@@ -1,0 +1,12 @@
+package me.tuanzi.integration;
+
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
+import com.terraformersmc.modmenu.api.ModMenuApi;
+
+public class ModMenuIntegration implements ModMenuApi {
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        // 后续可在此返回配置界面，目前返回 null 或默认占位符
+        return parent -> null;
+    }
+}
