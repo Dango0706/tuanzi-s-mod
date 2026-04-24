@@ -5,7 +5,9 @@
 	"refmap": "tuanzis_mod.refmap.json",
 	"mixins": [
 		"ExampleMixin",
-		"SoulboundMixin"
+		"SoulboundMixin",
+		"AnvilMixin",
+		"AnvilScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

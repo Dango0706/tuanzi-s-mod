@@ -28,7 +28,7 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
             1,    // max level
             Enchantment.constantCost(10), 
             Enchantment.constantCost(50), 
-            4,    // anvil cost
+            16,    // anvil cost
             EquipmentSlotGroup.ANY
         );
 
