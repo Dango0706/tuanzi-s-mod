@@ -1,0 +1,6 @@
+{
+  "enchantment.tuanzis_mod.soulbound": "灵魂绑定",
+  "item.tuanzis_mod.color_sponge": "颜色海绵",
+  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "团子的模组",
+  "jei.tuanzis_mod.color_sponge.description": "支持十六进制(如 #FF5555)及样式代码(如 &l)。\n十六进制：重命名 8 级，合成 32 级。\n样式代码：每个属性重命名 4 级，合成 16 级。\n支持叠加，使用 &r 重置。"
+}

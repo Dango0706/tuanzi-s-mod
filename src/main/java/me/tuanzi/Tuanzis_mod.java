@@ -10,6 +10,7 @@ public class Tuanzis_mod implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModEnchantments.initialize();
+		me.tuanzi.init.ModItems.initialize();
 		me.tuanzi.init.ModItemGroups.initialize();
 		ModLog.info("Hello Fabric world!");
 		ModLog.debug("Mod initialization started in development mode!");

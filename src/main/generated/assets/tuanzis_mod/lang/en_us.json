@@ -1,4 +1,6 @@
 {
   "enchantment.tuanzis_mod.soulbound": "Soulbound",
-  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "Tuanzi's Mod"
+  "item.tuanzis_mod.color_sponge": "Color Sponge",
+  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "Tuanzi's Mod",
+  "jei.tuanzis_mod.color_sponge.description": "[Color Sponge Manual]\n1.Hex Color: '#RRGGBB'. [Cost: 8/32]\n2.Style Codes: Use '&' (e.g. &l Bold). [Cost: +4/+16 per code]\n3.Splitting: Use ',' (e.g. &c,&b) to apply styles char-by-char. [Cost: +2/+8 per ',']\n4.Gradient: '&qN#Hex' (e.g. &q3#FF0000) auto-generates near-color gradients for N chars. [Cost: 8/32 per char]"
 }

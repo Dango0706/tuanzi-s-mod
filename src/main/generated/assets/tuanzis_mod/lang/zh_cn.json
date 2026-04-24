@@ -1,4 +1,6 @@
 {
   "enchantment.tuanzis_mod.soulbound": "灵魂绑定",
-  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "团子的模组"
+  "item.tuanzis_mod.color_sponge": "颜色海绵",
+  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "团子的模组",
+  "jei.tuanzis_mod.color_sponge.description": "【颜色海绵使用指南】\n1.十六进制颜色：'#RRGGBB'。[费: 8/32级]\n2.样式代码：使用 '&' (如 &l 加粗)。[费: +4/+16级/项]\n3.分割系统：使用 ',' 分隔样式 (如 &c,&b)。样式按序循环应用。[费: +2/+8级/符]\n4.智能渐变：'&qN#Hex' (如 &q3#FF0000) 自动生成 N 个字符的随机相近渐变色。[费: 每字 8/32级]"
 }

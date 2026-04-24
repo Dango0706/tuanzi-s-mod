@@ -49,8 +49,20 @@ fabricApi {
 	}
 }
 
+sourceSets {
+	main {
+		resources {
+			srcDirs = [
+					'src/main/resources',
+					'src/main/generated'
+			]
+		}
+	}
+}
+
 processResources {
 	inputs.property "version", project.version
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
 	filesMatching("fabric.mod.json") {
 		expand "version": inputs.properties.version

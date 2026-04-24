@@ -1,0 +1,6 @@
+{
+  "enchantment.tuanzis_mod.soulbound": "Soulbound",
+  "item.tuanzis_mod.color_sponge": "Color Sponge",
+  "itemGroup.tuanzis_mod.tuanzis_mod_tab": "Tuanzi's Mod",
+  "jei.tuanzis_mod.color_sponge.description": "Supports hex (e.g. #FF5555) and style codes (e.g. &l).\nHex: Rename 8, Combine 32 levels.\nStyles: Each attribute Rename 4, Combine 16 levels.\nSupports stacking, use &r to reset."
+}

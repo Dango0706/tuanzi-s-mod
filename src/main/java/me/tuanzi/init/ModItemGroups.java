@@ -25,6 +25,9 @@ public class ModItemGroups {
                 ItemStack soulboundBook = new ItemStack(Items.ENCHANTED_BOOK);
                 EnchantmentHelper.updateEnchantments(soulboundBook, mutable -> mutable.set(soulbound, 1));
                 entries.accept(soulboundBook);
+
+                // 加入颜色海绵
+                entries.accept(ModItems.COLOR_SPONGE);
             })
             .build()
     );
