@@ -2,7 +2,10 @@
 
 ## 核心指令 (Core Mandates)
 - **始终使用中文输出 (Always output in Chinese).**
-- **编译环境:** 使用 Java 25 进行编译，路径为 `C:/Program Files/Zulu/zulu-25`。
+- **编译环境:** 推荐使用 JBR 25 (JetBrains Runtime) 以支持增强的热重载 (HotSwap) 功能。
+- **热重载配置:** 
+    - 为了支持不重启修改 Mixin，请在 IDE 运行配置的 VM 参数中手动添加：`-Dmixin.hotSwap=true`。
+    - 若使用 JBR，可额外添加 `-XX:+AllowEnhancedClassRedefinition` 以开启增强类重定义。
 - **开发参考:** 请参考 Minecraft 反编译后的本地源码来进行开发（源码 Jar 包通常由 Fabric Loom 自动下载并配置在 Gradle 依赖中，或参考项目根目录相关说明）。
 
 ## Project Overview

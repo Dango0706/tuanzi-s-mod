@@ -13,7 +13,11 @@
 		"ImmortalTalismanMixin",
 		"ImmortalTalismanPlayerMixin",
 		"UndyingEffectMixin",
-		"BrewingRecipeMixin"
+		"BrewingRecipeMixin",
+		"WardenExperienceMixin",
+		"ExperienceEnchantmentMixin",
+		"WardenSoulboundDropMixin",
+		"InfinityMendingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

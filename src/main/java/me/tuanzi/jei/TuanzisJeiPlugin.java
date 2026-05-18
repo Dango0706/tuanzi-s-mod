@@ -1,6 +1,7 @@
 package me.tuanzi.jei;
 
 import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.init.ModItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -15,6 +16,8 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,5 +107,53 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("item.tuanzis_mod.yuris_revenge.jei.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.IMMORTAL_TALISMAN), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.immortal_talisman.description"));
+        registration.addIngredientInfo(new ItemStack(Items.WARDEN_SPAWN_EGG), VanillaTypes.ITEM_STACK, 
+            Component.translatable("item.minecraft.warden_spawn_egg.jei.description"));
+
+        // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
+        List<ItemStack> experienceBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.EXPERIENCE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!experienceBooks.isEmpty()) {
+            registration.addIngredientInfo(experienceBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.experience.description"));
+        }
+
+        // 注册无限与经验修补兼容性说明
+        List<ItemStack> infinityMendingBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(Enchantments.INFINITY) || entry.getKey().is(Enchantments.MENDING)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!infinityMendingBooks.isEmpty()) {
+            registration.addIngredientInfo(infinityMendingBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.compatibility.infinity_mending"));
+        }
     }
 }

@@ -1,6 +1,7 @@
 {
   "effect.tuanzis_mod.flight": "飞行",
   "effect.tuanzis_mod.undying": "不死",
+  "enchantment.tuanzis_mod.experience": "阅历",
   "enchantment.tuanzis_mod.soulbound": "灵魂绑定",
   "item.minecraft.lingering_potion.effect.flight": "滞留型飞行药水",
   "item.minecraft.lingering_potion.effect.long_flight": "滞留型飞行药水 (延长)",
@@ -18,12 +19,15 @@
   "item.minecraft.tipped_arrow.effect.long_flight": "飞行药箭 (延长)",
   "item.minecraft.tipped_arrow.effect.long_undying": "不死药箭 (延长)",
   "item.minecraft.tipped_arrow.effect.undying": "不死药箭",
+  "item.minecraft.warden_spawn_egg.jei.description": "【监守者】\n一种极其危险的生物，通常潜伏在深暗之域的远古城市中。\n\n§e奖励增强：§r\n1. §b经验提升§r：现在被玩家或被驯服的狼杀死时，会掉落 §a275§r 点经验值（原为 5 点）。\n2. §b稀有掉落§r：若玩家对单个监守者累计造成超过 §c50%§r 最大生命值的伤害，该监守者死亡时有 §a10%§r 的概率掉落§6《灵魂绑定》§r附魔书（受抢夺影响，每级增加 2.5%）。\n\n§7提示：虽然经验变多了，但它依然非常危险，建议做好充分准备再进行挑战。§r",
   "item.tuanzis_mod.immortal_talisman": "不朽圣符",
   "item.tuanzis_mod.immortal_talisman.tooltip": "持有此符，死亡时保留所有物品与经验值。",
   "item.tuanzis_mod.rainbow_sponge": "彩虹海绵",
   "item.tuanzis_mod.yuris_revenge": "尤里的复仇",
   "item.tuanzis_mod.yuris_revenge.jei.description": "【尤里的复仇】\n一把拥有神秘力量的工具。它能够以前所未有的速度粉碎坚不可摧的基岩。\n\n§e功能：§r\n1. §b破坏基岩§r：它是唯一能够挖掘并掉落基岩工具。\n2. §b极速挖掘§r：在面对基岩时拥有惊人的破坏速度。\n\n§7注：除了基岩，它在面对其他方块时几乎毫无用处。§r",
   "itemGroup.tuanzis_mod.tuanzis_mod_tab": "团子的模组",
-  "jei.tuanzis_mod.immortal_talisman.description": "【不朽圣符】\n一件保命的神器。只要它存在于你的物品栏中，死亡将不再是终点。\n\n§e效果：§r\n1. §b死亡不掉落§r：保留所有物品、盔甲和经验。\n2. §b自我牺牲§r：在发挥作用后，圣符会消耗掉一个。\n\n§c注意：如果圣符全部消耗完，死亡保护将失效！§r",
+  "jei.tuanzis_mod.compatibility.infinity_mending": "【附魔兼容性增强】\n现在 §b无限 (Infinity)§r 与 §b经验修补 (Mending)§r 互相兼容，可以同时附魔在同一把弓上。",
+  "jei.tuanzis_mod.experience.description": "【阅历附魔】\n增加击杀生物时获得的经验收益。\n\n§e效果：§r\n1. §b收益提升§r：每一级增加 §a25%§r 的经验收益（向上取整）。\n2. §b生效条件§r：仅在主手持有该附魔武器击杀生物时生效。\n3. §b范围§r：对除击杀玩家外的所有生物有效。\n\n§7说明：最高等级为 4 级。30 级附魔台最高只能刷出 3 级，4 级需通过铁砧合并或特殊战利品获得。§r",
+  "jei.tuanzis_mod.immortal_talisman.description": "【不朽圣符】\n一件保命的神器。只要它存在于你的物品栏中，死亡将不再是终点。\n\n§e效果：§r\n1. §b死亡不掉落§r：保留所有物品、盔甲和经验。\n2. §b自我牺牲§r：在发挥作用后，圣符会消耗掉一个。",
   "jei.tuanzis_mod.rainbow_sponge.description": "【彩虹海绵：高级定制指南】\n彩虹海绵是一张魔法指令卡。先通过在铁砧中命名来“编程”，再将其与物品合并来应用样式。\n\n§n一、编程语法 (重命名海绵)§r\n1. §b十六进制§r：'#RRGGBB' (如 #FF5555)。[费: 8级]\n2. §b样式代码§r：'&L' (如 &l加粗, &o倾斜, &n下划线)。[费: 每项 +4级]\n3. §b分割系统§r：',' 分隔样式 (如 &c,&b,&l)。样式循环应用到每个字。[费: 每个 ',' +2级]\n4. §b智能渐变§r：'&qN#Start-#End'。N为字数，End可省。系统生成平滑过渡。[费: 每字 8级]\n§7注意：渐变指令 (&q) 预览不显色，其余写法均实时显示染色效果作为示范。§r\n\n§n二、应用样式 (合并物品)§r\n1. §e普通/样式合并§r：基础 32 级 + (样式项×16 + 逗号数×8)。\n2. §e渐变合并§r：每字 32 级。\n3. §e重置属性§r：将命名的 '&r' 海绵与物品合并可清除所有颜色样式。[费: 16级]"
 }

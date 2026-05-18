@@ -21,10 +21,15 @@ public class ModItemGroups {
             .displayItems((displayContext, entries) -> {
                 var enchantmentRegistry = displayContext.holders().lookupOrThrow(Registries.ENCHANTMENT);
                 var soulbound = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
+                var experience = enchantmentRegistry.getOrThrow(ModEnchantments.EXPERIENCE);
                 
                 ItemStack soulboundBook = new ItemStack(Items.ENCHANTED_BOOK);
                 EnchantmentHelper.updateEnchantments(soulboundBook, mutable -> mutable.set(soulbound, 1));
                 entries.accept(soulboundBook);
+
+                ItemStack experienceBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(experienceBook, mutable -> mutable.set(experience, 4));
+                entries.accept(experienceBook);
 
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);

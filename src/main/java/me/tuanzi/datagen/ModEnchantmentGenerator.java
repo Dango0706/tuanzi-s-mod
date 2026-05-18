@@ -21,20 +21,33 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
     protected void configure(HolderLookup.Provider registries, Entries entries) {
         var items = registries.lookupOrThrow(Registries.ITEM);
 
-        // 26.1 附魔定义
-        Enchantment.EnchantmentDefinition definition = Enchantment.definition(
-            items.getOrThrow(ItemTags.DURABILITY_ENCHANTABLE),
-            1,    // weight (minimized)
-            1,    // max level
-            Enchantment.constantCost(10), 
-            Enchantment.constantCost(50), 
-            16,    // anvil cost
-            EquipmentSlotGroup.ANY
-        );
+        // Soulbound
+        entries.add(ModEnchantments.SOULBOUND, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.DURABILITY_ENCHANTABLE),
+                1,    // weight
+                1,    // max level
+                Enchantment.constantCost(10), 
+                Enchantment.constantCost(50), 
+                16,    // anvil cost
+                EquipmentSlotGroup.ANY
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "soulbound")));
 
-        // 26.1 使用 enchantment() 启动构建
-        entries.add(ModEnchantments.SOULBOUND, Enchantment.enchantment(definition)
-            .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "soulbound")));
+        // 阅历 (Experience)
+        // 30级附魔最多只能附出3级 -> Level 4 min cost > 30.
+        // Level 1: 5, Level 2: 15, Level 3: 25, Level 4: 35
+        entries.add(ModEnchantments.EXPERIENCE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
+                5,    // weight (common)
+                4,    // max level
+                Enchantment.dynamicCost(5, 10), 
+                Enchantment.dynamicCost(25, 10), 
+                4,     // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "experience")));
     }
 
     @Override

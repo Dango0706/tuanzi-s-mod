@@ -1,6 +1,7 @@
 {
   "effect.tuanzis_mod.flight": "Flight",
   "effect.tuanzis_mod.undying": "Undying",
+  "enchantment.tuanzis_mod.experience": "Experience",
   "enchantment.tuanzis_mod.soulbound": "Soulbound",
   "item.minecraft.lingering_potion.effect.flight": "Lingering Potion of Flight",
   "item.minecraft.lingering_potion.effect.long_flight": "Lingering Potion of Flight (Extended)",
@@ -18,12 +19,15 @@
   "item.minecraft.tipped_arrow.effect.long_flight": "Arrow of Flight (Extended)",
   "item.minecraft.tipped_arrow.effect.long_undying": "Arrow of Undying (Extended)",
   "item.minecraft.tipped_arrow.effect.undying": "Arrow of Undying",
+  "item.minecraft.warden_spawn_egg.jei.description": "[Warden]\nAn extremely dangerous creature that typically lurks within the Ancient Cities of the Deep Dark.\n\n§eReward Boost:§r\n1. §bXP Increase§r: Now drops §a275§r experience points when killed by a player or a tamed wolf (was 5).\n2. §bRare Drop§r: If a player deals more than §c50%§r of its max health as damage, it has a §a10%§r chance to drop a §6Soulbound§r enchanted book (affected by Looting, +2.5% per level).\n\n§7Tip: Even with the increased reward, it remains highly dangerous. Prepare thoroughly before engaging.§r",
   "item.tuanzis_mod.immortal_talisman": "Immortal Talisman",
   "item.tuanzis_mod.immortal_talisman.tooltip": "Retain all items and experience on death while in inventory.",
   "item.tuanzis_mod.rainbow_sponge": "Rainbow Sponge",
   "item.tuanzis_mod.yuris_revenge": "Yuri's Revenge",
   "item.tuanzis_mod.yuris_revenge.jei.description": "[Yuri's Revenge]\nA tool imbued with mysterious power, capable of shattering indestructible bedrock at unprecedented speeds.\n\n§eFeatures:§r\n1. §bBedrock Breaker§r: The only tool that can mine and drop bedrock.\n2. §bExtreme Speed§r: Amazing destruction speed when facing bedrock.\n\n§7Note: It is nearly useless against any block other than bedrock.§r",
   "itemGroup.tuanzis_mod.tuanzis_mod_tab": "Tuanzi's Mod",
+  "jei.tuanzis_mod.compatibility.infinity_mending": "[Enchantment Compatibility]\n§bInfinity§r and §bMending§r are now compatible and can be applied to the same bow simultaneously.",
+  "jei.tuanzis_mod.experience.description": "[Experience Enchantment]\nIncreases the experience points gained from killing mobs.\n\n§eEffects:§r\n1. §bXP Boost§r: Each level increases experience gain by §a25%§r (rounded up).\n2. §bCondition§r: Only effective when killing mobs with the enchanted weapon in the main hand.\n3. §bScope§r: Effective against all mobs except players.\n\n§7Note: Max level is 4. Level 30 enchantment table can yield up to level 3. Level 4 requires anvil merging or special loot.§r",
   "jei.tuanzis_mod.immortal_talisman.description": "[Immortal Talisman]\nA life-saving artifact. As long as it's in your inventory, death is no longer the end.\n\n§eEffects:§r\n1. §bKeep Inventory§r: Retain all items, armor, and experience upon death.\n2. §bSelf-Sacrifice§r: One talisman is consumed each time it saves you.\n\n§cWarning: If all talismans are consumed, death protection will fail!§r",
   "jei.tuanzis_mod.rainbow_sponge.description": "[Rainbow Sponge: Advanced Customization Guide]\nThe sponge acts as a 'Command Card'. Program it via Anvil naming, then merge with an item to apply styles.\n\n§n1. Programming Syntax (Naming)§r\n1. §bHex Colors§r: '#RRGGBB' (e.g. #FF5555). [Cost: 8]\n2. §bVanilla Styles§r: '&L' (e.g. &l Bold, &o Italic). [Cost: +4 per code]\n3. §bSplitting System§r: Use ',' (e.g. &c,&b). Styles apply char-by-char. [Cost: +2 per ',']\n4. §bSmart Gradient§r: '&qN#Start-#End'. N=Length. End optional. Smooth shift. [Cost: 8 per char]\n§7Note: Gradient codes (&q) show plain text; others show real color as demo.§r\n\n§n2. Applying Styles (Merging)§r\n1. §eNormal/Style Merge§r: 32 base + (Styles*16 + Commas*8).\n2. §eGradient Merge§r: 32 per character.\n3. §eReset Styles§r: Merge '&r' sponge to clear item's custom colors. [Cost: 16]",
   "message.tuanzis_mod.flight_expiring": "§cWarning: Flight effect expires in %d seconds!§r"
