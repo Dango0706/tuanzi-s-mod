@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "tuanzis_mod:item/color_sponge"
+    "layer0": "tuanzis_mod:item/rainbow_sponge"
   }
 }

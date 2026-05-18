@@ -37,7 +37,7 @@ public class TuanzisJeiPlugin implements IModPlugin {
         var factory = jeiHelpers.getVanillaRecipeFactory();
         List<mezz.jei.api.recipe.vanilla.IJeiAnvilRecipe> recipes = new ArrayList<>();
 
-        ItemStack rawSponge = new ItemStack(ModItems.COLOR_SPONGE);
+        ItemStack rawSponge = new ItemStack(ModItems.RAINBOW_SPONGE);
         ItemStack sword = new ItemStack(Items.DIAMOND_SWORD);
         String sName = Items.DIAMOND_SWORD.getDescriptionId();
 
@@ -59,9 +59,8 @@ public class TuanzisJeiPlugin implements IModPlugin {
         recipes.add(factory.createAnvilRecipe(List.of(sword), List.of(mixSponge), List.of(mixSword), 
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/dyeing_mix")));
 
-        // 场景 B: 分割系统 (&c,&e,&b) - 修正海绵名字渲染
+        // 场景 B: 分割系统 (&c,&e,&b)
         ItemStack splitSponge = rawSponge.copy();
-        // 构造分段颜色的预览名称
         var spongePreview = Component.empty()
             .append(Component.literal("&c").withStyle(ChatFormatting.RED))
             .append(Component.literal(",").withStyle(ChatFormatting.GRAY))
@@ -99,7 +98,11 @@ public class TuanzisJeiPlugin implements IModPlugin {
 
         registration.addRecipes(RecipeTypes.ANVIL, recipes);
         
-        registration.addIngredientInfo(new ItemStack(ModItems.COLOR_SPONGE), VanillaTypes.ITEM_STACK, 
-            Component.translatable("jei.tuanzis_mod.color_sponge.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.RAINBOW_SPONGE), VanillaTypes.ITEM_STACK, 
+            Component.translatable("jei.tuanzis_mod.rainbow_sponge.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.YURIS_REVENGE), VanillaTypes.ITEM_STACK,
+            Component.translatable("item.tuanzis_mod.yuris_revenge.jei.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.IMMORTAL_TALISMAN), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.immortal_talisman.description"));
     }
 }

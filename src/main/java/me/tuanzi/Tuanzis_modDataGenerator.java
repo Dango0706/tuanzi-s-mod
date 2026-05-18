@@ -2,6 +2,7 @@ package me.tuanzi;
 
 import me.tuanzi.datagen.ModEnchantmentGenerator;
 import me.tuanzi.init.ModItems;
+import me.tuanzi.init.ModStatusEffects;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
@@ -34,10 +35,34 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 		public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
 			translationBuilder.add("itemGroup.tuanzis_mod.tuanzis_mod_tab", "团子的模组");
 			translationBuilder.add("enchantment.tuanzis_mod.soulbound", "灵魂绑定");
-			translationBuilder.add(ModItems.COLOR_SPONGE, "颜色海绵");
+			translationBuilder.add(ModItems.RAINBOW_SPONGE, "彩虹海绵");
+			translationBuilder.add(ModItems.YURIS_REVENGE, "尤里的复仇");
+			translationBuilder.add(ModItems.IMMORTAL_TALISMAN, "不朽圣符");
+			translationBuilder.add("item.tuanzis_mod.immortal_talisman.tooltip", "持有此符，死亡时保留所有物品与经验值。");
+			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "飞行");
+			translationBuilder.add(ModStatusEffects.UNDYING.value(), "不死");
+
+			// 药水翻译
+			translationBuilder.add("item.minecraft.potion.effect.flight", "飞行药水");
+			translationBuilder.add("item.minecraft.splash_potion.effect.flight", "喷溅型飞行药水");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.flight", "滞留型飞行药水");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.flight", "飞行药箭");
+			translationBuilder.add("item.minecraft.potion.effect.long_flight", "飞行药水 (延长)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_flight", "喷溅型飞行药水 (延长)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_flight", "滞留型飞行药水 (延长)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_flight", "飞行药箭 (延长)");
+
+			translationBuilder.add("item.minecraft.potion.effect.undying", "不死药水");
+			translationBuilder.add("item.minecraft.splash_potion.effect.undying", "喷溅型不死药水");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.undying", "滞留型不死药水");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.undying", "不死药箭");
+			translationBuilder.add("item.minecraft.potion.effect.long_undying", "不死药水 (延长)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_undying", "喷溅型不死药水 (延长)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_undying", "滞留型不死药水 (延长)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_undying", "不死药箭 (延长)");
 			
-			String desc = "【颜色海绵：高级定制指南】\n" +
-				"颜色海绵是一张魔法指令卡。先通过在铁砧中命名来“编程”，再将其与物品合并来应用样式。\n\n" +
+			String desc = "【彩虹海绵：高级定制指南】\n" +
+				"彩虹海绵是一张魔法指令卡。先通过在铁砧中命名来“编程”，再将其与物品合并来应用样式。\n\n" +
 				"§n一、编程语法 (重命名海绵)§r\n" +
 				"1. §b十六进制§r：'#RRGGBB' (如 #FF5555)。[费: 8级]\n" +
 				"2. §b样式代码§r：'&L' (如 &l加粗, &o倾斜, &n下划线)。[费: 每项 +4级]\n" +
@@ -48,7 +73,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"1. §e普通/样式合并§r：基础 32 级 + (样式项×16 + 逗号数×8)。\n" +
 				"2. §e渐变合并§r：每字 32 级。\n" +
 				"3. §e重置属性§r：将命名的 '&r' 海绵与物品合并可清除所有颜色样式。[费: 16级]";
-			translationBuilder.add("jei.tuanzis_mod.color_sponge.description", desc);
+			translationBuilder.add("jei.tuanzis_mod.rainbow_sponge.description", desc);
 		}
 	}
 
@@ -61,9 +86,34 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 		public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translationBuilder) {
 			translationBuilder.add("itemGroup.tuanzis_mod.tuanzis_mod_tab", "Tuanzi's Mod");
 			translationBuilder.add("enchantment.tuanzis_mod.soulbound", "Soulbound");
-			translationBuilder.add(ModItems.COLOR_SPONGE, "Color Sponge");
+			translationBuilder.add(ModItems.RAINBOW_SPONGE, "Rainbow Sponge");
+			translationBuilder.add(ModItems.YURIS_REVENGE, "Yuri's Revenge");
+			translationBuilder.add(ModItems.IMMORTAL_TALISMAN, "Immortal Talisman");
+			translationBuilder.add("item.tuanzis_mod.immortal_talisman.tooltip", "Retain all items and experience on death while in inventory.");
+			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
+			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
 
-			String desc = "[Color Sponge: Advanced Customization Guide]\n" +
+			// Potion Translations
+			translationBuilder.add("item.minecraft.potion.effect.flight", "Potion of Flight");
+			translationBuilder.add("item.minecraft.splash_potion.effect.flight", "Splash Potion of Flight");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.flight", "Lingering Potion of Flight");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.flight", "Arrow of Flight");
+			translationBuilder.add("item.minecraft.potion.effect.long_flight", "Potion of Flight (Extended)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_flight", "Splash Potion of Flight (Extended)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_flight", "Lingering Potion of Flight (Extended)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_flight", "Arrow of Flight (Extended)");
+
+			translationBuilder.add("item.minecraft.potion.effect.undying", "Potion of Undying");
+			translationBuilder.add("item.minecraft.splash_potion.effect.undying", "Splash Potion of Undying");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.undying", "Lingering Potion of Undying");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.undying", "Arrow of Undying");
+			translationBuilder.add("item.minecraft.potion.effect.long_undying", "Potion of Undying (Extended)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_undying", "Splash Potion of Undying (Extended)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_undying", "Lingering Potion of Undying (Extended)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_undying", "Arrow of Undying (Extended)");
+			translationBuilder.add("message.tuanzis_mod.flight_expiring", "§cWarning: Flight effect expires in %d seconds!§r");
+
+			String desc = "[Rainbow Sponge: Advanced Customization Guide]\n" +
 				"The sponge acts as a 'Command Card'. Program it via Anvil naming, then merge with an item to apply styles.\n\n" +
 				"§n1. Programming Syntax (Naming)§r\n" +
 				"1. §bHex Colors§r: '#RRGGBB' (e.g. #FF5555). [Cost: 8]\n" +
@@ -75,7 +125,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"1. §eNormal/Style Merge§r: 32 base + (Styles*16 + Commas*8).\n" +
 				"2. §eGradient Merge§r: 32 per character.\n" +
 				"3. §eReset Styles§r: Merge '&r' sponge to clear item's custom colors. [Cost: 16]";
-			translationBuilder.add("jei.tuanzis_mod.color_sponge.description", desc);
+			translationBuilder.add("jei.tuanzis_mod.rainbow_sponge.description", desc);
 		}
 	}
 }
+

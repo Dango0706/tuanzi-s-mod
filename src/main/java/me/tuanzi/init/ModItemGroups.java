@@ -26,11 +26,30 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(soulboundBook, mutable -> mutable.set(soulbound, 1));
                 entries.accept(soulboundBook);
 
-                // 加入颜色海绵
-                entries.accept(ModItems.COLOR_SPONGE);
+                // 加入彩虹海绵
+                entries.accept(ModItems.RAINBOW_SPONGE);
+                // 加入尤里的复仇
+                entries.accept(ModItems.YURIS_REVENGE);
+                // 加入不朽圣符
+                entries.accept(ModItems.IMMORTAL_TALISMAN);
+
+                // 加入飞行药水及其变体
+                addPotionVariants(entries, ModPotions.FLIGHT_POTION);
+                addPotionVariants(entries, ModPotions.LONG_FLIGHT_POTION);
+
+                // 加入不死药水及其变体
+                addPotionVariants(entries, ModPotions.UNDYING_POTION);
+                addPotionVariants(entries, ModPotions.LONG_UNDYING_POTION);
             })
             .build()
     );
+
+    private static void addPotionVariants(CreativeModeTab.Output entries, net.minecraft.core.Holder<net.minecraft.world.item.alchemy.Potion> potion) {
+        entries.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.POTION, potion));
+        entries.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.SPLASH_POTION, potion));
+        entries.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.LINGERING_POTION, potion));
+        entries.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.TIPPED_ARROW, potion));
+    }
 
     public static void initialize() {
     }

@@ -12,6 +12,8 @@ public class Tuanzis_mod implements ModInitializer {
 		ModEnchantments.initialize();
 		me.tuanzi.init.ModItems.initialize();
 		me.tuanzi.init.ModItemGroups.initialize();
+		me.tuanzi.init.ModStatusEffects.initialize();
+		me.tuanzi.init.ModPotions.initialize();
 		ModLog.info("Hello Fabric world!");
 		ModLog.debug("Mod initialization started in development mode!");
 	}

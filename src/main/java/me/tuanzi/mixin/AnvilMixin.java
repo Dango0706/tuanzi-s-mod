@@ -30,6 +30,15 @@ public abstract class AnvilMixin {
     @Shadow @Final private DataSlot cost;
     @Shadow private String itemName;
 
+    /**
+     * 移除服务端铁砧名称验证的 50 字符限制。
+     * 在 1.21.2+ 中，validateName 负责截断字符串。
+     */
+    @Inject(method = "validateName", at = @At("HEAD"), cancellable = true)
+    private static void tuanzis_mod$removeNameValidationLimit(String string, CallbackInfoReturnable<String> cir) {
+        cir.setReturnValue(string);
+    }
+
     private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("#[0-9a-fA-F]{6}");
     private static final Pattern FORMAT_PATTERN = Pattern.compile("&[0-9a-fk-o]");
     private static final Pattern GRADIENT_PATTERN = Pattern.compile("&q(\\d+)(#[0-9a-fA-F]{6})(?:-(#[0-9a-fA-F]{6}))?");
@@ -53,8 +62,8 @@ public abstract class AnvilMixin {
         ItemStack left = menu.getSlot(0).getItem();
         ItemStack right = menu.getSlot(1).getItem();
 
-        // 场景1：仅重命名颜色海绵
-        if (left.is(ModItems.COLOR_SPONGE) && right.isEmpty()) {
+        // 场景1：仅重命名彩虹海绵
+        if (left.is(ModItems.RAINBOW_SPONGE) && right.isEmpty()) {
             if (this.itemName != null && !this.itemName.isBlank()) {
                 ItemStack result = left.copy();
                 
@@ -88,7 +97,7 @@ public abstract class AnvilMixin {
         }
         
         // 场景2：给物品应用样式 (此处逻辑保持不变)
-        if (!left.isEmpty() && right.is(ModItems.COLOR_SPONGE)) {
+        if (!left.isEmpty() && right.is(ModItems.RAINBOW_SPONGE)) {
             Component spongeNameComp = right.get(DataComponents.CUSTOM_NAME);
             if (spongeNameComp != null) {
                 String spongeText = spongeNameComp.getString();

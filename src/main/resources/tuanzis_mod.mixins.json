@@ -7,7 +7,13 @@
 		"ExampleMixin",
 		"SoulboundMixin",
 		"AnvilMixin",
-		"AnvilScreenMixin"
+		"AnvilScreenMixin",
+		"BedrockBreakerMixin",
+		"FlightEffectMixin",
+		"ImmortalTalismanMixin",
+		"ImmortalTalismanPlayerMixin",
+		"UndyingEffectMixin",
+		"BrewingRecipeMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
