@@ -11,6 +11,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
@@ -109,6 +110,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.immortal_talisman.description"));
         registration.addIngredientInfo(new ItemStack(Items.WARDEN_SPAWN_EGG), VanillaTypes.ITEM_STACK, 
             Component.translatable("item.minecraft.warden_spawn_egg.jei.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.WARDEN_HEART), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.warden_heart.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.ECHO_BREAKER), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.echo_breaker.description"));
 
         // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
         List<ItemStack> experienceBooks = registration.getIngredientManager()
@@ -131,6 +136,49 @@ public class TuanzisJeiPlugin implements IModPlugin {
         if (!experienceBooks.isEmpty()) {
             registration.addIngredientInfo(experienceBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.experience.description"));
+        }
+
+        // 获取所有附有“熔炼”附魔的附魔书 (Smelting)
+        List<ItemStack> smeltingBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.SMELTING)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!smeltingBooks.isEmpty()) {
+            registration.addIngredientInfo(smeltingBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.smelting.description"));
+        }
+
+        // 注册不死药水 1.0.3 更新说明 (针对所有不死药水/药箭)
+        List<ItemStack> undyingPotions = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> {
+                var potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                if (potionContents != null && potionContents.potion().isPresent()) {
+                    var potion = potionContents.potion().get().value();
+                    var id = BuiltInRegistries.POTION.getKey(potion);
+                    return id != null && id.getPath().contains("undying");
+                }
+                return false;
+            })
+            .toList();
+        
+        if (!undyingPotions.isEmpty()) {
+            registration.addIngredientInfo(undyingPotions, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.undying_potion.update_103"));
         }
 
         // 注册无限与经验修补兼容性说明

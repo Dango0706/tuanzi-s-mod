@@ -17,7 +17,9 @@
 		"WardenExperienceMixin",
 		"ExperienceEnchantmentMixin",
 		"WardenSoulboundDropMixin",
-		"InfinityMendingMixin"
+		"InfinityMendingMixin",
+		"SmeltingEnchantmentMixin",
+		"SonicBoomBlockMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

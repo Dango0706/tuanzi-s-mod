@@ -5,6 +5,8 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +20,14 @@ public abstract class UndyingEffectMixin {
         LivingEntity entity = (LivingEntity) (Object) this;
         
         if (entity.hasEffect(ModStatusEffects.UNDYING)) {
+            // 检查是否是玩家或已驯服生物 (拥有者不为空)
+            boolean isPlayer = entity instanceof Player;
+            boolean isTamed = entity instanceof TamableAnimal tamed && tamed.isTame();
+
+            if (!isPlayer && !isTamed) {
+                return;
+            }
+
             // 像不死图腾一样处理
             entity.setHealth(1.0F);
             entity.removeAllEffects();

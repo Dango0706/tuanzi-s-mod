@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "E": "minecraft:echo_shard",
+    "H": "tuanzis_mod:warden_heart",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "EEE",
+    " H ",
+    " S "
+  ],
+  "result": {
+    "id": "tuanzis_mod:echo_breaker"
+  }
+}

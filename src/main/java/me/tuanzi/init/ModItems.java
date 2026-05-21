@@ -1,5 +1,12 @@
 package me.tuanzi.init;
 
+import me.tuanzi.item.EchoBreakerItem;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.Weapon;
 import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.item.ImmortalTalismanItem;
 import me.tuanzi.item.YurisRevengeItem;
@@ -17,6 +24,19 @@ public class ModItems {
     public static final Item RAINBOW_SPONGE = register("rainbow_sponge", (properties) -> new Item(properties.stacksTo(1)));
     public static final Item YURIS_REVENGE = register("yuris_revenge", (properties) -> new YurisRevengeItem(properties.stacksTo(1).durability(5).rarity(Rarity.EPIC)));
     public static final Item IMMORTAL_TALISMAN = register("immortal_talisman", ImmortalTalismanItem::new);
+    public static final Item WARDEN_HEART = register("warden_heart", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
+    public static final Item ECHO_BREAKER = register("echo_breaker", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 8.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.8, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .build();
+        return new EchoBreakerItem(properties
+            .durability(1550)
+            .rarity(Rarity.RARE)
+            .component(DataComponents.WEAPON, new Weapon(1))
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
+            .attributes(modifiers));
+    });
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));

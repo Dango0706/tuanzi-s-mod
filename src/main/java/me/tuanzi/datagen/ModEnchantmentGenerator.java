@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -20,6 +21,7 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
     @Override
     protected void configure(HolderLookup.Provider registries, Entries entries) {
         var items = registries.lookupOrThrow(Registries.ITEM);
+        var enchantments = registries.lookupOrThrow(Registries.ENCHANTMENT);
 
         // Soulbound
         entries.add(ModEnchantments.SOULBOUND, Enchantment.enchantment(
@@ -48,6 +50,21 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 EquipmentSlotGroup.MAINHAND
             )
         ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "experience")));
+
+        // 熔炼 (Smelting)
+        entries.add(ModEnchantments.SMELTING, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.MINING_ENCHANTABLE),
+                2,    // weight
+                1,    // max level
+                Enchantment.constantCost(15), 
+                Enchantment.constantCost(65), 
+                8,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(EnchantmentTags.MINING_EXCLUSIVE))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "smelting")));
     }
 
     @Override

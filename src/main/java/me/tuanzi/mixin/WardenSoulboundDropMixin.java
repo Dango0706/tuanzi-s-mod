@@ -1,6 +1,7 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModEnchantments;
+import me.tuanzi.init.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -79,26 +80,36 @@ public abstract class WardenSoulboundDropMixin extends LivingEntity {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean killedByPlayer) {
         super.dropCustomDeathLoot(level, source, killedByPlayer);
 
-        if (tuanzis_mod$isMarkedForSoulbound && killedByPlayer && source.getEntity() instanceof Player player) {
+        if (killedByPlayer && source.getEntity() instanceof Player player) {
             int lootingLevel = EnchantmentHelper.getEnchantmentLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING), player);
             
-            // 基础10% + 每级抢夺2.5%
-            float chance = 0.10f + (lootingLevel * 0.025f);
-            ModLog.debug(String.format("Warden death: Marked=%b, Looting=%d, Drop Chance=%.2f%%", 
-                tuanzis_mod$isMarkedForSoulbound, lootingLevel, chance * 100));
-            
-            if (this.random.nextFloat() < chance) {
-                var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
-
-                ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(book, mutable -> mutable.set(soulboundHolder, 1));
-                
-                ModLog.info("Lucky! Warden dropped a Soulbound enchanted book.");
-                this.spawnAtLocation(level, book);
+            // 坚守者的心脏掉落：25% 概率，每级抢夺额外增加 10%
+            float heartChance = 0.25f + (lootingLevel * 0.10f);
+            ModLog.debug(String.format("Warden heart drop attempt: Looting=%d, Chance=%.2f%%", lootingLevel, heartChance * 100));
+            if (this.random.nextFloat() <= heartChance) {
+                ModLog.info("Warden dropped a Warden Heart!");
+                this.spawnAtLocation(level, new ItemStack(ModItems.WARDEN_HEART));
             }
-        } else if (killedByPlayer) {
-            ModLog.debug("Warden killed by player but was NOT marked for Soulbound drop.");
+
+            if (tuanzis_mod$isMarkedForSoulbound) {
+                // 基础10% + 每级抢夺2.5%
+                float chance = 0.10f + (lootingLevel * 0.025f);
+                ModLog.debug(String.format("Warden death: Marked=true, Looting=%d, Drop Chance=%.2f%%", 
+                    lootingLevel, chance * 100));
+                
+                if (this.random.nextFloat() <= chance) {
+                    var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
+
+                    ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+                    EnchantmentHelper.updateEnchantments(book, mutable -> mutable.set(soulboundHolder, 1));
+                    
+                    ModLog.info("Lucky! Warden dropped a Soulbound enchanted book.");
+                    this.spawnAtLocation(level, book);
+                }
+            } else {
+                ModLog.debug("Warden killed by player but was NOT marked for Soulbound drop.");
+            }
         }
     }
 }

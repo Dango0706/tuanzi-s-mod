@@ -37,6 +37,10 @@ public class ModItemGroups {
                 entries.accept(ModItems.YURIS_REVENGE);
                 // 加入不朽圣符
                 entries.accept(ModItems.IMMORTAL_TALISMAN);
+                // 加入坚守者的心脏
+                entries.accept(ModItems.WARDEN_HEART);
+                // 加入回响破障者
+                entries.accept(ModItems.ECHO_BREAKER);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);

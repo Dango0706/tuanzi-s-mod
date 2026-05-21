@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "tuanzis_mod:soulbound",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:smelting",
+      "required": false
+    }
+  ]
+}
