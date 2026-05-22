@@ -10,6 +10,7 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> SOULBOUND = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "soulbound"));
     public static final ResourceKey<Enchantment> EXPERIENCE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "experience"));
     public static final ResourceKey<Enchantment> SMELTING = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "smelting"));
+    public static final ResourceKey<Enchantment> CHAIN_MINING = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "chain_mining"));
 
     public static void initialize() {
         // 仅用于加载此类

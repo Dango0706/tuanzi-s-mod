@@ -22,6 +22,8 @@ public class ModItemGroups {
                 var enchantmentRegistry = displayContext.holders().lookupOrThrow(Registries.ENCHANTMENT);
                 var soulbound = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
                 var experience = enchantmentRegistry.getOrThrow(ModEnchantments.EXPERIENCE);
+                var smelting = enchantmentRegistry.getOrThrow(ModEnchantments.SMELTING);
+                var chainMining = enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_MINING);
                 
                 ItemStack soulboundBook = new ItemStack(Items.ENCHANTED_BOOK);
                 EnchantmentHelper.updateEnchantments(soulboundBook, mutable -> mutable.set(soulbound, 1));
@@ -30,6 +32,14 @@ public class ModItemGroups {
                 ItemStack experienceBook = new ItemStack(Items.ENCHANTED_BOOK);
                 EnchantmentHelper.updateEnchantments(experienceBook, mutable -> mutable.set(experience, 4));
                 entries.accept(experienceBook);
+
+                ItemStack smeltingBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(smeltingBook, mutable -> mutable.set(smelting, 1));
+                entries.accept(smeltingBook);
+
+                ItemStack chainMiningBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(chainMiningBook, mutable -> mutable.set(chainMining, 4));
+                entries.accept(chainMiningBook);
 
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);

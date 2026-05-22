@@ -19,7 +19,9 @@
 		"WardenSoulboundDropMixin",
 		"InfinityMendingMixin",
 		"SmeltingEnchantmentMixin",
-		"SonicBoomBlockMixin"
+		"SonicBoomBlockMixin",
+		"FoodDataAccessor",
+		"ChainMiningMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

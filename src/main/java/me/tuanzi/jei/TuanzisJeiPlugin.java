@@ -203,5 +203,28 @@ public class TuanzisJeiPlugin implements IModPlugin {
             registration.addIngredientInfo(infinityMendingBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.compatibility.infinity_mending"));
         }
+
+        // 获取所有附有“连锁采掘”附魔的附魔书 (Chain Mining I-IV)
+        List<ItemStack> chainMiningBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.CHAIN_MINING)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!chainMiningBooks.isEmpty()) {
+            registration.addIngredientInfo(chainMiningBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.chain_mining.description"));
+        }
     }
 }

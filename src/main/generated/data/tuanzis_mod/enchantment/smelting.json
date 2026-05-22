@@ -3,7 +3,7 @@
   "description": {
     "translate": "enchantment.tuanzis_mod.smelting"
   },
-  "exclusive_set": "#minecraft:exclusive_set/mining",
+  "exclusive_set": "minecraft:silk_touch",
   "max_cost": {
     "base": 65,
     "per_level_above_first": 0

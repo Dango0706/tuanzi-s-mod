@@ -6,10 +6,12 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.HolderSet;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -63,8 +65,21 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 EquipmentSlotGroup.MAINHAND
             )
         )
-        .exclusiveWith(enchantments.getOrThrow(EnchantmentTags.MINING_EXCLUSIVE))
+        .exclusiveWith(HolderSet.direct(enchantments.getOrThrow(Enchantments.SILK_TOUCH)))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "smelting")));
+
+        // 连锁采掘 (Chain Mining)
+        entries.add(ModEnchantments.CHAIN_MINING, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.MINING_ENCHANTABLE),
+                1,    // weight
+                4,    // max level
+                Enchantment.dynamicCost(15, 10), 
+                Enchantment.dynamicCost(65, 10), 
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "chain_mining")));
     }
 
     @Override

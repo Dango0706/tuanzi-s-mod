@@ -19,6 +19,9 @@
 		"main": [
 			"me.tuanzi.Tuanzis_mod"
 		],
+		"client": [
+			"me.tuanzi.client.TuanzisModClient"
+		],
 		"fabric-datagen": [
 			"me.tuanzi.Tuanzis_modDataGenerator"
 		],
