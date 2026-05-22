@@ -90,7 +90,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.minecraft.warden_spawn_egg.jei.description", "【监守者】\n一种极其危险的生物，通常潜伏在深暗之域的远古城市中。\n\n§e奖励增强：§r\n1. §b经验提升§r：现在被玩家或被驯服的狼杀死时，会掉落 §a275§r 点经验值（原为 5 点）。\n2. §b稀有掉落§r：若玩家对单个监守者累计造成超过 §c50%§r 最大生命值的伤害，该监守者死亡时有 §a10%§r 的概率掉落§6《灵魂绑定》§r附魔书（受抢夺影响，每级增加 2.5%）。\n\n§7提示：虽然经验变多了，但它依然非常危险，建议做好充分准备再进行挑战。§r");
 
 			translationBuilder.add("jei.tuanzis_mod.experience.description", "【阅历附魔】\n增加击杀生物时获得的经验收益。\n\n§e效果：§r\n1. §b收益提升§r：每一级增加 §a25%§r 的经验收益（向上取整）。\n2. §b生效条件§r：仅在主手持有该附魔武器击杀生物时生效。\n3. §b范围§r：对除击杀玩家外的所有生物有效。\n\n§7说明：最高等级为 4 级。30 级附魔台最高只能刷出 3 级，4 级需通过铁砧合并或特殊战利品获得。§r");
-			translationBuilder.add("jei.tuanzis_mod.warden_heart.description", "【坚守者的心脏】\n击杀监守者 (Warden) 获得的核心材料，蕴含着其顽强生命力与声波能量。\n\n§e获取方式：§r\n1. §b稀有掉落§r：击杀监守者 (Warden) 时有 §a10%§r 的概率掉落（受抢夺附魔影响，每级抢夺增加 2.5% 掉落概率）。\n\n§e用途：§r\n1. §b合成原料§r：与 8 个 §b回响碎片 (Echo Shard)§r 合成强力防御武器——§6回响破障者§r。\n2. §b装备修复§r：可用于在铁砧中修复§6回响破障者§r武器。");
+			translationBuilder.add("jei.tuanzis_mod.warden_heart.description", "【坚守者的心脏】\n击杀监守者 (Warden) 获得的核心材料，蕴含着其顽强生命力与声波能量。\n\n§e获取方式：§r\n1. §b稀有掉落§r：击杀监守者 (Warden) 时有 §a25%§r 的概率掉落（受抢夺附魔影响，每级抢夺增加 10% 掉落概率）。\n\n§e用途：§r\n1. §b合成原料§r：与 3 个 §b回响碎片 (Echo Shard)§r 和 1 根 §b木棍§r 合成强力防御武器——§6回响破障者§r。\n2. §b装备修复§r：可用于在铁砧中修复§6回响破障者§r武器。");
 			translationBuilder.add("jei.tuanzis_mod.echo_breaker.description", "【回响破障者】\n使用坚守者的心脏与回响碎片锻造的终极防御型防具/武器。蕴藏着能抵御甚至反弹声波伤害的神奇力量。\n\n§e被动效果：§r\n1. §b声波吸收§r：仅在主手持有生效，副手及快捷栏不生效。在受到监守者音波爆破伤害时，§a自动减免 30%§r 伤害。\n\n§e主动效果 (右键使用)：§r\n1. §b使用限制§r：仅在§c副手无物品§r时才可以使用右键格挡。\n2. §b完美格挡§r：右键格挡持续 §e0.5 秒§r。格挡期间§a免疫 100% 音波爆破伤害§r。\n3. §b声波反弹§r：在完美格挡音波爆破时，将声波完美反弹给发射源，对目标造成 §c15 点§r 真实伤害并附加 §9强烈击退§r 效果。\n4. §b格挡代价§r：每次格挡成功将额外扣除 §c3 点§r 耐久值。\n5. §b冷却机制§r：格挡§c失败§r则触发 §e5.0 秒§r 冷却，若格挡§a成功§r则触发 §68.0 秒§r 冷却。\n\n§e修复与维护：§r\n可以使用§b坚守者的心脏§r在铁砧中修复其耐久度。");
 			translationBuilder.add("enchantment.tuanzis_mod.chain_mining", "连锁采掘");
 			translationBuilder.add("key.tuanzis_mod.chain_mining", "连锁采掘激活键");
@@ -108,6 +108,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"2. §b饱食度消耗§r：每额外挖掘 1 个方块，额外增加 §c0.25§r 点消耗度。游戏将直接计算并即时扣除您的饱和度和饥饿值。\n\n" +
 				"§7获取方式：目前无生存获取方式，仅限创造模式获取。§r";
 			translationBuilder.add("jei.tuanzis_mod.chain_mining.description", chainDesc);
+			translationBuilder.add("hud.tuanzis_mod.chain_mining.active", "连锁挖掘§a已激活");
 		}
 	}
 
@@ -173,7 +174,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.minecraft.warden_spawn_egg.jei.description", "[Warden]\nAn extremely dangerous creature that typically lurks within the Ancient Cities of the Deep Dark.\n\n§eReward Boost:§r\n1. §bXP Increase§r: Now drops §a275§r experience points when killed by a player or a tamed wolf (was 5).\n2. §bRare Drop§r: If a player deals more than §c50%§r of its max health as damage, it has a §a10%§r chance to drop a §6Soulbound§r enchanted book (affected by Looting, +2.5% per level).\n\n§7Tip: Even with the increased reward, it remains highly dangerous. Prepare thoroughly before engaging.§r");
 
 			translationBuilder.add("jei.tuanzis_mod.experience.description", "[Experience Enchantment]\nIncreases the experience points gained from killing mobs.\n\n§eEffects:§r\n1. §bXP Boost§r: Each level increases experience gain by §a25%§r (rounded up).\n2. §bCondition§r: Only effective when killing mobs with the enchanted weapon in the main hand.\n3. §bScope§r: Effective against all mobs except players.\n\n§7Note: Max level is 4. Level 30 enchantment table can yield up to level 3. Level 4 requires anvil merging or special loot.§r");
-			translationBuilder.add("jei.tuanzis_mod.warden_heart.description", "[Warden Heart]\nA core material obtained from defeating the Warden, containing its resilient life force and sonic energy.\n\n§eAcquisition:§r\n1. §bRare Drop:§r Defeating a Warden has a §a10%§r chance to drop it (affected by Looting, +2.5% probability per level).\n\n§eUsage:§r\n1. §bCrafting Ingredient:§r Combine with 8 §bEcho Shards§r to craft the powerful defensive weapon — §6Echo Breaker§r.\n2. §bEquipment Repair:§r Can be used to repair the §6Echo Breaker§r in an anvil.");
+			translationBuilder.add("jei.tuanzis_mod.warden_heart.description", "[Warden Heart]\nA core material obtained from defeating the Warden, containing its resilient life force and sonic energy.\n\n§eAcquisition:§r\n1. §bRare Drop:§r Defeating a Warden has a §a25%§r chance to drop it (affected by Looting, +10% probability per level).\n\n§eUsage:§r\n1. §bCrafting Ingredient:§r Combine with 3 §bEcho Shards§r and 1 §bStick§r to craft the powerful defensive weapon — §6Echo Breaker§r.\n2. §bEquipment Repair:§r Can be used to repair the §6Echo Breaker§r in an anvil.");
 			translationBuilder.add("jei.tuanzis_mod.echo_breaker.description", "[Echo Breaker]\nAn ultimate defensive weapon forged using a Warden Heart and Echo Shards. It holds the mysterious power to resist and even deflect sonic damage.\n\n§ePassive Effects:§r\n1. §bSonic Absorption:§r Effective only when held in the main hand. Automatically §areduces Sonic Boom damage by 30%§r.\n\n§eActive Effects (Right-click):§r\n1. §bRestrictions:§r Right-click block can only be used when the §coffhand is empty§r.\n2. §bPerfect Block:§r Right-click to block for §e0.5 seconds§r. During blocking, grants §a100% immunity to Sonic Boom damage§r.\n3. §bSonic Deflection:§r Blocking a Sonic Boom perfectly deflects the sound wave back to its source, dealing §c15 true damage§r and applying §9strong knockback§r.\n4. §bDurability Cost:§r Each successful block consumes an extra §c3 durability points§r.\n5. §bCooldown Mechanics:§r Triggers a §c5.0-second§r cooldown on §cfailure§r (no damage blocked); triggers an §a8.0-second§r cooldown on §asuccess§r (perfectly deflected).\n\n§eRepair & Maintenance:§r\nCan be repaired in an anvil using a §bWarden Heart§r.");
 			translationBuilder.add("enchantment.tuanzis_mod.chain_mining", "Chain Mining");
 			translationBuilder.add("key.tuanzis_mod.chain_mining", "Chain Mining Activation");
@@ -191,6 +192,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"2. §bHunger Cost§r: Each extra block mined adds §c0.25§r exhaustion. The exhaustion is accumulated and applied instantly to deduct your saturation and food level.\n\n" +
 				"§7Acquisition: Currently unavailable in survival mode; obtain via Creative Mode only.§r";
 			translationBuilder.add("jei.tuanzis_mod.chain_mining.description", chainDescEn);
+			translationBuilder.add("hud.tuanzis_mod.chain_mining.active", "Chain Mining §aActive");
 		}
 	}
 }

@@ -36,4 +36,11 @@ public class TuanzisModClient implements ClientModInitializer {
             }
         });
     }
+
+    /**
+     * 判断当前客户端玩家是否正在按住连锁采掘激活键
+     */
+    public static boolean isHoldingChainMiningKey() {
+        return chainMiningKey != null && chainMiningKey.isDown();
+    }
 }

@@ -100,6 +100,18 @@ public class TuanzisJeiPlugin implements IModPlugin {
         recipes.add(factory.createAnvilRecipe(List.of(mixSword), List.of(resetSponge), List.of(sword), 
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/dyeing_reset")));
 
+        // 手动注册回响破障者的铁砧修复配方，保证 JEI 界面必定展示铁砧修复
+        ItemStack damagedEchoBreaker = new ItemStack(ModItems.ECHO_BREAKER);
+        damagedEchoBreaker.setDamageValue(1000); // 损坏 1000 点耐久
+        ItemStack repairedEchoBreaker = new ItemStack(ModItems.ECHO_BREAKER);
+        repairedEchoBreaker.setDamageValue(613); // 一颗心脏修复 25% 耐久 (1550 * 0.25 = 387.5 点，1000 - 387 = 613)
+        recipes.add(factory.createAnvilRecipe(
+            List.of(damagedEchoBreaker),
+            List.of(new ItemStack(ModItems.WARDEN_HEART)),
+            List.of(repairedEchoBreaker),
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/echo_breaker_repair")
+        ));
+
         registration.addRecipes(RecipeTypes.ANVIL, recipes);
         
         registration.addIngredientInfo(new ItemStack(ModItems.RAINBOW_SPONGE), VanillaTypes.ITEM_STACK, 

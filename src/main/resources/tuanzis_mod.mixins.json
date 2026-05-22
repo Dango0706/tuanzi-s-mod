@@ -21,7 +21,8 @@
 		"SmeltingEnchantmentMixin",
 		"SonicBoomBlockMixin",
 		"FoodDataAccessor",
-		"ChainMiningMixin"
+		"ChainMiningMixin",
+		"GuiMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
