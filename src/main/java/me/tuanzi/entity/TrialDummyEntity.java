@@ -149,7 +149,16 @@ public class TrialDummyEntity extends LivingEntity {
 
     @Override
     protected void actuallyHurt(ServerLevel level, DamageSource source, float amount) {
-        // 在这里获取经过 100% 护甲值、韧性、抗性、附魔保护伤害减免后的最终绝对真实伤害！
+        // 先经过 100% 护甲值、韧性、附魔保护、抗性药水减免计算，得出最终绝对真实受击伤害！
+        float finalDamage = amount;
+        finalDamage = this.getDamageAfterArmorAbsorb(source, finalDamage);
+        finalDamage = this.getDamageAfterMagicAbsorb(source, finalDamage);
+
+        float rawArmor = (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR);
+        float rawToughness = (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS);
+        me.tuanzi.util.ModLog.info(String.format("[TrialDummy] Damage diagnostics - armor: %.1f, toughness: %.1f, rawAmount: %.1f, finalDamage: %.1f",
+                rawArmor, rawToughness, amount, finalDamage));
+
         if (source.getEntity() instanceof ServerPlayer player) {
             long currentTime = System.currentTimeMillis();
             UUID playerUuid = player.getUUID();
@@ -165,10 +174,10 @@ public class TrialDummyEntity extends LivingEntity {
             TrialDummyTestSession session = this.activeSessions.computeIfAbsent(playerUuid, 
                     uuid -> new TrialDummyTestSession(uuid, this.getUUID(), currentTime));
 
-            session.recordHit(amount, currentTime);
+            session.recordHit(finalDamage, currentTime);
 
             // 发送 S2C 跳字同步包
-            TrialDummyDamagePacket packet = new TrialDummyDamagePacket(this.getId(), amount);
+            TrialDummyDamagePacket packet = new TrialDummyDamagePacket(this.getId(), finalDamage);
             for (ServerPlayer nearby : level.players()) {
                 if (nearby.distanceToSqr(this) < 64 * 64) {
                     net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(nearby, packet);
