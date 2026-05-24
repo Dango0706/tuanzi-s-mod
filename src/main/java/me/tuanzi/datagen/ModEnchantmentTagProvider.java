@@ -22,15 +22,19 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.SMELTING);
 
         builder(EnchantmentTags.IN_ENCHANTING_TABLE)
-            .addOptional(ModEnchantments.EXPERIENCE);
+            .addOptional(ModEnchantments.EXPERIENCE)
+            .addOptional(ModEnchantments.BLOOD_RAGE)
+            .addOptional(ModEnchantments.BERSERKER);
 
         builder(EnchantmentTags.ON_RANDOM_LOOT)
-            .addOptional(ModEnchantments.SOULBOUND)
-            .addOptional(ModEnchantments.EXPERIENCE);
+            .addOptional(ModEnchantments.EXPERIENCE)
+            .addOptional(ModEnchantments.BLOOD_RAGE)
+            .addOptional(ModEnchantments.BERSERKER);
 
         builder(EnchantmentTags.TRADEABLE)
-            .addOptional(ModEnchantments.SOULBOUND)
-            .addOptional(ModEnchantments.EXPERIENCE);
+            .addOptional(ModEnchantments.EXPERIENCE)
+            .addOptional(ModEnchantments.BLOOD_RAGE)
+            .addOptional(ModEnchantments.BERSERKER);
             
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入

@@ -3,6 +3,14 @@
     {
       "id": "tuanzis_mod:experience",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:blood_rage",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:berserker",
+      "required": false
     }
   ]
 }

@@ -22,6 +22,11 @@ public class ModLootTableModifiers {
         ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/desert_pyramid"))
     );
 
+    private static final Set<ResourceKey<LootTable>> DUMMY_CHESTS = Set.of(
+        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost")),
+        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_weaponsmith"))
+    );
+
     public static void initialize() {
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
             if (TARGET_CHESTS.contains(key)) {
@@ -40,6 +45,14 @@ public class ModLootTableModifiers {
                         .apply(SetComponentsFunction.setComponent(DataComponents.STORED_ENCHANTMENTS, smeltingEnchantmentInstance))
                     );
 
+                tableBuilder.pool(poolBuilder.build());
+            }
+
+            if (DUMMY_CHESTS.contains(key)) {
+                // 20% 的极大概率在战利品箱中掉落试炼假人物品
+                LootPool.Builder poolBuilder = LootPool.lootPool()
+                    .setRolls(BinomialDistributionGenerator.binomial(1, 0.20f))
+                    .add(LootItem.lootTableItem(me.tuanzi.init.ModItems.TRIAL_DUMMY));
                 tableBuilder.pool(poolBuilder.build());
             }
         });

@@ -31,6 +31,34 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_echo_shard", has(Items.ECHO_SHARD))
                     .unlockedBy("has_warden_heart", has(ModItems.WARDEN_HEART))
                     .save(exporter);
+
+                // 稻草人无序合成：干草块 + 木棍 + 雕刻南瓜
+                shapeless(RecipeCategory.MISC, ModItems.SCARECROW, 1)
+                    .requires(Items.HAY_BLOCK)
+                    .requires(Items.STICK)
+                    .requires(Items.CARVED_PUMPKIN)
+                    .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
+                    .save(exporter);
+
+                // 假目标无序合成：稻草人 + 萤石粉
+                shapeless(RecipeCategory.COMBAT, ModItems.DECOY_TOTEM, 1)
+                    .requires(ModItems.SCARECROW)
+                    .requires(Items.GLOWSTONE_DUST)
+                    .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
+                    .save(exporter);
+
+                // 试炼假人有序合成
+                shaped(RecipeCategory.MISC, ModItems.TRIAL_DUMMY, 1)
+                    .pattern("HHH")
+                    .pattern("SAS")
+                    .pattern("HTH")
+                    .define('H', Items.HAY_BLOCK)
+                    .define('S', Items.STICK)
+                    .define('A', ModItems.SCARECROW)
+                    .define('T', Items.TARGET)
+                    .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
+                    .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
+                    .save(exporter);
             }
         };
     }

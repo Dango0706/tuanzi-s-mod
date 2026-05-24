@@ -5,6 +5,7 @@ build/
 out/
 classes/
 MinecraftSources/
+src/main/generated
 
 # eclipse
 

@@ -1,11 +1,15 @@
 {
   "values": [
     {
-      "id": "tuanzis_mod:soulbound",
+      "id": "tuanzis_mod:experience",
       "required": false
     },
     {
-      "id": "tuanzis_mod:experience",
+      "id": "tuanzis_mod:blood_rage",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:berserker",
       "required": false
     }
   ]

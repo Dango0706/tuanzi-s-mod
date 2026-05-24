@@ -21,6 +21,9 @@ import net.minecraft.world.item.Rarity;
 import java.util.function.Function;
 
 public class ModItems {
+    public static final Item SCARECROW = register("scarecrow", (properties) -> new me.tuanzi.item.ScarecrowItem(properties));
+    public static final Item TRIAL_DUMMY = register("trial_dummy", (properties) -> new me.tuanzi.item.TrialDummyItem(properties.stacksTo(1).durability(32)));
+    public static final Item DECOY_TOTEM = register("decoy_totem", (properties) -> new me.tuanzi.item.DecoyTotemItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final Item RAINBOW_SPONGE = register("rainbow_sponge", (properties) -> new Item(properties.stacksTo(1)));
     public static final Item YURIS_REVENGE = register("yuris_revenge", (properties) -> new YurisRevengeItem(properties.stacksTo(1).durability(5).rarity(Rarity.EPIC)));
     public static final Item IMMORTAL_TALISMAN = register("immortal_talisman", ImmortalTalismanItem::new);

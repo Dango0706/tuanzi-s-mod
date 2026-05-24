@@ -41,6 +41,20 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(chainMiningBook, mutable -> mutable.set(chainMining, 4));
                 entries.accept(chainMiningBook);
 
+                var bloodRage = enchantmentRegistry.getOrThrow(ModEnchantments.BLOOD_RAGE);
+                ItemStack bloodRageBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(bloodRageBook, mutable -> mutable.set(bloodRage, 1));
+                entries.accept(bloodRageBook);
+
+                var berserker = enchantmentRegistry.getOrThrow(ModEnchantments.BERSERKER);
+                ItemStack berserkerBook1 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(berserkerBook1, mutable -> mutable.set(berserker, 1));
+                entries.accept(berserkerBook1);
+
+                ItemStack berserkerBook2 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(berserkerBook2, mutable -> mutable.set(berserker, 2));
+                entries.accept(berserkerBook2);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -51,6 +65,10 @@ public class ModItemGroups {
                 entries.accept(ModItems.WARDEN_HEART);
                 // 加入回响破障者
                 entries.accept(ModItems.ECHO_BREAKER);
+                // 加入稻草人与假目标
+                entries.accept(ModItems.SCARECROW);
+                entries.accept(ModItems.TRIAL_DUMMY);
+                entries.accept(ModItems.DECOY_TOTEM);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);

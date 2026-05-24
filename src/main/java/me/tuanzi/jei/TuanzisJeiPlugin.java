@@ -238,5 +238,35 @@ public class TuanzisJeiPlugin implements IModPlugin {
             registration.addIngredientInfo(chainMiningBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.chain_mining.description"));
         }
+
+        // 获取所有附有“血怒”附魔的附魔书 (Blood Rage)
+        List<ItemStack> bloodRageBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.BLOOD_RAGE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!bloodRageBooks.isEmpty()) {
+            registration.addIngredientInfo(bloodRageBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.blood_rage.description"));
+        }
+
+        registration.addIngredientInfo(new ItemStack(ModItems.SCARECROW), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.scarecrow.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.DECOY_TOTEM), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.decoy_totem.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.TRIAL_DUMMY), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.trial_dummy.description"));
     }
 }

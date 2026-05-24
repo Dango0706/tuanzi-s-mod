@@ -22,7 +22,12 @@
 		"SonicBoomBlockMixin",
 		"FoodDataAccessor",
 		"ChainMiningMixin",
-		"GuiMixin"
+		"GuiMixin",
+		"BloodRageEffectMixin",
+		"BloodRageDamageMixin",
+		"BerserkerEnchantmentMixin",
+		"ItemStackDurabilityMixin",
+		"ItemFrameFrameMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

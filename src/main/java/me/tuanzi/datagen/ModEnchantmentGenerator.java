@@ -80,6 +80,42 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 EquipmentSlotGroup.MAINHAND
             )
         ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "chain_mining")));
+
+        // 血怒 (Blood Rage)
+        entries.add(ModEnchantments.BLOOD_RAGE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                1,    // weight (rare)
+                1,    // max level
+                Enchantment.constantCost(15), 
+                Enchantment.constantCost(65), 
+                8,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(HolderSet.direct(enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT)))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "blood_rage")));
+
+        // 狂战士 (Berserker)
+        entries.add(ModEnchantments.BERSERKER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                2,    // max level
+                Enchantment.dynamicCost(15, 10), 
+                Enchantment.dynamicCost(65, 10), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        )
+        .exclusiveWith(HolderSet.direct(
+            enchantments.getOrThrow(Enchantments.PROTECTION),
+            enchantments.getOrThrow(Enchantments.FIRE_PROTECTION),
+            enchantments.getOrThrow(Enchantments.BLAST_PROTECTION),
+            enchantments.getOrThrow(Enchantments.PROJECTILE_PROTECTION),
+            enchantments.getOrThrow(Enchantments.FEATHER_FALLING)
+        ))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "berserker")));
     }
 
     @Override
