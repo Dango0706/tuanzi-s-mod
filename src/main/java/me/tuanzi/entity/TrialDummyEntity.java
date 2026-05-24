@@ -149,15 +149,46 @@ public class TrialDummyEntity extends LivingEntity {
 
     @Override
     protected void actuallyHurt(ServerLevel level, DamageSource source, float amount) {
-        // 先经过 100% 护甲值、韧性、附魔保护、抗性药水减免计算，得出最终绝对真实受击伤害！
-        float finalDamage = amount;
-        finalDamage = this.getDamageAfterArmorAbsorb(source, finalDamage);
-        finalDamage = this.getDamageAfterMagicAbsorb(source, finalDamage);
+        // 双保险设计：手动遍历每个防具槽收集护甲值与韧性，确保因原版 AI tick 缺失导致属性未即时刷新时依然 100% 准确生效！
+        final float[] armorBox = {0.0F};
+        final float[] toughnessBox = {0.0F};
+
+        for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+            if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR) {
+                net.minecraft.world.item.ItemStack stack = this.getItemBySlot(slot);
+                if (!stack.isEmpty()) {
+                    stack.forEachModifier(slot, (attribute, modifier) -> {
+                        if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR)) {
+                            armorBox[0] += (float) modifier.amount();
+                        } else if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS)) {
+                            toughnessBox[0] += (float) modifier.amount();
+                        }
+                    });
+                }
+            }
+        }
 
         float rawArmor = (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR);
         float rawToughness = (float) this.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS);
-        me.tuanzi.util.ModLog.info(String.format("[TrialDummy] Damage diagnostics - armor: %.1f, toughness: %.1f, rawAmount: %.1f, finalDamage: %.1f",
-                rawArmor, rawToughness, amount, finalDamage));
+
+        float finalArmor = Math.max(rawArmor, armorBox[0]);
+        float finalToughness = Math.max(rawToughness, toughnessBox[0]);
+
+        float finalDamage = amount;
+        if (!source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)) {
+            finalDamage = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(
+                this, 
+                finalDamage, 
+                source, 
+                finalArmor, 
+                finalToughness
+            );
+        }
+        finalDamage = this.getDamageAfterMagicAbsorb(source, finalDamage);
+
+        // 打印诊断，以便在开发控制台清晰直白地查阅
+        me.tuanzi.util.ModLog.info(String.format("[TrialDummy] Damage diagnostics - armor: %.1f (attribute: %.1f, box: %.1f), toughness: %.1f (attribute: %.1f, box: %.1f), rawAmount: %.1f, finalDamage: %.1f",
+                finalArmor, rawArmor, armorBox[0], finalToughness, rawToughness, toughnessBox[0], amount, finalDamage));
 
         if (source.getEntity() instanceof ServerPlayer player) {
             long currentTime = System.currentTimeMillis();

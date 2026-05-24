@@ -40,10 +40,16 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
                     .save(exporter);
 
-                // 假目标无序合成：稻草人 + 萤石粉
-                shapeless(RecipeCategory.COMBAT, ModItems.DECOY_TOTEM, 1)
-                    .requires(ModItems.SCARECROW)
-                    .requires(Items.GLOWSTONE_DUST)
+                // 假目标有序合成：空,幽匿脉络,空, 幻翼膜,稻草人,幻翼膜, 萤石,红石,萤石
+                shaped(RecipeCategory.COMBAT, ModItems.DECOY_TOTEM, 1)
+                    .pattern(" C ")
+                    .pattern("MSM")
+                    .pattern("GRG")
+                    .define('C', Items.SCULK_VEIN)
+                    .define('M', Items.PHANTOM_MEMBRANE)
+                    .define('S', ModItems.SCARECROW)
+                    .define('G', Items.GLOWSTONE)
+                    .define('R', Items.REDSTONE)
                     .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
                     .save(exporter);
 
