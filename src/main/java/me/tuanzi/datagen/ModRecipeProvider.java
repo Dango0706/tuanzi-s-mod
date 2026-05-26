@@ -65,6 +65,29 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
                     .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
                     .save(exporter);
+                // 缚灵笼有序合成：铁锭x7 + 绿宝石块 + 灵魂沙
+                shaped(RecipeCategory.MISC, ModItems.VILLAGER_CAGE, 1)
+                    .pattern("IEI")
+                    .pattern("ISI")
+                    .pattern("III")
+                    .define('I', Items.IRON_INGOT)
+                    .define('E', Items.EMERALD_BLOCK)
+                    .define('S', Items.SOUL_SAND)
+                    .unlockedBy("has_soul_sand", has(Items.SOUL_SAND))
+                    .unlockedBy("has_emerald_block", has(Items.EMERALD_BLOCK))
+                    .save(exporter);
+
+                // 灵笼贸易站有序合成
+                shaped(RecipeCategory.MISC, me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION, 1)
+                    .pattern("QSQ")
+                    .pattern("CRC")
+                    .pattern("QSQ")
+                    .define('Q', Items.QUARTZ)
+                    .define('S', Items.SCULK)
+                    .define('C', Items.COMPARATOR)
+                    .define('R', ModItems.VILLAGER_CAGE)
+                    .unlockedBy("has_villager_cage", has(ModItems.VILLAGER_CAGE))
+                    .save(exporter);
             }
         };
     }

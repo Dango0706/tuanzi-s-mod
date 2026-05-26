@@ -47,10 +47,6 @@ public class ModItemGroups {
                 entries.accept(bloodRageBook);
 
                 var berserker = enchantmentRegistry.getOrThrow(ModEnchantments.BERSERKER);
-                ItemStack berserkerBook1 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(berserkerBook1, mutable -> mutable.set(berserker, 1));
-                entries.accept(berserkerBook1);
-
                 ItemStack berserkerBook2 = new ItemStack(Items.ENCHANTED_BOOK);
                 EnchantmentHelper.updateEnchantments(berserkerBook2, mutable -> mutable.set(berserker, 2));
                 entries.accept(berserkerBook2);
@@ -69,6 +65,15 @@ public class ModItemGroups {
                 entries.accept(ModItems.SCARECROW);
                 entries.accept(ModItems.TRIAL_DUMMY);
                 entries.accept(ModItems.DECOY_TOTEM);
+                // 加入缚灵笼
+                entries.accept(ModItems.VILLAGER_CAGE);
+                // 加入灵笼贸易站
+                entries.accept(ModBlocks.SOUL_MERCHANT_STATION);
+
+                // 加入旅者手札、传送纸与道标符石
+                entries.accept(ModItems.TRAVELERS_NOTEBOOK);
+                entries.accept(ModItems.TELEPORTATION_PAPER);
+                entries.accept(ModItems.SIGNPOST_RUNE);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);

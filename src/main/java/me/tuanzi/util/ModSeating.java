@@ -27,6 +27,11 @@ public class ModSeating {
             return InteractionResult.PASS;
         }
 
+        // 必须是空手（主手和副手均不持有任何物品）
+        if (!player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty()) {
+            return InteractionResult.PASS;
+        }
+
         // 如果玩家处于潜行状态，不触发坐下（方便潜行放置方块或与其他方块交互）
         if (player.isSecondaryUseActive()) {
             return InteractionResult.PASS;

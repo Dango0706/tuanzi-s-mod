@@ -7,10 +7,12 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 public class SeatEntity extends Entity {
     public SeatEntity(EntityType<?> type, Level level) {
@@ -33,6 +35,12 @@ public class SeatEntity extends Entity {
                 this.discard();
             }
         }
+    }
+
+    @Override
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        // SeatEntity 位于 Y = pos.getY() + 0.3，将其加上 0.7 即可让玩家脱离坐下时平稳落在楼梯顶部 (pos.getY() + 1.0)
+        return new Vec3(this.getX(), this.getY() + 0.7, this.getZ());
     }
 
     @Override

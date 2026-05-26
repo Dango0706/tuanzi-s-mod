@@ -25,11 +25,20 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(ChainMiningKeyPacket.TYPE, ChainMiningKeyPacket.CODEC);
 		// 注册伤害飘字网络同步包
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.TrialDummyDamagePacket.TYPE, me.tuanzi.network.TrialDummyDamagePacket.CODEC);
+		// 注册手札书本及传送请求网络包
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, me.tuanzi.network.OpenBookScreenS2CPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.TeleportRequestPacket.TYPE, me.tuanzi.network.TeleportRequestPacket.CODEC);
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(ChainMiningKeyPacket.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				playerKeyStates.put(context.player(), payload.holding());
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				me.tuanzi.world.teleport.TeleportManager.handleTeleportRequest(context.player(), payload.slotIdx(), payload.isMainHand());
 			});
 		});
 
@@ -47,8 +56,11 @@ public class Tuanzis_mod implements ModInitializer {
 				}
 			}
 		});
+		me.tuanzi.init.ModBlocks.initialize();
 		me.tuanzi.init.ModEntities.initialize();
 		me.tuanzi.init.ModItems.initialize();
+		me.tuanzi.init.ModMenuTypes.initialize();
+		me.tuanzi.world.teleport.TeleportManager.initialize();
 		me.tuanzi.init.ModItemGroups.initialize();
 		me.tuanzi.init.ModStatusEffects.initialize();
 		me.tuanzi.init.ModPotions.initialize();

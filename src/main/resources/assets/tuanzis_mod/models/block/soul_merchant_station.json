@@ -1,0 +1,229 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "all": "tuanzis_mod:block/soul_merchant_station",
+    "particle": "tuanzis_mod:block/soul_merchant_station"
+  },
+  "elements": [
+    {
+      "name": "base_plate",
+      "from": [ 0.0, 0.0, 0.0 ],
+      "to": [ 16.0, 2.0, 16.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 3.5, 10.5, 12.5, 16.0 ],
+          "texture": "#all",
+          "cullface": "down"
+        },
+        "up": {
+          "uv": [ 3.5, 7.5, 12.5, 10.0 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 3.5, 7.5, 12.5, 8.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 3.5, 7.5, 12.5, 8.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 3.5, 7.5, 12.5, 8.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 3.5, 7.5, 12.5, 8.5 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "top_cap",
+      "from": [ 0.0, 14.0, 0.0 ],
+      "to": [ 16.0, 16.0, 16.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 5.5, 1.0, 10.5, 2.5 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 5.5, 0.0, 10.5, 2.0 ],
+          "texture": "#all",
+          "cullface": "up"
+        },
+        "north": {
+          "uv": [ 5.5, 0.0, 10.5, 1.0 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 5.5, 0.0, 10.5, 1.0 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 5.5, 0.0, 10.5, 1.0 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 5.5, 0.0, 10.5, 1.0 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "pillar_nw",
+      "from": [ 0.0, 2.0, 0.0 ],
+      "to": [ 3.0, 14.0, 3.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 5.0, 6.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 5.0, 2.0, 6.5, 3.5 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "pillar_ne",
+      "from": [ 13.0, 2.0, 0.0 ],
+      "to": [ 16.0, 14.0, 3.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 10.5, 6.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 10.5, 2.0, 12.0, 3.5 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "pillar_sw",
+      "from": [ 0.0, 2.0, 13.0 ],
+      "to": [ 3.0, 14.0, 16.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 5.0, 6.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 5.0, 2.0, 6.5, 3.5 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 5.0, 2.0, 6.5, 7.5 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "pillar_se",
+      "from": [ 13.0, 2.0, 13.0 ],
+      "to": [ 16.0, 14.0, 16.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 10.5, 6.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 10.5, 2.0, 12.0, 3.5 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 10.5, 2.0, 12.0, 7.5 ],
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "name": "inner_core",
+      "from": [ 5.0, 2.0, 5.0 ],
+      "to": [ 11.0, 3.0, 11.0 ],
+      "faces": {
+        "down": {
+          "uv": [ 5.0, 4.0, 11.0, 7.0 ],
+          "texture": "#all"
+        },
+        "up": {
+          "uv": [ 5.0, 4.0, 11.0, 7.0 ],
+          "texture": "#all"
+        },
+        "north": {
+          "uv": [ 5.0, 4.0, 11.0, 4.5 ],
+          "texture": "#all"
+        },
+        "south": {
+          "uv": [ 5.0, 4.0, 11.0, 4.5 ],
+          "texture": "#all"
+        },
+        "west": {
+          "uv": [ 5.0, 4.0, 11.0, 4.5 ],
+          "texture": "#all"
+        },
+        "east": {
+          "uv": [ 5.0, 4.0, 11.0, 4.5 ],
+          "texture": "#all"
+        }
+      }
+    }
+  ]
+}

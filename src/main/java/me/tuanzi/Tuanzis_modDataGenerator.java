@@ -19,6 +19,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 		pack.addProvider(ModEnchantmentGenerator::new);
 		pack.addProvider(ModEnchantmentTagProvider::new);
+		pack.addProvider(me.tuanzi.datagen.ModBlockTagProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModRecipeProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModModelProvider::new);
 		pack.addProvider(TuanziChineseLanguageProvider::new);
@@ -136,11 +137,32 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"1. §b破甲减免§r：作为代价，胸甲本身提供的基础护甲值减少 §c35%（等级 I）§r 或 §c30%（等级 II）§r（即实际保留胸甲基础护甲值的 65% 或 70%，例如 8 点护甲的钻石胸甲在 II 级下仅扣除 2 点，仍可提供 6 点护甲，绝非削减到仅剩 30%）。\n" +
 				"2. §b冲突互斥§r：与 §b保护§r、§b火焰保护§r、§b爆炸保护§r、§b弹射物保护§r、§b摔落保护§r 等所有保护类附魔互斥。\n\n" +
 				"§7获取方式：最高等级 II 级。可通过附魔台直接附魔（稀有级）、战利品箱搜刮或村民交易获得。§r";
+			translationBuilder.add("jei.tuanzis_mod.blood_rage.description", bloodRageDesc);
 			translationBuilder.add("jei.tuanzis_mod.berserker.description", berserkerDesc);
 
 			translationBuilder.add("hud.tuanzis_mod.chain_mining.active", "连锁挖掘§a已激活");
 			translationBuilder.add("jei.tuanzis_mod.scarecrow.description", "【稻草人】\n一个普通的装饰性物品，也是制作高级防御道具——§b假目标 (Decoy Totem)§r 的核心基础组件。\n\n§e获取方式：§r\n1. §b无序合成§r：由 1 个干草块、1 根木棍和 1 个雕刻南瓜合成。");
 			translationBuilder.add("jei.tuanzis_mod.decoy_totem.description", "【假目标】\n极其强大的战略防御道具。使用后可以完美吸引周围敌对生物的注意力，为自己创造安全的输出或逃生环境。\n\n§e效果与机制：§r\n1. §b幻影生成§r：放置后产生一个持续 §e15 秒§r 的玩家幻影，吸引半径 §a10 格§r 内所有怪物的仇恨。\n2. §b完美伪装§r：幻影与释放时的玩家一模一样（包括皮肤、身上所穿盔甲与手持物品）。\n3. §b属性继承§r：幻影的血量与护甲值完美继承释放瞬间玩家的数据。\n4. §b拟真行为§r：幻影会随机进行走动、跑动、跳跃等模拟真实玩家的动作。在受到伤害时，会立即切换为奔跑动作大跳着逃跑，远离伤害来源！\n5. §b碎裂余威§r：幻影死亡时不掉落任何物品，但发出玻璃般的碎裂声。激怒半径 §a10 格§r 内所有怪物，使其获得 §c速度 II§r 效果持续 §e10 秒§r。\n\n§e获取方式：§r\n1. §b有序合成§r：上排为[空、幽匿脉络、空]，中排为[幻翼膜、稻草人、幻翼膜]，下排为[萤石、红石、萤石]。\n\n§7注：每次使用会触发 §c15 秒§r 的物品冷却时间。");
+
+			// 缚灵笼翻译
+			translationBuilder.add(ModItems.VILLAGER_CAGE, "缚灵笼");
+			translationBuilder.add("item.tuanzis_mod.villager_cage.tooltip.empty", "§7空笼");
+			translationBuilder.add("item.tuanzis_mod.villager_cage.tooltip.filled", "§b内含: %s - %s（等级%d）");
+			translationBuilder.add("message.tuanzis_mod.villager_cage.need_solid", "§c需要固体方块表面才能释放村民！");
+			translationBuilder.add("message.tuanzis_mod.villager_cage.golem_aggro", "§c附近守护中的铁傀儡对你产生了敌意！");
+			translationBuilder.add("jei.tuanzis_mod.villager_cage.description",
+				"【缚灵笼】\n一件神秘的囚禁装置，可将村民封印于其中并跨维度运输。\n\n" +
+				"§e捕捉村民：§r\n" +
+				"1. §b主手持有§r缚灵笼，§b右键村民§r即可捕捉，播放灵魂沙音效并产生末影粒子。\n" +
+				"2. 村民所有数据（职业/等级/交易/命名）均完整保存，§c捕捉后笼子即销毁§r（一次性使用）。\n" +
+				"3. §c注意§r：若村民受到铁傀儡主动保护，捕捉将引发半径 §c16格§r 内所有傀儡的仇恨！\n\n" +
+				"§e释放村民：§r\n" +
+				"1. §b潜行 + 右键固体方块表面§r释放，村民在方块上方生成，数据完整恢复。\n" +
+				"2. 释放后笼子消失；若目标位置无固体方块或空间不足则拒绝释放并提示。\n\n" +
+				"§e特殊说明：§r\n" +
+				"1. §b跨维度运输§r：村民数据存于物品中，可在任意维度释放。\n" +
+				"2. 交易锁定状态保留，但床与工作站绑定会清除（需重新绑定）。\n\n" +
+				"§e合成：§r\n铁锭 绿宝石块 铁锭\n铁锭  灵魂沙  铁锭\n铁锭  铁锭  铁锭");
 
 			// 试炼假人翻译资源
 			translationBuilder.add(me.tuanzi.init.ModItems.TRIAL_DUMMY, "试炼假人");
@@ -157,6 +179,61 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.dps", "▶ 平均每秒伤害 (DPS): §c%s§r");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.duration", "▶ 伤害测试时长: §a%s§r 秒");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.footer", "================================================");
+
+			// 灵笼贸易站中文翻译
+			translationBuilder.add(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION, "灵笼贸易站");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION.asItem(), "灵笼贸易站");
+			translationBuilder.add("item.tuanzis_mod.soul_merchant_station.tooltip", "右键放置，导入村民以进行无AI超高TPS无实体村民交易。");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.imported", "§a村民已入驻！");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.no_villager", "§c当前贸易站尚未入驻村民！");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.already_has_villager", "§c该贸易站中已经入驻了一位村民！");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.extracted", "§a村民已被重新封装！");
+			translationBuilder.add("jei.tuanzis_mod.soul_merchant_station.description",
+				"【灵笼贸易站】\n一个革命性的无AI无实体村民交易装置。极大优化服务器FPS/TPS，同时保留核心玩法。\n\n" +
+				"§e功能：§r\n" +
+				"1. §b村民导入§r：手持装有村民的§b缚灵笼§r右键此方块，可将村民导入贸易站。缚灵笼消耗，同时外观上显示村民职业的3D浮空图标。\n" +
+				"2. §b村民取出§r：手持§c空缚灵笼§r且§e潜行+右键§r此方块，可安全地将村民重新封入空缚灵笼中，方块本身完好。\n" +
+				"3. §b无AI交易§r：右键它会直接打开完整的村民交易界面，经验累积、等级提升与原版完全同步，且村民100%安全，不受伤害。\n" +
+				"4. §b自动刷新§r：每天黎明或睡醒时，若贸易站相邻 6 面（东、西、南、北、上、下）贴有该村民所对应且§b未被占用的工作站点§r，锁定的交易会自动刷新（清空红叉）。\n" +
+				"5. §b命名支持§r：对贸易站使用§b命名牌§r可修改其名称，显示在交易界面顶部。\n" +
+				"6. §b完全防爆§r：方块本身完全免疫任何爆炸，村民处于永久温室中绝对安全。");
+
+			// 旅者手札相关中文翻译
+			translationBuilder.add(ModItems.TRAVELERS_NOTEBOOK, "旅者手札");
+			translationBuilder.add(ModItems.TELEPORTATION_PAPER, "传送纸");
+			translationBuilder.add(ModItems.SIGNPOST_RUNE, "道标符石");
+			
+			translationBuilder.add("item.tuanzis_mod.travelers_notebook.tooltip.energy", "⏣ 能量：%d/%d");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.unbound", "§8[未绑定]§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.bind_hint", "§7潜行+右键以绑定当前位置§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.bound", "§a[已绑定]§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.dimension", "§7维度：%s§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.coords", "§7坐标：X: %s, Y: %s, Z: %s§r");
+			
+			translationBuilder.add("message.tuanzis_mod.signpost_rune.bound", "§a位置已成功绑定！§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.insufficient_energy", "§c旅者手札：能量不足§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.interrupted", "§c传送被打断§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.starting", "§d传送开始引导... 请保持静止，持续 3 秒§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.cooldown", "§c旅者手札：冷却中... 剩余 %.1f 秒§r");
+			
+			translationBuilder.add("container.tuanzis_mod.travelers_notebook", "旅者手札存储");
+			
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.teleport", "传送");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.energy_status", "⏣ 能量：%d/64");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.empty_slots", "请在存储界面中放入道标符石进行目的地标记。");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.select_hint", "请在左侧列表中选择一个已绑定的道标符石开始传送。");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.dim_label", "维度：%s");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.energy_cost", "传送消耗：%d 能量");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.no_energy_warning", "能量不足");
+
+			// 维度翻译
+			translationBuilder.add("dimension.minecraft.overworld", "主世界");
+			translationBuilder.add("dimension.minecraft.the_nether", "下界");
+			translationBuilder.add("dimension.minecraft.the_end", "末路之地");
+
+			translationBuilder.add("jei.tuanzis_mod.travelers_notebook.description", "【旅者手札】\n一本凝聚了虚空维度的传送手札。\n\n§e使用方法：§r\n1. §b右键点击§r：打开水晶书本传送界面。选择一个已绑定的符石并点击传送按钮。\n2. §b潜行+右键§r：打开内部存储界面（3x9 共 27格）。\n\n§e存储与充能：§r\n1. 最左上角第一格（Slot 0）为 §e燃料格§r。在此格放入 §b传送纸§r 并在关闭界面时自动将其消耗充能，每张增加 1 点能量，上限 64 点。\n2. 剩余 26 格仅限放置已绑定的 §b道标符石§r。\n3. 手札本身无法被附魔或在砧上修复。\n\n§e传送规则与消耗：§r\n1. §b同维度§r传送消耗 §a1§r 点能量，§b跨维度§r传送消耗 §a2§r 点能量。\n2. 传送伴随 §e3 秒引导时间§r，期间受到伤害或产生移动都将打断传送。\n3. 传送后同维度冷却 3 秒，跨维度冷却 5 秒。\n\n§c安全警告：§r\n若手札物品实体在世界中被火烧、爆炸或被仙人掌摧毁，其内部存储的所有物品将全部在原地掉出！");
+			translationBuilder.add("jei.tuanzis_mod.teleportation_paper.description", "【传送纸】\n一种被注入微弱末影能量的羊皮纸。\n\n§e用途：§r\n唯一的充能媒介。将其放进 §b旅者手札§r 存储界面的第一格（燃料格），在关闭界面后手札将消耗纸张进行能量充实，每消耗一张补充 1 点能量。");
+			translationBuilder.add("jei.tuanzis_mod.signpost_rune.description", "【道标符石】\n记录世界之维空间坐标的符石。\n\n§e使用方法：§r\n1. §b绑定位置§r：主手或副手手持它并在任意地点右键点击，符石将立即绑定当前坐标与维度，并播放清脆的音效。\n2. §b自定义名称§r：绑定的符石可以使用 §b铁砧§r 进行重命名，该自定义名称将在 §b旅者手札§r 的传送列表里直接显示。\n\n§7注：符石不可堆叠。只有绑定了位置的符石才能放进手札的存储格中用于传送。");
 		}
 	}
 
@@ -267,6 +344,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"1. §bArmor Collapse§r: As a penalty, the chestplate's base armor value is reduced by §c35% (Level I)§r or §c30% (Level II)§r (meaning the chestplate still retains 65% or 70% of its base armor value. For example, a Diamond Chestplate with 8 base armor will only lose 2 points under Level II, still providing 6 armor points, instead of being reduced to only 30%).\n" +
 				"2. §bExclusion§r: Mutually exclusive with all protection enchantments including §bProtection§r, §bFire Protection§r, §bBlast Protection§r, §bProjectile Protection§r, and §bFeather Falling§r.\n\n" +
 				"§7Acquisition: Max level II. Obtainable via Enchanting Table (rare), random loot, or Villager trades.§r";
+			translationBuilder.add("jei.tuanzis_mod.blood_rage.description", bloodRageDescEn);
 			translationBuilder.add("jei.tuanzis_mod.berserker.description", berserkerDescEn);
 
 			translationBuilder.add("hud.tuanzis_mod.chain_mining.active", "Chain Mining §aActive");
@@ -288,6 +366,82 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.dps", "▶ Average DPS: §c%s§r");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.duration", "▶ Session Duration: §a%s§r seconds");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.stats.footer", "================================================");
+
+			// Villager Cage English Translations
+			translationBuilder.add(ModItems.VILLAGER_CAGE, "Villager Cage");
+			translationBuilder.add("item.tuanzis_mod.villager_cage.tooltip.empty", "§7Empty Cage");
+			translationBuilder.add("item.tuanzis_mod.villager_cage.tooltip.filled", "§bContains: %s - %s (Level %d)");
+			translationBuilder.add("message.tuanzis_mod.villager_cage.need_solid", "§cRequires a solid block surface to release the villager!");
+			translationBuilder.add("message.tuanzis_mod.villager_cage.golem_aggro", "§cNearby protecting Iron Golems are now hostile!");
+			translationBuilder.add("jei.tuanzis_mod.villager_cage.description",
+				"[Villager Cage]\nA mystical imprisonment device that seals a villager inside for cross-dimensional transport.\n\n" +
+				"§eCatching a Villager:§r\n" +
+				"1. Hold the cage in your §bmain hand§r and §bright-click a villager§r to capture it. Plays a soul sand sound with Ender particles.\n" +
+				"2. All villager data (profession/level/trades/name) is fully saved. The cage is §cdestroyed after use§r (one-time item).\n" +
+				"3. §cWarning§r: If an Iron Golem is actively protecting the villager, capturing it will make all Golems within §c16 blocks§r hostile!\n\n" +
+				"§eReleasing a Villager:§r\n" +
+				"1. §bSneak + Right-click§r a solid block surface to release. The villager spawns above the block with all data intact.\n" +
+				"2. The cage is consumed on release. If the target location has no solid ground or no space, release is denied with a message.\n" +
+				"3. An empty cage does nothing when sneaking and right-clicking.\n\n" +
+				"§eSpecial Notes:§r\n" +
+				"1. §bCross-dimensional transport§r: Villager data is stored in the item; release in any dimension.\n" +
+				"2. Trade lock state is preserved, but bed and job site bindings are cleared (must re-establish).\n\n" +
+				"§eCrafting:§r\nIron Ingot, Emerald Block, Iron Ingot\nIron Ingot, Soul Sand, Iron Ingot\nIron Ingot, Iron Ingot, Iron Ingot");
+
+			// Soul Merchant Station English Translations
+			translationBuilder.add(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION, "Soul Merchant Station");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION.asItem(), "Soul Merchant Station");
+			translationBuilder.add("item.tuanzis_mod.soul_merchant_station.tooltip", "Right-click to place. Import a villager for AI-free high-TPS trading.");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.imported", "§aVillager successfully imported!");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.no_villager", "§cNo villager currently residing in this station!");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.already_has_villager", "§cThis station already has a resident villager!");
+			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.extracted", "§aVillager successfully repackaged into the cage!");
+			translationBuilder.add("jei.tuanzis_mod.soul_merchant_station.description",
+				"[Soul Merchant Station]\nA revolutionary AI-free, non-entity villager trading device. Highly optimizes server FPS/TPS while fully retaining vanilla trading.\n\n" +
+				"§eFeatures:§r\n" +
+				"1. §bVillager Import§r: Right-click with a filled §bVillager Cage§r to import the villager. Consumes the cage, displaying a 3D rotating profession icon inside the cage.\n" +
+				"2. §bVillager Export§r: Sneak + Right-click with an §cempty Villager Cage§r to securely package the villager back, keeping the station intact.\n" +
+				"3. §bAI-Free Trading§r: Right-clicking opens the standard trading GUI. Experience, leveling, and trade locks are fully functional. The villager is 100% safe from harm.\n" +
+				"4. §bAuto-Restock§r: At dawn or waking up, if a matching, §bunoccupied job site block§r is adjacent (6 directions) to the station, locked trades will automatically restock.\n" +
+				"5. §bNaming Support§r: Use a §bName Tag§r on the station to rename it; the name appears at the top of the trading GUI.\n" +
+				"6. §bBlast Immunity§r: The block is completely immune to blast damages, offering permanent safety to the villager.");
+
+			// Travelers Notebook English Translations
+			translationBuilder.add(ModItems.TRAVELERS_NOTEBOOK, "Traveler's Notebook");
+			translationBuilder.add(ModItems.TELEPORTATION_PAPER, "Teleportation Paper");
+			translationBuilder.add(ModItems.SIGNPOST_RUNE, "Signpost Rune");
+			
+			translationBuilder.add("item.tuanzis_mod.travelers_notebook.tooltip.energy", "⏣ Energy: %d/%d");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.unbound", "§8[Unbound]§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.bind_hint", "§7Shift+Right-click to bind current location§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.bound", "§a[Bound]§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.dimension", "§7Dimension: %s§r");
+			translationBuilder.add("item.tuanzis_mod.signpost_rune.tooltip.coords", "§7Coords: X: %s, Y: %s, Z: %s§r");
+			
+			translationBuilder.add("message.tuanzis_mod.signpost_rune.bound", "§aLocation successfully bound!§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.insufficient_energy", "§cTraveler's Notebook: Insufficient Energy§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.interrupted", "§cTeleportation Interrupted§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.starting", "§dChannelling teleportation... Stand still for 3 seconds§r");
+			translationBuilder.add("message.tuanzis_mod.travelers_notebook.cooldown", "§cCooldown... %.1f seconds remaining§r");
+			
+			translationBuilder.add("container.tuanzis_mod.travelers_notebook", "Traveler's Notebook Storage");
+			
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.teleport", "Teleport");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.energy_status", "⏣ Energy: %d/64");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.empty_slots", "Please put bound Signpost Runes inside the storage to mark destinations.");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.select_hint", "Select a bound Signpost Rune on the left to begin teleportation.");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.dim_label", "Dimension: %s");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.energy_cost", "Energy Cost: %d");
+			translationBuilder.add("gui.tuanzis_mod.travelers_notebook.no_energy_warning", "Out of Energy");
+
+			// Dimension translations
+			translationBuilder.add("dimension.minecraft.overworld", "Overworld");
+			translationBuilder.add("dimension.minecraft.the_nether", "The Nether");
+			translationBuilder.add("dimension.minecraft.the_end", "The End");
+
+			translationBuilder.add("jei.tuanzis_mod.travelers_notebook.description", "[Traveler's Notebook]\nA notebook woven from void energy that allows players to teleport across coordinates.\n\n§eUsage:§r\n1. §bRight-click§r: Open book-style teleport interface. Select a bound rune and press teleport.\n2. §bSneak + Right-click§r: Open internal storage (3x9, 27 slots).\n\n§eCharging & Storage:§r\n1. The very first slot (Slot 0) is reserved for §eFuel§r. Place §bTeleportation Paper§r inside; it automatically consumes them on GUI close to charge the notebook. 1 paper = 1 energy point, cap 64.\n2. The remaining 26 slots only accept bound §bSignpost Runes§r.\n3. The notebook cannot be enchanted or repaired.\n\n§eTeleport Rules:§r\n1. §bIntra-dimension§r teleport costs §a1§r energy. §bCross-dimension§r teleport costs §a2§r energy.\n2. Teleportation requires §e3s channelling§r. Taking damage or moving will cancel the teleport.\n3. Intradimension cooldown is 3s. Crossdimension cooldown is 5s.\n\n§cWarning:§r\nIf the notebook entity is destroyed in the world (e.g. lava, fire, explosion), all stored contents will drop!");
+			translationBuilder.add("jei.tuanzis_mod.teleportation_paper.description", "[Teleportation Paper]\nA parchment infused with faint Ender energy.\n\n§eUsage:§r\nUsed solely as fuel. Place it in the fuel slot (Slot 0) of the §bTraveler's Notebook§r storage; it will be consumed to charge the notebook when the GUI is closed.");
+			translationBuilder.add("jei.tuanzis_mod.signpost_rune.description", "[Signpost Rune]\nA runic slate used to lock and store dimensional coordinate data.\n\n§eUsage:§r\n1. §bBinding Locations§r: Right-click while holding it anywhere in the world to bind the current location and dimension. Plays a ringing chime sound.\n2. §bCustom Naming§r: You can rename bound runes in an §bAnvil§r. The custom name will be displayed in the §bTraveler's Notebook§r destination list.\n\n§7Note: Runes are non-stackable. Only bound runes can be placed in the notebook's destination slots.");
 		}
 	}
 }

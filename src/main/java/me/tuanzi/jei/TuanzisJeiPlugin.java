@@ -262,11 +262,44 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.blood_rage.description"));
         }
 
+        // 获取所有附有“狂战士”附魔的附魔书 (Berserker)
+        List<ItemStack> berserkerBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.BERSERKER)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!berserkerBooks.isEmpty()) {
+            registration.addIngredientInfo(berserkerBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.berserker.description"));
+        }
+
         registration.addIngredientInfo(new ItemStack(ModItems.SCARECROW), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.scarecrow.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.DECOY_TOTEM), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.decoy_totem.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.TRIAL_DUMMY), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.trial_dummy.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.VILLAGER_CAGE), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.villager_cage.description"));
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.soul_merchant_station.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.TRAVELERS_NOTEBOOK), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.travelers_notebook.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.TELEPORTATION_PAPER), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.teleportation_paper.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.SIGNPOST_RUNE), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.signpost_rune.description"));
     }
 }

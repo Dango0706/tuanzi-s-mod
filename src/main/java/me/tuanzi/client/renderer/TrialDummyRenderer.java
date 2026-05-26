@@ -81,7 +81,7 @@ public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, T
         state.rightLegPose = new net.minecraft.core.Rotations(0.0F, 0.0F, 0.0F);
         
         // 受击晃动
-        state.wiggle = (float)entity.hurtTime + partialTicks;
+        state.wiggle = entity.hurtTime > 0 ? (float)entity.hurtTime + partialTicks : 0.0F;
 
         // 客户端伤害悬浮字提取
         state.damageTexts.clear();

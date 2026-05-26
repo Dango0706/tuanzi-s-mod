@@ -27,7 +27,11 @@
 		"BloodRageDamageMixin",
 		"BerserkerEnchantmentMixin",
 		"ItemStackDurabilityMixin",
-		"ItemFrameFrameMixin"
+		"ItemFrameFrameMixin",
+		"VillagerMixin",
+		"VillagerAccessor",
+		"ServerPlayerMixin",
+		"TravelersNotebookItemEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
