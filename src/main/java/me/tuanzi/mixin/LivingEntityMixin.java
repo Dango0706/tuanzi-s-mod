@@ -29,22 +29,13 @@ public abstract class LivingEntityMixin {
     @org.spongepowered.asm.mixin.Unique
     private double tuanzis_mod$tearingDistance = 0.0;
     @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$lastTickX = 0.0;
+    private double tuanzis_mod$persistentX = 0.0;
     @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$lastTickY = 0.0;
+    private double tuanzis_mod$persistentY = 0.0;
     @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$lastTickZ = 0.0;
+    private double tuanzis_mod$persistentZ = 0.0;
     @org.spongepowered.asm.mixin.Unique
-    private boolean tuanzis_mod$hasSavedLastPos = false;
-
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void tuanzis_mod$saveLastPosition(CallbackInfo ci) {
-        LivingEntity entity = (LivingEntity) (Object) this;
-        tuanzis_mod$lastTickX = entity.getX();
-        tuanzis_mod$lastTickY = entity.getY();
-        tuanzis_mod$lastTickZ = entity.getZ();
-        tuanzis_mod$hasSavedLastPos = true;
-    }
+    private boolean tuanzis_mod$hasPersistentPos = false;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tuanzis_mod$tickTearingDamage(CallbackInfo ci) {
@@ -56,10 +47,10 @@ public abstract class LivingEntityMixin {
             double dx = 0.0;
             double dy = 0.0;
             double dz = 0.0;
-            if (tuanzis_mod$hasSavedLastPos) {
-                dx = entity.getX() - tuanzis_mod$lastTickX;
-                dy = entity.getY() - tuanzis_mod$lastTickY;
-                dz = entity.getZ() - tuanzis_mod$lastTickZ;
+            if (tuanzis_mod$hasPersistentPos) {
+                dx = entity.getX() - tuanzis_mod$persistentX;
+                dy = entity.getY() - tuanzis_mod$persistentY;
+                dz = entity.getZ() - tuanzis_mod$persistentZ;
             } else {
                 dx = entity.getX() - entity.xo;
                 dy = entity.getY() - entity.yo;
@@ -83,7 +74,12 @@ public abstract class LivingEntityMixin {
             tuanzis_mod$tearingTicks = 0;
             tuanzis_mod$tearingDistance = 0.0;
         }
-        tuanzis_mod$hasSavedLastPos = false;
+
+        // 无论何种状态，在每一 tick 最终结算时，强制将当前最新坐标锁定为跨 tick 持久化对比坐标
+        tuanzis_mod$persistentX = entity.getX();
+        tuanzis_mod$persistentY = entity.getY();
+        tuanzis_mod$persistentZ = entity.getZ();
+        tuanzis_mod$hasPersistentPos = true;
     }
 
     /**
