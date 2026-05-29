@@ -19,5 +19,10 @@ public abstract class BrewingRecipeMixin {
     private static void tuanzis_mod$addBrewingRecipes(PotionBrewing.Builder builder, CallbackInfo ci) {
         builder.addMix(Potions.MUNDANE, Items.TOTEM_OF_UNDYING, ModPotions.UNDYING_POTION);
         builder.addMix(ModPotions.UNDYING_POTION, Items.REDSTONE, ModPotions.LONG_UNDYING_POTION);
+        
+        // 肾上腺素药水酿造配方
+        builder.addMix(Potions.WEAKNESS, Items.GOLDEN_CARROT, ModPotions.ADRENALINE_POTION);
+        builder.addMix(ModPotions.ADRENALINE_POTION, Items.GLOWSTONE_DUST, ModPotions.ADRENALINE_POTION_II);
+        builder.addMix(ModPotions.ADRENALINE_POTION, Items.REDSTONE, ModPotions.LONG_ADRENALINE_POTION);
     }
 }

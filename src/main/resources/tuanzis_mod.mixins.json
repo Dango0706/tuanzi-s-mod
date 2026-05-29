@@ -31,7 +31,10 @@
 		"VillagerMixin",
 		"VillagerAccessor",
 		"ServerPlayerMixin",
-		"TravelersNotebookItemEntityMixin"
+		"TravelersNotebookItemEntityMixin",
+		"LivingEntityMixin",
+		"WolfMixin",
+		"MobMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

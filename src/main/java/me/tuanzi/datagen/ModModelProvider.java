@@ -209,5 +209,7 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.TRAVELERS_NOTEBOOK, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.TELEPORTATION_PAPER, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.SIGNPOST_RUNE, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.BERSERK_CHARM, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.WOLF_COMMAND, ModelTemplates.FLAT_ITEM);
     }
 }

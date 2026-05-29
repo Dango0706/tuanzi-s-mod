@@ -120,6 +120,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("item.tuanzis_mod.yuris_revenge.jei.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.IMMORTAL_TALISMAN), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.immortal_talisman.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.BERSERK_CHARM), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.berserk_charm.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.WOLF_COMMAND), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.wolf_command.description"));
         registration.addIngredientInfo(new ItemStack(Items.WARDEN_SPAWN_EGG), VanillaTypes.ITEM_STACK, 
             Component.translatable("item.minecraft.warden_spawn_egg.jei.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.WARDEN_HEART), VanillaTypes.ITEM_STACK,
@@ -301,5 +305,25 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.teleportation_paper.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.SIGNPOST_RUNE), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.signpost_rune.description"));
+
+        // 注册肾上腺素药水介绍页
+        List<ItemStack> adrenalinePotions = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> {
+                var potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                if (potionContents != null && potionContents.potion().isPresent()) {
+                    var potion = potionContents.potion().get().value();
+                    var id = BuiltInRegistries.POTION.getKey(potion);
+                    return id != null && id.getPath().contains("adrenaline");
+                }
+                return false;
+            })
+            .toList();
+        
+        if (!adrenalinePotions.isEmpty()) {
+            registration.addIngredientInfo(adrenalinePotions, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.adrenaline_potion.description"));
+        }
     }
 }

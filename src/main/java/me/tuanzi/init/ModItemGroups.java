@@ -57,6 +57,10 @@ public class ModItemGroups {
                 entries.accept(ModItems.YURIS_REVENGE);
                 // 加入不朽圣符
                 entries.accept(ModItems.IMMORTAL_TALISMAN);
+                // 加入狂暴护符
+                entries.accept(ModItems.BERSERK_CHARM);
+                // 加入战狼护符
+                entries.accept(ModItems.WOLF_COMMAND);
                 // 加入坚守者的心脏
                 entries.accept(ModItems.WARDEN_HEART);
                 // 加入回响破障者
@@ -82,6 +86,11 @@ public class ModItemGroups {
                 // 加入不死药水及其变体
                 addPotionVariants(entries, ModPotions.UNDYING_POTION);
                 addPotionVariants(entries, ModPotions.LONG_UNDYING_POTION);
+
+                // 加入肾上腺素药水及其变体
+                addPotionVariants(entries, ModPotions.ADRENALINE_POTION);
+                addPotionVariants(entries, ModPotions.ADRENALINE_POTION_II);
+                addPotionVariants(entries, ModPotions.LONG_ADRENALINE_POTION);
             })
             .build()
     );

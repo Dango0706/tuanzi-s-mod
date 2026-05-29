@@ -88,6 +88,25 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .define('R', ModItems.VILLAGER_CAGE)
                     .unlockedBy("has_villager_cage", has(ModItems.VILLAGER_CAGE))
                     .save(exporter);
+
+                // 狂暴护符无序合成：铁锭 + 2个烈焰粉 + 红石
+                shapeless(RecipeCategory.MISC, ModItems.BERSERK_CHARM, 1)
+                    .requires(Items.IRON_INGOT)
+                    .requires(Items.BLAZE_POWDER, 2)
+                    .requires(Items.REDSTONE)
+                    .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                    .unlockedBy("has_blaze_powder", has(Items.BLAZE_POWDER))
+                    .save(exporter);
+
+                // 战狼护符无序合成：1个骨块 + 2个铁锭 + 1个幽匿脉络
+                shapeless(RecipeCategory.COMBAT, ModItems.WOLF_COMMAND, 1)
+                    .requires(Items.BONE_BLOCK)
+                    .requires(Items.IRON_INGOT, 2)
+                    .requires(Items.SCULK_VEIN)
+                    .unlockedBy("has_bone_block", has(Items.BONE_BLOCK))
+                    .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                    .unlockedBy("has_sculk_vein", has(Items.SCULK_VEIN))
+                    .save(exporter);
             }
         };
     }

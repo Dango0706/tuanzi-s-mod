@@ -46,10 +46,16 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.YURIS_REVENGE, "尤里的复仇");
 			translationBuilder.add(ModItems.IMMORTAL_TALISMAN, "不朽圣符");
 			translationBuilder.add("item.tuanzis_mod.immortal_talisman.tooltip", "持有此符，死亡时保留所有物品与经验值。");
+			translationBuilder.add(ModItems.BERSERK_CHARM, "狂暴护符");
+			translationBuilder.add("item.tuanzis_mod.berserk_charm.tooltip", "放入副手，当生命值低于 30% 时自动激活。获得 15 秒的力量 II 与速度 II，并消耗一个护符。");
+			translationBuilder.add(ModItems.WOLF_COMMAND, "战狼护符");
+			translationBuilder.add("item.tuanzis_mod.wolf_command.tooltip", "放入副手时，驯服的狼获得额外生命值、撕裂攻击及致命伤害保护。");
 			translationBuilder.add(ModItems.WARDEN_HEART, "坚守者的心脏");
 			translationBuilder.add(ModItems.ECHO_BREAKER, "回响破障者");
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "飞行");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "不死");
+			translationBuilder.add(ModStatusEffects.TEARING.value(), "撕裂");
+			translationBuilder.add("death.attack.tuanzis_mod.tearing", "%s 因伤口撕裂大出血而亡");
 			translationBuilder.add(ModItems.SCARECROW, "稻草人");
 			translationBuilder.add(ModItems.DECOY_TOTEM, "假目标");
 			translationBuilder.add("entity.tuanzis_mod.decoy", "假目标幻影");
@@ -91,6 +97,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
 			translationBuilder.add("item.tuanzis_mod.yuris_revenge.jei.description", "【尤里的复仇】\n一把拥有神秘力量的工具。它能够以前所未有的速度粉碎坚不可摧的基岩。\n\n§e功能：§r\n1. §b破坏基岩§r：它是唯一能够挖掘并掉落基岩工具。\n2. §b极速挖掘§r：在面对基岩时拥有惊人的破坏速度。\n\n§7注：除了基岩，它在面对其他方块时几乎毫无用处。§r");
 			translationBuilder.add("jei.tuanzis_mod.immortal_talisman.description", "【不朽圣符】\n一件保命的神器。只要它存在于你的物品栏中，死亡将不再是终点。\n\n§e效果：§r\n1. §b死亡不掉落§r：保留所有物品、盔甲和经验。\n2. §b自我牺牲§r：在发挥作用后，圣符会消耗掉一个。");
+			translationBuilder.add("jei.tuanzis_mod.berserk_charm.description", "【狂暴护符】\n一个能够激发潜在力量的特殊护符。\n\n§e触发条件：§r\n1. 必须处于§b副手栏§r。\n2. 玩家生命值低于 §c30%§r。\n\n§e激活效果：§r\n1. 消耗 §e1 个§r 护符。\n2. 获得 15 秒的 §6力量 II§r 与 §b速度 II§r 效果。\n3. 该物品会进入 §e15 秒的冷却状态§r，在此期间无法再次触发（即便生命值依然低于 30%），从而防止同一时间消耗掉多个护符。");
 			translationBuilder.add("jei.tuanzis_mod.compatibility.infinity_mending", "【附魔兼容性增强】\n现在 §b无限 (Infinity)§r 与 §b经验修补 (Mending)§r 互相兼容，可以同时附魔在同一把弓上。");
 			translationBuilder.add("item.minecraft.warden_spawn_egg.jei.description", "【监守者】\n一种极其危险的生物，通常潜伏在深暗之域的远古城市中。\n\n§e奖励增强：§r\n1. §b经验提升§r：现在被玩家或被驯服的狼杀死时，会掉落 §a275§r 点经验值（原为 5 点）。\n2. §b稀有掉落§r：若玩家对单个监守者累计造成超过 §c50%§r 最大生命值的伤害，该监守者死亡时有 §a10%§r 的概率掉落§6《灵魂绑定》§r附魔书（受抢夺影响，每级增加 2.5%）。\n\n§7提示：虽然经验变多了，但它依然非常危险，建议做好充分准备再进行挑战。§r");
 
@@ -134,7 +141,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"1. §b绝境怒火§r：穿戴该附魔胸甲时，近战攻击伤害随已损失生命值比例获得提升。每损失 10% 最大生命值，近战伤害增加 §a5%（等级 I）§r 或 §a8%（等级 II）§r。最多提升至生命值低于 §c5%§r 时达到上限。\n" +
 				"2. §b伤势实时变化§r：当生命值因治疗而恢复时，伤害加成实时下降。\n\n" +
 				"§e代价与惩罚：§r\n" +
-				"1. §b破甲减免§r：作为代价，胸甲本身提供的基础护甲值减少 §c35%（等级 I）§r 或 §c30%（等级 II）§r（即实际保留胸甲基础护甲值的 65% 或 70%，例如 8 点护甲的钻石胸甲在 II 级下仅扣除 2 点，仍可提供 6 点护甲，绝非削减到仅剩 30%）。\n" +
+				"1. §b破甲减免§r：作为代价，胸甲本身提供的基础护甲值减少 §c35%（等级 I）§r 或 §c30%（等级 II）§r（即实际保留胸甲基础护甲值的 65% 或 70%，例如 8 点护甲 of 钻石胸甲在 II 级下仅扣除 2 点，仍可提供 6 点护甲，绝非削减到仅剩 30%）。\n" +
 				"2. §b冲突互斥§r：与 §b保护§r、§b火焰保护§r、§b爆炸保护§r、§b弹射物保护§r、§b摔落保护§r 等所有保护类附魔互斥。\n\n" +
 				"§7获取方式：最高等级 II 级。可通过附魔台直接附魔（稀有级）、战利品箱搜刮或村民交易获得。§r";
 			translationBuilder.add("jei.tuanzis_mod.blood_rage.description", bloodRageDesc);
@@ -234,6 +241,40 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("jei.tuanzis_mod.travelers_notebook.description", "【旅者手札】\n一本凝聚了虚空维度的传送手札。\n\n§e使用方法：§r\n1. §b右键点击§r：打开水晶书本传送界面。选择一个已绑定的符石并点击传送按钮。\n2. §b潜行+右键§r：打开内部存储界面（3x9 共 27格）。\n\n§e存储与充能：§r\n1. 最左上角第一格（Slot 0）为 §e燃料格§r。在此格放入 §b传送纸§r 并在关闭界面时自动将其消耗充能，每张增加 1 点能量，上限 64 点。\n2. 剩余 26 格仅限放置已绑定的 §b道标符石§r。\n3. 手札本身无法被附魔或在砧上修复。\n\n§e传送规则与消耗：§r\n1. §b同维度§r传送消耗 §a1§r 点能量，§b跨维度§r传送消耗 §a2§r 点能量。\n2. 传送伴随 §e3 秒引导时间§r，期间受到伤害或产生移动都将打断传送。\n3. 传送后同维度冷却 3 秒，跨维度冷却 5 秒。\n\n§c安全警告：§r\n若手札物品实体在世界中被火烧、爆炸或被仙人掌摧毁，其内部存储的所有物品将全部在原地掉出！");
 			translationBuilder.add("jei.tuanzis_mod.teleportation_paper.description", "【传送纸】\n一种被注入微弱末影能量的羊皮纸。\n\n§e用途：§r\n唯一的充能媒介。将其放进 §b旅者手札§r 存储界面的第一格（燃料格），在关闭界面后手札将消耗纸张进行能量充实，每消耗一张补充 1 点能量。");
 			translationBuilder.add("jei.tuanzis_mod.signpost_rune.description", "【道标符石】\n记录世界之维空间坐标的符石。\n\n§e使用方法：§r\n1. §b绑定位置§r：主手或副手手持它并在任意地点右键点击，符石将立即绑定当前坐标与维度，并播放清脆的音效。\n2. §b自定义名称§r：绑定的符石可以使用 §b铁砧§r 进行重命名，该自定义名称将在 §b旅者手札§r 的传送列表里直接显示。\n\n§7注：符石不可堆叠。只有绑定了位置的符石才能放进手札的存储格中用于传送。");
+
+			// 肾上腺素药水效果中文翻译
+			translationBuilder.add(ModStatusEffects.ADRENALINE.value(), "肾上腺素");
+			translationBuilder.add(ModStatusEffects.ADRENALINE_OVERDRAW.value(), "肾上腺素透支");
+			
+			translationBuilder.add("item.minecraft.potion.effect.adrenaline", "肾上腺素药水");
+			translationBuilder.add("item.minecraft.splash_potion.effect.adrenaline", "喷溅型肾上腺素药水");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.adrenaline", "滞留型肾上腺素药水");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.adrenaline", "肾上腺素药箭");
+			
+			translationBuilder.add("item.minecraft.potion.effect.adrenaline_ii", "肾上腺素药水 II");
+			translationBuilder.add("item.minecraft.splash_potion.effect.adrenaline_ii", "喷溅型肾上腺素药水 II");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.adrenaline_ii", "滞留型肾上腺素药水 II");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.adrenaline_ii", "肾上腺素药箭 II");
+			
+			translationBuilder.add("item.minecraft.potion.effect.long_adrenaline", "肾上腺素药水 (延长)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_adrenaline", "喷溅型肾上腺素药水 (延长)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_adrenaline", "滞留型肾上腺素药水 (延长)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_adrenaline", "肾上腺素药箭 (延长)");
+
+			translationBuilder.add("jei.tuanzis_mod.adrenaline_potion.description", "【肾上腺素药水】\n一种能瞬间激发潜能、大幅提升行动与攻击速度的强效药剂，但会导致严重的透支反噬。\n\n§e饮用效果：§r\n1. §b极限加成§r：饮用后攻击速度提升 §a15% * 等级§r，移动速度提升 §a7.5% * 等级§r。\n2. §b持续时间§r：普通版 45 秒，增强版 II 级 30 秒，延长版 1 分 30 秒。\n\n§e透支与惩罚机制：§r\n1. §b立即透支§r：饮用时立即获得一层§c“肾上腺素透支”§r效果（持续至药水Buff结束）。\n2. §b无法消除§r：透支效果§e无法被牛奶清除§r。如果在药水Buff结束时仍处于透支状态，将触发透支副作用。\n3. §b副作用表现§r：每级透支给予 §c30 秒的虚弱 I + 挖掘疲劳 I§r。\n4. §b连续饮用叠加§r：若在透支效果未结束时连续饮用，会§6叠加透支效果的等级与时间§r。每多喝一瓶，透支等级提升 1 级（最高 IV 级），结束时的副作用持续时间也随之线性叠加（I级30秒，II级60秒，III级90秒，IV级120秒）。");
+
+			String wolfCommandDesc = "【战狼护符】\n" +
+				"一个能够赐予驯养战狼无穷威能与生命力的护符。\n\n" +
+				"§e持有效果（必须置于副手）：§r\n" +
+				"1. §b生命加成§r：你所有驯服的狼获得额外 §a+4§r 点最大生命值。\n" +
+				"2. §b撕裂利爪§r：狼的攻击有 §a15%§r 概率使目标进入 §c撕裂§r 状态，持续 8 秒。若目标已处于撕裂状态，则刷新时间并增加 1 级（最高 4 级）。\n" +
+				"3. §b不死战意§r：当狼受到致命伤害时，不会死亡，而是会获得 §e5 秒的无敌与激怒§r（攻击速度翻倍，移动和攻击力增强），随后狼会力竭倒地并消耗护符 1 点耐久。\n\n" +
+				"§e倒地状态：§r\n" +
+				"倒地的狼无法移动、无法攻击、免疫一切常规伤害且禁止使用拴绳牵引。喂食其 §e腐肉 10 次§r 即可使其满血复活！\n\n" +
+				"§e状态效果 - 撕裂：§r\n" +
+				"每 0.5s（10 ticks）判定一次。若在此期间实体移动，则受到 §c0.5 * 等级§r 点的魔法伤害；若不移动则不受伤害。\n\n" +
+				"§c注意：护符无法修复，耐久上限为 3，最大堆叠为 1。§r";
+			translationBuilder.add("jei.tuanzis_mod.wolf_command.description", wolfCommandDesc);
 		}
 	}
 
@@ -252,10 +293,16 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.YURIS_REVENGE, "Yuri's Revenge");
 			translationBuilder.add(ModItems.IMMORTAL_TALISMAN, "Immortal Talisman");
 			translationBuilder.add("item.tuanzis_mod.immortal_talisman.tooltip", "Retain all items and experience on death while in inventory.");
+			translationBuilder.add(ModItems.BERSERK_CHARM, "Berserk Charm");
+			translationBuilder.add("item.tuanzis_mod.berserk_charm.tooltip", "Place in off-hand to activate automatically when health falls below 30%. Grants Strength II and Speed II for 15 seconds, and consumes one charm.");
+			translationBuilder.add(ModItems.WOLF_COMMAND, "Wolf Command");
+			translationBuilder.add("item.tuanzis_mod.wolf_command.tooltip", "Equip in off-hand to grant tamed wolves bonus health, tearing attacks, and death protection.");
 			translationBuilder.add(ModItems.WARDEN_HEART, "Warden Heart");
 			translationBuilder.add(ModItems.ECHO_BREAKER, "Echo Breaker");
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
+			translationBuilder.add(ModStatusEffects.TEARING.value(), "Tearing");
+			translationBuilder.add("death.attack.tuanzis_mod.tearing", "%s bled to death from torn wounds");
 			translationBuilder.add(ModItems.SCARECROW, "Scarecrow");
 			translationBuilder.add(ModItems.DECOY_TOTEM, "Decoy Totem");
 			translationBuilder.add("entity.tuanzis_mod.decoy", "Decoy Phantom");
@@ -298,6 +345,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
 			translationBuilder.add("item.tuanzis_mod.yuris_revenge.jei.description", "[Yuri's Revenge]\nA tool imbued with mysterious power, capable of shattering indestructible bedrock at unprecedented speeds.\n\n§eFeatures:§r\n1. §bBedrock Breaker§r: The only tool that can mine and drop bedrock.\n2. §bExtreme Speed§r: Amazing destruction speed when facing bedrock.\n\n§7Note: It is nearly useless against any block other than bedrock.§r");
 			translationBuilder.add("jei.tuanzis_mod.immortal_talisman.description", "[Immortal Talisman]\nA life-saving artifact. As long as it's in your inventory, death is no longer the end.\n\n§eEffects:§r\n1. §bKeep Inventory§r: Retain all items, armor, and experience upon death.\n2. §bSelf-Sacrifice§r: One talisman is consumed each time it saves you.\n\n§cWarning: If all talismans are consumed, death protection will fail!§r");
+			translationBuilder.add("jei.tuanzis_mod.berserk_charm.description", "[Berserk Charm]\nA special charm that unleashes potential power under extreme conditions.\n\n§eTrigger Conditions:§r\n1. Must be equipped in the §boff-hand§r.\n2. Player health falls below §c30%§r.\n\n§eActivation Effects:§r\n1. Consumes §e1§r charm.\n2. Grants §6Strength II§r and §bSpeed II§r for 15 seconds.\n3. Enters a §e15-second cooldown§r to prevent multiple charms from being consumed rapidly if health remains low.");
 			translationBuilder.add("jei.tuanzis_mod.compatibility.infinity_mending", "[Enchantment Compatibility]\n§bInfinity§r and §bMending§r are now compatible and can be applied to the same bow simultaneously.");
 			translationBuilder.add("item.minecraft.warden_spawn_egg.jei.description", "[Warden]\nAn extremely dangerous creature that typically lurks within the Ancient Cities of the Deep Dark.\n\n§eReward Boost:§r\n1. §bXP Increase§r: Now drops §a275§r experience points when killed by a player or a tamed wolf (was 5).\n2. §bRare Drop§r: If a player deals more than §c50%§r of its max health as damage, it has a §a10%§r chance to drop a §6Soulbound§r enchanted book (affected by Looting, +2.5% per level).\n\n§7Tip: Even with the increased reward, it remains highly dangerous. Prepare thoroughly before engaging.§r");
 
@@ -397,7 +445,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.already_has_villager", "§cThis station already has a resident villager!");
 			translationBuilder.add("message.tuanzis_mod.soul_merchant_station.extracted", "§aVillager successfully repackaged into the cage!");
 			translationBuilder.add("jei.tuanzis_mod.soul_merchant_station.description",
-				"[Soul Merchant Station]\nA revolutionary AI-free, non-entity villager trading device. Highly optimizes server FPS/TPS while fully retaining vanilla trading.\n\n" +
+				"[Soul Merchant Station]\nA revolutionary AI-free, non-entity villager trading device. Highly optimizes server FPS/TPS while fully retains vanilla trading.\n\n" +
 				"§eFeatures:§r\n" +
 				"1. §bVillager Import§r: Right-click with a filled §bVillager Cage§r to import the villager. Consumes the cage, displaying a 3D rotating profession icon inside the cage.\n" +
 				"2. §bVillager Export§r: Sneak + Right-click with an §cempty Villager Cage§r to securely package the villager back, keeping the station intact.\n" +
@@ -442,6 +490,37 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("jei.tuanzis_mod.travelers_notebook.description", "[Traveler's Notebook]\nA notebook woven from void energy that allows players to teleport across coordinates.\n\n§eUsage:§r\n1. §bRight-click§r: Open book-style teleport interface. Select a bound rune and press teleport.\n2. §bSneak + Right-click§r: Open internal storage (3x9, 27 slots).\n\n§eCharging & Storage:§r\n1. The very first slot (Slot 0) is reserved for §eFuel§r. Place §bTeleportation Paper§r inside; it automatically consumes them on GUI close to charge the notebook. 1 paper = 1 energy point, cap 64.\n2. The remaining 26 slots only accept bound §bSignpost Runes§r.\n3. The notebook cannot be enchanted or repaired.\n\n§eTeleport Rules:§r\n1. §bIntra-dimension§r teleport costs §a1§r energy. §bCross-dimension§r teleport costs §a2§r energy.\n2. Teleportation requires §e3s channelling§r. Taking damage or moving will cancel the teleport.\n3. Intradimension cooldown is 3s. Crossdimension cooldown is 5s.\n\n§cWarning:§r\nIf the notebook entity is destroyed in the world (e.g. lava, fire, explosion), all stored contents will drop!");
 			translationBuilder.add("jei.tuanzis_mod.teleportation_paper.description", "[Teleportation Paper]\nA parchment infused with faint Ender energy.\n\n§eUsage:§r\nUsed solely as fuel. Place it in the fuel slot (Slot 0) of the §bTraveler's Notebook§r storage; it will be consumed to charge the notebook when the GUI is closed.");
 			translationBuilder.add("jei.tuanzis_mod.signpost_rune.description", "[Signpost Rune]\nA runic slate used to lock and store dimensional coordinate data.\n\n§eUsage:§r\n1. §bBinding Locations§r: Right-click while holding it anywhere in the world to bind the current location and dimension. Plays a ringing chime sound.\n2. §bCustom Naming§r: You can rename bound runes in an §bAnvil§r. The custom name will be displayed in the §bTraveler's Notebook§r destination list.\n\n§7Note: Runes are non-stackable. Only bound runes can be placed in the notebook's destination slots.");
+
+			// Potion Translations
+			translationBuilder.add("item.minecraft.potion.effect.adrenaline", "Potion of Adrenaline");
+			translationBuilder.add("item.minecraft.splash_potion.effect.adrenaline", "Splash Potion of Adrenaline");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.adrenaline", "Lingering Potion of Adrenaline");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.adrenaline", "Arrow of Adrenaline");
+			
+			translationBuilder.add("item.minecraft.potion.effect.adrenaline_ii", "Potion of Adrenaline II");
+			translationBuilder.add("item.minecraft.splash_potion.effect.adrenaline_ii", "Splash Potion of Adrenaline II");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.adrenaline_ii", "Lingering Potion of Adrenaline II");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.adrenaline_ii", "Arrow of Adrenaline II");
+			
+			translationBuilder.add("item.minecraft.potion.effect.long_adrenaline", "Potion of Adrenaline (Extended)");
+			translationBuilder.add("item.minecraft.splash_potion.effect.long_adrenaline", "Splash Potion of Adrenaline (Extended)");
+			translationBuilder.add("item.minecraft.lingering_potion.effect.long_adrenaline", "Lingering Potion of Adrenaline (Extended)");
+			translationBuilder.add("item.minecraft.tipped_arrow.effect.long_adrenaline", "Arrow of Adrenaline (Extended)");
+
+			translationBuilder.add("jei.tuanzis_mod.adrenaline_potion.description", "[Potion of Adrenaline]\nA powerful potion that instantly unleashes potential, boosting attack speed and movement speed at the cost of a severe overdraw backlash.\n\n§eDrink Effects:§r\n1. §bExtreme Boost:§r Attack Speed is increased by §a15% * Level§r, and Movement Speed is increased by §a7.5% * Level§r.\n2. §bDurability:§r Normal version lasts 45 seconds, Strong (II) version lasts 30 seconds, and Extended version lasts 1 min 30 seconds.\n\n§eOverdraw & Penalties:§r\n1. §bMilk Immunity:§r The overdraw effect §ecannot be cleared by milk§r. If it remains when the Adrenaline buff ends, the overdraw side effects are triggered.\n2. §bSide Effects:§r Grants §c30 seconds of Weakness I + Mining Fatigue I§r per overdraw level.\n3. §bStacking Rule:§r Drinking while overdrawn §6stacks both the overdraw level and its duration§r. Each additional drink raises the overdraw level by 1 (max level IV), and the final side effect duration stacks linearly (30s for Level I, 60s for II, 90s for III, 120s for IV).");
+
+			String wolfCommandDescEn = "[Wolf Command]\n" +
+				"A charm that bestows infinite power and vitality to tamed wolves.\n\n" +
+				"§eEquipped Effects (Must be in off-hand):§r\n" +
+				"1. §bHealth Boost§r: All your tamed wolves gain an extra §a+4§r max health.\n" +
+				"2. §bTearing Claws§r: Wolves' attacks have a §a15%§r chance to inflict the §cTearing§r status effect for 8 seconds. If the target is already torn, refreshes the duration and increases the effect level by 1 (up to level 4).\n" +
+				"3. §bUndying Battle-will§r: Tamed wolves will not die upon taking fatal damage. Instead, they enter a §e5-second invulnerable rage mode§r (attack frequency doubled, movement and attack damage boosted), and then collapse while consuming 1 durability point of the charm.\n\n" +
+				"§eDowned State:§r\n" +
+				"The downed wolf cannot move, cannot attack, is immune to all environmental/normal damage, and cannot be leashed. Feed it §eRotten Flesh 10 times§r to fully revive it with full health!\n\n" +
+				"§eStatus Effect - Tearing:§r\n" +
+				"Ticks every 0.5s (10 ticks). If the entity moves during this tick, it takes §c0.5 * Level§r magic damage; otherwise, nothing happens.\n\n" +
+				"§cNote: The charm cannot be repaired. Maximum durability is 3, maximum stack size is 1.§r";
+			translationBuilder.add("jei.tuanzis_mod.wolf_command.description", wolfCommandDescEn);
 		}
 	}
 }

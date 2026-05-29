@@ -1,0 +1,148 @@
+package me.tuanzi.mixin;
+
+import me.tuanzi.init.ModStatusEffects;
+import net.minecraft.core.Holder;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
+@Mixin(LivingEntity.class)
+public abstract class LivingEntityMixin {
+
+    @Shadow
+    protected abstract void onEffectsRemoved(Collection<MobEffectInstance> effects);
+
+    @org.spongepowered.asm.mixin.Unique
+    private int tuanzis_mod$tearingTicks = 0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$tearingDistance = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$lastTickX = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$lastTickY = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$lastTickZ = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private boolean tuanzis_mod$hasSavedLastPos = false;
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void tuanzis_mod$saveLastPosition(CallbackInfo ci) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        tuanzis_mod$lastTickX = entity.getX();
+        tuanzis_mod$lastTickY = entity.getY();
+        tuanzis_mod$lastTickZ = entity.getZ();
+        tuanzis_mod$hasSavedLastPos = true;
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void tuanzis_mod$tickTearingDamage(CallbackInfo ci) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.level().isClientSide()) return;
+
+        if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.TEARING)) {
+            tuanzis_mod$tearingTicks++;
+            double dx = 0.0;
+            double dy = 0.0;
+            double dz = 0.0;
+            if (tuanzis_mod$hasSavedLastPos) {
+                dx = entity.getX() - tuanzis_mod$lastTickX;
+                dy = entity.getY() - tuanzis_mod$lastTickY;
+                dz = entity.getZ() - tuanzis_mod$lastTickZ;
+            } else {
+                dx = entity.getX() - entity.xo;
+                dy = entity.getY() - entity.yo;
+                dz = entity.getZ() - entity.zo;
+            }
+            tuanzis_mod$tearingDistance += Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+            if (tuanzis_mod$tearingTicks >= 10) {
+                if (tuanzis_mod$tearingDistance > 0.05) {
+                    var effectInstance = entity.getEffect(me.tuanzi.init.ModStatusEffects.TEARING);
+                    if (effectInstance != null) {
+                        int level = effectInstance.getAmplifier() + 1;
+                        float damageAmount = 0.5f * level;
+                        entity.hurt(entity.damageSources().magic(), damageAmount);
+                    }
+                }
+                tuanzis_mod$tearingTicks = 0;
+                tuanzis_mod$tearingDistance = 0.0;
+            }
+        } else {
+            tuanzis_mod$tearingTicks = 0;
+            tuanzis_mod$tearingDistance = 0.0;
+        }
+        tuanzis_mod$hasSavedLastPos = false;
+    }
+
+    /**
+     * 当实体移除状态效果时（不管是到期自动移除，还是被其他逻辑清除），
+     * 如果“肾上腺素”Buff被移除，且“肾上腺素透支”效果依然存在，就会在这里拦截并触发负面效果。
+     */
+    @Inject(method = "onEffectsRemoved", at = @At("HEAD"))
+    private void tuanzis_mod$onEffectsRemoved(Collection<MobEffectInstance> effects, CallbackInfo ci) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.level().isClientSide()) return;
+
+        for (MobEffectInstance effect : effects) {
+            if (effect.getEffect().equals(ModStatusEffects.ADRENALINE)) {
+                // 肾上腺素药水效果结束时
+                MobEffectInstance overdraw = entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
+                if (overdraw != null) {
+                    // 根据是否仍处于透支状态触发副作用！
+                    // “每级叠加30秒虚弱I + 挖掘疲劳I，最高叠加至IV级”
+                    // overdraw.getAmplifier() 范围为 0 至 3 (即 I 至 IV 级)
+                    int level = overdraw.getAmplifier() + 1;
+                    int sideEffectTicks = level * 30 * 20; // 30秒/级
+
+                    // 虚弱 I 的 amplifier 是 0，挖掘疲劳 I 的 amplifier 是 0
+                    entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, sideEffectTicks, 0));
+                    entity.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, sideEffectTicks, 0));
+
+                    // 播放虚脱副作用音效
+                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), 
+                        net.minecraft.sounds.SoundEvents.WITHER_SHOOT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.8f);
+
+                    // 移除肾上腺素透支标识，以防止重复触发
+                    entity.removeEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
+                }
+            }
+        }
+    }
+
+    /**
+     * 拦截 removeAllEffects 中的 Map.clear() 逻辑。
+     * 当喝牛奶清除所有状态效果时，主动把“肾上腺素透支”效果强行保留，不被清空。
+     */
+    @Redirect(method = "removeAllEffects", at = @At(value = "INVOKE", target = "Ljava/util/Map;clear()V"))
+    private void tuanzis_mod$clearActiveEffects(Map<Holder<MobEffect>, MobEffectInstance> map) {
+        MobEffectInstance overdrawInstance = map.get(ModStatusEffects.ADRENALINE_OVERDRAW);
+        map.clear();
+        if (overdrawInstance != null) {
+            map.put(ModStatusEffects.ADRENALINE_OVERDRAW, overdrawInstance);
+        }
+    }
+
+    /**
+     * 拦截 removeAllEffects 中的 onEffectsRemoved 调用。
+     * 把保留在 activeEffects 中的“肾上腺素透支”效果从已删除效果的 copy.values() 列表中过滤掉，
+     * 这样系统就不会向客户端网络发送“该效果被移除”的包，在世界中完美维持它。
+     */
+    @Redirect(method = "removeAllEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;onEffectsRemoved(Ljava/util/Collection;)V"))
+    private void tuanzis_mod$onEffectsRemovedRedirect(LivingEntity entity, Collection<MobEffectInstance> effects) {
+        List<MobEffectInstance> list = new ArrayList<>(effects);
+        list.removeIf(instance -> instance.getEffect().equals(ModStatusEffects.ADRENALINE_OVERDRAW));
+        this.onEffectsRemoved(list);
+    }
+}

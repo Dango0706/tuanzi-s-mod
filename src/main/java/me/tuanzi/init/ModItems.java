@@ -8,8 +8,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Weapon;
 import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.item.BerserkCharmItem;
 import me.tuanzi.item.ImmortalTalismanItem;
 import me.tuanzi.item.YurisRevengeItem;
+import me.tuanzi.item.WolfCommandItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -27,6 +29,8 @@ public class ModItems {
     public static final Item RAINBOW_SPONGE = register("rainbow_sponge", (properties) -> new Item(properties.stacksTo(1)));
     public static final Item YURIS_REVENGE = register("yuris_revenge", (properties) -> new YurisRevengeItem(properties.stacksTo(1).durability(5).rarity(Rarity.EPIC)));
     public static final Item IMMORTAL_TALISMAN = register("immortal_talisman", ImmortalTalismanItem::new);
+    public static final Item BERSERK_CHARM = register("berserk_charm", BerserkCharmItem::new);
+    public static final Item WOLF_COMMAND = register("wolf_command", WolfCommandItem::new);
     public static final Item WARDEN_HEART = register("warden_heart", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
     public static final Item ECHO_BREAKER = register("echo_breaker", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
