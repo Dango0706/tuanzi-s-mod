@@ -289,6 +289,75 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.berserker.description"));
         }
 
+        // 获取所有附有“处决”附魔的附魔书 (Execute)
+        List<ItemStack> executeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.EXECUTE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!executeBooks.isEmpty()) {
+            registration.addIngredientInfo(executeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.execute.description"));
+        }
+
+        // 获取所有附有“连锁苦痛”附魔的附魔书 (Chain Pain)
+        List<ItemStack> chainPainBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.CHAIN_PAIN)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!chainPainBooks.isEmpty()) {
+            registration.addIngredientInfo(chainPainBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.chain_pain.description"));
+        }
+
+        // 获取所有附有“追踪箭”附魔的附魔书 (Seeking Arrow)
+        List<ItemStack> seekingArrowBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.SEEKING_ARROW)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!seekingArrowBooks.isEmpty()) {
+            registration.addIngredientInfo(seekingArrowBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.seeking_arrow.description"));
+        }
+
         registration.addIngredientInfo(new ItemStack(ModItems.SCARECROW), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.scarecrow.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.DECOY_TOTEM), VanillaTypes.ITEM_STACK,
@@ -305,6 +374,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.teleportation_paper.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.SIGNPOST_RUNE), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.signpost_rune.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.SHURIKEN), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.shuriken.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.NETHER_STEW), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.nether_stew.description"));
 
         // 注册肾上腺素药水介绍页
         List<ItemStack> adrenalinePotions = registration.getIngredientManager()

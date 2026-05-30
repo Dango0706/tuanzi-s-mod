@@ -25,6 +25,11 @@ public class DamageCalculator {
      * @return 调整后的最终伤害值
      */
     public static float calculateDamage(float amount, DamageSource source, LivingEntity target) {
+        // 0. 免疫火焰与岩浆伤害
+        if (target.hasEffect(ModStatusEffects.HELL_FIRE) && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+            return 0.0f;
+        }
+
         float attackerMultiplier = 1.0f;
         float victimMultiplier = 1.0f;
 
@@ -40,6 +45,17 @@ public class DamageCalculator {
                 || source.is(DamageTypes.MOB_ATTACK) 
                 || source.is(DamageTypes.MACE_SMASH);
             if (isMelee) {
+                if (attacker.hasEffect(ModStatusEffects.HELL_FIRE)) {
+                    // 60% 概率点燃目标 2 秒 (40 ticks)
+                    if (!attacker.level().isClientSide() && attacker.getRandom().nextFloat() < 0.60f) {
+                        target.setRemainingFireTicks(Math.max(target.getRemainingFireTicks(), 40));
+                    }
+                    // 对着火的目标伤害额外 +1
+                    if (target.isOnFire()) {
+                        amount += 1.0f;
+                    }
+                }
+
                 var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                 var berserkerEnch = registry.getOrThrow(ModEnchantments.BERSERKER);
                 ItemStack chest = attacker.getItemBySlot(EquipmentSlot.CHEST);
@@ -54,6 +70,80 @@ public class DamageCalculator {
                         float stepCount = lostPercent / 0.10f;
                         float percentPerStep = level == 1 ? 0.05f : 0.08f;
                         attackerMultiplier += stepCount * percentPerStep;
+                    }
+                }
+
+                // 处决 (Execute) 附魔逻辑
+                var executeEnch = registry.getOrThrow(ModEnchantments.EXECUTE);
+                ItemStack mainHand = attacker.getMainHandItem();
+                int execLevel = EnchantmentHelper.getItemEnchantmentLevel(executeEnch, mainHand);
+                if (execLevel > 0) {
+                    // 目标生命值低于 ( 5 + 等级×10% ) = (0.05f + execLevel * 0.10f) * maxHealth
+                    float targetThreshold = target.getMaxHealth() * (0.05f + execLevel * 0.10f);
+                    if (target.getHealth() < targetThreshold) {
+                        // 伤害提升 等级 * 25% (加到攻击者乘数)
+                        attackerMultiplier += execLevel * 0.25f;
+
+                        // 嗜血反噬：受到 等级×0.5点伤害（最高1.5心，即 execLevel * 1.0f 点真实伤害）
+                        if (!attacker.level().isClientSide()) {
+                            float backlashDamage = execLevel * 1.0f;
+                            var typeHolder = attacker.registryAccess()
+                                .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                .getOrThrow(DamageTypes.GENERIC);
+                            me.tuanzi.util.ExecuteBacklashDamageSource backlashSrc = new me.tuanzi.util.ExecuteBacklashDamageSource(typeHolder);
+
+                            float newHealth = attacker.getHealth() - backlashDamage;
+                            attacker.setHealth(Math.max(0.0f, newHealth));
+                            if (newHealth <= 0.0f) {
+                                attacker.die(backlashSrc);
+                            }
+                        }
+                    }
+                }
+
+                // 连锁苦痛 (Chain Pain) 附魔逻辑
+                var chainPainEnch = registry.getOrThrow(ModEnchantments.CHAIN_PAIN);
+                int chainLevel = EnchantmentHelper.getItemEnchantmentLevel(chainPainEnch, mainHand);
+                if (chainLevel > 0) {
+                    float finalDamage = amount * attackerMultiplier * victimMultiplier;
+                    if (finalDamage >= target.getHealth()) {
+                        float overflow = finalDamage - target.getHealth();
+                        if (overflow > 0.0f) {
+                            float splashDamage = overflow * 0.5f;
+                            // 击杀目标后，对其周围 5 格内敌人造成该次溢出伤害的 50%，最多连锁 5 个目标，由近到远排序。
+                            if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                                // 查找目标周围 5 格内的敌人（非自身，非攻击者，必须是 LivingEntity 且存活）
+                                var targets = serverLevel.getEntitiesOfClass(LivingEntity.class, 
+                                    target.getBoundingBox().inflate(5.0), 
+                                    entity -> entity != target && entity != attacker && entity.isAlive()
+                                );
+                                
+                                // 由近到远排序
+                                targets.sort((e1, e2) -> Double.compare(target.distanceToSqr(e1), target.distanceToSqr(e2)));
+                                
+                                // 最多连锁 5 个目标
+                                int count = 0;
+                                for (LivingEntity victim : targets) {
+                                    if (count >= 5) break;
+                                    
+                                    // 造成伤害
+                                    var typeHolder = attacker.registryAccess()
+                                        .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                        .getOrThrow(DamageTypes.MAGIC);
+                                    
+                                    me.tuanzi.util.ChainPainDamageSource chainSrc = new me.tuanzi.util.ChainPainDamageSource(typeHolder);
+                                    
+                                    victim.hurtServer(serverLevel, chainSrc, splashDamage);
+                                    
+                                    // 产生附魔打击粒子效果
+                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT, 
+                                        victim.getX(), victim.getY() + 1.0, victim.getZ(), 
+                                        5, 0.2, 0.2, 0.2, 0.1);
+                                        
+                                    count++;
+                                }
+                            }
+                        }
                     }
                 }
             }

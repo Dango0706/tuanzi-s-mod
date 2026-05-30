@@ -76,6 +76,21 @@ public class ModEntities {
                     .build(SEAT_KEY)
     );
 
+    public static final ResourceKey<EntityType<?>> SHURIKEN_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "shuriken")
+    );
+
+    public static final EntityType<me.tuanzi.entity.ShurikenEntity> SHURIKEN = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            SHURIKEN_KEY,
+            EntityType.Builder.<me.tuanzi.entity.ShurikenEntity>of(me.tuanzi.entity.ShurikenEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .clientTrackingRange(10)
+                    .noLootTable()
+                    .build(SHURIKEN_KEY)
+    );
+
     public static void initialize() {
         FabricDefaultAttributeRegistry.register(DECOY, DecoyEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SCARECROW, LivingEntity.createLivingAttributes());

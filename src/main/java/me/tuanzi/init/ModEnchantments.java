@@ -13,6 +13,9 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> CHAIN_MINING = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "chain_mining"));
     public static final ResourceKey<Enchantment> BLOOD_RAGE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blood_rage"));
     public static final ResourceKey<Enchantment> BERSERKER = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "berserker"));
+    public static final ResourceKey<Enchantment> EXECUTE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "execute"));
+    public static final ResourceKey<Enchantment> CHAIN_PAIN = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "chain_pain"));
+    public static final ResourceKey<Enchantment> SEEKING_ARROW = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "seeking_arrow"));
 
     public static void initialize() {
         // 仅用于加载此类

@@ -275,6 +275,86 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"每 0.5s（10 ticks）判定一次。若在此期间实体移动，则受到 §c0.5 * 等级§r 点的魔法伤害；若不移动则不受伤害。\n\n" +
 				"§c注意：护符无法修复，耐久上限为 3，最大堆叠为 1。§r";
 			translationBuilder.add("jei.tuanzis_mod.wolf_command.description", wolfCommandDesc);
+
+			String seekingArrowDesc = "【追踪箭附魔】\n" +
+				"仅适用于弩的宝藏级附魔。在瞄准与射击时，赋予弩神秘的弹道修正能力。\n\n" +
+				"§e附魔效果：§r\n" +
+				"1. §b目标高亮§r：手持已装填此附魔的弩瞄准时，被瞄准的生物会在客户端高亮显示（仅限瞄准者本人可见）。\n" +
+				"2. §b弹道修正§r：箭矢射出后，在 0.5 秒（10 ticks）后，向射出瞬间准星瞄准的高亮实体（若有）或指向的坐标点（若无实体）进行一次不超过 30 度的自动修正。优先追踪实体！\n\n" +
+				"§e使用限制：§r\n" +
+				"1. §b单次修正§r：每支箭矢在飞行中仅可且仅会进行一次修正，无法在空中拐大弯。\n" +
+				"2. §b移动预判§r：对移动的目标具有预判逻辑（基于发射时目标的移动向量，推算 0.5 秒后的位置），但无法追踪目标的加速度或运动方向改变（若目标在修正后改变方向，箭矢仍会射失）。\n" +
+				"3. §b互斥机制§r：与 §b多重射击 (Multishot)§r 互斥。\n\n" +
+				"§7获取途径：属于“宝藏附魔”，无法通过附魔台获得，也无法与村民交易。仅能从野外遗迹、要塞等宝箱中开出。";
+			translationBuilder.add("jei.tuanzis_mod.seeking_arrow.description", seekingArrowDesc);
+			translationBuilder.add("enchantment.tuanzis_mod.seeking_arrow", "追踪箭");
+
+			// 手里剑与地狱炖菜中文翻译
+			translationBuilder.add(ModItems.SHURIKEN, "手里剑");
+			translationBuilder.add(ModStatusEffects.SHURIKEN_STUCK.value(), "手里剑嵌入");
+			
+			String shurikenDesc = "【手里剑】\n" +
+				"一种轻巧且飞行速度极快的极速远程投掷武器。\n\n" +
+				"§e特殊投掷：§r\n" +
+				"1. §b极速普通投掷§r：伤害为 2，飞行速度是箭的 1.5 倍，无任何抛物线下坠。单发右键有 0.2 秒的投掷冷却。\n" +
+				"2. §b潜行三连发§r：按住潜行 (Shift) + 右键可一次性消耗 3 枚，向前方的扇形区域射出 3 枚手里剑。每发手里剑独立计算并造成伤害。使用后进入 0.6 秒的额外整体冷却。\n\n" +
+				"§e手里剑嵌入负面效果：§r\n" +
+				"1. §b移动惩罚§r：击中目标时，有 20% 的概率对目标施加“手里剑嵌入”效果。每一枚嵌入的手里剑使目标移动速度 -10%，最多嵌入 3 枚（即移速 -30% 限制）。\n" +
+				"2. §b时间刷新§r：再次命中目标时，会将目标身上所有已嵌入的手里剑的持续时间全部刷新回 8 秒。\n" +
+				"3. §b物品脱落§r：8秒内未刷新，手里剑会自动从目标身上脱落，掉落在目标脚下成为可拾取实体。\n" +
+				"4. §bPVP脱落对抗§r：玩家被嵌入时，每次受到伤害有 15% 概率脱落 1 枚手里剑，每次挥动作战手臂有 10% 概率脱落 1 枚手里剑。";
+			translationBuilder.add("jei.tuanzis_mod.shuriken.description", shurikenDesc);
+
+			translationBuilder.add(ModItems.NETHER_STEW, "地狱炖菜");
+			translationBuilder.add(ModStatusEffects.HELL_FIRE.value(), "地狱之火");
+			translationBuilder.add(ModStatusEffects.BLAZING_HUNGER.value(), "烈焰饥渴");
+			translationBuilder.add(ModStatusEffects.HYDROPHOBIA.value(), "惧水");
+			translationBuilder.add("death.attack.tuanzis_mod.hydrophobia", "%s 碰到了水，痛苦地蒸发了");
+
+			String netherStewDesc = "【地狱炖菜】\n" +
+				"一种由地狱火种提炼而成的魔化热辣炖菜，可堆叠至 64 个，食用后返还空碗。食用后将赋予玩家持续 1 分 30 秒的双刃剑式三大状态效果：\n\n" +
+				"§e正面效果 - 地狱之火：§r\n" +
+				"1. 获得完全的§6免疫火焰与岩浆伤害§r能力。\n" +
+				"2. 近战攻击有 60% 概率点燃目标 2 秒。\n" +
+				"3. 攻击处于着火状态的目标时，近战伤害额外 +1 点。\n\n" +
+				"§c副作用 1 - 烈焰饥渴：§r\n" +
+				"玩家的饱食度与饱和度消耗速度翻倍。\n\n" +
+				"§c副作用 2 - 惧水：§r\n" +
+				"1. 玩家变得极度惧怕水源。在水中（或雨中）时每 1 秒受到 2 点伤害。\n" +
+				"2. 此伤害属于真实伤害，无视任何护甲，且绝对不会因为任何抗性提升或伤害吸收效果而减少！";
+			translationBuilder.add("jei.tuanzis_mod.nether_stew.description", netherStewDesc);
+			
+			// 处决与连锁苦痛中文翻译
+			translationBuilder.add("enchantment.tuanzis_mod.execute", "处决");
+			translationBuilder.add("death.attack.tuanzis_mod.execute_backlash", "%s 无法承受自身杀意的反噬");
+			String executeDesc = "【处决附魔】\n" +
+				"一种可附魔于剑和斧上的强力战斗型附魔。通过引导自身的狂乱杀意对低生命值目标进行绝对斩杀！\n\n" +
+				"§e附魔效果：§r\n" +
+				"当攻击目标的当前生命百分比低于指定阈值时触发，近战伤害获得极大比例的爆发式乘算增幅！\n" +
+				"1. §a等级 I§r：生命值低于 §e15%§r 触发，近战伤害提升 §a+25%§r。\n" +
+				"2. §a等级 II§r：生命值低于 §e25%§r 触发，近战伤害提升 §a+50%§r。\n" +
+				"3. §a等级 III§r：生命值低于 §e35%§r 触发，近战伤害提升 §a+75%§r。\n\n" +
+				"§c负面反噬代价 - 嗜血反噬：§r\n" +
+				"1. 每次成功触发处决斩杀伤害提升时，自身的杀意也会疯狂反噬自身！玩家自身将立刻受到伤害：\n" +
+				"   §c等级 * 1 点（I级1点，II级2点，III级3点）的真实伤害§r。\n" +
+				"2. 该反噬伤害为绝对真实伤害，无视任何护甲，且绝对不会因为任何抗性提升或伤害吸收效果而减少！极其致命！\n\n" +
+				"§e冲突与限制：§r\n" +
+				"与常规增伤附魔 §b锋利 (Sharpness)§r、§b亡灵杀手 (Smite)§r、§b节肢杀手 (Bane of Arthropods)§r 互斥。";
+			translationBuilder.add("jei.tuanzis_mod.execute.description", executeDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.chain_pain", "连锁苦痛");
+			translationBuilder.add("death.attack.tuanzis_mod.chain_pain", "%s 无法承受溢出的苦痛冲击波");
+			String chainPainDesc = "【连锁苦痛附魔】\n" +
+				"仅可附魔于斧头武器的宝藏级稀有战斗附魔。能将击杀瞬间产生的多余溢出苦痛，以波荡形式无情链击并传导给周围所有的敌人！\n\n" +
+				"§e附魔效果：§r\n" +
+				"使用附有此效果的斧头击杀任意敌人时，计算这次致死一击产生的溢出伤害（即实际造成的最终伤害减去目标被杀前的剩余生命值），并对其周围 §a5 格§r 范围内的其它所有敌人造成该溢出伤害的 §c50%§r。\n" +
+				"1. 苦痛传导会自动从近到远依次选择周围最多 §e5 个§r 敌对目标进行连锁轰击。\n" +
+				"2. 苦痛涟漪为溅射类型，能一次性对群体敌人造成毁灭性的清场扫尾！\n\n" +
+				"§e规则限制与互斥：§r\n" +
+				"1. §b无循环套娃§r：由该涟漪造成的传导伤害，绝对不会再次触发连锁苦痛效果，防范无限套娃崩盘。\n" +
+				"2. §b宝藏附魔§r：无法通过附魔台附魔获取，也无法与村民交易，仅能通过搜刮地牢、要塞、远古城市箱子产出。\n" +
+				"3. §b冲突互斥§r：与常规工具附魔 §b精准采集 (Silk Touch)§r 互斥。";
+			translationBuilder.add("jei.tuanzis_mod.chain_pain.description", chainPainDesc);
 		}
 	}
 
@@ -521,6 +601,86 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"Ticks every 0.5s (10 ticks). If the entity moves during this tick, it takes §c0.5 * Level§r magic damage; otherwise, nothing happens.\n\n" +
 				"§cNote: The charm cannot be repaired. Maximum durability is 3, maximum stack size is 1.§r";
 			translationBuilder.add("jei.tuanzis_mod.wolf_command.description", wolfCommandDescEn);
+
+			String seekingArrowDescEn = "[Seeking Arrow Enchantment]\n" +
+				"A treasure-grade enchantment exclusively for Crossbows. Imbues fired arrows with unique projectile self-correction capabilities.\n\n" +
+				"§eEffects:§r\n" +
+				"1. §bTarget Highlighting§r: While holding a loaded Seeking Arrow crossbow, the targeted living entity glows brightly (glowing outline is visible only to the shooter in client-side).\n" +
+				"2. §bTrajectory Correction§r: Once fired, after 0.5 seconds (10 ticks), the arrow performs a one-time trajectory self-correction (up to 30 degrees) towards either the highlighted entity or the target coordinates. Prioritizes entities!\n\n" +
+				"§eConstraints \u0026 Restrictions:§r\n" +
+				"1. §bOne-time Correction§r: Each arrow corrects its trajectory exactly once; it cannot perform large sweeping turns in mid-air.\n" +
+				"2. §bMovement Prediction§r: Features movement prediction logic based on the target's current velocity (extrapolating its position 0.5 seconds later), but does not track acceleration or change in direction (if the target changes direction after correction, the arrow will still miss).\n" +
+				"3. §bMutual Exclusion§r: Incompatible with §bMultishot§r.\n\n" +
+				"§7Acquisition: A \"Treasure Enchantment\". Cannot be obtained via the Enchanting Table or Librarian trades. Found only in loot chests in dungeons or fortresses.";
+			translationBuilder.add("jei.tuanzis_mod.seeking_arrow.description", seekingArrowDescEn);
+			translationBuilder.add("enchantment.tuanzis_mod.seeking_arrow", "Seeking Arrow");
+
+			// Shuriken and Nether Stew English translations
+			translationBuilder.add(ModItems.SHURIKEN, "Shuriken");
+			translationBuilder.add(ModStatusEffects.SHURIKEN_STUCK.value(), "Shuriken Stuck");
+			
+			String shurikenDescEn = "[Shuriken]\n" +
+				"A lightweight and extremely fast ranged throwing weapon.\n\n" +
+				"§eSpecial Throwing:§r\n" +
+				"1. §bRapid Normal Throw§r: Deals 2 damage. Flying speed is 1.5 times that of an arrow without any gravity drop. Single right-click has a 0.2s throwing cooldown.\n" +
+				"2. §bSneak Fan-Out Burst§r: Hold Sneak (Shift) + Right-click to consume 3 shurikens and launch 3 shurikens in a forward fan arc. Each shuriken calculates damage independently. Triggers a 0.6s overall cooldown after the burst.\n\n" +
+				"§eShuriken Stuck Status Effect:§r\n" +
+				"1. §bMovement Penalty§r: Hits have a 20% chance to apply the \"Shuriken Stuck\" debuff. Each stuck shuriken reduces movement speed by -10%, stacking up to 3 times (max -30% speed).\n" +
+				"2. §bDuration Refresh§r: Hitting the target again refreshes the duration of all currently stuck shurikens back to 8 seconds.\n" +
+				"3. §bItem Drop§r: If not refreshed within 8s, stuck shurikens automatically detach and drop at the target's feet as collectible items.\n" +
+				"4. §bPVP Counterplay§r: When a player is stuck, taking damage has a 15% chance, and swinging a weapon has a 10% chance to shake off 1 shuriken prematurely.";
+			translationBuilder.add("jei.tuanzis_mod.shuriken.description", shurikenDescEn);
+
+			translationBuilder.add(ModItems.NETHER_STEW, "Nether Stew");
+			translationBuilder.add(ModStatusEffects.HELL_FIRE.value(), "Hell Fire");
+			translationBuilder.add(ModStatusEffects.BLAZING_HUNGER.value(), "Blazing Hunger");
+			translationBuilder.add(ModStatusEffects.HYDROPHOBIA.value(), "Hydrophobia");
+			translationBuilder.add("death.attack.tuanzis_mod.hydrophobia", "%s was vaporized by water");
+
+			String netherStewDescEn = "[Nether Stew]\n" +
+				"A demonic, spicy stew distilled from Hellfire crimson and warped funguses. Stackable up to 64, returns an empty bowl after eating. Consuming grants the player three double-edged status effects lasting 1 min 30 seconds:\n\n" +
+				"§ePositive Effect - Hell Fire:§r\n" +
+				"1. Grants complete immunity to fire and lava damage.\n" +
+				"2. Melee attacks have a 60% chance to ignite the target for 2s.\n" +
+				"3. Dealing melee damage to burning targets gains a flat +1 damage bonus.\n\n" +
+				"§cNegative Effect 1 - Blazing Hunger:§r\n" +
+				"Doubles the depletion speed of the player's hunger and saturation.\n\n" +
+				"§cNegative Effect 2 - Hydrophobia:§r\n" +
+				"1. Makes the player extremely afraid of water. Takes 2 damage per 1s while in water or rain.\n" +
+				"2. This damage is true damage, ignoring all armor, and cannot be mitigated by any resistance or absorption effects!";
+			translationBuilder.add("jei.tuanzis_mod.nether_stew.description", netherStewDescEn);
+			
+			// Execute and Chain Pain English translations
+			translationBuilder.add("enchantment.tuanzis_mod.execute", "Execute");
+			translationBuilder.add("death.attack.tuanzis_mod.execute_backlash", "%s died from the bloodlust backlash");
+			String executeDescEn = "[Execute Enchantment]\n" +
+				"A powerful combat enchantment applicable to Swords and Axes. Unleash chaotic bloodlust to execute low-health targets!\n\n" +
+				"§eEffects:§r\n" +
+				"Triggers when the target's current health percentage falls below a specified threshold, providing a massive multiplier to your melee damage!\n" +
+				"1. §aLevel I§r: Triggers below §e15%§r health, deals §a+25%§r melee damage.\n" +
+				"2. §aLevel II§r: Triggers below §e25%§r health, deals §a+50%§r melee damage.\n" +
+				"3. §aLevel III§r: Triggers below §e35%§r health, deals §a+75%§r melee damage.\n\n" +
+				"§cBacklash Penalty - Bloodlust Backlash:§r\n" +
+				"1. Each time the execute damage boost is triggered, you will instantly take:\n" +
+				"   §cLevel * 1 point of true damage (Level I: 1, Level II: 2, Level III: 3)§r.\n" +
+				"2. This backlash is true damage, ignoring all armor, and cannot be mitigated by any resistance or absorption effects! Highly lethal!\n\n" +
+				"§eExclusion \u0026 Limits:§r\n" +
+				"Mutually exclusive with §bSharpness§r, §bSmite§r, and §bBane of Arthropods§r.";
+			translationBuilder.add("jei.tuanzis_mod.execute.description", executeDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.chain_pain", "Chain Pain");
+			translationBuilder.add("death.attack.tuanzis_mod.chain_pain", "%s was crushed by the overflow pain shockwave");
+			String chainPainDescEn = "[Chain Pain Enchantment]\n" +
+				"A rare, treasure-grade combat enchantment exclusively for Axes. Directs the excess pain from a kill into a devastating shockwave chaining to nearby enemies!\n\n" +
+				"§eEffects:§r\n" +
+				"Killing any target with this Axe calculates the overflow damage (final blow damage minus target's health prior to the blow), dealing §c50%§r of this excess damage to all other enemies within §a5 blocks§r.\n" +
+				"1. Chaining automatically targets up to §e5 entities§r, sorted and damaged from nearest to furthest.\n" +
+				"2. Ideal for sweeping groups of monsters instantly after executing a single target.\n\n" +
+				"§eConstraints \u0026 Restrictions:§r\n" +
+				"1. §bNo Recursion§r: Chained splash damage will never trigger the chain pain effect recursively.\n" +
+				"2. §bTreasure Hunt§r: Cannot be obtained via the Enchanting Table or Librarian trades. Found only in loot chests in dungeons or fortresses.\n" +
+				"3. §bExclusion§r: Mutually exclusive with §bSilk Touch§r.";
+			translationBuilder.add("jei.tuanzis_mod.chain_pain.description", chainPainDescEn);
 		}
 	}
 }

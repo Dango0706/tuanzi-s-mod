@@ -75,6 +75,17 @@ public abstract class LivingEntityMixin {
             tuanzis_mod$tearingDistance = 0.0;
         }
 
+        // 手里剑嵌入状态在身上产生小型手里剑（十字星）粒子符号
+        if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {
+            if (entity.tickCount % 4 == 0) {
+                if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, 
+                        entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5), 
+                        1, 0.0, 0.0, 0.0, 0.0);
+                }
+            }
+        }
+
         // 无论何种状态，在每一 tick 最终结算时，强制将当前最新坐标锁定为跨 tick 持久化对比坐标
         tuanzis_mod$persistentX = entity.getX();
         tuanzis_mod$persistentY = entity.getY();
@@ -92,6 +103,21 @@ public abstract class LivingEntityMixin {
         if (entity.level().isClientSide()) return;
 
         for (MobEffectInstance effect : effects) {
+            if (effect.getEffect().equals(ModStatusEffects.SHURIKEN_STUCK)) {
+                // 如果手里剑效果被彻底移除（不是被更新，更新时 entity.getEffect 还会存在新的实例）
+                if (entity.getEffect(ModStatusEffects.SHURIKEN_STUCK) == null) {
+                    int count = effect.getAmplifier() + 1;
+                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        net.minecraft.world.entity.item.ItemEntity itemEntity = new net.minecraft.world.entity.item.ItemEntity(
+                            serverLevel, entity.getX(), entity.getY(), entity.getZ(), 
+                            new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, count)
+                        );
+                        itemEntity.setDefaultPickUpDelay();
+                        serverLevel.addFreshEntity(itemEntity);
+                    }
+                }
+            }
+
             if (effect.getEffect().equals(ModStatusEffects.ADRENALINE)) {
                 // 肾上腺素药水效果结束时
                 MobEffectInstance overdraw = entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
@@ -140,5 +166,60 @@ public abstract class LivingEntityMixin {
         List<MobEffectInstance> list = new ArrayList<>(effects);
         list.removeIf(instance -> instance.getEffect().equals(ModStatusEffects.ADRENALINE_OVERDRAW));
         this.onEffectsRemoved(list);
+    }
+
+    @org.spongepowered.asm.mixin.Unique
+    private void tuanzis_mod$shakeOffShuriken() {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.level().isClientSide()) return;
+        
+        MobEffectInstance currentEffect = entity.getEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK);
+        if (currentEffect != null) {
+            // 1. 在脚下生成 1 枚手里剑物品
+            if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                net.minecraft.world.entity.item.ItemEntity itemEntity = new net.minecraft.world.entity.item.ItemEntity(
+                    serverLevel, entity.getX(), entity.getY(), entity.getZ(), 
+                    new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, 1)
+                );
+                itemEntity.setDefaultPickUpDelay();
+                serverLevel.addFreshEntity(itemEntity);
+            }
+            
+            // 2. 扣除 1 级效果或者直接移除
+            if (currentEffect.getAmplifier() > 0) {
+                int newAmplifier = currentEffect.getAmplifier() - 1;
+                int remainingDuration = currentEffect.getDuration();
+                entity.addEffect(new MobEffectInstance(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK, remainingDuration, newAmplifier, false, false, true));
+            } else {
+                entity.removeEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK);
+            }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+        method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+        at = @org.spongepowered.asm.mixin.injection.At("HEAD")
+    )
+    private void tuanzis_mod$onHurtServer(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity instanceof net.minecraft.world.entity.player.Player && !entity.level().isClientSide()) {
+            if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {
+                if (entity.getRandom().nextFloat() < 0.15f) {
+                    tuanzis_mod$shakeOffShuriken();
+                }
+            }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Z)V", at = @org.spongepowered.asm.mixin.injection.At("HEAD"))
+    private void tuanzis_mod$onSwing(net.minecraft.world.InteractionHand hand, boolean updateAnim, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity instanceof net.minecraft.world.entity.player.Player && !entity.level().isClientSide()) {
+            if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {
+                if (entity.getRandom().nextFloat() < 0.10f) {
+                    tuanzis_mod$shakeOffShuriken();
+                }
+            }
+        }
     }
 }

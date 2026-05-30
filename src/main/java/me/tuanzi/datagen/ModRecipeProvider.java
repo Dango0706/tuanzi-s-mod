@@ -98,7 +98,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_blaze_powder", has(Items.BLAZE_POWDER))
                     .save(exporter);
 
-                // 战狼护符无序合成：1个骨块 + 2个铁锭 + 1个幽匿脉络
+                // 战狼护符无序合成
                 shapeless(RecipeCategory.COMBAT, ModItems.WOLF_COMMAND, 1)
                     .requires(Items.BONE_BLOCK)
                     .requires(Items.IRON_INGOT, 2)
@@ -106,6 +106,28 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_bone_block", has(Items.BONE_BLOCK))
                     .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                     .unlockedBy("has_sculk_vein", has(Items.SCULK_VEIN))
+                    .save(exporter);
+
+                // 手里剑有序合成：铁粒在上下左右，石英在中间，产出4枚
+                shaped(RecipeCategory.COMBAT, ModItems.SHURIKEN, 4)
+                    .pattern(" N ")
+                    .pattern("NQN")
+                    .pattern(" N ")
+                    .define('N', Items.IRON_NUGGET)
+                    .define('Q', Items.QUARTZ)
+                    .unlockedBy("has_quartz", has(Items.QUARTZ))
+                    .save(exporter);
+
+                // 地狱炖菜无序合成：碗 + 绯红菌 + 诡异菌 + 烈焰粉 + 岩浆膏
+                shapeless(RecipeCategory.FOOD, ModItems.NETHER_STEW, 1)
+                    .requires(Items.BOWL)
+                    .requires(Items.CRIMSON_FUNGUS)
+                    .requires(Items.WARPED_FUNGUS)
+                    .requires(Items.BLAZE_POWDER)
+                    .requires(Items.MAGMA_CREAM)
+                    .unlockedBy("has_bowl", has(Items.BOWL))
+                    .unlockedBy("has_crimson_fungus", has(Items.CRIMSON_FUNGUS))
+                    .unlockedBy("has_warped_fungus", has(Items.WARPED_FUNGUS))
                     .save(exporter);
             }
         };

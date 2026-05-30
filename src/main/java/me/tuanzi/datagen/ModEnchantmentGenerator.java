@@ -116,6 +116,59 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
             enchantments.getOrThrow(Enchantments.FEATHER_FALLING)
         ))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "berserker")));
+
+        // 处决 (Execute)
+        entries.add(ModEnchantments.EXECUTE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(HolderSet.direct(
+            enchantments.getOrThrow(Enchantments.SHARPNESS),
+            enchantments.getOrThrow(Enchantments.SMITE),
+            enchantments.getOrThrow(Enchantments.BANE_OF_ARTHROPODS)
+        ))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "execute")));
+
+        // 连锁苦痛 (Chain Pain)
+        entries.add(ModEnchantments.CHAIN_PAIN, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.AXES),
+                2,    // weight (rare)
+                1,    // max level (I)
+                Enchantment.constantCost(15), 
+                Enchantment.constantCost(65), 
+                8,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(HolderSet.direct(
+            enchantments.getOrThrow(Enchantments.SILK_TOUCH)
+        ))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "chain_pain")));
+
+        // 追踪箭 (Seeking Arrow)
+        entries.add(ModEnchantments.SEEKING_ARROW, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CROSSBOW_ENCHANTABLE),
+                1,    // weight
+                1,    // max level (I)
+                Enchantment.constantCost(15), 
+                Enchantment.constantCost(65), 
+                8,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(HolderSet.direct(
+            enchantments.getOrThrow(Enchantments.MULTISHOT)
+        ))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "seeking_arrow")));
     }
 
     @Override

@@ -3,15 +3,15 @@
 	"id": "tuanzis_mod",
 	"version": "${version}",
 	"name": "tuanzi's_mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "一个使用AI制作的我的世界模组,用于丰富我的服务器的内容.",
 	"authors": [
 		"Me!"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/tuanzismod",
+		"sources": "https://github.com/Dango0706/tuanzi-s-mod"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/tuanzis_mod/icon.png",
 
 	"environment": "*",
@@ -33,7 +33,11 @@
 		]
 	},
 	"mixins": [
-		"tuanzis_mod.mixins.json"
+		"tuanzis_mod.mixins.json",
+		{
+			"config": "tuanzis_mod.client.mixins.json",
+			"environment": "client"
+		}
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

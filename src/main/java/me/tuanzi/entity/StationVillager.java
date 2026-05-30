@@ -16,4 +16,10 @@ public class StationVillager extends Villager {
         // 只要虚拟村民存活，且玩家与贸易站物理距离在 8 格内，就永远保持交易有效，完全绕过原版在世界中无实体跟踪导致闪退的限制
         return this.isAlive() && distSqr <= 64.0;
     }
+
+    @Override
+    public boolean hurtServer(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        // 服务端拒绝一切伤害
+        return false;
+    }
 }

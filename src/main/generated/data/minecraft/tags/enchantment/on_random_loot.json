@@ -11,6 +11,18 @@
     {
       "id": "tuanzis_mod:berserker",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:execute",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:chain_pain",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:seeking_arrow",
+      "required": false
     }
   ]
 }

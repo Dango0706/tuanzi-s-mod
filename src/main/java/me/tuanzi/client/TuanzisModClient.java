@@ -41,6 +41,10 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.init.ModEntities.SEAT,
             net.minecraft.client.renderer.entity.NoopRenderer::new
         );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.SHURIKEN,
+            context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context)
+        );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
             me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION_BLOCK_ENTITY,

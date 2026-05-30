@@ -34,7 +34,10 @@
 		"TravelersNotebookItemEntityMixin",
 		"LivingEntityMixin",
 		"WolfMixin",
-		"MobMixin"
+		"MobMixin",
+		"PlayerHungerMixin",
+		"CrossbowItemMixin",
+		"AbstractArrowMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

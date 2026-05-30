@@ -7,6 +7,14 @@
     {
       "id": "tuanzis_mod:smelting",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:chain_pain",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:seeking_arrow",
+      "required": false
     }
   ]
 }

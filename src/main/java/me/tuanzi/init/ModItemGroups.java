@@ -51,6 +51,21 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(berserkerBook2, mutable -> mutable.set(berserker, 2));
                 entries.accept(berserkerBook2);
 
+                var execute = enchantmentRegistry.getOrThrow(ModEnchantments.EXECUTE);
+                ItemStack executeBook3 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(executeBook3, mutable -> mutable.set(execute, 3));
+                entries.accept(executeBook3);
+
+                var chainPain = enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_PAIN);
+                ItemStack chainPainBook1 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(chainPainBook1, mutable -> mutable.set(chainPain, 1));
+                entries.accept(chainPainBook1);
+
+                var seekingArrow = enchantmentRegistry.getOrThrow(ModEnchantments.SEEKING_ARROW);
+                ItemStack seekingArrowBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(seekingArrowBook, mutable -> mutable.set(seekingArrow, 1));
+                entries.accept(seekingArrowBook);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -78,6 +93,8 @@ public class ModItemGroups {
                 entries.accept(ModItems.TRAVELERS_NOTEBOOK);
                 entries.accept(ModItems.TELEPORTATION_PAPER);
                 entries.accept(ModItems.SIGNPOST_RUNE);
+                entries.accept(ModItems.SHURIKEN);
+                entries.accept(ModItems.NETHER_STEW);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);

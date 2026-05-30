@@ -11,6 +11,10 @@
     {
       "id": "tuanzis_mod:berserker",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:execute",
+      "required": false
     }
   ]
 }

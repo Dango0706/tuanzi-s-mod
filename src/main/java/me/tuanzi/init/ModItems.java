@@ -49,6 +49,15 @@ public class ModItems {
     public static final Item TRAVELERS_NOTEBOOK = register("travelers_notebook", (properties) -> new me.tuanzi.item.TravelersNotebookItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final Item TELEPORTATION_PAPER = register("teleportation_paper", (properties) -> new me.tuanzi.item.TeleportationPaperItem(properties.stacksTo(64).rarity(net.minecraft.world.item.Rarity.COMMON)));
     public static final Item SIGNPOST_RUNE = register("signpost_rune", (properties) -> new me.tuanzi.item.SignpostRuneItem(properties.stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
+    public static final Item SHURIKEN = register("shuriken", (properties) -> new me.tuanzi.item.ShurikenItem(properties));
+    public static final Item NETHER_STEW = register("nether_stew", (properties) -> new me.tuanzi.item.NetherStewItem(properties
+        .stacksTo(64)
+        .food(new net.minecraft.world.food.FoodProperties.Builder()
+            .nutrition(7)
+            .saturationModifier(0.57142857f)
+            .alwaysEdible()
+            .build())
+    ));
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));
