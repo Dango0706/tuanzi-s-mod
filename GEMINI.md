@@ -28,6 +28,7 @@
       ```
 - **日志版本号规范**: 编写或创建模组版本更新日志时，版本号命名必须严格根据 `gradle.properties` 中的 `mod_version` 常量版本值来走，禁止自创或臆测下一个版本号。
 - **伤害计算规范**: 模组内所有自定义伤害或受到伤害的计算与加成调整，必须严格使用 `me.tuanzi.util.DamageCalculator` 类进行（支持加法累加模型），禁止在各处分散编写 ad-hoc 的伤害修改逻辑，以确保伤害计算的统一与可维护性。
+- **禁止删除文件**: 禁止你使用任何方式（包括工具、所有命令、各种脚本等）删除任何文件。需要删除文件时，将其重命名为原来的名字后缀加上 `.bak`，如 `xxx.png` -> `xxx.png.bak`。
 
 ## Project Overview
 **tuanzi's_mod** is a Minecraft mod built on the **Fabric Loader** for Minecraft version 26.1 (as specified in `gradle.properties`). It utilizes the **Fabric API** and follows the standard Fabric mod structure.
