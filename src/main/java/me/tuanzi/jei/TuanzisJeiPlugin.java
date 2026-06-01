@@ -32,7 +32,7 @@ public class TuanzisJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(new ItemStack(Items.ANVIL), RecipeTypes.ANVIL);
+        registration.addCraftingStation(RecipeTypes.ANVIL, new ItemStack(Items.ANVIL));
     }
 
     @Override
