@@ -48,6 +48,7 @@ public class TeleportManager {
                 // 移动检测：若距离初始位置超过 0.1 格，则打断传送
                 if (player.position().distanceToSqr(task.startVec) > 0.01) {
                     player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
+                    me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：玩家移动距离过大。");
                     iterator.remove();
                     continue;
                 }
@@ -133,12 +134,14 @@ public class TeleportManager {
         
         // 提示传送引导开始
         player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.starting"));
+        me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送引导开始！目标维度: " + targetDimStr + "，目标坐标: (" + tx + ", " + ty + ", " + tz + ")，消耗能量: " + neededEnergy);
     }
 
     public static void onPlayerDamage(ServerPlayer player) {
         if (activeTasks.containsKey(player.getUUID())) {
             activeTasks.remove(player.getUUID());
             player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
+            me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：玩家受到伤害。");
         }
     }
 
@@ -156,6 +159,7 @@ public class TeleportManager {
 
             // 播放起点的传送音效与粒子
             ServerLevel originLevel = (ServerLevel) player.level();
+            me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送引导成功，执行传送！从 " + originLevel.dimension().identifier() + " (" + player.getX() + ", " + player.getY() + ", " + player.getZ() + ") 传送至 " + task.targetDim.identifier() + " (" + task.tx + ", " + task.ty + ", " + task.tz + ")，扣除能量: " + task.energyCost);
             originLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f);
             originLevel.sendParticles(ParticleTypes.PORTAL,

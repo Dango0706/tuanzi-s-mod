@@ -38,6 +38,8 @@ public abstract class UndyingEffectMixin {
             // 触发图腾颗粒和声音
             entity.level().broadcastEntityEvent(entity, (byte) 35);
 
+            me.tuanzi.util.ModLog.debug(entity, null, "不死药水效果触发成功：免除致命伤害，生命值设为 1.0F 并清除所有状态效果，已获得生命恢复 II、防火 I 和伤害吸收 II 效果。");
+
             // 移除不死状态效果
             entity.removeEffect(ModStatusEffects.UNDYING);
 

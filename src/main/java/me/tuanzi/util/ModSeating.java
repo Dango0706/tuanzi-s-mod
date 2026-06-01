@@ -84,6 +84,8 @@ public class ModSeating {
             
             // 让玩家骑乘该实体
             player.startRiding(seatEntity);
+
+            me.tuanzi.util.ModLog.debug(player, null, "坐在楼梯上触发成功：生成了座椅实体，坐标为 (" + seatX + ", " + seatY + ", " + seatZ + ")，玩家已骑乘。");
         }
 
         return level.isClientSide() ? InteractionResult.SUCCESS : InteractionResult.SUCCESS_SERVER;

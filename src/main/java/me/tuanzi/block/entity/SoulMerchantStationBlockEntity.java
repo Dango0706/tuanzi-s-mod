@@ -264,6 +264,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             villager.restock();
             syncVillagerToNbt();
             serverLevel.playSound(null, pos, SoundEvents.VILLAGER_WORK_LIBRARIAN, SoundSource.BLOCKS, 1.0f, 1.0f);
+            me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站检测到周围工作站，村民交易已自动刷新（村民: " + villager.getDisplayName().getString() + "）。");
         }
     }
 

@@ -90,6 +90,7 @@ public class VillagerCageItem extends Item {
                 } catch (Exception ignored) {}
             }
             player.sendSystemMessage(Component.translatable("message.tuanzis_mod.villager_cage.golem_aggro"));
+            me.tuanzi.util.ModLog.debug(player, null, "缚灵笼捕捉村民触发守护仇恨：附近 " + protectingGolems.size() + " 只守护中的铁傀儡对捕捉者产生仇恨。");
         }
 
         // 使用 26.1 的 TagValueOutput 来序列化村民
@@ -117,6 +118,11 @@ public class VillagerCageItem extends Item {
         serverLevel.sendParticles(ParticleTypes.PORTAL,
                 villager.getX(), villager.getY() + 1.0, villager.getZ(),
                 20, 0.3, 0.5, 0.3, 0.1);
+
+        String capturedName = villager.getDisplayName().getString();
+        String capturedProf = villager.getVillagerData().profession().toString();
+        int capturedLevel = villager.getVillagerData().level();
+        me.tuanzi.util.ModLog.debug(player, villager, "缚灵笼成功捕捉村民：" + capturedName + "，职业: " + capturedProf + "，等级: " + capturedLevel);
 
         // 从世界中移除村民
         villager.discard();
@@ -191,6 +197,11 @@ public class VillagerCageItem extends Item {
                 villager.getYRot(), villager.getXRot());
 
         serverLevel.addFreshEntity(villager);
+
+        String releasedName = villager.getDisplayName().getString();
+        String releasedProf = villager.getVillagerData().profession().toString();
+        int releasedLevel = villager.getVillagerData().level();
+        me.tuanzi.util.ModLog.debug(player, villager, "缚灵笼成功释放村民！坐标: " + spawnPos + "，职业: " + releasedProf + "，等级: " + releasedLevel);
 
         // 播放释放音效（玻璃破碎）
         serverLevel.playSound(null, spawnPos.getX(), spawnPos.getY(), spawnPos.getZ(),

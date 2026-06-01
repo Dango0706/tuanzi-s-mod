@@ -85,30 +85,31 @@ public abstract class WardenSoulboundDropMixin extends LivingEntity {
             
             // 坚守者的心脏掉落：25% 概率，每级抢夺额外增加 10%
             float heartChance = 0.25f + (lootingLevel * 0.10f);
-            ModLog.debug(String.format("Warden heart drop attempt: Looting=%d, Chance=%.2f%%", lootingLevel, heartChance * 100));
-            if (this.random.nextFloat() <= heartChance) {
-                ModLog.info("Warden dropped a Warden Heart!");
+            float heartRoll = this.random.nextFloat();
+            me.tuanzi.util.ModLog.debug(player, this, "坚守者心脏掉落概率判定：需要概率: <= " + String.format("%.2f%%", heartChance * 100) + "，抽到的概率: " + String.format("%.2f%%", heartRoll * 100) + " (抢夺等级: " + lootingLevel + ")");
+            if (heartRoll <= heartChance) {
+                me.tuanzi.util.ModLog.debug(player, this, "坚守者心脏掉落成功！已生成坚守者的心脏。");
                 this.spawnAtLocation(level, new ItemStack(ModItems.WARDEN_HEART));
             }
 
             if (tuanzis_mod$isMarkedForSoulbound) {
                 // 基础10% + 每级抢夺2.5%
                 float chance = 0.10f + (lootingLevel * 0.025f);
-                ModLog.debug(String.format("Warden death: Marked=true, Looting=%d, Drop Chance=%.2f%%", 
-                    lootingLevel, chance * 100));
+                float soulboundRoll = this.random.nextFloat();
+                me.tuanzi.util.ModLog.debug(player, this, "灵魂绑定附魔书掉落概率判定：需要概率: <= " + String.format("%.2f%%", chance * 100) + "，抽到的概率: " + String.format("%.2f%%", soulboundRoll * 100) + " (抢夺等级: " + lootingLevel + ")");
                 
-                if (this.random.nextFloat() <= chance) {
+                if (soulboundRoll <= chance) {
                     var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                     var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
 
                     ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
                     EnchantmentHelper.updateEnchantments(book, mutable -> mutable.set(soulboundHolder, 1));
                     
-                    ModLog.info("Lucky! Warden dropped a Soulbound enchanted book.");
+                    me.tuanzi.util.ModLog.debug(player, this, "灵魂绑定附魔书掉落成功！已生成灵魂绑定附魔书。");
                     this.spawnAtLocation(level, book);
                 }
             } else {
-                ModLog.debug("Warden killed by player but was NOT marked for Soulbound drop.");
+                me.tuanzi.util.ModLog.debug(player, this, "坚守者被击杀但未被标记，无法触发灵魂绑定附魔书的概率判定。");
             }
         }
     }

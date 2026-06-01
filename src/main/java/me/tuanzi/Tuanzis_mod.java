@@ -53,6 +53,7 @@ public class Tuanzis_mod implements ModInitializer {
 				if (level > 0) {
 					// 获得或刷新 7 秒的“血怒”状态效果 (140 ticks)
 					player.addEffect(new net.minecraft.world.effect.MobEffectInstance(me.tuanzi.init.ModStatusEffects.BLOOD_RAGE, 140, 0));
+					me.tuanzi.util.ModLog.debug(player, killedEntity, "杀死生物获得血怒效果！击杀目标: " + killedEntity.getName().getString() + "，获得或刷新 7 秒的血怒效果。");
 				}
 			}
 		});
@@ -67,7 +68,6 @@ public class Tuanzis_mod implements ModInitializer {
 		me.tuanzi.init.ModTrades.initialize();
 		me.tuanzi.util.ModLootTableModifiers.initialize();
 		me.tuanzi.util.ModSeating.initialize();
-		ModLog.info("Hello Fabric world!");
 		ModLog.debug("Mod initialization started in development mode!");
 	}
 

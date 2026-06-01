@@ -4,7 +4,8 @@
 	"compatibilityLevel": "JAVA_25",
 	"refmap": "tuanzis_mod.refmap.json",
 	"mixins": [
-		"EntityClientGlowingMixin"
+		"EntityClientGlowingMixin",
+		"TitleScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

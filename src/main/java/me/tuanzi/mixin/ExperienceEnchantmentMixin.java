@@ -34,6 +34,7 @@ public abstract class ExperienceEnchantmentMixin {
                 float multiplier = 1.0f + (level * 0.25f);
                 int newExp = (int) Math.ceil(currentAmount * multiplier);
                 cir.setReturnValue(newExp);
+                me.tuanzi.util.ModLog.debug(player, killed, "阅历附魔触发成功：将击杀生物掉落经验由 " + currentAmount + " 提升至 " + newExp + "（阅历等级: " + level + " 级）。");
             }
         }
     }

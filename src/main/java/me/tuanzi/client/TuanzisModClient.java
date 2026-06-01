@@ -1,5 +1,6 @@
 package me.tuanzi.client;
 
+import me.tuanzi.client.update.UpdateChecker;
 import me.tuanzi.network.ChainMiningKeyPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,6 +18,9 @@ public class TuanzisModClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // 启动异步更新检查
+        UpdateChecker.checkUpdate();
+
         tuanzisModCategory = KeyMapping.Category.register(Identifier.withDefaultNamespace("tuanzis_mod"));
 
         chainMiningKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(

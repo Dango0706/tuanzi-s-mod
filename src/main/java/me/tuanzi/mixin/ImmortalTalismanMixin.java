@@ -34,6 +34,7 @@ public abstract class ImmortalTalismanMixin {
                     ItemStack stack = newPlayer.getInventory().getItem(i);
                     if (stack.is(ModItems.IMMORTAL_TALISMAN)) {
                         stack.shrink(1);
+                        me.tuanzi.util.ModLog.debug(newPlayer, null, "不朽圣符触发成功：扣除 1 个不朽圣符，保留了该玩家死亡前的所有物品与经验值（剩余不朽圣符: " + stack.getCount() + " 个）。");
                         break;
                     }
                 }

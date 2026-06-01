@@ -117,9 +117,11 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
             int count = paperStack.getCount();
             if (energy < 64) {
                 int toConsume = Math.min(64 - energy, count);
+                int oldEnergy = energy;
                 energy += toConsume;
                 paperStack.shrink(toConsume);
                 TravelersNotebookItem.setEnergy(this.notebook, energy);
+                me.tuanzi.util.ModLog.debug(player, null, "旅者手札充能：消耗了 " + toConsume + " 张传送纸，能量由 " + oldEnergy + " 提升至 " + energy + "/64。");
             }
         }
 

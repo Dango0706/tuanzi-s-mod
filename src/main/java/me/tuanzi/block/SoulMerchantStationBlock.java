@@ -168,6 +168,11 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
                         
                         stationBe.importVillager(villagerTag);
 
+                        net.minecraft.nbt.CompoundTag vData = villagerTag.getCompoundOrEmpty("VillagerData");
+                        String prof = vData.getStringOr("profession", "generic");
+                        int lvl = vData.getIntOr("level", 1);
+                        me.tuanzi.util.ModLog.debug(player.getName().getString(), pos.toString(), "灵笼贸易站村民导入成功：职业: " + prof + "，等级: " + lvl);
+
                         if (!player.isCreative()) {
                             stack.shrink(1);
                         }
@@ -186,6 +191,11 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
 
                     if (!level.isClientSide()) {
                         net.minecraft.nbt.CompoundTag villagerTag = stationBe.exportVillager();
+
+                        net.minecraft.nbt.CompoundTag vData = villagerTag.getCompoundOrEmpty("VillagerData");
+                        String prof = vData.getStringOr("profession", "generic");
+                        int lvl = vData.getIntOr("level", 1);
+                        me.tuanzi.util.ModLog.debug(player.getName().getString(), pos.toString(), "灵笼贸易站村民取出成功：职业: " + prof + "，等级: " + lvl);
 
                         ItemStack filledCage = new ItemStack(ModItems.VILLAGER_CAGE);
                         net.minecraft.nbt.CompoundTag cageData = new net.minecraft.nbt.CompoundTag();

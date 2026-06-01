@@ -40,6 +40,7 @@ public class ServerPlayerMixin {
                     // 获得 15 秒（300 刻）的力量 II（等级 1）与速度 II（等级 1）
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.STRENGTH, 300, 1));
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SPEED, 300, 1));
+                    me.tuanzi.util.ModLog.debug(player, null, "狂暴护符激活！消耗 1 个护符，当前副手剩余: " + offhandStack.getCount() + "，已获得 15 秒的力量 II 与速度 II 效果。");
 
                     // 进入 15 秒冷却（300 刻）
                     player.getCooldowns().addCooldown(offhandStack, 300);

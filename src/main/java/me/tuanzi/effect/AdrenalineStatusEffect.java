@@ -32,11 +32,13 @@ public class AdrenalineStatusEffect extends MobEffect {
         if (oldOverdraw == null) {
             // 第一次获得效果，施加肾上腺素透支效果（持续时间为药水时间 + 2秒缓冲以确保Buff结束时透支效果依旧存在）
             entity.addEffect(new MobEffectInstance(ModStatusEffects.ADRENALINE_OVERDRAW, duration + 40, amplifier, false, true, true));
+            me.tuanzi.util.ModLog.debug(entity, null, "饮用肾上腺素药水：第一次获得，已施加透支效果（等级: " + (amplifier + 1) + ", 持续时间: " + (duration + 40) + " ticks）。");
         } else {
             // 连续饮用，叠加透支效果的等级与时间。最高可叠加至 IV 级（amplifier = 3）
             int newAmplifier = Math.min(3, oldOverdraw.getAmplifier() + 1);
             int newDuration = oldOverdraw.getDuration() + duration;
             entity.addEffect(new MobEffectInstance(ModStatusEffects.ADRENALINE_OVERDRAW, newDuration, newAmplifier, false, true, true));
+            me.tuanzi.util.ModLog.debug(entity, null, "饮用肾上腺素药水：触发连续饮用惩罚！透支效果堆叠（等级由 " + (oldOverdraw.getAmplifier() + 1) + " 级提升至 " + (newAmplifier + 1) + " 级，总持续时间: " + newDuration + " ticks）。");
         }
     }
 }

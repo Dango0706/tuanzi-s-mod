@@ -17,8 +17,13 @@ public class YurisRevengeItem extends Item {
 
     @Override
     public boolean mineBlock(ItemStack stack, Level world, BlockState state, BlockPos pos, LivingEntity miner) {
-        if (!world.isClientSide() && state.getDestroySpeed(world, pos) != 0.0F) {
-            stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
+        if (!world.isClientSide()) {
+            if (state.is(Blocks.BEDROCK)) {
+                me.tuanzi.util.ModLog.debug(miner, null, "尤里的复仇破坏基岩成功！破坏基岩位置: " + pos + "，维度: " + world.dimension().identifier() + "。");
+            }
+            if (state.getDestroySpeed(world, pos) != 0.0F) {
+                stack.hurtAndBreak(1, miner, EquipmentSlot.MAINHAND);
+            }
         }
         return true;
     }

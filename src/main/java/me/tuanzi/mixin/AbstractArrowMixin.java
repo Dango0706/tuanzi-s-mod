@@ -100,6 +100,12 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
                     
                     this.setDeltaMovement(newVelocity);
                     
+                    net.minecraft.world.entity.Entity owner = ((AbstractArrow)(Object)this).getOwner();
+                    String ownerName = owner != null ? owner.getName().getString() : "未知射手";
+                    String targetName = this.tuanzis_mod$seekingTargetEntity != null ? this.tuanzis_mod$seekingTargetEntity.getName().getString() : "无实体目标";
+                    double angleDeg = Math.toDegrees(angleRad);
+                    me.tuanzi.util.ModLog.debug(ownerName, targetName, "追踪箭弹道修正成功：修正角度为 " + String.format("%.2f", angleDeg) + "°，修正后目标坐标为 " + predictedPos + "。");
+                    
                     // 旋转同步
                     double d = newVelocity.x;
                     double e = newVelocity.y;

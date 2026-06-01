@@ -127,6 +127,9 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
                 this.setHealth(1.0f);
                 wolf.setOrderedToSit(true);
 
+                String ownerNameStr = (wolf.isTame() && wolf.getOwner() != null) ? wolf.getOwner().getName().getString() : "无主人";
+                me.tuanzi.util.ModLog.debug(ownerNameStr, wolf.getName().getString(), "战狼濒死激怒结束，进入力竭倒地状态。");
+
                 // 斩断已经绑定的拴绳
                 if (wolf.isLeashed()) {
                     wolf.dropLeash();
@@ -207,6 +210,9 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
                     tuanzis_mod$rageTicks = 100;
                     tuanzis_mod$downed = false;
 
+                    String ownerName = owner.getName().getString();
+                    me.tuanzi.util.ModLog.debug(ownerName, wolf.getName().getString(), "战狼护符致命保护触发！消耗护符，回复满血，进入 5 秒无敌与濒死激怒状态。");
+
                     // 播放变种激怒吼叫和怒火粒子
                     wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
                         this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.5F, 1.5F);
@@ -242,6 +248,7 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
                         stack.shrink(1);
                     }
                     tuanzis_mod$rottenFleshFedCount++;
+                    me.tuanzi.util.ModLog.debug(player.getName().getString(), wolf.getName().getString(), "喂食战狼腐肉，当前复活进度: " + tuanzis_mod$rottenFleshFedCount + "/10");
 
                     // 播放吃东西声音与快乐骨粉粒子
                     wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
@@ -263,6 +270,7 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
                         tuanzis_mod$rottenFleshFedCount = 0;
                         this.setHealth(this.getMaxHealth());
                         wolf.setOrderedToSit(false);
+                        me.tuanzi.util.ModLog.debug(player.getName().getString(), wolf.getName().getString(), "战狼喂食次数满，已满血复活！");
 
                         // 播放变种复活吼叫与爱心粒子
                         wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),

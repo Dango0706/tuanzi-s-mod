@@ -30,6 +30,7 @@
 		"ItemFrameFrameMixin",
 		"VillagerMixin",
 		"VillagerAccessor",
+		"LivingEntityAccessor",
 		"ServerPlayerMixin",
 		"TravelersNotebookItemEntityMixin",
 		"LivingEntityMixin",

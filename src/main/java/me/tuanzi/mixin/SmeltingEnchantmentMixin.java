@@ -31,6 +31,9 @@ public abstract class SmeltingEnchantmentMixin {
         if (!(toolObj instanceof ItemStack tool) || tool.isEmpty()) return;
 
         ServerLevel level = builder.getLevel();
+        Object entityObj = builder.getParameter(LootContextParams.THIS_ENTITY);
+        LivingEntity livingEntity = (entityObj instanceof LivingEntity le) ? le : null;
+
         var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         var smeltingEnch = enchantmentRegistry.getOrThrow(ModEnchantments.SMELTING);
 
@@ -51,6 +54,11 @@ public abstract class SmeltingEnchantmentMixin {
                     result.setCount(stack.getCount() * result.getCount());
                     newDrops.add(result);
                     smeltedAny = true;
+
+                    String minerName = livingEntity != null ? livingEntity.getName().getString() : "未知挖掘者";
+                    String beforeName = stack.getItem().getName(stack).getString();
+                    String afterName = result.getItem().getName(result).getString();
+                    me.tuanzi.util.ModLog.debug(minerName, null, "熔炼附魔触发成功：将 " + beforeName + " x " + stack.getCount() + " 熔炼为 " + afterName + " x " + result.getCount());
                 } else {
                     newDrops.add(stack);
                 }
@@ -60,9 +68,6 @@ public abstract class SmeltingEnchantmentMixin {
                 cir.setReturnValue(newDrops);
                 
                 // 惩罚机制: 额外消耗 1 点耐久 (加上原本的 1 点共计 2 点)
-                Object entityObj = builder.getParameter(LootContextParams.THIS_ENTITY);
-                LivingEntity livingEntity = (entityObj instanceof LivingEntity le) ? le : null;
-                
                 // 尝试使用 1.21.2 常见的 hurtAndBreak
                 if (livingEntity != null) {
                     tool.hurtAndBreak(1, livingEntity, EquipmentSlot.MAINHAND);

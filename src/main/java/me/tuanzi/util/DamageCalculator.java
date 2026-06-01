@@ -25,8 +25,11 @@ public class DamageCalculator {
      * @return 调整后的最终伤害值
      */
     public static float calculateDamage(float amount, DamageSource source, LivingEntity target) {
+        float initialDamage = amount;
+
         // 0. 免疫火焰与岩浆伤害
         if (target.hasEffect(ModStatusEffects.HELL_FIRE) && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+            me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！触发地狱之火免疫，计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: 0.00");
             return 0.0f;
         }
 
@@ -38,6 +41,7 @@ public class DamageCalculator {
             // 攻击者拥有“血怒”状态效果，攻击伤害乘算提升 40% (累加值 +0.4f)
             if (attacker.hasEffect(ModStatusEffects.BLOOD_RAGE)) {
                 attackerMultiplier += 0.4f;
+                me.tuanzi.util.ModLog.debug(attacker, target, "伤害更改触发：攻击者拥有血怒效果，攻击力增加 40% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
             }
             
             // 攻击者穿戴狂战士附魔胸甲，近战伤害随已损失生命值比例获得提升 (I级每损失10%增伤5%，II级增伤8%)
@@ -69,7 +73,9 @@ public class DamageCalculator {
                         lostPercent = Math.min(lostPercent, 0.95f);
                         float stepCount = lostPercent / 0.10f;
                         float percentPerStep = level == 1 ? 0.05f : 0.08f;
-                        attackerMultiplier += stepCount * percentPerStep;
+                        float berserkerBonus = stepCount * percentPerStep;
+                        attackerMultiplier += berserkerBonus;
+                        me.tuanzi.util.ModLog.debug(attacker, target, "伤害更改触发：攻击者拥有狂战士附魔（等级: " + level + "），当前损失生命比例: " + String.format("%.1f", lostPercent * 100) + "%，攻击力增加 " + String.format("%.1f", berserkerBonus * 100) + "% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
                     }
                 }
 
@@ -83,6 +89,7 @@ public class DamageCalculator {
                     if (target.getHealth() < targetThreshold) {
                         // 伤害提升 等级 * 25% (加到攻击者乘数)
                         attackerMultiplier += execLevel * 0.25f;
+                        me.tuanzi.util.ModLog.debug(attacker, target, "伤害更改触发：触发处决附魔（等级: " + execLevel + "，目标血量低于阈值），攻击力增加 " + String.format("%.1f", execLevel * 0.25f * 100) + "% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
 
                         // 嗜血反噬：受到 等级×0.5点伤害（最高1.5心，即 execLevel * 1.0f 点真实伤害）
                         if (!attacker.level().isClientSide()) {
@@ -135,6 +142,8 @@ public class DamageCalculator {
                                     
                                     victim.hurtServer(serverLevel, chainSrc, splashDamage);
                                     
+                                    me.tuanzi.util.ModLog.debug(attacker, victim, "连锁苦痛：苦痛震荡波伤害连锁触发！对其造成了 " + String.format("%.2f", splashDamage) + " 点溢出波及伤害（连锁计数: " + (count + 1) + "/5）。");
+                                    
                                     // 产生附魔打击粒子效果
                                     serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT, 
                                         victim.getX(), victim.getY() + 1.0, victim.getZ(), 
@@ -147,24 +156,18 @@ public class DamageCalculator {
                     }
                 }
             }
-            
-            // 此处可预留并累加未来新增的攻击者增伤/降伤效果，如：
-            // if (attacker.hasEffect(ModStatusEffects.SOME_OTHER_BUFF)) {
-            //     attackerMultiplier += 0.2f;
-            // }
         }
 
         // 2. 受击者受伤加深乘数计算（加法累加模型）
         // 被攻击者拥有“血怒”状态效果，且伤害非血怒反馈伤害，所受伤害乘算提升 30% (累加值 +0.3f)
         if (target.hasEffect(ModStatusEffects.BLOOD_RAGE) && !(source instanceof BloodRageDamageSource)) {
             victimMultiplier += 0.3f;
+            me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：受击者拥有血怒效果，受到的伤害增加 30% (当前受伤乘数累加值: " + String.format("%.2f", victimMultiplier) + ")。");
         }
 
-        // 此处可预留并累加未来新增的受击者易伤/免伤效果，如：
-        // if (target.hasEffect(ModStatusEffects.SOME_DEFENSIVE_BUFF)) {
-        //     victimMultiplier -= 0.2f;
-        // }
+        float finalDamage = amount * attackerMultiplier * victimMultiplier;
+        me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: " + String.format("%.2f", finalDamage));
 
-        return amount * attackerMultiplier * victimMultiplier;
+        return finalDamage;
     }
 }

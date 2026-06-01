@@ -70,6 +70,8 @@ public abstract class SonicBoomBlockMixin {
                 // 5.5. Apply 8 seconds cooldown (160 ticks) for successful block
                 player.getCooldowns().addCooldown(stack, 160);
 
+                me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者声波反弹触发！免疫声波爆破伤害，成功完美格挡并向发射源反弹了 15 点真实伤害和强烈击退效果。");
+
                 // 6. Block the original damage by canceling the call
                 cir.setReturnValue(false);
                 return;
@@ -79,6 +81,7 @@ public abstract class SonicBoomBlockMixin {
             if (player.getMainHandItem().is(ModItems.ECHO_BREAKER)) {
                 tuanzis_mod$isApplyingPassiveReduction = true;
                 try {
+                    me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者被动属性触发：主手持有吸收 30% 声波伤害，减免后伤害为 " + String.format("%.2f", amount * 0.7F) + "。");
                     boolean result = player.hurtServer(level, source, amount * 0.7F);
                     cir.setReturnValue(result);
                 } finally {
