@@ -211,14 +211,17 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                 }
 
                 // 时间流逝刷新交易锁定
-                long gameTime = level.getGameTime();
-                long currentDay = gameTime / 24000L;
+                long clockTime = level.getOverworldClockTime();
+                long currentDay = clockTime / 24000L;
                 if (be.lastRestockCheckDay == -1) {
                     be.lastRestockCheckDay = currentDay;
                 }
                 if (currentDay > be.lastRestockCheckDay) {
                     be.lastRestockCheckDay = currentDay;
                     be.tryRestock(serverLevel);
+                    be.setChanged();
+                } else if (currentDay < be.lastRestockCheckDay) {
+                    be.lastRestockCheckDay = currentDay;
                     be.setChanged();
                 }
             }

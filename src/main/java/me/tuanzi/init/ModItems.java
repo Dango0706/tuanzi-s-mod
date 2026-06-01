@@ -1,6 +1,6 @@
 package me.tuanzi.init;
 
-import me.tuanzi.item.EchoBreakerItem;
+import me.tuanzi.item.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -8,10 +8,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Weapon;
 import me.tuanzi.Tuanzis_mod;
-import me.tuanzi.item.BerserkCharmItem;
-import me.tuanzi.item.ImmortalTalismanItem;
-import me.tuanzi.item.YurisRevengeItem;
-import me.tuanzi.item.WolfCommandItem;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +19,7 @@ import net.minecraft.world.item.Rarity;
 import java.util.function.Function;
 
 public class ModItems {
-    public static final Item SCARECROW = register("scarecrow", (properties) -> new me.tuanzi.item.ScarecrowItem(properties));
+    public static final Item SCARECROW = register("scarecrow", ScarecrowItem::new);
     public static final Item TRIAL_DUMMY = register("trial_dummy", (properties) -> new me.tuanzi.item.TrialDummyItem(properties.stacksTo(1).durability(32)));
     public static final Item DECOY_TOTEM = register("decoy_totem", (properties) -> new me.tuanzi.item.DecoyTotemItem(properties.stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final Item RAINBOW_SPONGE = register("rainbow_sponge", (properties) -> new Item(properties.stacksTo(1)));
@@ -38,9 +34,9 @@ public class ModItems {
             .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.8, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
             .build();
         return new EchoBreakerItem(properties
+            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 8.0F, -2.8F)
             .durability(1550)
             .rarity(Rarity.RARE)
-            .component(DataComponents.WEAPON, new Weapon(1))
             .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
             .attributes(modifiers));
     });

@@ -20,6 +20,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(ModEnchantmentGenerator::new);
 		pack.addProvider(ModEnchantmentTagProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModBlockTagProvider::new);
+		pack.addProvider(me.tuanzi.datagen.ModItemTagProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModRecipeProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModModelProvider::new);
 		pack.addProvider(TuanziChineseLanguageProvider::new);
