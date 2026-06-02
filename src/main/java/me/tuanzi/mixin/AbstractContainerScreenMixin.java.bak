@@ -1,0 +1,55 @@
+package me.tuanzi.mixin;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Environment(EnvType.CLIENT)
+@Mixin(AbstractContainerScreen.class)
+public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> {
+    @Shadow public T menu;
+
+    @Inject(method = "extractSlot", at = @At("HEAD"))
+    private void tuanzis_mod$drawRaritySlotBorder(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
+        // 判断当前菜单是否为 GachaHistoryMenu
+        if (this.menu instanceof me.tuanzi.gacha.gui.GachaHistoryMenu) {
+            // 只渲染 Slot 0-44 的抽卡历史物品格子 (排除下排功能翻页栏)
+            if (slot.index < 45 && slot.hasItem()) {
+                ItemStack stack = slot.getItem();
+                String name = stack.getHoverName().getString();
+                
+                int color = 0;
+                if (name.contains("§6")) {
+                    color = 0xFFFF9C00; // 传说 (金橙)
+                } else if (name.contains("§d")) {
+                    color = 0xFFD254FF; // 史诗 (紫)
+                } else if (name.contains("§b")) {
+                    color = 0xFF00DFFF; // 稀有 (青蓝)
+                } else if (name.contains("§2")) {
+                    color = 0xFF00FF66; // 优秀 (绿)
+                } else if (name.contains("§f")) {
+                    color = 0xFFE0E0E0; // 普通 (灰白)
+                }
+                
+                if (color != 0) {
+                    // 1. 绘制温润的半透明背景填充 (Alpha = 0x25 = 15% 透明度)
+                    int bgColor = (color & 0x00FFFFFF) | 0x25000000;
+                    graphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, bgColor);
+                    
+                    // 2. 使用 outline 绘制 1 像素高亮彩色外边框 (Alpha = 0xE0 = 88% 不透明度)
+                    int borderColor = (color & 0x00FFFFFF) | 0xE0000000;
+                    graphics.outline(slot.x - 1, slot.y - 1, 18, 18, borderColor);
+                }
+            }
+        }
+    }
+}

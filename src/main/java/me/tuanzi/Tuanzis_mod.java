@@ -68,6 +68,21 @@ public class Tuanzis_mod implements ModInitializer {
 		me.tuanzi.init.ModTrades.initialize();
 		me.tuanzi.util.ModLootTableModifiers.initialize();
 		me.tuanzi.util.ModSeating.initialize();
+
+		// 初始化抽卡保底与卡池系统生命周期事件
+		me.tuanzi.gacha.PlayerGachaManager.initialize();
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			me.tuanzi.gacha.PlayerGachaManager.onPlayerDisconnect(handler.getPlayer().getUUID());
+		});
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			me.tuanzi.gacha.PoolManager.loadAllPools(server.registryAccess());
+		});
+
+		// 注册抽卡系统指令
+		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+			me.tuanzi.gacha.GachaCommands.register(dispatcher);
+		});
+
 		ModLog.debug("Mod initialization started in development mode!");
 	}
 

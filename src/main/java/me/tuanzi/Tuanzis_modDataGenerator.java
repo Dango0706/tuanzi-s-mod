@@ -356,6 +356,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"2. §b宝藏附魔§r：无法通过附魔台附魔获取，也无法与村民交易，仅能通过搜刮地牢、要塞、远古城市箱子产出。\n" +
 				"3. §b冲突互斥§r：与常规工具附魔 §b精准采集 (Silk Touch)§r 互斥。";
 			translationBuilder.add("jei.tuanzis_mod.chain_pain.description", chainPainDesc);
+
+			// 抽卡物品中文翻译
+			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_PACK, "星旅卡牌包");
+			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "星旅卡牌箱");
+			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "樱花祭卡牌包");
+			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "樱花祭卡牌箱");
 		}
 	}
 
@@ -380,6 +386,13 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.wolf_command.tooltip", "Equip in off-hand to grant tamed wolves bonus health, tearing attacks, and death protection.");
 			translationBuilder.add(ModItems.WARDEN_HEART, "Warden Heart");
 			translationBuilder.add(ModItems.ECHO_BREAKER, "Echo Breaker");
+
+			// Gacha items translations
+			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_PACK, "Star Travel Card Pack");
+			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "Star Travel Card Chest");
+			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "Sakura Festival Card Pack");
+			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
+
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
 			translationBuilder.add(ModStatusEffects.TEARING.value(), "Tearing");

@@ -41,16 +41,20 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
     public static final com.mojang.serialization.MapCodec<SoulMerchantStationBlock> CODEC = simpleCodec(SoulMerchantStationBlock::new);
 
     private static final VoxelShape SHAPE = Shapes.or(
-        Block.box(1.0, 0.0, 1.0, 15.0, 2.0, 15.0),      // 阶梯底座第一层
-        Block.box(2.0, 2.0, 2.0, 14.0, 3.0, 14.0),      // 阶梯底座第二层
-        Block.box(2.0, 13.0, 2.0, 14.0, 14.0, 14.0),    // 阶梯顶盖第一层
-        Block.box(3.0, 14.0, 3.0, 13.0, 15.0, 13.0),    // 阶梯顶盖第二层
-        Block.box(5.0, 15.0, 5.0, 11.0, 16.0, 11.0),    // 顶端能量尖冠
-        Block.box(2.0, 3.0, 2.0, 3.5, 13.0, 3.5),        // 纤细西北柱
-        Block.box(12.5, 3.0, 2.0, 14.0, 13.0, 3.5),      // 纤细东北柱
-        Block.box(2.0, 3.0, 12.5, 3.5, 13.0, 14.0),      // 纤细西南柱
-        Block.box(12.5, 3.0, 12.5, 14.0, 13.0, 14.0),    // 纤细东南柱
-        Block.box(6.0, 5.0, 6.0, 10.0, 6.0, 10.0)        // 中央悬浮融合台
+        Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),      // 阶梯大底座
+        Block.box(1.0, 2.0, 1.0, 15.0, 3.0, 15.0),      // 阶梯小底座
+        Block.box(1.0, 13.0, 1.0, 15.0, 14.0, 15.0),    // 顶盖底层
+        Block.box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0),    // 顶盖顶层
+        Block.box(1.0, 3.0, 1.0, 4.0, 6.0, 4.0),        // 西北柱下部基座
+        Block.box(12.0, 3.0, 1.0, 15.0, 6.0, 4.0),      // 东北柱下部基座
+        Block.box(1.0, 3.0, 12.0, 4.0, 6.0, 15.0),      // 西南柱下部基座
+        Block.box(12.0, 3.0, 12.0, 15.0, 6.0, 15.0),    // 东南柱下部基座
+        Block.box(1.5, 6.0, 1.5, 3.5, 13.0, 3.5),        // 西北柱柱身
+        Block.box(12.5, 6.0, 1.5, 14.5, 13.0, 3.5),      // 东北柱柱身
+        Block.box(1.5, 6.0, 12.5, 3.5, 13.0, 14.5),      // 西南柱柱身
+        Block.box(12.5, 6.0, 12.5, 14.5, 13.0, 14.5),    // 东南柱柱身
+        Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0),      // 中央悬浮能量核
+        Block.box(5.0, 16.0, 5.0, 11.0, 18.0, 11.0)      // 顶端能量尖冠
     );
 
     @Override

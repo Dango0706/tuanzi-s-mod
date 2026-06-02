@@ -1,6 +1,7 @@
 # gradle
 
 .gradle/
+.agents/
 build/
 out/
 classes/

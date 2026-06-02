@@ -5,7 +5,8 @@
 	"refmap": "tuanzis_mod.refmap.json",
 	"mixins": [
 		"EntityClientGlowingMixin",
-		"TitleScreenMixin"
+		"TitleScreenMixin",
+		"AbstractContainerScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

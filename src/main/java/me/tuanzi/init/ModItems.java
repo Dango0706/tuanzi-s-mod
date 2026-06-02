@@ -55,6 +55,11 @@ public class ModItems {
             .build())
     ));
 
+    public static final Item STAR_TRAVEL_CARD_PACK = register("star_travel_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.UNCOMMON), "normal", false));
+    public static final Item STAR_TRAVEL_CARD_CHEST = register("star_travel_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.RARE), "normal", true));
+    public static final Item SAKURA_FESTIVAL_CARD_PACK = register("sakura_festival_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", false));
+    public static final Item SAKURA_FESTIVAL_CARD_CHEST = register("sakura_festival_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", true));
+
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));
         Item item = itemFactory.apply(new Item.Properties().setId(key));

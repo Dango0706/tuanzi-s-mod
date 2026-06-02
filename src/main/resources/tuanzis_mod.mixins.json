@@ -38,7 +38,8 @@
 		"MobMixin",
 		"PlayerHungerMixin",
 		"CrossbowItemMixin",
-		"AbstractArrowMixin"
+		"AbstractArrowMixin",
+		"FireworkRocketEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

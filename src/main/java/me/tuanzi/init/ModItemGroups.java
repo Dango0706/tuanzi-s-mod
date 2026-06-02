@@ -96,6 +96,12 @@ public class ModItemGroups {
                 entries.accept(ModItems.SHURIKEN);
                 entries.accept(ModItems.NETHER_STEW);
 
+                // 加入抽卡道具
+                entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);
+                entries.accept(ModItems.STAR_TRAVEL_CARD_CHEST);
+                entries.accept(ModItems.SAKURA_FESTIVAL_CARD_PACK);
+                entries.accept(ModItems.SAKURA_FESTIVAL_CARD_CHEST);
+
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);
                 addPotionVariants(entries, ModPotions.LONG_FLIGHT_POTION);

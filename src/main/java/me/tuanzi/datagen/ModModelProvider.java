@@ -213,5 +213,11 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.WOLF_COMMAND, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.SHURIKEN, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.NETHER_STEW, ModelTemplates.FLAT_ITEM);
+
+        // 抽卡包/箱模型生成
+        itemModelGenerator.generateFlatItem(ModItems.STAR_TRAVEL_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.STAR_TRAVEL_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.SAKURA_FESTIVAL_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.SAKURA_FESTIVAL_CARD_CHEST, ModelTemplates.FLAT_ITEM);
     }
 }
