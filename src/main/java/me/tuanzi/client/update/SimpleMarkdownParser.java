@@ -1,9 +1,12 @@
 package me.tuanzi.client.update;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.ARGB;
 
+@Environment(EnvType.CLIENT)
 public class SimpleMarkdownParser {
 
     /**

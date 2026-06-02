@@ -1,5 +1,7 @@
 package me.tuanzi.client.update;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,6 +13,7 @@ import net.minecraft.util.Mth;
 import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class UpdateConfirmScreen extends Screen {
     private final Screen parent;
     private List<FormattedCharSequence> changelogLines = new ArrayList<>();

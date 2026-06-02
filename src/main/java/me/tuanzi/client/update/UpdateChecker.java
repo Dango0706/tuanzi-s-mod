@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.tuanzi.util.ModLog;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
@@ -20,6 +22,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@Environment(EnvType.CLIENT)
 public class UpdateChecker {
     public enum Status {
         IDLE, CHECKING, HAS_UPDATE, NO_UPDATE, FAILED, DOWNLOADING, DOWNLOADED, DOWNLOAD_FAILED
@@ -87,6 +90,9 @@ public class UpdateChecker {
     }
 
     public static void loadConfig() {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return;
+        }
         ModLog.info("[自动更新检测] 正在加载本地更新历史配置...");
         try {
             Path configPath = FabricLoader.getInstance().getConfigDir().resolve("tuanzis_mod_update.json");
@@ -106,6 +112,9 @@ public class UpdateChecker {
     }
 
     public static void saveIgnoreTime() {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return;
+        }
         ModLog.info("[自动更新检测] 正在写入忽略更新一天的配置...");
         try {
             ignoredTime = System.currentTimeMillis();
@@ -121,6 +130,9 @@ public class UpdateChecker {
     }
 
     public static boolean shouldNotify() {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return false;
+        }
         // 如果本次游戏已经提示并且玩家进行了操作（点击了忽略、暂不），在当前运行周期内绝对不再弹窗，避免死循环挂钩
         if (alreadyNotified) {
             return false;
@@ -144,6 +156,9 @@ public class UpdateChecker {
     }
 
     public static void checkUpdate() {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return;
+        }
         if (status == Status.CHECKING) {
             ModLog.warn("[自动更新检测] 检测服务已在运行中，请勿重复启动检查任务。");
             return;
@@ -334,6 +349,9 @@ public class UpdateChecker {
     }
 
     public static CompletableFuture<Boolean> downloadAndInstall() {
+        if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+            return CompletableFuture.completedFuture(false);
+        }
         if (downloadUrl.isEmpty()) {
             ModLog.error("[自动更新下载] 下载 URL 为空，无法执行更新任务！");
             return CompletableFuture.completedFuture(false);
