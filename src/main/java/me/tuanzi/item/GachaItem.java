@@ -96,16 +96,6 @@ public class GachaItem extends Item {
                     }
                 }
 
-                // 在聊天栏打印抽卡报告
-                player.sendSystemMessage(Component.literal("§6★ ==================================== ★"));
-                player.sendSystemMessage(Component.literal("§e§l✦ 恭喜你获得了以下卡牌奖励 ✦"));
-                for (GachaLogic.RollResult res : results) {
-                    ItemStack prize = res.getPoolItem().getItem().copy();
-                    String rarityName = getRarityChinese(res.getRarity());
-                    player.sendSystemMessage(Component.literal("§f- " + rarityName + " " + prize.getHoverName().getString() + " §bx" + prize.getCount()));
-                }
-                player.sendSystemMessage(Component.literal("§6★ ==================================== ★"));
-
                 // 烟花实体与多彩粒子齐射爆炸效果，并在半空中生成专属防火的掉落物实体
                 ServerLevel serverLevel = (ServerLevel) level;
                 double px = player.getX();

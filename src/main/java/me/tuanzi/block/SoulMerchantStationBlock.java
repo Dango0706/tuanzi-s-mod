@@ -53,8 +53,7 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
         Block.box(12.5, 6.0, 1.5, 14.5, 13.0, 3.5),      // 东北柱柱身
         Block.box(1.5, 6.0, 12.5, 3.5, 13.0, 14.5),      // 西南柱柱身
         Block.box(12.5, 6.0, 12.5, 14.5, 13.0, 14.5),    // 东南柱柱身
-        Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0),      // 中央悬浮能量核
-        Block.box(5.0, 16.0, 5.0, 11.0, 18.0, 11.0)      // 顶端能量尖冠
+        Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0)      // 中央悬浮能量核（已移回地面，与贴图一致）
     );
 
     @Override

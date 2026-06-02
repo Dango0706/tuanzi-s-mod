@@ -26,8 +26,8 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
     @Inject(method = "extractSlot", at = @At("HEAD"))
     private void tuanzis_mod$drawRaritySlotBorder(GuiGraphicsExtractor graphics, Slot slot, int mouseX, int mouseY, CallbackInfo ci) {
-        // 判断当前界面的标题是否包含“抽卡历史记录”来实现对抽卡界面的精准识别 (在联机中客户端接收的菜单实例通常为普通的 ChestMenu)
-        if (this.title != null && this.title.getString().contains("抽卡历史记录")) {
+        // 判断当前界面的标题是否包含“抽卡历史记录”或“卡池预览”来实现对相应界面的精准识别
+        if (this.title != null && (this.title.getString().contains("抽卡历史记录") || this.title.getString().contains("卡池预览"))) {
             // 只渲染 Slot 0-44 的抽卡历史物品格子 (排除下排功能翻页栏以及玩家背包)
             if (slot.index < 45 && slot.hasItem()) {
                 ItemStack stack = slot.getItem();

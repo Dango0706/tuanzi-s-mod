@@ -77,8 +77,9 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
             }
             itemEntity.setDeltaMovement(dx * 0.12, 0.15, dz * 0.12);
 
-            // 4. 开启原生发光轮廓
+            // 4. 开启原生发光轮廓并添加抽卡掉落物专属标识
             itemEntity.setGlowingTag(true);
+            itemEntity.addTag("tuanzis_gacha_drop");
 
             // 5. 根据稀有度品质，赋予对应的发光轮廓颜色 (计分板 Team 队伍颜色)
             try {

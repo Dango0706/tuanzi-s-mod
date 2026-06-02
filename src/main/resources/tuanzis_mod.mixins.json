@@ -39,7 +39,8 @@
 		"PlayerHungerMixin",
 		"CrossbowItemMixin",
 		"AbstractArrowMixin",
-		"FireworkRocketEntityMixin"
+		"FireworkRocketEntityMixin",
+		"GachaItemEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

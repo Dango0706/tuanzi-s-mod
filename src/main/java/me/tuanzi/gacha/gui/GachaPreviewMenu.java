@@ -25,8 +25,8 @@ public class GachaPreviewMenu extends ChestMenu {
     private final GachaPool pool;
     private final ServerPlayer player;
     private final PlayerGachaState state;
-    private final List<GachaPoolItem> sortedItems = new ArrayList<>();
     private int currentPage = 0;
+    private String currentRarity = "legendary"; // 默认加载传说板块奖励
 
     public GachaPreviewMenu(int containerId, Inventory playerInventory, GachaPool pool) {
         super(MenuType.GENERIC_9x6, containerId, playerInventory, new SimpleContainer(54), 6);
@@ -34,13 +34,11 @@ public class GachaPreviewMenu extends ChestMenu {
         this.player = (ServerPlayer) playerInventory.player;
         this.state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
         
-        // 整理卡池内所有物品，按品质高低排序展示
-        String[] rarities = {"legendary", "epic", "rare", "uncommon", "common"};
-        for (String r : rarities) {
-            sortedItems.addAll(pool.getListByRarity(r));
-        }
-
         refreshSlots();
+    }
+
+    private List<GachaPoolItem> getActiveItems() {
+        return pool.getListByRarity(currentRarity);
     }
 
     public void refreshSlots() {
@@ -50,20 +48,41 @@ public class GachaPreviewMenu extends ChestMenu {
             container.setItem(i, ItemStack.EMPTY);
         }
 
-        int totalItems = sortedItems.size();
+        List<GachaPoolItem> activeItems = getActiveItems();
+        int totalItems = activeItems.size();
         int totalPages = (int) Math.ceil((double) totalItems / 45);
         if (totalPages == 0) totalPages = 1;
 
-        // 2. 绘制翻页与实时保底概率展示栏 (第 6 行: Slot 45-53)
+        // 2. 绘制翻页与实时保底概率展示栏，以及品质板块切换导航台 (第 6 行: Slot 45-53)
         ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
+
         for (int i = 45; i < 54; i++) {
             if (i == 45) {
                 container.setItem(i, createNamedItem(Items.ARROW, "§e◀ 上一页"));
+            } else if (i == 46) {
+                String name = (currentRarity.equals("legendary") ? "§6§l★ 传说板块 ★" : "§7传说大奖板块 §e◀点击切换");
+                net.minecraft.world.item.Item icon = (currentRarity.equals("legendary") ? Items.GOLD_BLOCK : Items.ORANGE_STAINED_GLASS_PANE);
+                container.setItem(i, createNamedItem(icon, name));
+            } else if (i == 47) {
+                String name = (currentRarity.equals("epic") ? "§d§l★ 史诗板块 ★" : "§7史诗特赏板块 §e◀点击切换");
+                net.minecraft.world.item.Item icon = (currentRarity.equals("epic") ? Items.AMETHYST_BLOCK : Items.PURPLE_STAINED_GLASS_PANE);
+                container.setItem(i, createNamedItem(icon, name));
+            } else if (i == 48) {
+                String name = (currentRarity.equals("rare") ? "§b§l★ 稀有板块 ★" : "§7稀有精品板块 §e◀点击切换");
+                net.minecraft.world.item.Item icon = (currentRarity.equals("rare") ? Items.LAPIS_BLOCK : Items.BLUE_STAINED_GLASS_PANE);
+                container.setItem(i, createNamedItem(icon, name));
             } else if (i == 49) {
-                // 动态计算该玩家当前的抽卡实时概率
                 List<String> statsLore = getPlayerStatsLore();
                 container.setItem(i, createDetailedItem(Items.BOOK, "§6§l✦ 你的实时出货概率与保底 ✦", statsLore));
+            } else if (i == 50) {
+                String name = (currentRarity.equals("uncommon") ? "§2§l★ 优秀板块 ★" : "§7优秀卓越板块 §e◀点击切换");
+                net.minecraft.world.item.Item icon = (currentRarity.equals("uncommon") ? Items.EMERALD_BLOCK : Items.GREEN_STAINED_GLASS_PANE);
+                container.setItem(i, createNamedItem(icon, name));
+            } else if (i == 51) {
+                String name = (currentRarity.equals("common") ? "§f§l★ 普通板块 ★" : "§7普通大众板块 §e◀点击切换");
+                net.minecraft.world.item.Item icon = (currentRarity.equals("common") ? Items.IRON_BLOCK : Items.WHITE_STAINED_GLASS_PANE);
+                container.setItem(i, createNamedItem(icon, name));
             } else if (i == 53) {
                 container.setItem(i, createNamedItem(Items.ARROW, "§e下一页 ▶"));
             } else {
@@ -71,18 +90,16 @@ public class GachaPreviewMenu extends ChestMenu {
             }
         }
 
-        // 3. 填充当前页的物品 (Slot 0-44，展示原本属性，Lore 尾部加上概率占比)
+        // 3. 填充当前页的选定板块物品 (Slot 0-44)
         int startIdx = currentPage * 45;
-        // 计算当前卡池对应品质的总权重，从而算出物品在此品质内的出货占比
+        int totalRarityWeight = activeItems.stream().mapToInt(GachaPoolItem::getWeight).sum();
+
         for (int i = 0; i < 45; i++) {
             int itemIdx = startIdx + i;
-            if (itemIdx < sortedItems.size()) {
-                GachaPoolItem poolItem = sortedItems.get(itemIdx);
+            if (itemIdx < totalItems) {
+                GachaPoolItem poolItem = activeItems.get(itemIdx);
                 ItemStack displayStack = poolItem.getItem().copy();
 
-                // 获取品质占比
-                String rarity = getRarityOfItem(poolItem);
-                int totalRarityWeight = pool.getListByRarity(rarity).stream().mapToInt(GachaPoolItem::getWeight).sum();
                 double percentInRarity = totalRarityWeight > 0 ? (poolItem.getWeight() * 100.0 / totalRarityWeight) : 0.0;
 
                 // 准备 Lore
@@ -93,7 +110,8 @@ public class GachaPreviewMenu extends ChestMenu {
                 }
                 displayLore.add(Component.literal(""));
                 displayLore.add(Component.literal("§7===================="));
-                displayLore.add(Component.literal("§7所属品质: " + getRarityName(rarity)));
+                displayLore.add(Component.literal("§7所属品质: " + getRarityName(currentRarity)));
+                displayLore.add(Component.literal(String.format("§7本品质内出货权重: §a%d", poolItem.getWeight())));
                 displayLore.add(Component.literal(String.format("§7同品质内随机占比: §a%.2f%%", percentInRarity)));
                 displayLore.add(Component.literal("§7===================="));
                 displayStack.set(DataComponents.LORE, new ItemLore(displayLore));
@@ -116,9 +134,42 @@ public class GachaPreviewMenu extends ChestMenu {
                 refreshSlots();
             }
         } else if (slotIndex == 53) {
-            int totalPages = (int) Math.ceil((double) sortedItems.size() / 45);
+            List<GachaPoolItem> activeItems = getActiveItems();
+            int totalPages = (int) Math.ceil((double) activeItems.size() / 45);
             if (currentPage + 1 < totalPages) {
                 currentPage++;
+                refreshSlots();
+            }
+        }
+        // 品质大板块切换控制栏 (Slot 46, 47, 48, 50, 51)
+        else if (slotIndex == 46) {
+            if (!currentRarity.equals("legendary")) {
+                currentRarity = "legendary";
+                currentPage = 0;
+                refreshSlots();
+            }
+        } else if (slotIndex == 47) {
+            if (!currentRarity.equals("epic")) {
+                currentRarity = "epic";
+                currentPage = 0;
+                refreshSlots();
+            }
+        } else if (slotIndex == 48) {
+            if (!currentRarity.equals("rare")) {
+                currentRarity = "rare";
+                currentPage = 0;
+                refreshSlots();
+            }
+        } else if (slotIndex == 50) {
+            if (!currentRarity.equals("uncommon")) {
+                currentRarity = "uncommon";
+                currentPage = 0;
+                refreshSlots();
+            }
+        } else if (slotIndex == 51) {
+            if (!currentRarity.equals("common")) {
+                currentRarity = "common";
+                currentPage = 0;
                 refreshSlots();
             }
         }
@@ -155,23 +206,13 @@ public class GachaPreviewMenu extends ChestMenu {
         lore.add(String.format("§7已累积未出史诗: §d%d 抽 §8(上限 20 抽)", epicCounter));
         lore.add(Component.literal("").getString());
         lore.add(String.format("§7▶ 下一抽传说级(金)概率: §6%.1f%%", pLegendary * 100.0));
-        lore.add(String.format("§7▶ 下一抽史诗级(紫)概率: §d%.1f%%", pEpic * 100.0));
+        lore.add(String.format("§7▶ 下一抽史诗级(假饰)概率: §d%.1f%%", pEpic * 100.0));
         
         if (isSakura) {
             lore.add("§8* 限定池若中金，直接 100% 获得当期限定传说大奖！");
         }
 
         return lore;
-    }
-
-    private String getRarityOfItem(GachaPoolItem item) {
-        String[] rarities = {"legendary", "epic", "rare", "uncommon", "common"};
-        for (String r : rarities) {
-            if (pool.getListByRarity(r).contains(item)) {
-                return r;
-            }
-        }
-        return "common";
     }
 
     private String getRarityName(String key) {

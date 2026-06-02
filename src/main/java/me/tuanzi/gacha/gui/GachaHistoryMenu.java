@@ -266,6 +266,7 @@ public class GachaHistoryMenu extends ChestMenu {
             default -> "§f[普通] ";
         };
 
+        stack.setCount(entry.getCount());
         stack.set(DataComponents.CUSTOM_NAME, Component.literal(colorPrefix + entry.getItemName()));
 
         List<String> lore = List.of(

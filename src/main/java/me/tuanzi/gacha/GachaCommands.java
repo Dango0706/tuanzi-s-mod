@@ -85,6 +85,7 @@ public class GachaCommands {
                     .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
                     .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("pool", StringArgumentType.word())
+                            .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
                             .executes(context -> {
                                 ServerPlayer player = context.getSource().getPlayerOrException();
                                 ServerPlayer target = EntityArgument.getPlayer(context, "player");
@@ -99,6 +100,7 @@ public class GachaCommands {
                     .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
                     .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("pool", StringArgumentType.word())
+                            .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
                             .then(Commands.argument("counterType", StringArgumentType.word())
                                 .then(Commands.argument("value", IntegerArgumentType.integer(0))
                                     .executes(context -> {
@@ -118,6 +120,7 @@ public class GachaCommands {
                 .then(Commands.literal("test_roll")
                     .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
                     .then(Commands.argument("pool", StringArgumentType.word())
+                        .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
                         .then(Commands.argument("times", IntegerArgumentType.integer(1, 100000))
                             .executes(context -> {
                                 ServerPlayer player = context.getSource().getPlayerOrException();
@@ -132,6 +135,7 @@ public class GachaCommands {
                 .then(Commands.literal("edit")
                     .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
                     .then(Commands.argument("pool", StringArgumentType.word())
+                        .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayerOrException();
                             String poolId = StringArgumentType.getString(context, "pool");

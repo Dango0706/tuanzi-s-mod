@@ -78,7 +78,8 @@ public class GachaLogic {
                         rarity,
                         itemName,
                         timestamp,
-                        itemRegistryId
+                        itemRegistryId,
+                        itemStack.getCount() // 写入本件抽卡结果的实际堆叠数量
                 );
                 state.addHistoryEntry(historyEntry);
 

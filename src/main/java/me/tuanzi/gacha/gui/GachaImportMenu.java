@@ -120,7 +120,12 @@ public class GachaImportMenu extends ChestMenu {
 
     @Override
     public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
-        if (slotIndex < 0 || slotIndex >= 90) {
+        // 如果 slotIndex < 0 (例如 -999 表示点击槽位外部，比如丢弃物品或JEI特殊拖拽交互)，直接交给原版处理，决不进行拦截
+        if (slotIndex < 0) {
+            super.clicked(slotIndex, buttonNum, containerInput, player);
+            return;
+        }
+        if (slotIndex >= 90) {
             return;
         }
 
@@ -131,13 +136,17 @@ public class GachaImportMenu extends ChestMenu {
             ItemStack carried = this.getCarried();
             ItemStack current = container.getItem(slotIndex);
 
-            // 1.1 手中拿着物品 -> 放入/复制进去
+            // 1.1 手中拿着物品 -> 放入/复制进去并清空手持以完成“拖放”
             if (!carried.isEmpty()) {
-                // 复制一份放入待导入区（不消耗玩家本人的背包物品，非常安全！）
+                // 复制一份放入待导入区（不消耗玩家本人的背包物品，极其安全！）
                 ItemStack putItem = carried.copy();
-                putItem.setCount(1); // 导入只需一件模板
+                putItem.setCount(carried.getCount()); // 保留手中原本的正确数量
                 container.setItem(slotIndex, putItem);
                 tempWeights.put(slotIndex, 10); // 重置为此格子默认权重
+                
+                // 核心修复：成功拖入后清空手持物品，完成完美、自然的“拖入放下”操作，彻底解决 JEI 拖入和手持粘连卡死问题
+                this.setCarried(ItemStack.EMPTY);
+                
                 refreshSlots();
             } 
             // 1.2 手中没有拿着物品 -> 进行微调、删除或复制
@@ -146,17 +155,16 @@ public class GachaImportMenu extends ChestMenu {
                     // 中键或 Shift 点击复制到背包
                     ItemStack giveStack = current.copy();
                     // 还原清除我们额外追加的 Lore
-                    giveStack.set(DataComponents.LORE, null); // 简单粗暴去掉，或者不加
+                    giveStack.set(DataComponents.LORE, null);
+                    giveStack.setCount(current.getCount()); // 确保复制回去的也是正确的数量
                     if (player.getInventory().add(giveStack)) {
-                        player.sendSystemMessage(Component.literal("§a已复制物品 " + giveStack.getHoverName().getString() + " 到你的背包。"));
+                        player.sendSystemMessage(Component.literal("§a已复制物品 " + giveStack.getHoverName().getString() + "x" + giveStack.getCount() + " 到你的背包。"));
                     }
                 } else if (buttonNum == 0 && containerInput == ContainerInput.PICKUP) {
                     // 左键微调权重
-                    // 这里的 targetItem 并不存在于 pool 中，需要临时装载在 GachaPoolItem 实体里
                     int currentWeight = tempWeights.getOrDefault(slotIndex, 10);
-                    // 提取纯净的原物品（无我们添加的 Lore 提示）
+                    // 提取纯净的原物品
                     ItemStack cleanStack = current.copy();
-                    // 剔除导入提示 Lore
                     cleanStack.set(DataComponents.LORE, null); 
                     
                     GachaPoolItem tempItem = new GachaPoolItem("temp_" + slotIndex, currentWeight, new ArrayList<>(), cleanStack);
@@ -196,7 +204,7 @@ public class GachaImportMenu extends ChestMenu {
                         }
                         if (emptySlot != -1) {
                             ItemStack copyItem = invStack.copy();
-                            copyItem.setCount(1);
+                            copyItem.setCount(invStack.getCount()); // 一键导入时保留原本堆叠的正确数量
                             container.setItem(emptySlot, copyItem);
                             tempWeights.put(emptySlot, 10);
                             fillCount++;
@@ -276,7 +284,7 @@ public class GachaImportMenu extends ChestMenu {
                     }
                     if (emptySlot != -1) {
                         ItemStack copyItem = invStack.copy();
-                        copyItem.setCount(1);
+                        copyItem.setCount(invStack.getCount()); // Shift点击导入时，保留原本拥有的正确数量
                         container.setItem(emptySlot, copyItem);
                         tempWeights.put(emptySlot, 10);
                         refreshSlots();
@@ -284,8 +292,11 @@ public class GachaImportMenu extends ChestMenu {
                         player.sendSystemMessage(Component.literal("§c[!] 待导入区已满，无法继续放入物品。"));
                     }
                 }
+            } else {
+                // 如果不是 Shift 快捷装载，则为普通在生存背包内的拖拽、移位、整理操作，直接调用 super 从而赋予 100% 原生交互体验
+                super.clicked(slotIndex, buttonNum, containerInput, player);
             }
-            // 强行广播全状态，确保生存背包的点击只用于拖拽和Shift快速放入，物品绝对不扣除
+            // 强行广播全状态，确保生存背包的点击整理完全同步
             this.broadcastFullState();
         }
     }

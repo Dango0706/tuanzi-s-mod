@@ -65,7 +65,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             this.cachedVillager.setNoAi(true);
             this.cachedVillager.setInvulnerable(true);
             this.cachedVillager.setSilent(true);
-            this.cachedVillager.snapTo(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.3125, this.worldPosition.getZ() + 0.5, this.villagerYaw, 0.0f);
+            this.cachedVillager.snapTo(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.33, this.worldPosition.getZ() + 0.5, this.villagerYaw, 0.0f);
             this.cachedVillager.setYRot(this.villagerYaw);
             this.cachedVillager.setYHeadRot(this.villagerYaw);
             this.cachedVillager.setYBodyRot(this.villagerYaw);
@@ -156,7 +156,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                 villager.setNoAi(true);
                 villager.setInvulnerable(true);
                 villager.setSilent(true);
-                villager.snapTo(pos.getX() + 0.5, pos.getY() + 0.3125, pos.getZ() + 0.5, be.villagerYaw, 0.0f);
+                villager.snapTo(pos.getX() + 0.5, pos.getY() + 0.33, pos.getZ() + 0.5, be.villagerYaw, 0.0f);
                 villager.setYRot(be.villagerYaw);
                 villager.setYHeadRot(be.villagerYaw);
                 villager.setYBodyRot(be.villagerYaw);
@@ -168,7 +168,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
 
             // 2. 如果找到了世界实体，我们每 tick 都强行将其状态锁定在光笼正中心，并将其朝向固定在 yaw 上！
             if (villager != null) {
-                villager.snapTo(pos.getX() + 0.5, pos.getY() + 0.3125, pos.getZ() + 0.5, be.villagerYaw, 0.0f);
+                villager.snapTo(pos.getX() + 0.5, pos.getY() + 0.33, pos.getZ() + 0.5, be.villagerYaw, 0.0f);
                 villager.setYRot(be.villagerYaw);
                 villager.setYHeadRot(be.villagerYaw);
                 villager.setYBodyRot(be.villagerYaw);
@@ -273,7 +273,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
         if (this.villagerUuid != null && this.level instanceof ServerLevel serverLevel) {
             net.minecraft.world.entity.Entity entity = serverLevel.getEntity(this.villagerUuid);
             if (entity instanceof Villager v) {
-                v.snapTo(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.3125, this.worldPosition.getZ() + 0.5, this.villagerYaw, 0.0f);
+                v.snapTo(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.33, this.worldPosition.getZ() + 0.5, this.villagerYaw, 0.0f);
                 v.setYRot(this.villagerYaw);
                 v.setYHeadRot(this.villagerYaw);
                 v.setYBodyRot(this.villagerYaw);
