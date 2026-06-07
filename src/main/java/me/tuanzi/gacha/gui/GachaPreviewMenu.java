@@ -4,6 +4,7 @@ import me.tuanzi.gacha.GachaPool;
 import me.tuanzi.gacha.GachaPoolItem;
 import me.tuanzi.gacha.PlayerGachaState;
 import me.tuanzi.gacha.PlayerGachaManager;
+import me.tuanzi.gacha.GachaLogic;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -113,6 +114,19 @@ public class GachaPreviewMenu extends ChestMenu {
                 displayLore.add(Component.literal("§7所属品质: " + getRarityName(currentRarity)));
                 displayLore.add(Component.literal(String.format("§7本品质内出货权重: §a%d", poolItem.getWeight())));
                 displayLore.add(Component.literal(String.format("§7同品质内随机占比: §a%.2f%%", percentInRarity)));
+
+                // 定轨指示展示
+                PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), currentRarity);
+                if (anchor != null && poolItem.getId().equals(anchor.getTargetItemId())) {
+                    displayLore.add(Component.literal("§7--------------------"));
+                    displayLore.add(Component.literal("§d§l★ 当前定轨目标 ★"));
+                    displayLore.add(Component.literal("§7命定值: §c" + anchor.getFateValue() + " / " + GachaLogic.getFateLimit(pool.getPoolId(), currentRarity)));
+                    displayLore.add(Component.literal("§c[左键点击取消定轨]"));
+                } else {
+                    displayLore.add(Component.literal("§7--------------------"));
+                    displayLore.add(Component.literal("§e[左键点击设定轨目标]"));
+                }
+
                 displayLore.add(Component.literal("§7===================="));
                 displayStack.set(DataComponents.LORE, new ItemLore(displayLore));
 
@@ -125,6 +139,27 @@ public class GachaPreviewMenu extends ChestMenu {
     public void clicked(int slotIndex, int buttonNum, ContainerInput containerInput, Player player) {
         if (slotIndex < 0 || slotIndex >= 90) {
             return;
+        }
+
+        // 定轨点击拦截 (Slot 0-44)
+        if (slotIndex >= 0 && slotIndex < 45) {
+            if (buttonNum == 0 && containerInput == ContainerInput.PICKUP) {
+                List<GachaPoolItem> activeItems = getActiveItems();
+                int startIdx = currentPage * 45;
+                int itemIdx = startIdx + slotIndex;
+                if (itemIdx < activeItems.size()) {
+                    GachaPoolItem clickedItem = activeItems.get(itemIdx);
+                    PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), currentRarity);
+                    boolean isCancel = anchor != null && clickedItem.getId().equals(anchor.getTargetItemId());
+                    
+                    // 打开确认菜单
+                    this.player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                            (id, playerInv, p) -> new GachaFateConfirmMenu(id, playerInv, pool, clickedItem, currentRarity, isCancel),
+                            Component.literal(isCancel ? "§c取消定轨确认" : "§a定轨目标确认")
+                    ));
+                    return;
+                }
+            }
         }
 
         // 处理箱子界面的翻页控制 (Slot 45 和 53)
@@ -210,6 +245,27 @@ public class GachaPreviewMenu extends ChestMenu {
         
         if (isSakura) {
             lore.add("§8* 限定池若中金，直接 100% 获得当期限定传说大奖！");
+        }
+
+        boolean hasAnyFate = false;
+        String[] raritiesToCheck = {"legendary", "epic", "rare", "uncommon", "common"};
+        for (String rty : raritiesToCheck) {
+            PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), rty);
+            if (anchor != null && anchor.getTargetItemId() != null) {
+                if (!hasAnyFate) {
+                    lore.add(Component.literal("").getString());
+                    lore.add("§6§l✦ 当前定轨目标列表 ✦");
+                    hasAnyFate = true;
+                }
+                GachaPoolItem targetItem = pool.getItemById(anchor.getTargetItemId());
+                String targetName = targetItem != null ? targetItem.getItem().getHoverName().getString() : anchor.getTargetItemId();
+                int limit = GachaLogic.getFateLimit(pool.getPoolId(), rty);
+                lore.add("§7▶ " + getRarityName(rty) + "§7: §6" + targetName + " §c(" + anchor.getFateValue() + "/" + limit + ")");
+            }
+        }
+        if (!hasAnyFate) {
+            lore.add(Component.literal("").getString());
+            lore.add("§7▶ 当前定轨目标: §8未设置 §8(左键点击上方物品定轨)");
         }
 
         return lore;

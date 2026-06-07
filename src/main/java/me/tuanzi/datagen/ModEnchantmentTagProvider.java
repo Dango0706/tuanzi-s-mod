@@ -27,7 +27,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.EXPERIENCE)
             .addOptional(ModEnchantments.BLOOD_RAGE)
             .addOptional(ModEnchantments.BERSERKER)
-            .addOptional(ModEnchantments.EXECUTE);
+            .addOptional(ModEnchantments.EXECUTE)
+            .addOptional(ModEnchantments.BUZZING_RHYTHM)
+            .addOptional(ModEnchantments.RESONANCE_PULSE);
 
         builder(EnchantmentTags.ON_RANDOM_LOOT)
             .addOptional(ModEnchantments.EXPERIENCE)
@@ -35,13 +37,17 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.BERSERKER)
             .addOptional(ModEnchantments.EXECUTE)
             .addOptional(ModEnchantments.CHAIN_PAIN)
-            .addOptional(ModEnchantments.SEEKING_ARROW);
+            .addOptional(ModEnchantments.SEEKING_ARROW)
+            .addOptional(ModEnchantments.BUZZING_RHYTHM)
+            .addOptional(ModEnchantments.RESONANCE_PULSE);
 
         builder(EnchantmentTags.TRADEABLE)
             .addOptional(ModEnchantments.EXPERIENCE)
             .addOptional(ModEnchantments.BLOOD_RAGE)
             .addOptional(ModEnchantments.BERSERKER)
-            .addOptional(ModEnchantments.EXECUTE);
+            .addOptional(ModEnchantments.EXECUTE)
+            .addOptional(ModEnchantments.BUZZING_RHYTHM)
+            .addOptional(ModEnchantments.RESONANCE_PULSE);
             
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入

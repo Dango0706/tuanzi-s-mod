@@ -253,6 +253,13 @@ public class GachaImportMenu extends ChestMenu {
                 
                 player.sendSystemMessage(Component.literal("§a[!] 成功批量导入了 " + importedCount + " 件物品至 " + getRarityName(rarity) + " 卡池！"));
                 
+                // 自动保存并备份到本地
+                if (importedCount > 0) {
+                    me.tuanzi.gacha.PoolManager.savePoolSafe(pool, this.player.level().getServer().registryAccess());
+                    me.tuanzi.gacha.PoolManager.backupPoolSafe(pool, this.player.level().getServer().registryAccess());
+                    player.sendSystemMessage(Component.literal("§a[!] 卡池配置已自动保存并备份到本地！"));
+                }
+                
                 // 返回主卡池编辑器
                 net.minecraft.world.SimpleMenuProvider provider = new net.minecraft.world.SimpleMenuProvider(
                         (id, playerInv, p) -> {

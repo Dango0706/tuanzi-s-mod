@@ -226,6 +226,7 @@ public class TrialDummyEntity extends LivingEntity {
 
         // 立刻将血量回满，实现完美无敌！
         this.setHealth(this.getMaxHealth());
+        this.invulnerableTime = 0;
     }
 
     @Override

@@ -19,10 +19,23 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker {
 
     @Shadow
     protected abstract void onEffectsRemoved(Collection<MobEffectInstance> effects);
+
+    @org.spongepowered.asm.mixin.Unique
+    private java.util.UUID tuanzis_mod$lastRhythmTargetUuid = null;
+
+    @Override
+    public java.util.UUID tuanzis_mod$getLastRhythmTarget() {
+        return this.tuanzis_mod$lastRhythmTargetUuid;
+    }
+
+    @Override
+    public void tuanzis_mod$setLastRhythmTarget(java.util.UUID uuid) {
+        this.tuanzis_mod$lastRhythmTargetUuid = uuid;
+    }
 
     @org.spongepowered.asm.mixin.Unique
     private int tuanzis_mod$tearingTicks = 0;

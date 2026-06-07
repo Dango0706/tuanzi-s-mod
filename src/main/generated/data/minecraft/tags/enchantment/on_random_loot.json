@@ -23,6 +23,14 @@
     {
       "id": "tuanzis_mod:seeking_arrow",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:buzzing_rhythm",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:resonance_pulse",
+      "required": false
     }
   ]
 }

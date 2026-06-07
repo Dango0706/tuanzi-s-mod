@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "tuanzis_mod:item/tide_cleaver_3",
+    "layer1": "tuanzis_mod:item/tide_cleaver_4",
+    "layer2": "tuanzis_mod:item/tide_cleaver_energy"
+  }
+}

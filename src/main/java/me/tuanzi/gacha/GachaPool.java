@@ -123,4 +123,44 @@ public class GachaPool {
             }
         }
     }
+
+    public GachaPoolItem getItemById(String itemId) {
+        if (itemId == null) return null;
+        for (GachaPoolItem item : legendary) {
+            if (itemId.equals(item.getId())) return item;
+        }
+        for (GachaPoolItem item : epic) {
+            if (itemId.equals(item.getId())) return item;
+        }
+        for (GachaPoolItem item : rare) {
+            if (itemId.equals(item.getId())) return item;
+        }
+        for (GachaPoolItem item : uncommon) {
+            if (itemId.equals(item.getId())) return item;
+        }
+        for (GachaPoolItem item : common) {
+            if (itemId.equals(item.getId())) return item;
+        }
+        return null;
+    }
+
+    public String getItemRarity(String itemId) {
+        if (itemId == null) return null;
+        for (GachaPoolItem item : legendary) {
+            if (itemId.equals(item.getId())) return "legendary";
+        }
+        for (GachaPoolItem item : epic) {
+            if (itemId.equals(item.getId())) return "epic";
+        }
+        for (GachaPoolItem item : rare) {
+            if (itemId.equals(item.getId())) return "rare";
+        }
+        for (GachaPoolItem item : uncommon) {
+            if (itemId.equals(item.getId())) return "uncommon";
+        }
+        for (GachaPoolItem item : common) {
+            if (itemId.equals(item.getId())) return "common";
+        }
+        return null;
+    }
 }

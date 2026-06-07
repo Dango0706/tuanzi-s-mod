@@ -24,6 +24,11 @@ public class ModStatusEffects {
     public static final Holder<MobEffect> HELL_FIRE = register("hell_fire", new me.tuanzi.effect.HellFireStatusEffect());
     public static final Holder<MobEffect> BLAZING_HUNGER = register("blazing_hunger", new me.tuanzi.effect.BlazingHungerStatusEffect());
     public static final Holder<MobEffect> HYDROPHOBIA = register("hydrophobia", new me.tuanzi.effect.HydrophobiaStatusEffect());
+    public static final Holder<MobEffect> BEE_POISON = register("bee_poison", new me.tuanzi.effect.BeePoisonStatusEffect());
+    public static final Holder<MobEffect> BEE_POISON_COOLDOWN = register("bee_poison_cooldown", new me.tuanzi.effect.BeePoisonCooldownStatusEffect());
+    public static final Holder<MobEffect> BUZZING_RHYTHM = register("buzzing_rhythm", new me.tuanzi.effect.BuzzingRhythmStatusEffect());
+    public static final Holder<MobEffect> RESONANCE = register("resonance", new me.tuanzi.effect.ResonanceStatusEffect());
+    public static final Holder<MobEffect> TIDE_EROSION = register("tide_erosion", new me.tuanzi.effect.TideErosionStatusEffect());
 
     private static Holder<MobEffect> register(String name, MobEffect effect) {
         return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, name), effect);

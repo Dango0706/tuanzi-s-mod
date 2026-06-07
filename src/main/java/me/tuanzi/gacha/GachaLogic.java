@@ -195,14 +195,69 @@ public class GachaLogic {
             raritySelected = "common";
         }
 
-        // 7. 限定池传说 UP 特性
-        GachaPoolItem selectedItem;
-        if (isSakura && raritySelected.equals("legendary")) {
-            // 限定池一旦抽中传说，直接 100% 获得当期限定传说级物品的第一个
-            selectedItem = list.get(0);
-        } else {
-            // 常规加权随机
-            selectedItem = selectWeightedItem(list);
+        // 7. 定轨机制处理与物品选择
+        GachaPoolItem selectedItem = null;
+        PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), raritySelected);
+        boolean hasFateTargetAndMatched = false;
+
+        if (anchor != null && anchor.getTargetItemId() != null) {
+            String targetRarity = pool.getItemRarity(anchor.getTargetItemId());
+            if (targetRarity != null && targetRarity.equalsIgnoreCase(raritySelected)) {
+                hasFateTargetAndMatched = true;
+                int limit = getFateLimit(pool.getPoolId(), raritySelected);
+                
+                if (anchor.getFateValue() >= limit) {
+                    // 命定值已满，必中目标物品
+                    selectedItem = pool.getItemById(anchor.getTargetItemId());
+                    if (selectedItem != null) {
+                        boolean isEpicOrAbove = raritySelected.equalsIgnoreCase("legendary") || raritySelected.equalsIgnoreCase("epic");
+                        if (isEpicOrAbove) {
+                            state.setFateAnchor(pool.getPoolId(), raritySelected, null);
+                        } else {
+                            anchor.setFateValue(0);
+                            state.setDirty(true);
+                            PlayerGachaManager.saveStateSafe(state);
+                        }
+                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
+                        ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
+                    }
+                }
+                
+                if (selectedItem == null) {
+                    if (isSakura && raritySelected.equals("legendary")) {
+                        selectedItem = list.get(0);
+                    } else {
+                        selectedItem = selectWeightedItem(list);
+                    }
+                    
+                    if (selectedItem.getId().equals(anchor.getTargetItemId())) {
+                        boolean isEpicOrAbove = raritySelected.equalsIgnoreCase("legendary") || raritySelected.equalsIgnoreCase("epic");
+                        if (isEpicOrAbove) {
+                            state.setFateAnchor(pool.getPoolId(), raritySelected, null);
+                        } else {
+                            anchor.setFateValue(0);
+                            state.setDirty(true);
+                            PlayerGachaManager.saveStateSafe(state);
+                        }
+                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
+                        ModLog.debug(player, null, "提前抽中定轨目标！获得定轨目标: " + selectedItem.getId());
+                    } else {
+                        anchor.setFateValue(anchor.getFateValue() + 1);
+                        state.setDirty(true);
+                        PlayerGachaManager.saveStateSafe(state);
+                        player.sendSystemMessage(Component.literal("§e你获得了其他" + getRarityChineseName(raritySelected) + "品质的物品，命定值 +1（当前 " + anchor.getFateValue() + "/" + limit + "）。"));
+                        ModLog.debug(player, null, "定轨匹配但抽中其他物品，歪了！获得物品: " + selectedItem.getId() + " | 当前命定值: " + anchor.getFateValue() + "/" + limit);
+                    }
+                }
+            }
+        }
+
+        if (!hasFateTargetAndMatched || selectedItem == null) {
+            if (isSakura && raritySelected.equals("legendary")) {
+                selectedItem = list.get(0);
+            } else {
+                selectedItem = selectWeightedItem(list);
+            }
         }
 
         // 8. 调试概率计算日志输出 ( me.tuanzi.util.ModLog.debug )
@@ -239,6 +294,34 @@ public class GachaLogic {
         }
 
         return new RollResult(selectedItem, raritySelected);
+    }
+
+    public static boolean isLimitedPool(String poolId) {
+        return poolId != null && !poolId.equalsIgnoreCase("normal");
+    }
+
+    public static int getFateLimit(String poolId, String rarity) {
+        if (isLimitedPool(poolId)) {
+            return 1;
+        } else {
+            if (rarity != null && (rarity.equalsIgnoreCase("legendary") || rarity.equalsIgnoreCase("epic"))) {
+                return 2;
+            } else {
+                return 1;
+            }
+        }
+    }
+
+    public static String getRarityChineseName(String rarity) {
+        if (rarity == null) return "未知";
+        return switch (rarity.toLowerCase()) {
+            case "legendary" -> "传说";
+            case "epic" -> "史诗";
+            case "rare" -> "稀有";
+            case "uncommon" -> "优秀";
+            case "common" -> "普通";
+            default -> "未知";
+        };
     }
 
     /**

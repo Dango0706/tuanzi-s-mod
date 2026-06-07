@@ -66,6 +66,21 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(seekingArrowBook, mutable -> mutable.set(seekingArrow, 1));
                 entries.accept(seekingArrowBook);
 
+                var buzzingRhythm = enchantmentRegistry.getOrThrow(ModEnchantments.BUZZING_RHYTHM);
+                ItemStack buzzingRhythmBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(buzzingRhythmBook, mutable -> mutable.set(buzzingRhythm, 4));
+                entries.accept(buzzingRhythmBook);
+
+                var resonancePulse = enchantmentRegistry.getOrThrow(ModEnchantments.RESONANCE_PULSE);
+                ItemStack resonancePulseBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(resonancePulseBook, mutable -> mutable.set(resonancePulse, 3));
+                entries.accept(resonancePulseBook);
+
+                var abyssalRhythm = enchantmentRegistry.getOrThrow(ModEnchantments.ABYSSAL_RHYTHM);
+                ItemStack abyssalRhythmBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(abyssalRhythmBook, mutable -> mutable.set(abyssalRhythm, 4));
+                entries.accept(abyssalRhythmBook);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -80,6 +95,12 @@ public class ModItemGroups {
                 entries.accept(ModItems.WARDEN_HEART);
                 // 加入回响破障者
                 entries.accept(ModItems.ECHO_BREAKER);
+                // 加入蜂刺余响
+                entries.accept(ModItems.BEE_STING_ECHO);
+                // 加入幽匿裂片
+                entries.accept(ModItems.SCULLY_SHARD);
+                // 加入潮汐切割者
+                entries.accept(ModItems.TIDE_CLEAVER);
                 // 加入稻草人与假目标
                 entries.accept(ModItems.SCARECROW);
                 entries.accept(ModItems.TRIAL_DUMMY);

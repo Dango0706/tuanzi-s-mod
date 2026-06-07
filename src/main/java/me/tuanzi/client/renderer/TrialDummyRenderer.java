@@ -27,16 +27,13 @@ import net.minecraft.world.phys.Vec3;
 
 @Environment(EnvType.CLIENT)
 public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, TrialDummyRenderState, ArmorStandArmorModel> {
-    public static final Identifier DEFAULT_SKIN_LOCATION = Identifier.withDefaultNamespace("textures/entity/armorstand/armorstand.png");
+    public static final Identifier TRIAL_DUMMY_SKIN_LOCATION = Identifier.fromNamespaceAndPath(me.tuanzi.Tuanzis_mod.MOD_ID, "textures/entity/trial_dummy.png");
     private final ArmorStandArmorModel bigModel = this.getModel();
     private final ArmorStandArmorModel smallModel;
     
-    private final MovingBlockRenderState movingBlockRenderState = new MovingBlockRenderState();
-    private final MovingBlockRenderState fenceRenderState = new MovingBlockRenderState();
-
     public TrialDummyRenderer(final EntityRendererProvider.Context context) {
-        super(context, new ScarecrowModel(context.bakeLayer(ModelLayers.ARMOR_STAND)), 0.0F);
-        this.smallModel = new ScarecrowModel(context.bakeLayer(ModelLayers.ARMOR_STAND_SMALL));
+        super(context, new TrialDummyModel(context.bakeLayer(TrialDummyModel.TRIAL_DUMMY_LAYER)), 0.0F);
+        this.smallModel = new TrialDummyModel(context.bakeLayer(TrialDummyModel.TRIAL_DUMMY_LAYER));
         
         // 使用 Raw Type 强转，大师级避开 Java 泛型不协变的编译硬伤
         this.addLayer((net.minecraft.client.renderer.entity.layers.RenderLayer) new HumanoidArmorLayer(
@@ -51,7 +48,7 @@ public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, T
 
     @Override
     public Identifier getTextureLocation(final TrialDummyRenderState state) {
-        return DEFAULT_SKIN_LOCATION;
+        return TRIAL_DUMMY_SKIN_LOCATION;
     }
 
     @Override
@@ -87,42 +84,12 @@ public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, T
         state.damageTexts.clear();
         state.damageTexts.addAll(entity.clientDamageTexts);
 
-        BlockPos pos = entity.blockPosition();
-        this.movingBlockRenderState.randomSeedPos = pos;
-        this.movingBlockRenderState.blockPos = pos;
-        this.movingBlockRenderState.blockState = Blocks.HAY_BLOCK.defaultBlockState();
-        
-        this.fenceRenderState.randomSeedPos = pos;
-        this.fenceRenderState.blockPos = pos;
-        this.fenceRenderState.blockState = Blocks.OAK_FENCE.defaultBlockState();
-        
-        if (entity.level() instanceof net.minecraft.client.multiplayer.ClientLevel clientLevel) {
-            this.movingBlockRenderState.biome = clientLevel.getBiome(pos);
-            this.movingBlockRenderState.cardinalLighting = clientLevel.cardinalLighting();
-            this.movingBlockRenderState.lightEngine = clientLevel.getLightEngine();
-            
-            this.fenceRenderState.biome = clientLevel.getBiome(pos);
-            this.fenceRenderState.cardinalLighting = clientLevel.cardinalLighting();
-            this.fenceRenderState.lightEngine = clientLevel.getLightEngine();
-        }
     }
 
     @Override
     public void submit(final TrialDummyRenderState state, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final CameraRenderState camera) {
         this.model = state.isSmall ? this.smallModel : this.bigModel;
         super.submit(state, poseStack, submitNodeCollector, camera);
-
-        // 1. 渲染包裹身体的干草块
-        poseStack.pushPose();
-        poseStack.translate(-0.5F, 0.65F, -0.5F);
-        submitNodeCollector.submitMovingBlock(poseStack, this.movingBlockRenderState);
-        poseStack.popPose();
-
-        // 2. 渲染插在地下的橡木栅栏木桩
-        poseStack.pushPose();
-        poseStack.translate(-0.5F, -0.35F, -0.5F);
-        submitNodeCollector.submitMovingBlock(poseStack, this.fenceRenderState);
-        poseStack.popPose();
 
         // 3. 遍历伤害文字列表，将其原生渲染至假人上方 3D 空间
         for (DamageText text : state.damageTexts) {

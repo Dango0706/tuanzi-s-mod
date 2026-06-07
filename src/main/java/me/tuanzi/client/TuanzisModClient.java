@@ -21,6 +21,16 @@ public class TuanzisModClient implements ClientModInitializer {
         // 启动异步更新检查
         UpdateChecker.checkUpdate();
 
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
+            me.tuanzi.client.renderer.ScarecrowModel.SCARECROW_LAYER,
+            me.tuanzi.client.renderer.ScarecrowModel::createBodyLayer
+        );
+
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
+            me.tuanzi.client.renderer.TrialDummyModel.TRIAL_DUMMY_LAYER,
+            me.tuanzi.client.renderer.TrialDummyModel::createBodyLayer
+        );
+
         tuanzisModCategory = KeyMapping.Category.register(Identifier.withDefaultNamespace("tuanzis_mod"));
 
         chainMiningKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
@@ -59,6 +69,30 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.gui.screens.MenuScreens.register(
             me.tuanzi.init.ModMenuTypes.TRAVELERS_NOTEBOOK,
             me.tuanzi.client.gui.screens.inventory.TravelersNotebookScreen::new
+        );
+
+        // 注册蜂刺余响自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "bee_sting_echo"),
+            me.tuanzi.client.BeeStingEchoTintSource.MAP_CODEC
+        );
+
+        // 注册幽匿裂片自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "scully_shard"),
+            me.tuanzi.client.ScullyShardTintSource.MAP_CODEC
+        );
+
+        // 注册潮汐切割者自定义 Wear TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_wear"),
+            me.tuanzi.client.TideCleaverWearTintSource.MAP_CODEC
+        );
+
+        // 注册潮汐切割者自定义 Energy TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_energy"),
+            me.tuanzi.client.TideCleaverEnergyTintSource.MAP_CODEC
         );
 
         // 注册 S2C 打开手札书本界面接收器

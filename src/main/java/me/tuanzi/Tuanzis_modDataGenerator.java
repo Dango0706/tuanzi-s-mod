@@ -104,11 +104,13 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
 			translationBuilder.add("jei.tuanzis_mod.experience.description", "【阅历附魔】\n增加击杀生物时获得的经验收益。\n\n§e效果：§r\n1. §b收益提升§r：每一级增加 §a25%§r 的经验收益（向上取整）。\n2. §b生效条件§r：仅在主手持有该附魔武器击杀生物时生效。\n3. §b范围§r：对除击杀玩家外的所有生物有效。\n\n§7说明：最高等级为 4 级。30 级附魔台最高只能刷出 3 级，4 级需通过铁砧合并或特殊战利品获得。§r");
 			translationBuilder.add("jei.tuanzis_mod.warden_heart.description", "【坚守者的心脏】\n击杀监守者 (Warden) 获得的核心材料，蕴含着其顽强生命力与声波能量。\n\n§e获取方式：§r\n1. §b稀有掉落§r：击杀监守者 (Warden) 时有 §a25%§r 的概率掉落（受抢夺附魔影响，每级抢夺增加 10% 掉落概率）。\n\n§e用途：§r\n1. §b合成原料§r：与 3 个 §b回响碎片 (Echo Shard)§r 和 1 根 §b木棍§r 合成强力防御武器——§6回响破障者§r。\n2. §b装备修复§r：可用于在铁砧中修复§6回响破障者§r武器。");
-			translationBuilder.add("jei.tuanzis_mod.echo_breaker.description", "【回响破障者】\n使用坚守者的心脏与回响碎片锻造的终极防御型防具/武器。蕴藏着能抵御甚至反弹声波伤害的神奇力量。\n\n§e被动效果：§r\n1. §b声波吸收§r：仅在主手持有生效，副手及快捷栏不生效。在受到监守者音波爆破伤害时，§a自动减免 30%§r 伤害。\n\n§e主动效果 (右键使用)：§r\n1. §b使用限制§r：仅在§c副手无物品§r时才可以使用右键格挡。\n2. §b完美格挡§r：右键格挡持续 §e0.5 秒§r。格挡期间§a免疫 100% 音波爆破伤害§r。\n3. §b声波反弹§r：在完美格挡音波爆破时，将声波完美反弹给发射源，对目标造成 §c15 点§r 真实伤害并附加 §9强烈击退§r 效果。\n4. §b格挡代价§r：每次格挡成功将额外扣除 §c3 点§r 耐久值。\n5. §b冷却机制§r：格挡§c失败§r则触发 §e5.0 秒§r 冷却，若格挡§a成功§r则触发 §68.0 秒§r 冷却。\n\n§e修复与维护：§r\n可以使用§b坚守者的心脏§r在铁砧中修复其耐久度。");
+			translationBuilder.add("jei.tuanzis_mod.echo_breaker.description", "【回响破障者】\n使用坚守者的心脏与回响碎片锻造的终极防御型防具/武器。蕴藏着能抵御甚至反弹声波伤害的神奇力量。\n\n§e被动效果：§r\n1. §b声波吸收§r：仅在主手持有生效，副手及快捷栏不生效。在受到监守者音波爆破伤害时，§a自动减免 15%§r 伤害。\n\n§e主动效果 (右键使用)：§r\n1. §b使用限制§r：仅在§c副手无物品§r时才可以使用右键格挡。\n2. §b完美格挡§r：右键格挡持续 §e0.75 秒§r。格挡期间§a免疫 100% 音波爆破伤害§r。\n3. §b声波反弹§r：在完美格挡音波爆破时，将声波完美反弹给发射源，对目标造成 §c18 点§r 真实伤害并附加 §9强烈击退§r 效果。\n4. §b格挡代价§r：每次格挡成功将额外扣除 §c3 点§r 耐久值。\n5. §b冷却机制§r：格挡§c失败§r则触发 §e2.0 秒§r 冷却，若格挡§a成功§r则触发 §64.0 秒§r 冷却。\n\n§e修复与维护：§r\n可以使用§b坚守者的心脏§r在铁砧中修复其耐久度。");
 			translationBuilder.add("enchantment.tuanzis_mod.chain_mining", "连锁采掘");
 			translationBuilder.add("enchantment.tuanzis_mod.blood_rage", "血怒");
 			translationBuilder.add("enchantment.tuanzis_mod.berserker", "狂战士");
+			translationBuilder.add("enchantment.tuanzis_mod.buzzing_rhythm", "蜂鸣节律");
 			translationBuilder.add("effect.tuanzis_mod.blood_rage", "血怒");
+			translationBuilder.add("effect.tuanzis_mod.buzzing_rhythm", "节律");
 			translationBuilder.add("death.attack.tuanzis_mod.blood_rage_feedback", "%s 因血怒反噬而亡");
 			translationBuilder.add("key.tuanzis_mod.chain_mining", "连锁采掘激活键");
 			translationBuilder.add("key.category.tuanzis_mod", "团子的模组");
@@ -357,11 +359,123 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"3. §b冲突互斥§r：与常规工具附魔 §b精准采集 (Silk Touch)§r 互斥。";
 			translationBuilder.add("jei.tuanzis_mod.chain_pain.description", chainPainDesc);
 
+			String buzzingRhythmDesc = "【蜂鸣节律附魔】\n" +
+				"一种可附魔于剑类武器的稀有战斗型附魔。可以通过极富节奏的连续打击极大地强化自身的攻击伤害！\n\n" +
+				"§e附魔效果：§r\n" +
+				"1. §b节律增伤§r：当持有者使用带有此附魔的武器连续攻击带有“蜂毒”或“蜂毒冷却”的目标时，每次攻击命中后叠加一层“节律”状态，持续 3 秒，最多叠加 1 + 等级（最高 5）层。每层节律使持有者的攻击伤害额外提升 §a3%§r（最高提升 15% 伤害）。\n" +
+				"2. §b时间过期§r：若 3 秒内未命中该带毒目标，节律层数立刻清零。\n" +
+				"3. §b触及范围加成§r：每一级附魔将为持有者额外增加 §b0.0625 格§r 的触及距离（最高增加 0.25 格）。\n\n" +
+				"§e冲突与限制：§r\n" +
+				"与常规战斗附魔 §b横扫之刃 (Sweeping Edge)§r、§b火焰附加 (Fire Aspect)§r、§b击退 (Knockback)§r 互斥。";
+			translationBuilder.add("jei.tuanzis_mod.buzzing_rhythm.description", buzzingRhythmDesc);
+
 			// 抽卡物品中文翻译
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_PACK, "星旅卡牌包");
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "星旅卡牌箱");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "樱花祭卡牌包");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "樱花祭卡牌箱");
+
+			// 蜂刺余响翻译
+			translationBuilder.add(ModItems.BEE_STING_ECHO, "蜂刺余响");
+			translationBuilder.add(ModStatusEffects.BEE_POISON.value(), "蜂毒");
+			translationBuilder.add(ModStatusEffects.BEE_POISON_COOLDOWN.value(), "蜂毒冷却");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.1", "外观: §a初振之锋");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.2", "外观: §e微疲之纹");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.3", "外观: §6劳损之痕");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.4", "外观: §c衰振之音");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.5", "外观: §4残响空巢");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.1", "§7剑身薄如蝉翼，呈现半透明的琥珀金色，刃纹呈密集的六边形网格状。挥动时空中残留金色残影。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.2", "§7琥珀金色变淡为蜂蜜色，不再透明。六边形刃纹有几处断续，护手翼膜上现出数道放射状裂纹。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.3", "§7剑身呈现磨砂质感的老蜜色，整体黯淡无光。剑刃边缘有细碎锯齿状缺口，护手一侧完全穿孔。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.4", "§7剑身已呈暗褐色的古旧蜜蜡色，表面布满风化般的微孔。刃纹完全消失，取而代之的是无序分布的细密裂纹。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.5", "§7整把剑呈焦黑色，覆盖着蓝紫色氧化斑。原本的薄刃上布满贯穿孔洞，大小不一，边缘融化成泪滴状。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.1", "§8在某个被遗忘的蜂语者的传说中，这把剑由蜂后的最后一根螫针锻造而成。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.2", "§8当蜂巢覆灭、族群消亡之际，蜂后将毕生未释放的刺注入一块凡铁，于是有了这把薄刃。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.3", "§8每位持剑者在第一次握紧它时，都会感到掌心传来微弱的持续振动。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.4", "§8它在高速交击中将对手拖入无尽的刺痛节奏，直到敌人发现伤口已多到无从包扎。");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion", "%s 被引爆的蜂毒噬体而亡");
+			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion.player", "%s 在与 %s 的战斗中，被满层蜂毒的爆破真实伤害终结了生命");
+			
+			String beeStingEchoDesc = "【蜂刺余响】\n由蜂后的最后一根螫针锻造而成的绝影薄刃。拥有极快的攻速与独特的叠刺爆毒被动。\n\n§e属性：§r\n1. §a攻击力§r: 7 点（比下界合金剑低 1 点）。\n2. §a攻击速度§r: 2.1（显著快于下界合金剑的 1.6）。\n3. §a限制§r: 该武器的攻击距离缩短 0.25 格，且无法触发横扫攻击。\n\n§e叠刺被动：§r\n1. 每次成功命中目标时，为其叠加一层 §6蜂毒§r 效果，持续 5 秒，最高叠加 5 层。\n2. 每层蜂毒使目标受到的下一次伤害提升 §a3%§r（对真实伤害同样有效）。如果是非蜂刺余响造成的伤害，会在触发增幅后立即消耗（清空）所有层数。\n3. 当蜂毒叠满 5 层时，会立刻引爆所有层数，造成合计 §c15%§r 该次命中最终伤害的§4额外真实伤害§r，并清空层数。\n4. 引爆后，目标进入 §e8 秒的引爆冷却§r 状态，期间无法再被叠加蜂毒。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (初振之锋、微疲之纹、劳损之痕、衰振之音、残响空巢) 以及不同频率的蜂鸣声。";
+			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", beeStingEchoDesc);
+
+			// 幽匿裂片（Scully Shard）与 共振脉冲（Resonance Pulse）翻译
+			translationBuilder.add(ModItems.SCULLY_SHARD, "幽匿裂片");
+			translationBuilder.add(ModStatusEffects.RESONANCE.value(), "共鸣");
+			translationBuilder.add("enchantment.tuanzis_mod.resonance_pulse", "共振脉冲");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.1", "外观: §a深空回响");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.2", "外观: §e微纹共鸣");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.3", "外观: §6脉动裂痕");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.4", "外观: §c衰变尖啸");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.5", "外观: §4静默残片");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.1", "§7剑身如深空水晶般透彻，内部可见缓慢流动的幽蓝色星云状光雾。剑格回响碎片晶莹饱满，散发柔和的蓝白色脉冲光晕。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.2", "§7透明剑身开始出现细微的银色冰裂纹，光泽略微变暗，星云光雾的流速加快且略显紊乱。剑格碎片边缘出现细小的暗色蚀点，光晕转为不稳定的间歇式闪烁。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.3", "§7剑身内部裂纹交织成网状，幽蓝光雾已混入暗紫色紊流，仿佛被困的能量在挣扎。剑格碎片表面布满深浅不一的蚀痕，脉冲光晕变得暗淡且失去规律，偶尔会出现短暂的暗灭。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.4", "§7剑身浑浊发黑，只有少数裂纹间隙仍透出垂死挣扎的微弱蓝光，大部分区域呈现幽匿块原生的暗绿色。剑格碎片边缘崩缺，蚀痕扩散如霉斑。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.5", "§7剑身几乎完全被暗色裂隙覆盖，仅剩极细如发丝的光线证明幽能尚未彻底消散。剑格碎片色泽浑浊且严重缺损，光晕已彻底消失。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.1", "§8由深暗之域深处的幽匿核心碎片与凝聚的回响结晶炼制。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.2", "§8它能捕捉并放大空气中细微的声波振动，与目标的灵魂产生不可磨灭的共鸣。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.3", "§8当共鸣被打破时，积压的音波脉冲将如超声轰击般，在虚空中撕碎一切敌人的防御。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.4", "§8然而，幽能的反噬也在无情地侵蚀着剑身，直至万籁俱寂，空留残片。");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			
+			String scullyShardJeiDesc = "【幽匿裂片】\n来自深暗之域的幽能魔刃，拥有专属的音波共鸣被动与独特的磨损特性。\n\n" +
+				"§e属性：§r\n" +
+				"1. §a攻击力§r: 10 点。\n" +
+				"2. §a攻击速度§r: 1.25。\n\n" +
+				"§e固有机制——“幽匿共鸣”：§r\n" +
+				"1. 每次命中目标时，对其施加持续 2.5 秒的 §b“共鸣”§r 状态（不叠加层数，可刷新持续时间）。\n" +
+				"2. 若命中的目标已带“共鸣”，则消耗并移除共鸣，对其额外造成 §c2 点音波魔法伤害§r（无视护甲，触发时可与共振脉冲附魔产生强力联动）。\n\n" +
+				"§e磨损度外观机制：§r\n" +
+				"1. 本剑在诞生时会随机生成磨损度 (0-1)，永久不可变更。不同的磨损度对应五种外观阶段，并在击中时播放不同音效。";
+			translationBuilder.add("jei.tuanzis_mod.scully_shard.description", scullyShardJeiDesc);
+
+			String resonancePulseJeiDesc = "【共振脉冲附魔】\n仅可附魔于剑类武器的音波附魔，能够与幽匿裂片的共鸣被动完美联动。\n\n" +
+				"§e附魔效果：§r\n" +
+				"1. §b共鸣施加§r：每次命中时，有 §a10% * 等级§r 的概率对目标施加持续 2.5 秒的 §b“共鸣”§r 状态。\n" +
+				"2. §b脉冲爆发§r：当攻击命中已带有“共鸣”的目标时，立即消耗共鸣并产生一次共振脉冲，对目标及周围 §a2格§r 内所有敌人造成 §c0.2 + 0.4 * 等级§r 点音波魔法伤害（无视护甲，无冷却，可多次连环触发）。";
+			translationBuilder.add("jei.tuanzis_mod.resonance_pulse.description", resonancePulseJeiDesc);
+
+			String tideCleaverJeiDesc = "【潮汐切割者】\n一把凝结了海洋能量的奇特武器，具有独特的“潮汐节拍”被动与磨损机制。\n\n§e潮汐节拍：§r\n1. §b合拍窗口§r：攻击冷却在 §a80% 至 100%§r，或完全充满后的 §e0.2 秒 (4 ticks)§r 内。在此期间攻击为“合拍攻击”，获得 1 层潮汐充能（最高 5 层），每层提供 §a+2% 近战伤害§r。\n2. §b失拍攻击§r：在冷却低于 §c80%§r 时攻击，伤害降低 §c15%§r 并失去 1 层充能。\n3. §b正常攻击§r：冷却满超过 0.2 秒后攻击，伤害无修正，层数不变。\n\n§e被动效果：§r\n1. §b潮汐侵蚀§r：当持有的充能层数 §a>= 2 层§r 时，每次近战攻击会使目标获得 2 秒“潮汐侵蚀”效果，每秒造成 §c1 点魔法伤害§r。\n2. §b潮涌爆发§r：充能达到 5 层时，下一次合拍攻击额外造成 §c3点无视护甲魔法伤害§r，随后充能重置为 1。该爆发有 §e7 秒内置冷却§r。\n\n§e修复与维护：§r\n可在铁砧中使用§b海洋之心§r修复其耐久度。";
+			translationBuilder.add(ModItems.TIDE_CLEAVER, "潮汐切割者");
+			translationBuilder.add(ModStatusEffects.TIDE_EROSION.value(), "潮汐侵蚀");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.1", "外观: §a永澜之锋");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.2", "外观: §e浅湾余波");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.3", "外观: §6暗礁潜流");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.4", "外观: §c退潮裂礁");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.5", "外观: §4枯潮死心");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.1", "§7剑身呈现完美的深海钴蓝至浅海碧色渐变，虹彩珍珠光泽流转不息。剑格内海洋之心饱满剔透，液态能量缓缓涨落，边缘清晰。剑刃无任何划痕，在阳光下可见波浪纹理的反光。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.2", "§7剑刃边缘出现极细微的磨损痕迹，渐变色彩稍微变得柔和，虹彩减弱。海洋之心依旧充盈，但液态能量涨落时偶尔出现微小的暗色波痕，如浅湾底部的沙纹。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.3", "§7剑身出现数道可见划痕，刃部有轻微卷口，整体色调偏向灰蓝，仿佛被海底暗流侵蚀。海洋之心内部出现絮状浑浊物，能量流动不再顺畅，偶尔停滞。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.4", "§7剑身裂纹扩大，几处刃口崩缺，渐变涂层大面积剥落，露出暗沉的金属底色。海洋之心表面出现明显裂痕，液态能量持续向外泄漏为微弱光点。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.5", "§7剑身多处结构性断裂，仅靠残余的魔法能量勉强维系在一起，断裂处透出微弱的蓝光。海洋之心彻底暗淡，几乎停止旋转，内部只剩下最后一点微弱的荧光。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.1", "§8凝聚了满月下深海的潮汐之力与深渊的心脏。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.2", "§8每一次剑刃的划过都如同潮汐的涨落，跟随不可名状的节律而动。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.3", "§8在完美的节拍中攻击，涌动的浪潮将撕裂敌人的防线。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.4", "§8但若节奏混乱，失控的洋流亦会反噬武器本身，致其磨损破败。");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			translationBuilder.add("jei.tuanzis_mod.tide_cleaver.description", tideCleaverJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.abyssal_rhythm", "深渊律动");
+			String abyssalRhythmDesc = "【深渊律动附魔】\n" +
+				"一种可附魔于剑类武器的通用战斗型附魔。可以通过与潮汐力量产生共鸣造成额外的魔法伤害！\n\n" +
+				"§e附魔效果：§r\n" +
+				"1. §b深渊震击§r：每次用剑攻击命中目标时，必定触发一次深渊律动，对主目标造成额外魔法伤害。无内置冷却。\n" +
+				"2. §b伤害计算§r：\n" +
+				"   额外伤害 = 基础伤害 + 潮汐共鸣加成\n" +
+				"   §a基础伤害§r：根据等级而定 (I级0.1, II级0.2, III级0.25, IV级0.3)\n" +
+				"   §a潮汐共鸣加成§r：仅在持有潮汐充能层数（来自潮汐切割者）时生效，加成 = 0.05 × 附魔等级 × 当前层数。\n" +
+				"   在 5 层充能下，IV 级附魔的共鸣加成可额外提供 1.0 点伤害！\n\n" +
+				"§e获取方式：§r\n" +
+				"最高等级 IV 级。通用剑附魔，可与其它增伤附魔兼容。";
+			translationBuilder.add("jei.tuanzis_mod.abyssal_rhythm.description", abyssalRhythmDesc);
 		}
 	}
 
@@ -392,6 +506,86 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "Star Travel Card Chest");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "Sakura Festival Card Pack");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
+
+			// Bee Sting Echo translations
+			translationBuilder.add(ModItems.BEE_STING_ECHO, "Bee Sting Echo");
+			translationBuilder.add(ModStatusEffects.BEE_POISON.value(), "Bee Poison");
+			translationBuilder.add(ModStatusEffects.BEE_POISON_COOLDOWN.value(), "Bee Poison Cooldown");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.1", "Appearance: §aFirst Vibration");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.2", "Appearance: §eSlight Fatigue");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.3", "Appearance: §6Worn Scratches");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.4", "Appearance: §cDecaying Buzz");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.status.5", "Appearance: §4Echoing Empty Hive");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.1", "§7The blade is as thin as a cicada's wing, showing a translucent amber-gold color with a dense hexagonal grid pattern. Gold trail left in midair.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.2", "§7Amber-gold fades to opaque honey color. Hexagonal blade pattern has some breaks, guard wing has radial cracks.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.3", "§7The blade shows a matte old-honey color, overall dim. The blade edge has tiny jagged notches, one guard wing is perforated.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.4", "§7Opaque dark brown color. The blade surface is full of weathered pores. Blade patterns completely disappear, replaced by unordered cracks.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.desc.5", "§7The blade is charred black, covered in blue-purple burn stains. The blade is full of holes, and the guard is just charred frames.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.1", "§8In the legend of a forgotten bee-whisperer, this blade was forged from the queen bee's last stinger.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.2", "§8When the hive fell and the colony died, the queen injected her unspent sting into a piece of common iron.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.3", "§8Every wielder feels a slight constant vibration in their palm—not the sword shaking, but it following the ancient rhythm.");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.lore.4", "§8It drags opponents into a rhythm of endless pain in high-speed clashes, until they find too many wounds to bandage.");
+			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion", "%s was destroyed by detonating bee poison");
+			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion.player", "%s was terminated by the detonated bee poison in a battle with %s");
+			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", "A thin blade forged from the queen bee's last stinger. Extremely fast attack speed and poison accumulation.");
+
+			// Scully Shard & Resonance Pulse translations
+			translationBuilder.add(ModItems.SCULLY_SHARD, "Scully Shard");
+			translationBuilder.add(ModStatusEffects.RESONANCE.value(), "Resonance");
+			translationBuilder.add("enchantment.tuanzis_mod.resonance_pulse", "Resonance Pulse");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.1", "Appearance: §aPristine Echo");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.2", "Appearance: §eFaint Resonance");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.3", "Appearance: §6Pulsing Fracture");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.4", "Appearance: §cDecaying Wail");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.status.5", "Appearance: §4Silent Remnant");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.1", "§7The blade is as clear as deep-space crystal, with a slow-flowing cyan nebula mist inside. Crystallized echo fragments on the guard glow softly with white-blue pulses.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.2", "§7Fine silver hairline cracks appear on the transparent blade, slightly dimming its luster. The nebula flows faster and irregularly. Tiny dark spots appear on the guard fragments.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.3", "§7Internal cracks interweave into a web. Dark purple turbulence mixes into the cyan mist. Guard pulses are dim, irregular, and briefly turn off.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.4", "§7The blade is cloudy and black, with only small teal cracks still glowing. Guard fragments are broken at the edges, and corrosion spreads like mold.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.desc.5", "§7The blade is almost entirely covered by dark fissures, with only thread-like glow lines left. The guard is heavily ruined, and its glow has vanished.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.1", "§8Forged from deep sculk core fragments and crystallized echo remnants found in the deep dark.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.2", "§8It captures and amplifies micro-vibrations in the air, creating an indelible resonance with the target's soul.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.3", "§8When the resonance breaks, the pent-up sonic waves tear through enemy defenses in a sudden supersonic burst.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.lore.4", "§8However, the sculk energy ruthlessly corrodes the blade, leaving only a silent remnant.");
+			translationBuilder.add("item.tuanzis_mod.scully_shard.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.scully_shard.description", "A sculk-energy blade from the deep dark. Deals extra armor-penetrating sonic damage to resonated targets. Even when worn down to a Silent Remnant (Stage V), it remains fully functional without breaking.");
+			translationBuilder.add("jei.tuanzis_mod.resonance_pulse.description", "Enchantment for swords. Grants a chance to apply Resonance on hit, and triggers a sonic boom dealing armor-penetrating damage to nearby enemies when attacking a resonated target.");
+
+			String tideCleaverJeiDescEn = "【Tide Cleaver】\nAn exotic weapon condensed with ocean energy, featuring a unique \"Tide Beat\" passive and wear mechanism.\n\n" +
+				"§eTide Beat:§r\n" +
+				"1. §bOn-Beat Window§r: Attack cooldown is between §a80% and 100%§r, or within §e0.2 seconds (4 ticks)§r after fully charged. Attacking during this window is an \"On-Beat Attack\", granting 1 layer of Tide Charge (up to 5), each layer providing §a+2% Melee Damage§r.\n" +
+				"2. §bOff-Beat Attack§r: Attacking when cooldown is below §c80%§r reduces damage by §c15%§r and loses 1 layer of charge.\n" +
+				"3. §bNormal Attack§r: Attacking more than 0.2 seconds after fully charged has no damage modifier and does not change charge layers.\n\n" +
+				"§ePassive Effects:§r\n" +
+				"1. §bTide Erosion§r: When holding §a>= 2 layers§r of charge, melee attacks apply Tide Erosion to the target for 2 seconds, dealing §c1 magic damage per second§r.\n" +
+				"2. §bSurging Burst§r: Upon reaching 5 layers of charge, the next On-Beat Attack deals §c3.0 armor-penetrating magic damage§r, resetting charge to 1. Cooldown: §e7 seconds§r.\n\n" +
+				"§eRepair & Maintenance:§r\n" +
+				"Can be repaired with the §bHeart of the Sea§r in an anvil.";
+			translationBuilder.add(ModItems.TIDE_CLEAVER, "Tide Cleaver");
+			translationBuilder.add(ModStatusEffects.TIDE_EROSION.value(), "Tide Erosion");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.1", "Appearance: §aBlade of Eternal Waves");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.2", "Appearance: §eBay Aftermath");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.3", "Appearance: §6Reef Undercurrent");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.4", "Appearance: §cLow Tide Fissure");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.status.5", "Appearance: §4Dead Heart of Dried Tide");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.1", "§7The blade exhibits a perfect gradient from deep-sea cobalt to shallow-sea teal, with shifting pearlescent luster. The Heart of the Sea in the guard is full and clear, liquid energy waxing and waning smoothly. No scratches on the blade.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.2", "§7Tiny signs of wear appear at the blade edge. The gradient color softens and pearlescence decreases. The Heart of the Sea is still full, but tiny dark ripple marks appear occasionally.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.3", "§7Visible scratches appear on the blade, and the edge is slightly rolled. The overall tone shifts to gray-blue, eroded by undercurrents. Flocculent turbidity appears inside the Heart of the Sea, disrupting energy flow.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.4", "§7Fissures expand on the blade, with chipped edges. The gradient coat peels off significantly, exposing dark metal underneath. The Heart of the Sea surface cracks, and energy leaks as faint sparks.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.desc.5", "§7Severe structural fractures across the blade, held together only by residual magic. The Heart of the Sea is completely dim, almost static, leaving only a tiny spark of light.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.1", "§8Condenses the tide power under full moon and the heart of the abyss.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.2", "§8Every swing flows like the tide, following an unspeakable rhythm.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.3", "§8Attack in perfect beat, and the surging waves will breach enemy lines.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.4", "§8But if the rhythm breaks, the out-of-control currents will backlash and ruin the blade.");
+			translationBuilder.add("item.tuanzis_mod.tide_cleaver.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.tide_cleaver.description", tideCleaverJeiDescEn);
 
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
@@ -449,7 +643,9 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("enchantment.tuanzis_mod.chain_mining", "Chain Mining");
 			translationBuilder.add("enchantment.tuanzis_mod.blood_rage", "Blood Rage");
 			translationBuilder.add("enchantment.tuanzis_mod.berserker", "Berserker");
+			translationBuilder.add("enchantment.tuanzis_mod.buzzing_rhythm", "Buzzing Rhythm");
 			translationBuilder.add("effect.tuanzis_mod.blood_rage", "Blood Rage");
+			translationBuilder.add("effect.tuanzis_mod.buzzing_rhythm", "Rhythm");
 			translationBuilder.add("death.attack.tuanzis_mod.blood_rage_feedback", "%s died of Blood Rage backlash");
 			translationBuilder.add("key.tuanzis_mod.chain_mining", "Chain Mining Activation");
 			translationBuilder.add("key.category.tuanzis_mod", "Tuanzi's Mod");
@@ -695,6 +891,30 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"2. §bTreasure Hunt§r: Cannot be obtained via the Enchanting Table or Librarian trades. Found only in loot chests in dungeons or fortresses.\n" +
 				"3. §bExclusion§r: Mutually exclusive with §bSilk Touch§r.";
 			translationBuilder.add("jei.tuanzis_mod.chain_pain.description", chainPainDescEn);
+
+			String buzzingRhythmDescEn = "[Buzzing Rhythm Enchantment]\n" +
+				"A rare combat enchantment applicable to Swords. Drastically boosts attack damage through rhythmic consecutive hits!\n\n" +
+				"§eEffects:§r\n" +
+				"1. §bRhythm Boost§r: When attacking a target with \"Bee Poison\" or \"Bee Poison Cooldown\" consecutively with this enchanted weapon, gains one stack of \"Rhythm\" per hit, lasting for 3 seconds, up to 1 + level (max 5) stacks. Each stack grants a §a+3%§r bonus to attack damage (max +15% attack damage).\n" +
+				"2. §bExpiration§r: If no hit is scored on the same target within 3 seconds, the stacks instantly clear.\n" +
+				"3. §bReach Distance§r: Each level increases your entity interaction reach distance by §b0.0625 blocks§r (max 0.25 blocks).\n\n" +
+				"§eExclusion \u0026 Limits:§r\n" +
+				"Mutually exclusive with §bSweeping Edge§r, §bFire Aspect§r, and §bKnockback§r.";
+			translationBuilder.add("jei.tuanzis_mod.buzzing_rhythm.description", buzzingRhythmDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.abyssal_rhythm", "Abyssal Rhythm");
+			String abyssalRhythmDescEn = "[Abyssal Rhythm Enchantment]\n" +
+				"A general combat enchantment applicable to Swords. Resonates with tide energy to deal extra magic damage!\n\n" +
+				"§eEffects:§r\n" +
+				"1. §bAbyssal Strike§r: Each melee attack hit on a target with an enchanted sword triggers Abyssal Rhythm, dealing extra magic damage to the primary target. No cooldown.\n" +
+				"2. §bDamage Calculations§r:\n" +
+				"   Extra Damage = Base Damage + Tide Resonance Bonus\n" +
+				"   §aBase Damage§r: Based on Level (0.1 for I, 0.2 for II, 0.25 for III, 0.3 for IV).\n" +
+				"   §aTide Resonance Bonus§r: Active only when holding Tide Charge layers (from Tide Cleaver). Bonus = 0.05 × Level × current layers.\n" +
+				"   At 5 layers, the resonance bonus for Level IV provides an extra 1.0 damage!\n\n" +
+				"§eAcquisition:§r\n" +
+				"Max Level IV. General sword enchantment, compatible with other damage enchantments.";
+			translationBuilder.add("jei.tuanzis_mod.abyssal_rhythm.description", abyssalRhythmDescEn);
 		}
 	}
 }

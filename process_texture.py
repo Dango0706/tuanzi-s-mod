@@ -2,7 +2,7 @@ import sys
 import argparse
 from PIL import Image
 
-def process_image(input_path, output_path, target_size=32, bg_color="white", threshold=240):
+def process_image(input_path, output_path, target_size=32, bg_color="white", threshold=240, no_crop=False):
     try:
         # 1. 打开图片并转换为 RGBA
         img = Image.open(input_path).convert("RGBA")
@@ -35,22 +35,26 @@ def process_image(input_path, output_path, target_size=32, bg_color="white", thr
             
     img.putdata(new_data)
     
-    # 3. 自动检测非透明内容的边界（Bounding Box），移除多余边缘留白
-    bbox = img.getbbox()
-    if not bbox:
-        print("错误: 图片中未检测到任何有效的非透明实体内容！请调低阈值或检查背景颜色配置。")
-        return False
-    
-    # 4. 裁剪出物体主体
-    cropped = img.crop(bbox)
-    c_w, c_h = cropped.size
-    
-    # 5. 居中填充为正方形画布，防止拉伸变形
-    max_side = max(c_w, c_h)
-    square_img = Image.new("RGBA", (max_side, max_side), (0, 0, 0, 0))
-    offset_x = (max_side - c_w) // 2
-    offset_y = (max_side - c_h) // 2
-    square_img.paste(cropped, (offset_x, offset_y))
+    if no_crop:
+        # 如果是实体贴图，保留原始画布比例和相对位置，不进行裁剪，直接作为正方形画布
+        square_img = img
+    else:
+        # 3. 自动检测非透明内容的边界（Bounding Box），移除多余边缘留白
+        bbox = img.getbbox()
+        if not bbox:
+            print("错误: 图片中未检测到任何有效的非透明实体内容！请调低阈值或检查背景颜色配置。")
+            return False
+        
+        # 4. 裁剪出物体主体
+        cropped = img.crop(bbox)
+        c_w, c_h = cropped.size
+        
+        # 5. 居中填充为正方形画布，防止拉伸变形
+        max_side = max(c_w, c_h)
+        square_img = Image.new("RGBA", (max_side, max_side), (0, 0, 0, 0))
+        offset_x = (max_side - c_w) // 2
+        offset_y = (max_side - c_h) // 2
+        square_img.paste(cropped, (offset_x, offset_y))
     
     # 6. 高保真缩放到指定尺寸
     try:
@@ -64,7 +68,7 @@ def process_image(input_path, output_path, target_size=32, bg_color="white", thr
     # 7. 保存并输出
     try:
         final_img.save(output_path, "PNG")
-        print(f"成功处理贴图: {input_path} -> {output_path} ({target_size}x{target_size}, 自动去 {bg_color} 背景并紧密裁剪)")
+        print(f"成功处理贴图: {input_path} -> {output_path} ({target_size}x{target_size}, 自动去 {bg_color} 背景，no_crop={no_crop})")
         return True
     except Exception as e:
         print(f"错误: 无法保存输出图片 {output_path}。原因: {e}")
@@ -77,6 +81,7 @@ def main():
     parser.add_argument("-s", "--size", type=int, default=32, help="目标缩小尺寸 (例如 16 或 32，默认 32)")
     parser.add_argument("-b", "--bg", choices=["white", "black", "none"], default="white", help="背景颜色模式: white(去白底，默认) / black(去黑底) / none(不去底)")
     parser.add_argument("-t", "--threshold", type=int, default=240, help="去除背景色判定阈值 (去白底默认 240，去黑底建议设为 15 左右)")
+    parser.add_argument("--no-crop", action="store_true", help="跳过边界裁剪，对整张画布直接进行等比例缩放（实体贴图必选此项，以防 UV 错位）")
     
     args = parser.parse_args()
     
@@ -85,7 +90,7 @@ def main():
     if args.bg == "black" and args.threshold == 240:
         threshold = 15
         
-    process_image(args.input, args.output, args.size, args.bg, threshold)
+    process_image(args.input, args.output, args.size, args.bg, threshold, args.no_crop)
 
 if __name__ == "__main__":
     main()

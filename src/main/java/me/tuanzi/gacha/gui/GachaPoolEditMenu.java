@@ -26,6 +26,7 @@ public class GachaPoolEditMenu extends ChestMenu {
     private final ServerPlayer player;
     private String currentRarity = "legendary";
     private int currentPage = 0;
+    private GachaPoolItem pendingDeleteItem = null;
 
     public GachaPoolEditMenu(int containerId, Inventory playerInventory, GachaPool pool) {
         super(MenuType.GENERIC_9x6, containerId, playerInventory, new SimpleContainer(54), 6);
@@ -116,9 +117,16 @@ public class GachaPoolEditMenu extends ChestMenu {
                 newLoreList.add(Component.literal("§7===================="));
                 newLoreList.add(Component.literal("§7当前权重: §a" + poolItem.getWeight()));
                 newLoreList.add(Component.literal("§e左键 §7- §b微调权重"));
-                newLoreList.add(Component.literal("§e右键 §7- §c删除物品"));
+                if (poolItem == pendingDeleteItem) {
+                    newLoreList.add(Component.literal("§c§l▶ 右键 - 再次点击确认删除 ◀"));
+                } else {
+                    newLoreList.add(Component.literal("§e右键 §7- §c删除物品"));
+                }
                 newLoreList.add(Component.literal("§e中键/Shift §7- §a复制到背包"));
                 newLoreList.add(Component.literal("§7===================="));
+                if (poolItem == pendingDeleteItem) {
+                    newLoreList.add(Component.literal("§c§l⚠️ 警告：该操作将彻底移除物品！"));
+                }
                 
                 displayStack.set(DataComponents.LORE, new ItemLore(newLoreList));
                 container.setItem(targetSlot, displayStack);
@@ -144,6 +152,7 @@ public class GachaPoolEditMenu extends ChestMenu {
                     case 4 -> currentRarity = "common";
                 }
                 currentPage = 0;
+                pendingDeleteItem = null;
                 refreshSlots();
             }
             // 点击操作控制区 (Slot 38, 40, 42)
@@ -163,6 +172,11 @@ public class GachaPoolEditMenu extends ChestMenu {
                 } else {
                     GachaPoolItem newItem = new GachaPoolItem(UUID.randomUUID().toString(), 10, new ArrayList<>(), hand.copy());
                     pool.getListByRarity(currentRarity).add(newItem);
+                    // 自动保存并备份到本地
+                    me.tuanzi.gacha.PoolManager.savePoolSafe(pool, this.player.level().getServer().registryAccess());
+                    me.tuanzi.gacha.PoolManager.backupPoolSafe(pool, this.player.level().getServer().registryAccess());
+                    this.player.sendSystemMessage(Component.literal("§a[!] 卡池配置已自动保存并备份到本地！"));
+                    pendingDeleteItem = null;
                     refreshSlots();
                 }
             } else if (slotIndex == 42) {
@@ -178,6 +192,7 @@ public class GachaPoolEditMenu extends ChestMenu {
             else if (slotIndex == 45) {
                 if (currentPage > 0) {
                     currentPage--;
+                    pendingDeleteItem = null;
                     refreshSlots();
                 }
             } else if (slotIndex == 53) {
@@ -185,6 +200,7 @@ public class GachaPoolEditMenu extends ChestMenu {
                 int totalPages = (int) Math.ceil((double) items.size() / 18);
                 if (currentPage + 1 < totalPages) {
                     currentPage++;
+                    pendingDeleteItem = null;
                     refreshSlots();
                 }
             }
@@ -210,10 +226,20 @@ public class GachaPoolEditMenu extends ChestMenu {
                         player.openMenu(provider);
                         return;
                     } else if (buttonNum == 1 && containerInput == ContainerInput.PICKUP) {
-                        // 右键常规点击 -> 直接删除物品
-                        pool.getListByRarity(currentRarity).remove(clickedItem);
-                        refreshSlots();
-                        player.sendSystemMessage(Component.literal("§e已临时移除物品！需点击 §a[保存并重载] §e方可落盘更新。"));
+                        // 右键常规点击 -> 移除操作的二次确认
+                        if (pendingDeleteItem == clickedItem) {
+                            pool.getListByRarity(currentRarity).remove(clickedItem);
+                            pendingDeleteItem = null;
+                            // 自动保存并备份到本地
+                            me.tuanzi.gacha.PoolManager.savePoolSafe(pool, this.player.level().getServer().registryAccess());
+                            me.tuanzi.gacha.PoolManager.backupPoolSafe(pool, this.player.level().getServer().registryAccess());
+                            player.sendSystemMessage(Component.literal("§a[!] 物品已成功移除，卡池配置已自动保存并备份！"));
+                            refreshSlots();
+                        } else {
+                            pendingDeleteItem = clickedItem;
+                            player.sendSystemMessage(Component.literal("§c[!] 请再次右键点击该物品以确认彻底移除！"));
+                            refreshSlots();
+                        }
                     }
                 }
             }

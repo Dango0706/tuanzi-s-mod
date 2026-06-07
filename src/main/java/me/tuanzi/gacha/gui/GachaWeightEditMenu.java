@@ -115,6 +115,10 @@ public class GachaWeightEditMenu extends ChestMenu {
                     }
                 } else {
                     targetItem.setWeight(currentWeight);
+                    // 自动保存并备份到本地
+                    me.tuanzi.gacha.PoolManager.savePoolSafe(pool, this.player.level().getServer().registryAccess());
+                    me.tuanzi.gacha.PoolManager.backupPoolSafe(pool, this.player.level().getServer().registryAccess());
+                    player.sendSystemMessage(Component.literal("§a[!] 卡池配置已自动保存并备份到本地！"));
                 }
                 player.sendSystemMessage(Component.literal("§a[!] 成功将权重修改为: " + currentWeight));
                 returnToParent();

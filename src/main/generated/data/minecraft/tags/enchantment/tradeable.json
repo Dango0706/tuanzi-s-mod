@@ -15,6 +15,14 @@
     {
       "id": "tuanzis_mod:execute",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:buzzing_rhythm",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:resonance_pulse",
+      "required": false
     }
   ]
 }

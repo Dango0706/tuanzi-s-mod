@@ -358,6 +358,29 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.seeking_arrow.description"));
         }
 
+        // 获取所有附有“蜂鸣节律”附魔的附魔书 (Buzzing Rhythm)
+        List<ItemStack> buzzingRhythmBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.BUZZING_RHYTHM)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!buzzingRhythmBooks.isEmpty()) {
+            registration.addIngredientInfo(buzzingRhythmBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.buzzing_rhythm.description"));
+        }
+
         registration.addIngredientInfo(new ItemStack(ModItems.SCARECROW), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.scarecrow.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.DECOY_TOTEM), VanillaTypes.ITEM_STACK,
@@ -397,6 +420,64 @@ public class TuanzisJeiPlugin implements IModPlugin {
         if (!adrenalinePotions.isEmpty()) {
             registration.addIngredientInfo(adrenalinePotions, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.adrenaline_potion.description"));
+        }
+
+        // 注册蜂刺余响介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.BEE_STING_ECHO), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.bee_sting_echo.description"));
+
+        // 注册幽匿裂片介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.SCULLY_SHARD), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.scully_shard.description"));
+
+        // 获取所有附有“共振脉冲”附魔的附魔书并注册介绍页 (Resonance Pulse I-III)
+        List<ItemStack> resonancePulseBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.RESONANCE_PULSE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!resonancePulseBooks.isEmpty()) {
+            registration.addIngredientInfo(resonancePulseBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.resonance_pulse.description"));
+        }
+
+        // 注册潮汐切割者介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.TIDE_CLEAVER), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.tide_cleaver.description"));
+
+        // 获取所有附有“深渊律动”附魔的附魔书并注册介绍页 (Abyssal Rhythm I-IV)
+        List<ItemStack> abyssalRhythmBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.ABYSSAL_RHYTHM)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!abyssalRhythmBooks.isEmpty()) {
+            registration.addIngredientInfo(abyssalRhythmBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.abyssal_rhythm.description"));
         }
     }
 }

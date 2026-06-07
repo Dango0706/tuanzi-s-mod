@@ -40,7 +40,10 @@
 		"CrossbowItemMixin",
 		"AbstractArrowMixin",
 		"FireworkRocketEntityMixin",
-		"GachaItemEntityMixin"
+		"GachaItemEntityMixin",
+		"PlayerSweepMixin",
+		"BeeStingEchoTooltipMixin",
+		"PlayerCooldownMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

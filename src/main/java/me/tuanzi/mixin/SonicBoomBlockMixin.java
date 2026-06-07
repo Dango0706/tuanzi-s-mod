@@ -51,8 +51,8 @@ public abstract class SonicBoomBlockMixin {
                     level.sendParticles(ParticleTypes.SONIC_BOOM, 
                         warden.getX(), warden.getY() + 1.0, warden.getZ(), 2, 0.2, 0.2, 0.2, 0.1);
 
-                    // 3. Deal 15 damage to Warden (source is player attack)
-                    warden.hurtServer(level, level.damageSources().playerAttack(player), 15.0F);
+                    // 3. Deal 18 damage to Warden (source is player attack)
+                    warden.hurtServer(level, level.damageSources().playerAttack(player), 18.0F);
 
                     // 4. Knock back Warden
                     Vec3 pushVector = warden.position().subtract(player.position());
@@ -67,22 +67,22 @@ public abstract class SonicBoomBlockMixin {
                 ItemStack stack = player.getUseItem();
                 stack.hurtAndBreak(4, player, player.getUsedItemHand());
 
-                // 5.5. Apply 8 seconds cooldown (160 ticks) for successful block
-                player.getCooldowns().addCooldown(stack, 160);
+                // 5.5. Apply 4 seconds cooldown (80 ticks) for successful block
+                player.getCooldowns().addCooldown(stack, 80);
 
-                me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者声波反弹触发！免疫声波爆破伤害，成功完美格挡并向发射源反弹了 15 点真实伤害和强烈击退效果。");
+                me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者声波反弹触发！免疫声波爆破伤害，成功完美格挡并向发射源反弹了 18 点真实伤害和强烈击退效果。");
 
                 // 6. Block the original damage by canceling the call
                 cir.setReturnValue(false);
                 return;
             }
 
-            // 被动吸伤被动：必须在主手持有该武器，副手和快捷栏均不生效，自动减免 30% 的爆破伤害（即造成 70% 的原始伤害）
+            // 被动吸伤被动：必须在主手持有该武器，副手和快捷栏均不生效，自动减免 15% 的爆破伤害（即造成 85% 的原始伤害）
             if (player.getMainHandItem().is(ModItems.ECHO_BREAKER)) {
                 tuanzis_mod$isApplyingPassiveReduction = true;
                 try {
-                    me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者被动属性触发：主手持有吸收 30% 声波伤害，减免后伤害为 " + String.format("%.2f", amount * 0.7F) + "。");
-                    boolean result = player.hurtServer(level, source, amount * 0.7F);
+                    me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者被动属性触发：主手持有吸收 15% 声波伤害，减免后伤害为 " + String.format("%.2f", amount * 0.85F) + "。");
+                    boolean result = player.hurtServer(level, source, amount * 0.85F);
                     cir.setReturnValue(result);
                 } finally {
                     tuanzis_mod$isApplyingPassiveReduction = false;

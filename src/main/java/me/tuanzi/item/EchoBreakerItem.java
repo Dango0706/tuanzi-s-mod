@@ -10,10 +10,10 @@ import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.level.Level;
 
 public class EchoBreakerItem extends Item {
-    // 格挡持续时间：0.5秒 = 10 tick
-    private static final int BLOCK_DURATION_TICKS = 10;
-    // 格挡失败冷却时间：5秒 = 100 tick
-    private static final int BLOCK_FAILURE_COOLDOWN_TICKS = 100;
+    // 格挡持续时间：0.75秒 = 15 tick
+    private static final int BLOCK_DURATION_TICKS = 15;
+    // 格挡失败冷却时间：2秒 = 40 tick
+    private static final int BLOCK_FAILURE_COOLDOWN_TICKS = 40;
 
     public EchoBreakerItem(Properties properties) {
         super(properties);
