@@ -77,6 +77,9 @@ public class Tuanzis_mod implements ModInitializer {
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			me.tuanzi.gacha.PoolManager.loadAllPools(server.registryAccess());
 		});
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+			me.tuanzi.gacha.PlayerGachaManager.saveAllCachedStates();
+		});
 
 		// 注册抽卡系统指令
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {

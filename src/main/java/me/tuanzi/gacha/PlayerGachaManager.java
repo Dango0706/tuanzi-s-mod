@@ -179,4 +179,14 @@ public class PlayerGachaManager {
             ModLog.debug("滚动清理玩家保底快照发生异常: " + e.getMessage());
         }
     }
+
+    public static void saveAllCachedStates() {
+        ModLog.debug("服务器关闭，开始强制同步保存所有玩家的抽卡定轨状态...");
+        for (PlayerGachaState state : cache.values()) {
+            saveStateSafe(state);
+            backupStateSafe(state);
+            state.setDirty(false);
+        }
+        ModLog.debug("玩家抽卡定轨数据强制保存完成。");
+    }
 }

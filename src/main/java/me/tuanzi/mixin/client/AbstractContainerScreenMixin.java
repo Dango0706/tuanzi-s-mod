@@ -34,25 +34,25 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                 
                 // 100% 稳定可靠的稀有度检测方法：优先遍历 Lore，再降级检查 CustomName
                 String rarity = null;
+                boolean isFateTarget = false;
                 ItemLore itemLore = stack.get(DataComponents.LORE);
                 if (itemLore != null) {
                     for (Component line : itemLore.lines()) {
                         String plainText = line.getString();
                         if (plainText.contains("Legendary")) {
                             rarity = "legendary";
-                            break;
                         } else if (plainText.contains("Epic")) {
                             rarity = "epic";
-                            break;
                         } else if (plainText.contains("Rare")) {
                             rarity = "rare";
-                            break;
                         } else if (plainText.contains("Uncommon")) {
                             rarity = "uncommon";
-                            break;
                         } else if (plainText.contains("Common")) {
                             rarity = "common";
-                            break;
+                        }
+                        
+                        if (plainText.contains("当前定轨目标")) {
+                            isFateTarget = true;
                         }
                     }
                 }
@@ -73,6 +73,10 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                             rarity = "common";
                         }
                     }
+                }
+
+                if (rarity == null && isFateTarget) {
+                    rarity = "common";
                 }
 
                 if (rarity != null) {
@@ -102,11 +106,34 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                         }
                     }
 
-                    // 1. 绘制温润的半透明背景填充
+                    // 1. 绘制半透明背景填充
                     graphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, bgColor);
                     
                     // 2. 绘制槽位外边缘 1 像素高亮描边
                     graphics.outline(slot.x - 1, slot.y - 1, 18, 18, borderColor);
+
+                    // 3. 并在四个角使用红色的指向对应位置的对角线小箭头表示
+                    if (isFateTarget) {
+                        // ↖ 左上角箭头 (向左上方指)
+                        graphics.fill(slot.x - 3, slot.y - 3, slot.x + 1, slot.y - 1, 0xFFFF0000);
+                        graphics.fill(slot.x - 3, slot.y - 1, slot.x - 1, slot.y + 3, 0xFFFF0000);
+                        graphics.fill(slot.x - 1, slot.y - 1, slot.x + 2, slot.y + 2, 0xFFFF0000);
+
+                        // ↗ 右上角箭头 (向右上方指)
+                        graphics.fill(slot.x + 15, slot.y - 3, slot.x + 19, slot.y - 1, 0xFFFF0000);
+                        graphics.fill(slot.x + 17, slot.y - 1, slot.x + 19, slot.y + 3, 0xFFFF0000);
+                        graphics.fill(slot.x + 14, slot.y - 1, slot.x + 17, slot.y + 2, 0xFFFF0000);
+
+                        // ↙ 左下角箭头 (向左下方指)
+                        graphics.fill(slot.x - 3, slot.y + 17, slot.x + 1, slot.y + 19, 0xFFFF0000);
+                        graphics.fill(slot.x - 3, slot.y + 13, slot.x - 1, slot.y + 17, 0xFFFF0000);
+                        graphics.fill(slot.x - 1, slot.y + 14, slot.x + 2, slot.y + 17, 0xFFFF0000);
+
+                        // ↘ 右下角箭头 (向右下方指)
+                        graphics.fill(slot.x + 15, slot.y + 17, slot.x + 19, slot.y + 19, 0xFFFF0000);
+                        graphics.fill(slot.x + 17, slot.y + 13, slot.x + 19, slot.y + 17, 0xFFFF0000);
+                        graphics.fill(slot.x + 14, slot.y + 14, slot.x + 17, slot.y + 17, 0xFFFF0000);
+                    }
                 }
             }
         }
