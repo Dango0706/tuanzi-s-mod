@@ -218,7 +218,7 @@ public class GachaLogic {
                             state.setDirty(true);
                             PlayerGachaManager.saveStateSafe(state);
                         }
-                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
+//                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
                         ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
                     }
                 }
@@ -239,13 +239,13 @@ public class GachaLogic {
                             state.setDirty(true);
                             PlayerGachaManager.saveStateSafe(state);
                         }
-                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
+//                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
                         ModLog.debug(player, null, "提前抽中定轨目标！获得定轨目标: " + selectedItem.getId());
                     } else {
                         anchor.setFateValue(anchor.getFateValue() + 1);
                         state.setDirty(true);
                         PlayerGachaManager.saveStateSafe(state);
-                        player.sendSystemMessage(Component.literal("§e你获得了其他" + getRarityChineseName(raritySelected) + "品质的物品，命定值 +1（当前 " + anchor.getFateValue() + "/" + limit + "）。"));
+//                        player.sendSystemMessage(Component.literal("§e你获得了其他" + getRarityChineseName(raritySelected) + "品质的物品，命定值 +1（当前 " + anchor.getFateValue() + "/" + limit + "）。"));
                         ModLog.debug(player, null, "定轨匹配但抽中其他物品，歪了！获得物品: " + selectedItem.getId() + " | 当前命定值: " + anchor.getFateValue() + "/" + limit);
                     }
                 }
