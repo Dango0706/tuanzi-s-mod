@@ -383,29 +383,89 @@ public class UpdateChecker {
                     Files.createDirectories(modsFolder);
                 }
 
-                // 1. 将旧的 jar 重命名为 .bak (严格遵守 GEMINI.md 不删除任何文件的要求)
-                Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer("tuanzis_mod");
-                if (modContainer.isPresent()) {
-                    Path originPath = modContainer.get().getOrigin().getPaths().get(0);
-                    if (Files.isRegularFile(originPath) && originPath.getFileName().toString().endsWith(".jar")) {
-                        Path bakPath = originPath.resolveSibling(originPath.getFileName().toString() + ".bak");
-                        ModLog.info("[自动更新下载] 正在执行 GEMINI.md 安全重命名，将旧的加载包: " + originPath.getFileName() + " 重命名为 " + bakPath.getFileName());
+                // 物理扫描 mods 目录，精确定位 Default File System 下的物理旧 .jar，避开 ZipFileSystem Path 引起的格式或不支持异常
+                Path originPath = null;
+                Path bakPath = null;
+                if (Files.exists(modsFolder)) {
+                    try (java.util.stream.Stream<Path> list = Files.list(modsFolder)) {
+                        originPath = list.filter(p -> Files.isRegularFile(p)
+                                && p.getFileName().toString().startsWith("tuanzis_mod-")
+                                && p.getFileName().toString().endsWith(".jar"))
+                                .findFirst()
+                                .orElse(null);
+                    } catch (Exception ex) {
+                        ModLog.warn("[自动更新下载] 物理扫描 mods 文件夹寻找旧包失败: " + ex.getMessage());
+                    }
+                }
+                
+                if (originPath != null) {
+                    bakPath = originPath.resolveSibling(originPath.getFileName().toString() + ".bak");
+                }
+
+                Path targetPath = modsFolder.resolve(downloadFilename);
+                boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+
+                if (isWindows && originPath != null && bakPath != null) {
+                    // Windows 平台：使用预先异步调起的锁检测批处理脚本，在游戏进程以任意方式关闭释放文件锁时瞬间完成替换
+                    Path tmpTargetPath = targetPath.resolveSibling(downloadFilename + ".tmp");
+                    ModLog.info("[自动更新下载] 运行系统检测为 Windows，为防运行中文件锁定，将新包暂存至: " + tmpTargetPath.getFileName());
+                    
+                    try (InputStream is = response.body()) {
+                        Files.copy(is, tmpTargetPath, StandardCopyOption.REPLACE_EXISTING);
+                    }
+
+                    // 创建延迟替换批处理脚本 (update.bat)
+                    // 使用 loop 循环检测 ren 操作是否成功，一旦成功说明游戏已经退出释放了文件锁，随后执行覆盖并自我销毁
+                    Path batPath = modsFolder.resolve("update.bat");
+                    String originFileStr = originPath.toAbsolutePath().toString();
+                    String bakFileName = bakPath.getFileName().toString();
+                    String tmpFileStr = tmpTargetPath.toAbsolutePath().toString();
+                    String targetFileStr = targetPath.toAbsolutePath().toString();
+
+                    String batContent = "@echo off\r\n" +
+                            ":loop\r\n" +
+                            "if exist \"" + originFileStr + "\" (\r\n" +
+                            "    ren \"" + originFileStr + "\" \"" + bakFileName + "\" >nul 2>nul\r\n" +
+                            "    if exist \"" + originFileStr + "\" (\r\n" +
+                            "        timeout /t 1 /nobreak > nul\r\n" +
+                            "        goto loop\r\n" +
+                            "    )\r\n" +
+                            ")\r\n" +
+                            "if exist \"" + tmpFileStr + "\" (\r\n" +
+                            "    move /y \"" + tmpFileStr + "\" \"" + targetFileStr + "\" >nul 2>nul\r\n" +
+                            ")\r\n" +
+                            "del \"%~f0\"\r\n";
+                    
+                    Files.writeString(batPath, batContent);
+                    ModLog.info("[自动更新下载] Windows 锁检测延迟替换脚本生成成功: " + batPath.toAbsolutePath());
+
+                    // 下载完成的瞬间立刻异步拉起该脚本，完全脱离游戏生命周期。不管玩家是重启、关闭游戏、点红叉还是强退，均能成功捕获锁释放并替换！
+                    try {
+                        new ProcessBuilder("cmd.exe", "/c", "start", "/b", "update.bat")
+                                .directory(modsFolder.toFile())
+                                .start();
+                        ModLog.info("[自动更新下载] 已在后台异步拉起锁检测更新进程，等待客户端释放文件锁。");
+                    } catch (Exception ex) {
+                        ModLog.error("[自动更新下载] 启动 Windows 后台锁检测批处理进程失败: " + ex.getMessage());
+                    }
+                } else {
+                    // 非 Windows 平台 (Linux/macOS) 或未定位到源 jar: 直接执行文件移动与覆盖
+                    if (originPath != null && bakPath != null) {
+                        ModLog.info("[自动更新下载] 正在执行安全重命名，将旧的加载包: " + originPath.getFileName() + " 重命名为 " + bakPath.getFileName());
                         Files.move(originPath, bakPath, StandardCopyOption.REPLACE_EXISTING);
-                        ModLog.info("[自动更新下载] 旧包安全重命名完成，备份文件处于脱机状态 (.bak)，已避开 Fabric 加载冲突。");
+                        ModLog.info("[自动更新下载] 旧包安全重命名完成。");
                     } else {
-                        ModLog.warn("[自动更新下载] 未能定位原生的物理 .jar 加载源文件（可能是在开发环境加载的 class 路径），跳过备份重命名流程。");
+                        ModLog.warn("[自动更新下载] 未定位到物理 .jar 加载源文件，跳过备份重命名流程。");
+                    }
+
+                    ModLog.info("[自动更新下载] 正在将下载输入流写入至目标路径: " + targetPath.toAbsolutePath());
+                    try (InputStream is = response.body()) {
+                        Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
                     }
                 }
 
-                // 2. 保存新下载的 jar
-                Path targetPath = modsFolder.resolve(downloadFilename);
-                ModLog.info("[自动更新下载] 正在将下载输入流写入至目标路径: " + targetPath.toAbsolutePath());
-                try (InputStream is = response.body()) {
-                    Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-
                 status = Status.DOWNLOADED;
-                ModLog.info("[自动更新下载] 模组包数据下载并写入成功！目标文件: " + targetPath.getFileName());
+                ModLog.info("[自动更新下载] 模组包自动升级准备就绪！重启游戏即可应用新版本。");
                 return true;
             } catch (Exception e) {
                 status = Status.DOWNLOAD_FAILED;

@@ -7,7 +7,7 @@
 - **Gradle 运行:** 运行 `gradlew` 时，可直接运行 `./gradlew <任务名>`。已在 `gradle.properties` 中全局配置了 `org.gradle.java.home=C:\\Program Files\\Zulu\\zulu-25`，Gradle 将自动使用 Java 25 运行。
 - **工具优先:** 能使用系统提供的工具（如 `replace`, `write_file` 等）时，绝不使用命令行指令。
 - **数据生成:** 语言（Lang）、合成（Recipe）、标签（Tag）等资源文件一律使用 Data Generation (DataGen) 完成，禁止手动编辑相关 JSON。
-- **源码参考:** Minecraft 版本为 26.1（2026年3月24日发布）。执行代码操作前，必须先阅读 `MinecraftSources` 下的源码。若无该目录，请运行 `./gradlew genSources` 并解压至此。
+- **源码参考:** Minecraft 版本为 26.2（2026年6月发布）。执行代码操作前，必须先阅读 `MinecraftSources` 下的源码。若无该目录，请运行 `./gradlew genSources` 并解压至此。
 - **热重载配置:** 
     - 为了支持不重启修改 Mixin，请在 IDE 运行配置的 VM 参数中手动添加：`-Dmixin.hotSwap=true`
     - 若使用 JBR，可额外添加 `-XX:+AllowEnhancedClassRedefinition` 以开启增强类重定义。

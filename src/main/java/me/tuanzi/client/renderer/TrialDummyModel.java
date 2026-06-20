@@ -38,33 +38,42 @@ public class TrialDummyModel extends ArmorStandModel {
             net.minecraft.client.model.geom.builders.CubeDeformation.NONE, 0.0F);
         PartDefinition root = mesh.getRoot();
 
-        // 1. head（布袋头 + 脖子系绳）— 麻布材质与叉叉眼，32x32 纹理中的 (0, 0)
+        // 1. head（面袋头 + 脖子系绳 + 头后结绳）
         root.addOrReplaceChild("head", CubeListBuilder.create()
-            .texOffs(0, 0).addBox(-3.0F, -7.0F, -3.0F, 6.0F, 6.0F, 6.0F)      // 6x6x6 布袋头
-            .texOffs(0, 0).addBox(-1.5F, -1.0F, -1.5F, 3.0F, 1.0F, 3.0F),     // 3x1x3 脖系绳 (UV 共享)
+            .texOffs(0, 0).addBox(-4.0F, -9.0F, -4.0F, 8.0F, 8.0F, 8.0F)      // 8x8x8 愤怒面具头
+            .texOffs(24, 16).addBox(-1.5F, -1.0F, -1.5F, 3.0F, 1.0F, 3.0F)    // 3x1x3 脖子系绳
+            .texOffs(24, 16).addBox(-1.0F, -7.0F, 4.0F, 2.0F, 4.0F, 2.0F),    // 2x4x2 面具结绳
             PartPose.offset(0.0F, 0.0F, 0.0F));
 
-        // 2. body（皮革皮垫躯干 + 肩部双向贯穿木棍）— 皮革底色与打靶同心圆
+        // 2. body（金黄稻草躯干 + 左右肩甲 + 打靶木胸垫 + 肩膀贯穿横木）
         root.addOrReplaceChild("body", CubeListBuilder.create()
-            .texOffs(0, 16).addBox(-4.0F, 0.0F, -3.0F, 8.0F, 10.0F, 6.0F)    // 8x10x6 丰满皮垫躯干
-            .texOffs(0, 12).addBox(-8.0F, 8.0F, -1.0F, 16.0F, 2.0F, 2.0F),   // 16x2x2 肩膀木棍贯穿 (UV 共享木纹)
+            .texOffs(4, 14).addBox(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F)     // 8x12x6 主躯干
+            .texOffs(14, 16).addBox(0.5F, 1.0F, -4.0F, 3.0F, 10.0F, 1.0F)     // 3x10x1 左半靶牌
+            .texOffs(17, 16).addBox(-3.5F, 1.0F, -4.0F, 3.0F, 10.0F, 1.0F)    // 3x10x1 右半靶牌
+            .texOffs(0, 16).addBox(4.0F, 0.0F, -3.5F, 2.0F, 3.0F, 7.0F)       // 左肩甲
+            .texOffs(0, 16).addBox(-6.0F, 0.0F, -3.5F, 2.0F, 3.0F, 7.0F)      // 右肩甲
+            .texOffs(0, 16).addBox(-9.0F, 2.0F, -1.0F, 18.0F, 2.0F, 2.0F),    // 肩膀横木
             PartPose.offset(0.0F, 0.0F, 0.0F));
 
-        // 3. left_arm（左手臂木棍）— 垂直木棍，挂在肩膀上
+        // 3. left_arm（左打击木桩臂）
         root.addOrReplaceChild("left_arm", CubeListBuilder.create()
-            .texOffs(0, 12).addBox(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F),     // 2x8x2 左手臂木棍 (UV 共享木纹)
-            PartPose.offset(4.0F, 4.0F, 0.0F));
+            .texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F),     // 2x8x2 左臂木桩
+            PartPose.offset(9.0F, 3.0F, 0.0F));
 
-        // 4. right_arm（右手臂木棍）— 垂直木棍，挂在肩膀上
+        // 4. right_arm（右打击木桩臂）
         root.addOrReplaceChild("right_arm", CubeListBuilder.create()
-            .texOffs(0, 12).addBox(-2.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F),    // 2x8x2 右手臂木棍 (UV 共享木纹)
-            PartPose.offset(-4.0F, 4.0F, 0.0F));
+            .texOffs(0, 16).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F),     // 2x8x2 右臂木桩
+            PartPose.offset(-9.0F, 3.0F, 0.0F));
 
-        // 5. bottom_post（底部支撑木桩与十字底座）— 支撑假人屹立在地面
+        // 5. bottom_post（铁箍立柱 + 十字阶梯八角木底座）
         root.addOrReplaceChild("bottom_post", CubeListBuilder.create()
-            .texOffs(0, 12).addBox(-1.5F, 0.0F, -1.5F, 3.0F, 10.0F, 3.0F)    // 3x10x3 支撑木柱
-            .texOffs(0, 12).addBox(-8.0F, -10.0F, -2.0F, 16.0F, 2.0F, 4.0F)  // 16x2x4 底座横条1
-            .texOffs(0, 12).addBox(-2.0F, -10.0F, -8.0F, 4.0F, 2.0F, 16.0F), // 4x2x16 底座横条2
+            .texOffs(0, 16).addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F)     // 立柱桩
+            .texOffs(0, 24).addBox(-2.5F, 10.0F, -2.5F, 5.0F, 2.0F, 5.0F)     // 下铁箍
+            .texOffs(0, 24).addBox(-2.5F, 2.0F, -2.5F, 5.0F, 2.0F, 5.0F)      // 上铁箍
+            .texOffs(0, 20).addBox(-6.0F, 13.0F, -2.0F, 12.0F, 1.0F, 4.0F)    // 12x1x4 底层十字 A
+            .texOffs(0, 20).addBox(-2.0F, 13.0F, -6.0F, 4.0F, 1.0F, 12.0F)    // 4x1x12 底层十字 B
+            .texOffs(0, 20).addBox(-4.0F, 12.0F, -2.0F, 8.0F, 1.0F, 4.0F)     // 8x1x4 中层十字 A
+            .texOffs(0, 20).addBox(-2.0F, 12.0F, -4.0F, 4.0F, 1.0F, 8.0F),    // 4x1x8 中层十字 B
             PartPose.offset(0.0F, 12.0F, 0.0F));
 
         // 以下为 ArmorStandModel 构造链所需的空虚拟部件（隐藏，但必须存在）

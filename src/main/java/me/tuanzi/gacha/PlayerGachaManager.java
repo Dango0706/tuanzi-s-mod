@@ -26,7 +26,11 @@ public class PlayerGachaManager {
 
     // 异步 30 秒合并落盘定时器
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-            r -> new Thread(r, "Gacha-Player-Saver")
+            r -> {
+                Thread t = new Thread(r, "Gacha-Player-Saver");
+                t.setDaemon(true);
+                return t;
+            }
     );
 
     static {
@@ -188,5 +192,19 @@ public class PlayerGachaManager {
             state.setDirty(false);
         }
         ModLog.debug("玩家抽卡定轨数据强制保存完成。");
+    }
+
+    public static void shutdown() {
+        ModLog.debug("正在关闭 PlayerGachaManager 调度器...");
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+        saveAllCachedStates();
     }
 }

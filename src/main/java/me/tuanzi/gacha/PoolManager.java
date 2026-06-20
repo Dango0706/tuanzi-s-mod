@@ -30,7 +30,11 @@ public class PoolManager {
     
     // 防抖定时器线程池
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
-            r -> new Thread(r, "Gacha-Pool-Saver")
+            r -> {
+                Thread t = new Thread(r, "Gacha-Pool-Saver");
+                t.setDaemon(true);
+                return t;
+            }
     );
     private static final Map<String, ScheduledFuture<?>> pendingSaves = new ConcurrentHashMap<>();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -220,5 +224,30 @@ public class PoolManager {
         sakuraPool.getUncommon().add(new GachaPoolItem("lapis_lazuli", 23, new ArrayList<>(), new ItemStack(Items.LAPIS_LAZULI)));
         sakuraPool.getCommon().add(new GachaPoolItem("cobblestone", 50, new ArrayList<>(), new ItemStack(Items.COBBLESTONE)));
         savePoolSafe(sakuraPool, registries);
+    }
+
+    public static void shutdown(HolderLookup.Provider registries) {
+        ModLog.debug("正在关闭 PoolManager 调度器...");
+        
+        // 立即同步落盘所有待保存的卡池，防止数据丢失
+        for (Map.Entry<String, ScheduledFuture<?>> entry : pendingSaves.entrySet()) {
+            entry.getValue().cancel(false);
+            GachaPool pool = pools.get(entry.getKey());
+            if (pool != null) {
+                savePoolSafe(pool, registries);
+                backupPoolSafe(pool, registries);
+            }
+        }
+        pendingSaves.clear();
+
+        scheduler.shutdown();
+        try {
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }

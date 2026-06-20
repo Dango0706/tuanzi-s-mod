@@ -45,6 +45,15 @@ public class GachaHistoryMenu extends ChestMenu {
         refreshSlots();
     }
 
+    public GachaHistoryMenu(int containerId, Inventory playerInventory, PlayerGachaState state, String targetPoolId) {
+        super(MenuType.GENERIC_9x6, containerId, playerInventory, new SimpleContainer(54), 6);
+        this.player = (ServerPlayer) playerInventory.player;
+        this.state = state;
+        this.targetPoolId = targetPoolId;
+        
+        refreshSlots();
+    }
+
     private boolean isNormalGachaItem(net.minecraft.world.item.ItemStack stack) {
         if (stack != null && !stack.isEmpty()) {
             if (stack.getItem() instanceof me.tuanzi.item.GachaItem gachaItem) {

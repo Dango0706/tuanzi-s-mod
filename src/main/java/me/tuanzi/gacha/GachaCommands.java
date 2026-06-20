@@ -71,6 +71,160 @@ public class GachaCommands {
                         ));
                         return 1;
                     })
+                    .then(Commands.literal("self")
+                        .then(Commands.argument("pool", StringArgumentType.word())
+                            .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
+                            .executes(context -> {
+                                ServerPlayer player = context.getSource().getPlayerOrException();
+                                String poolId = StringArgumentType.getString(context, "pool");
+                                GachaPool pool = PoolManager.getPool(poolId);
+                                if (pool == null) {
+                                    player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+                                    return 0;
+                                }
+                                PlayerGachaState selfState = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
+                                player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                                        (id, playerInv, p) -> new GachaHistoryMenu(id, playerInv, selfState, poolId),
+                                        Component.literal("§d卡池历史记录 - " + pool.getPoolName())
+                                ));
+                                return 1;
+                            })
+                        )
+                    )
+                    .then(Commands.literal("player")
+                        .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
+                        .then(Commands.argument("player", EntityArgument.player())
+                            .then(Commands.argument("pool", StringArgumentType.word())
+                                .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
+                                .executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    ServerPlayer target = EntityArgument.getPlayer(context, "player");
+                                    String poolId = StringArgumentType.getString(context, "pool");
+                                    GachaPool pool = PoolManager.getPool(poolId);
+                                    if (pool == null) {
+                                        player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+                                        return 0;
+                                    }
+                                    PlayerGachaState targetState = PlayerGachaManager.getOrCreatePlayerState(target.getUUID());
+                                    player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                                            (id, playerInv, p) -> new GachaHistoryMenu(id, playerInv, targetState, poolId),
+                                            Component.literal("§d玩家 [" + target.getScoreboardName() + "] 的历史记录 - " + pool.getPoolName())
+                                    ));
+                                    return 1;
+                                })
+                            )
+                        )
+                    )
+                )
+                .then(Commands.literal("preview")
+                    .then(Commands.argument("pool", StringArgumentType.word())
+                        .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
+                        .executes(context -> {
+                            ServerPlayer player = context.getSource().getPlayerOrException();
+                            String poolId = StringArgumentType.getString(context, "pool");
+                            GachaPool pool = PoolManager.getPool(poolId);
+                            if (pool == null) {
+                                player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+                                return 0;
+                            }
+                            player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+                                    (id, playerInv, p) -> new me.tuanzi.gacha.gui.GachaPreviewMenu(id, playerInv, pool),
+                                    Component.literal("§6卡池预览 - " + pool.getPoolName())
+                            ));
+                            return 1;
+                        })
+                    )
+                )
+                .then(Commands.literal("fate")
+                    .then(Commands.literal("set")
+                        .then(Commands.argument("pool", StringArgumentType.word())
+                            .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
+                            .then(Commands.argument("rarity", StringArgumentType.word())
+                                .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(new String[]{"legendary", "epic", "rare", "uncommon", "common"}, builder))
+                                .then(Commands.argument("item", StringArgumentType.word())
+                                    .suggests((context, builder) -> {
+                                        try {
+                                            String poolId = StringArgumentType.getString(context, "pool");
+                                            String rarity = StringArgumentType.getString(context, "rarity");
+                                            GachaPool pool = PoolManager.getPool(poolId);
+                                            if (pool != null) {
+                                                java.util.List<String> itemIds = pool.getListByRarity(rarity).stream().map(GachaPoolItem::getId).toList();
+                                                return net.minecraft.commands.SharedSuggestionProvider.suggest(itemIds, builder);
+                                            }
+                                        } catch (Exception e) {}
+                                        return net.minecraft.commands.SharedSuggestionProvider.suggest(new String[]{}, builder);
+                                    })
+                                    .executes(context -> {
+                                        ServerPlayer player = context.getSource().getPlayerOrException();
+                                        String poolId = StringArgumentType.getString(context, "pool");
+                                        String rarity = StringArgumentType.getString(context, "rarity");
+                                        String itemId = StringArgumentType.getString(context, "item");
+                                        
+                                        GachaPool pool = PoolManager.getPool(poolId);
+                                        if (pool == null) {
+                                            player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+                                            return 0;
+                                        }
+                                        
+                                        String rarityLower = rarity.toLowerCase();
+                                        if (!rarityLower.equals("legendary") && !rarityLower.equals("epic") && !rarityLower.equals("rare") && !rarityLower.equals("uncommon") && !rarityLower.equals("common")) {
+                                            player.sendSystemMessage(Component.literal("§c非法的品质等级: " + rarity));
+                                            return 0;
+                                        }
+                                        
+                                        GachaPoolItem targetItem = pool.getListByRarity(rarityLower).stream()
+                                                .filter(item -> item.getId().equals(itemId))
+                                                .findFirst().orElse(null);
+                                        if (targetItem == null) {
+                                            player.sendSystemMessage(Component.literal("§c该物品未在卡池【" + pool.getPoolName() + "】的品质【" + rarity + "】中找到！"));
+                                            return 0;
+                                        }
+                                        
+                                        PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
+                                        state.setFateAnchor(poolId, rarityLower, itemId);
+                                        player.sendSystemMessage(Component.literal("§a定轨目标已成功设为【" + targetItem.getItem().getHoverName().getString() + "】，当前命定值已清零。"));
+                                        
+                                        me.tuanzi.util.ModLog.debug(player, null, "通过指令设定轨目标: 卡池ID=" + poolId + ", 稀有度=" + rarityLower + ", 物品ID=" + itemId);
+                                        
+                                        return 1;
+                                    })
+                                )
+                            )
+                        )
+                    )
+                    .then(Commands.literal("cancel")
+                        .then(Commands.argument("pool", StringArgumentType.word())
+                            .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
+                            .then(Commands.argument("rarity", StringArgumentType.word())
+                                .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(new String[]{"legendary", "epic", "rare", "uncommon", "common"}, builder))
+                                .executes(context -> {
+                                    ServerPlayer player = context.getSource().getPlayerOrException();
+                                    String poolId = StringArgumentType.getString(context, "pool");
+                                    String rarity = StringArgumentType.getString(context, "rarity");
+                                    
+                                    GachaPool pool = PoolManager.getPool(poolId);
+                                    if (pool == null) {
+                                        player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+                                        return 0;
+                                    }
+                                    
+                                    String rarityLower = rarity.toLowerCase();
+                                    if (!rarityLower.equals("legendary") && !rarityLower.equals("epic") && !rarityLower.equals("rare") && !rarityLower.equals("uncommon") && !rarityLower.equals("common")) {
+                                        player.sendSystemMessage(Component.literal("§c非法的品质等级: " + rarity));
+                                        return 0;
+                                    }
+                                    
+                                    PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
+                                    state.setFateAnchor(poolId, rarityLower, null);
+                                    player.sendSystemMessage(Component.literal("§a定轨目标已取消，命定值已清零。"));
+                                    
+                                    me.tuanzi.util.ModLog.debug(player, null, "通过指令取消定轨目标: 卡池ID=" + poolId + ", 稀有度=" + rarityLower);
+                                    
+                                    return 1;
+                                })
+                            )
+                        )
+                    )
                 )
                 .then(Commands.literal("reload")
                     .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
@@ -102,6 +256,7 @@ public class GachaCommands {
                         .then(Commands.argument("pool", StringArgumentType.word())
                             .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(PoolManager.getPools().keySet(), builder))
                             .then(Commands.argument("counterType", StringArgumentType.word())
+                                .suggests((context, builder) -> net.minecraft.commands.SharedSuggestionProvider.suggest(new String[]{"legendary", "epic"}, builder))
                                 .then(Commands.argument("value", IntegerArgumentType.integer(0))
                                     .executes(context -> {
                                         ServerPlayer player = context.getSource().getPlayerOrException();

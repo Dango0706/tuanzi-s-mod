@@ -170,6 +170,36 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
         ))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "seeking_arrow")));
 
+        // 共振脉冲 (Resonance Pulse)
+        entries.add(ModEnchantments.RESONANCE_PULSE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SWORDS),
+                2,    // weight
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "resonance_pulse")));
+
+        // 深渊律动 (Abyssal Rhythm)
+        entries.add(ModEnchantments.ABYSSAL_RHYTHM, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SWORDS),
+                2,    // weight
+                4,    // max level (IV)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "abyssal_rhythm")));
+
         // 蜂鸣节律 (Buzzing Rhythm)
         entries.add(ModEnchantments.BUZZING_RHYTHM, Enchantment.enchantment(
             Enchantment.definition(
@@ -197,32 +227,6 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
             )
         )
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "buzzing_rhythm")));
-
-        // 共振脉冲 (Resonance Pulse)
-        entries.add(ModEnchantments.RESONANCE_PULSE, Enchantment.enchantment(
-            Enchantment.definition(
-                items.getOrThrow(ItemTags.SWORDS),
-                2,    // weight
-                3,    // max level (III)
-                Enchantment.dynamicCost(15, 9), 
-                Enchantment.dynamicCost(65, 9), 
-                8,    // anvil cost per level
-                EquipmentSlotGroup.MAINHAND
-            )
-        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "resonance_pulse")));
-
-        // 深渊律动 (Abyssal Rhythm)
-        entries.add(ModEnchantments.ABYSSAL_RHYTHM, Enchantment.enchantment(
-            Enchantment.definition(
-                items.getOrThrow(ItemTags.SWORDS),
-                2,    // weight
-                4,    // max level (IV)
-                Enchantment.dynamicCost(15, 9), 
-                Enchantment.dynamicCost(65, 9), 
-                8,    // anvil cost per level
-                EquipmentSlotGroup.MAINHAND
-            )
-        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "abyssal_rhythm")));
     }
 
     @Override

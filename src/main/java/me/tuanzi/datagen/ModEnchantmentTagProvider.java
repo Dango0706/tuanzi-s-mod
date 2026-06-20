@@ -51,5 +51,10 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入
+
+        builder(ModEnchantments.EXCLUSIVE_NORMALIZATION)
+            .addOptional(ModEnchantments.RESONANCE_PULSE)
+            .addOptional(ModEnchantments.ABYSSAL_RHYTHM)
+            .addOptional(ModEnchantments.BUZZING_RHYTHM);
     }
 }

@@ -20,6 +20,8 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
         // 将回响破障者和蜂刺余响归入“剑 (swords)”这一类 Item 标签中
         builder(ItemTags.SWORDS)
             .add(ModItems.ECHO_BREAKER.builtInRegistryHolder().key())
-            .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key());
+            .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key())
+            .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
+            .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key());
     }
 }

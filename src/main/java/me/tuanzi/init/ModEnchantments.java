@@ -20,6 +20,8 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> RESONANCE_PULSE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "resonance_pulse"));
     public static final ResourceKey<Enchantment> ABYSSAL_RHYTHM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "abyssal_rhythm"));
 
+    public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
+
     public static void initialize() {
         // 仅用于加载此类
     }
