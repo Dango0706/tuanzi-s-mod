@@ -1,0 +1,482 @@
+﻿
+> Configure project :
+Fabric Loom: 1.17.11
+
+> Task :compileJava FAILED
+./gradlew : F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\block\entity\SoulMerchantStationBlockEntity.java:5
+6: 閿欒: 鎵句笉鍒扮鍙?        this.cachedVillager = new StationVillager(net.minecraft.world.entity.EntityType.VILLAGER, serve
+rLevel);
+所在位置 行:1 字符: 1
++ ./gradlew compileJava *>&1 | Out-File -FilePath scratch/build_errors. ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (F:\Development\..., serverLevel);:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                                                                       ^
+  绗﹀彿:   鍙橀噺 VILLAGER
+  浣嶇疆: 绫?EntityType
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\block\entity\SoulMerchantStationBlockEntity.java:146: 閿欒: 鎵句笉
+鍒扮鍙?                villager = new me.tuanzi.entity.StationVillager(net.minecraft.world.entity.EntityType.VILLAGER, se
+rverLevel);
+                                                                                                     ^
+  绗﹀彿:   鍙橀噺 VILLAGER
+  浣嶇疆: 绫?EntityType
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\renderer\TrialDummyRenderer.java:102: 閿欒: 鏃犳硶灏嗘帴鍙?Orde
+redSubmitNodeCollector涓殑鏂规硶 submitNameTag搴旂敤鍒扮粰瀹氱被鍨?
+            submitNodeCollector.submitNameTag(
+                               ^
+  闇€瑕? PoseStack,Vec3,int,Component,boolean,int,CameraRenderState
+  鎵惧埌:    PoseStack,Vec3,int,Component,boolean,int,double,CameraRenderState
+  鍘熷洜: 瀹為檯鍙傛暟鍒楄〃鍜屽舰寮忓弬鏁板垪琛ㄩ暱搴︿笉鍚?
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\entity\TrialDummyEntity.java:354: 閿欒: 鏂规硶涓嶄細瑕嗙洊鎴栧疄鐜拌秴绫诲瀷鐨勬柟娉?
+    @Override
+    ^
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\TuanzisModClient.java:102: 閿欒: 鎵句笉鍒扮鍙?               
+ context.client().setScreen(new me.tuanzi.client.gui.screens.TravelersNotebookBookScreen(hand));
+                                ^
+  绗﹀彿:   鏂规硶 setScreen(TravelersNotebookBookScreen)
+  浣嶇疆: 绫?Minecraft
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:55: 閿欒: 鎵句笉鍒扮鍙?      
+          Button.builder(Component.literal("绋嶅悗閲嶅惎"), button -> this.minecraft.setScreen(this.parent))
+                                                                                  ^
+  绗﹀彿:   鏂规硶 setScreen(Screen)
+  浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:95: 閿欒: 鎵句笉鍒扮鍙?      
+          this.minecraft.setScreen(this.parent);
+                              ^
+  绗﹀彿:   鏂规硶 setScreen(Screen)
+  浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:105: 閿欒: 鎵句笉鍒扮鍙?     
+           this.minecraft.setScreen(this.parent);
+                              ^
+  绗﹀彿:   鏂规硶 setScreen(Screen)
+  浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:47: 閿欒: 鎵句笉鍒扮鍙?        I
+temStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:54: 閿欒: 鎵句笉鍒扮鍙?        I
+temStack confirmButton = new ItemStack(Items.GREEN_STAINED_GLASS_PANE);
+                                                     ^
+  绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:84: 閿欒: 鎵句笉鍒扮鍙?        I
+temStack backButton = new ItemStack(Items.RED_STAINED_GLASS_PANE);
+                                                  ^
+  绗﹀彿:   鍙橀噺 RED_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:107: 閿欒: 鎵句笉鍒扮鍙?        Item
+Stack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:318: 閿欒: 鎵句笉鍒扮鍙?            
+case "legendary" -> new ItemStack(Items.ORANGE_STAINED_GLASS_PANE);  // 浼犺鐢ㄦ鑹茬幓鐠?                                    
+               ^
+  绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:319: 閿欒: 鎵句笉鍒扮鍙?            
+case "epic" -> new ItemStack(Items.PURPLE_STAINED_GLASS_PANE);       // 鍙茶瘲鐢ㄧ传鑹茬幓鐠?                                    
+          ^
+  绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:320: 閿欒: 鎵句笉鍒扮鍙?            
+case "rare" -> new ItemStack(Items.BLUE_STAINED_GLASS_PANE);         // 绋€鏈夌敤钃濊壊鐜荤拑
+                                              ^
+  绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:321: 閿欒: 鎵句笉鍒扮鍙?            
+case "uncommon" -> new ItemStack(Items.GREEN_STAINED_GLASS_PANE);    // 浼樼鐢ㄧ豢鑹茬幓鐠?                                    
+              ^
+  绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:322: 閿欒: 鎵句笉鍒扮鍙?            
+default -> new ItemStack(Items.WHITE_STAINED_GLASS_PANE);           // 鏅€氱敤鐧借壊鐜荤拑
+                                          ^
+  绗﹀彿:   鍙橀噺 WHITE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaImportMenu.java:51: 閿欒: 鎵句笉鍒扮鍙?        ItemSt
+ack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:46: 閿欒: 鎵句笉鍒扮鍙?        cont
+ainer.setItem(0, createNamedItem(Items.YELLOW_GLAZED_TERRACOTTA, "搂6鈽?浼犺鍝佽川鐗╁搧 (Legendary) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                  ^
+  绗﹀彿:   鍙橀噺 YELLOW_GLAZED_TERRACOTTA
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:47: 閿欒: 鎵句笉鍒扮鍙?        cont
+ainer.setItem(1, createNamedItem(Items.PURPLE_GLAZED_TERRACOTTA, "搂d鈽?鍙茶瘲鍝佽川鐗╁搧 (Epic) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                  ^
+  绗﹀彿:   鍙橀噺 PURPLE_GLAZED_TERRACOTTA
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:48: 閿欒: 鎵句笉鍒扮鍙?        cont
+ainer.setItem(2, createNamedItem(Items.BLUE_GLAZED_TERRACOTTA, "搂b鈽?绋€鏈夊搧璐ㄧ墿鍝?(Rare) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                  ^
+  绗﹀彿:   鍙橀噺 BLUE_GLAZED_TERRACOTTA
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:49: 閿欒: 鎵句笉鍒扮鍙?        cont
+ainer.setItem(3, createNamedItem(Items.GREEN_GLAZED_TERRACOTTA, "搂2鈽?浼樼鍝佽川鐗╁搧 (Uncommon) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                  ^
+  绗﹀彿:   鍙橀噺 GREEN_GLAZED_TERRACOTTA
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:50: 閿欒: 鎵句笉鍒扮鍙?        cont
+ainer.setItem(4, createNamedItem(Items.WHITE_GLAZED_TERRACOTTA, "搂f鈽?鏅€氬搧璐ㄧ墿鍝?(Common) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                  ^
+  绗﹀彿:   鍙橀噺 WHITE_GLAZED_TERRACOTTA
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:52: 閿欒: 鎵句笉鍒扮鍙?        Item
+Stack grayGlass = createNamedItem(Items.GRAY_STAINED_GLASS_PANE, " ");
+                                                   ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:58: 閿欒: 鎵句笉鍒扮鍙?        ItemS
+tack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:66: 閿欒: 鎵句笉鍒扮鍙?             
+   net.minecraft.world.item.Item icon = (currentRarity.equals("legendary") ? Items.GOLD_BLOCK : Items.ORANGE_STAINED_GL
+ASS_PANE);
+                                                                                                                  ^
+  绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:70: 閿欒: 鎵句笉鍒扮鍙?             
+   net.minecraft.world.item.Item icon = (currentRarity.equals("epic") ? Items.AMETHYST_BLOCK : Items.PURPLE_STAINED_GLA
+SS_PANE);
+                                                                                                                 ^
+  绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:74: 閿欒: 鎵句笉鍒扮鍙?             
+   net.minecraft.world.item.Item icon = (currentRarity.equals("rare") ? Items.LAPIS_BLOCK : Items.BLUE_STAINED_GLASS_PA
+NE);
+                                                                                                              ^
+  绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:81: 閿欒: 鎵句笉鍒扮鍙?             
+   net.minecraft.world.item.Item icon = (currentRarity.equals("uncommon") ? Items.EMERALD_BLOCK : Items.GREEN_STAINED_G
+LASS_PANE);
+                                                                                                                    ^
+  绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:85: 閿欒: 鎵句笉鍒扮鍙?             
+   net.minecraft.world.item.Item icon = (currentRarity.equals("common") ? Items.IRON_BLOCK : Items.WHITE_STAINED_GLASS_
+PANE);
+                                                                                                               ^
+  绗﹀彿:   鍙橀噺 WHITE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:49: 閿欒: 鎵句笉鍒扮鍙?        It
+emStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                ^
+  绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:56: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(10, createNamedItem(Items.RED_STAINED_GLASS_PANE, "搂c搂l鏉冮噸 -100"));
+                                                   ^
+  绗﹀彿:   鍙橀噺 RED_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:57: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(11, createNamedItem(Items.ORANGE_STAINED_GLASS_PANE, "搂6搂l鏉冮噸 -10"));
+                                                   ^
+  绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:58: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(12, createNamedItem(Items.YELLOW_STAINED_GLASS_PANE, "搂e搂l鏉冮噸 -1"));
+
+[Incubating] Problems report is available at: file:///F:/Development/Java/tuanzis_mods/build/reports/problems/problems-report.html
+                                                   ^
+  绗﹀彿:   鍙橀噺 YELLOW_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:76: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(14, createNamedItem(Items.LIGHT_BLUE_STAINED_GLASS_PANE, "搂b搂l鏉冮噸 +1"));
+                                                   ^
+  绗﹀彿:   鍙橀噺 LIGHT_BLUE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:77: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(15, createNamedItem(Items.BLUE_STAINED_GLASS_PANE, "搂9搂l鏉冮噸 +10"));
+                                                   ^
+  绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:78: 閿欒: 鎵句笉鍒扮鍙?        co
+ntainer.setItem(16, createNamedItem(Items.PURPLE_STAINED_GLASS_PANE, "搂d搂l鏉冮噸 +100"));
+                                                   ^
+  绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+  浣嶇疆: 绫?Items
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\ScarecrowItem.java:43: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: 涓嶅瓨鍦ㄧ被鍨嬪彉閲廡鐨勫疄渚? 浠
+ヤ娇PostSpawnProcessor<T>涓嶤onsumer<ScarecrowEntity>涓€鑷?                    Consumer<ScarecrowEntity> entityConfig = Entit
+yType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
+                                                                                                ^
+  鍏朵腑, T鏄被鍨嬪彉閲?
+    T鎵╁睍宸插湪鏂规硶 <T>createDefaultStackConfig(Level,ItemStack,@org.jspecify.annotations.Nullable LivingEntity)涓０鏄庣殑Entity
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\ScarecrowItem.java:44: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: Consumer<Scarecrow
+Entity>鏃犳硶杞崲涓篜ostSpawnProcessor<ScarecrowEntity>
+                    ScarecrowEntity entity = ModEntities.SCARECROW.create(serverLevel, entityConfig, blockPos, EntitySp
+awnReason.SPAWN_ITEM_USE, true, true);
+                                                                                       ^
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\VillagerCageItem.java:186: 閿欒: 鎵句笉鍒扮鍙?        Villager 
+villager = net.minecraft.world.entity.EntityType.VILLAGER.create(serverLevel,
+                                                                 ^
+  绗﹀彿:   鍙橀噺 VILLAGER
+  浣嶇疆: 绫?EntityType
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\client\TitleScreenMixin.java:28: 閿欒: 鎵句笉鍒扮鍙?          
+  Minecraft.getInstance().setScreen(new UpdateConfirmScreen((TitleScreen) (Object) this));
+                                   ^
+  绗﹀彿:   鏂规硶 setScreen(UpdateConfirmScreen)
+  浣嶇疆: 绫?Minecraft
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\FireworkRocketEntityMixin.java:98: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: ChatF
+ormatting鏃犳硶杞崲涓篛ptional<TeamColor>
+                    team.setColor(color);
+                                  ^
+F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\GuiMixin.java:32: 閿欒: 鎵句笉鍒扮鍙?        if (this.minecraf
+t.options.hideGui) return;
+                                  ^
+  绗﹀彿:   鍙橀噺 hideGui
+  浣嶇疆: 绫诲瀷涓篛ptions鐨勫彉閲?options
+娉? 鏌愪簺杈撳叆鏂囦欢浣跨敤鎴栬鐩栦簡宸茶繃鏃剁殑 API銆?
+娉? 鏈夊叧璇︾粏淇℃伅, 璇蜂娇鐢?-Xlint:deprecation 閲嶆柊缂栬瘧銆?
+娉? 鏌愪簺杈撳叆鏂囦欢浣跨敤浜嗘湭缁忔鏌ユ垨涓嶅畨鍏ㄧ殑鎿嶄綔銆?
+娉? 鏈夊叧璇︾粏淇℃伅, 璇蜂娇鐢?-Xlint:unchecked 閲嶆柊缂栬瘧銆?
+娉? 鏌愪簺娑堟伅宸茬粡杩囩畝鍖? 璇蜂娇鐢?-Xdiags:verbose 閲嶆柊缂栬瘧浠ヨ幏寰楀畬鏁磋緭鍑?
+43 涓敊璇?
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
+> Compilation failed; see the compiler output below.
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\renderer\TrialDummyRenderer.java:102: 閿欒: 鏃犳硶灏嗘帴鍙?Or
+deredSubmitNodeCollector涓殑鏂规硶 submitNameTag搴旂敤鍒扮粰瀹氱被鍨?
+              submitNodeCollector.submitNameTag(
+                                 ^
+    闇€瑕? PoseStack,Vec3,int,Component,boolean,int,CameraRenderState
+    鎵惧埌:    PoseStack,Vec3,int,Component,boolean,int,double,CameraRenderState
+    鍘熷洜: 瀹為檯鍙傛暟鍒楄〃鍜屽舰寮忓弬鏁板垪琛ㄩ暱搴︿笉鍚?
+  娉? 鏈夊叧璇︾粏淇℃伅, 璇蜂娇鐢?-Xlint:deprecation 閲嶆柊缂栬瘧銆?
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\ScarecrowItem.java:43: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: 涓嶅瓨鍦ㄧ被鍨嬪彉閲廡鐨勫疄渚?
+ 浠ヤ娇PostSpawnProcessor<T>涓嶤onsumer<ScarecrowEntity>涓€鑷?                      Consumer<ScarecrowEntity> entityConfig = E
+ntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
+                                                                                                  ^
+    鍏朵腑, T鏄被鍨嬪彉閲?
+      T鎵╁睍宸插湪鏂规硶 <T>createDefaultStackConfig(Level,ItemStack,@org.jspecify.annotations.Nullable LivingEntity)涓０鏄庣殑Enti
+ty
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\ScarecrowItem.java:44: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: Consumer<Scarecr
+owEntity>鏃犳硶杞崲涓篜ostSpawnProcessor<ScarecrowEntity>
+                      ScarecrowEntity entity = ModEntities.SCARECROW.create(serverLevel, entityConfig, blockPos, Entity
+SpawnReason.SPAWN_ITEM_USE, true, true);
+                                                                                         ^
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\FireworkRocketEntityMixin.java:98: 閿欒: 涓嶅吋瀹圭殑绫诲瀷: Cha
+tFormatting鏃犳硶杞崲涓篛ptional<TeamColor>
+                      team.setColor(color);
+                                    ^
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\block\entity\SoulMerchantStationBlockEntity.java:56: 閿欒: 鎵句
+笉鍒扮鍙?          this.cachedVillager = new StationVillager(net.minecraft.world.entity.EntityType.VILLAGER, serverLevel);
+                                                                                         ^
+    绗﹀彿:   鍙橀噺 VILLAGER
+    浣嶇疆: 绫?EntityType
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\block\entity\SoulMerchantStationBlockEntity.java:146: 閿欒: 鎵
+句笉鍒扮鍙?                  villager = new me.tuanzi.entity.StationVillager(net.minecraft.world.entity.EntityType.VILLAGER
+, serverLevel);
+                                                                                                       ^
+    绗﹀彿:   鍙橀噺 VILLAGER
+    浣嶇疆: 绫?EntityType
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:47: 閿欒: 鎵句笉鍒扮鍙?       
+   ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                  ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:54: 閿欒: 鎵句笉鍒扮鍙?       
+   ItemStack confirmButton = new ItemStack(Items.GREEN_STAINED_GLASS_PANE);
+                                                       ^
+    绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaFateConfirmMenu.java:84: 閿欒: 鎵句笉鍒扮鍙?       
+   ItemStack backButton = new ItemStack(Items.RED_STAINED_GLASS_PANE);
+                                                    ^
+    绗﹀彿:   鍙橀噺 RED_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:107: 閿欒: 鎵句笉鍒扮鍙?          
+ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                  ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:318: 閿欒: 鎵句笉鍒扮鍙?          
+    case "legendary" -> new ItemStack(Items.ORANGE_STAINED_GLASS_PANE);  // 浼犺鐢ㄦ鑹茬幓鐠?                                
+                     ^
+    绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:319: 閿欒: 鎵句笉鍒扮鍙?          
+    case "epic" -> new ItemStack(Items.PURPLE_STAINED_GLASS_PANE);       // 鍙茶瘲鐢ㄧ传鑹茬幓鐠?                                
+                ^
+    绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:320: 閿欒: 鎵句笉鍒扮鍙?          
+    case "rare" -> new ItemStack(Items.BLUE_STAINED_GLASS_PANE);         // 绋€鏈夌敤钃濊壊鐜荤拑
+                                                ^
+    绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:321: 閿欒: 鎵句笉鍒扮鍙?          
+    case "uncommon" -> new ItemStack(Items.GREEN_STAINED_GLASS_PANE);    // 浼樼鐢ㄧ豢鑹茬幓鐠?                                
+                    ^
+    绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaHistoryMenu.java:322: 閿欒: 鎵句笉鍒扮鍙?          
+    default -> new ItemStack(Items.WHITE_STAINED_GLASS_PANE);           // 鏅€氱敤鐧借壊鐜荤拑
+                                            ^
+    绗﹀彿:   鍙橀噺 WHITE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaImportMenu.java:51: 閿欒: 鎵句笉鍒扮鍙?          It
+emStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                  ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:46: 閿欒: 鎵句笉鍒扮鍙?          
+container.setItem(0, createNamedItem(Items.YELLOW_GLAZED_TERRACOTTA, "搂6鈽?浼犺鍝佽川鐗╁搧 (Legendary) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                    ^
+    绗﹀彿:   鍙橀噺 YELLOW_GLAZED_TERRACOTTA
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:47: 閿欒: 鎵句笉鍒扮鍙?          
+container.setItem(1, createNamedItem(Items.PURPLE_GLAZED_TERRACOTTA, "搂d鈽?鍙茶瘲鍝佽川鐗╁搧 (Epic) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                    ^
+    绗﹀彿:   鍙橀噺 PURPLE_GLAZED_TERRACOTTA
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:48: 閿欒: 鎵句笉鍒扮鍙?          
+container.setItem(2, createNamedItem(Items.BLUE_GLAZED_TERRACOTTA, "搂b鈽?绋€鏈夊搧璐ㄧ墿鍝?(Rare) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                    ^
+    绗﹀彿:   鍙橀噺 BLUE_GLAZED_TERRACOTTA
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:49: 閿欒: 鎵句笉鍒扮鍙?          
+container.setItem(3, createNamedItem(Items.GREEN_GLAZED_TERRACOTTA, "搂2鈽?浼樼鍝佽川鐗╁搧 (Uncommon) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                    ^
+    绗﹀彿:   鍙橀噺 GREEN_GLAZED_TERRACOTTA
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:50: 閿欒: 鎵句笉鍒扮鍙?          
+container.setItem(4, createNamedItem(Items.WHITE_GLAZED_TERRACOTTA, "搂f鈽?鏅€氬搧璐ㄧ墿鍝?(Common) 搂7[鐐瑰嚮鍒囨崲]"));
+                                                    ^
+    绗﹀彿:   鍙橀噺 WHITE_GLAZED_TERRACOTTA
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPoolEditMenu.java:52: 閿欒: 鎵句笉鍒扮鍙?          
+ItemStack grayGlass = createNamedItem(Items.GRAY_STAINED_GLASS_PANE, " ");
+                                                     ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:58: 閿欒: 鎵句笉鍒扮鍙?          I
+temStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                  ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:66: 閿欒: 鎵句笉鍒扮鍙?           
+       net.minecraft.world.item.Item icon = (currentRarity.equals("legendary") ? Items.GOLD_BLOCK : Items.ORANGE_STAINE
+D_GLASS_PANE);
+                                                                                                                    ^
+    绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+1 actionable task: 1 executed
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:70: 閿欒: 鎵句笉鍒扮鍙?           
+       net.minecraft.world.item.Item icon = (currentRarity.equals("epic") ? Items.AMETHYST_BLOCK : Items.PURPLE_STAINED
+_GLASS_PANE);
+                                                                                                                   ^
+    绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:74: 閿欒: 鎵句笉鍒扮鍙?           
+       net.minecraft.world.item.Item icon = (currentRarity.equals("rare") ? Items.LAPIS_BLOCK : Items.BLUE_STAINED_GLAS
+S_PANE);
+                                                                                                                ^
+    绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:81: 閿欒: 鎵句笉鍒扮鍙?           
+       net.minecraft.world.item.Item icon = (currentRarity.equals("uncommon") ? Items.EMERALD_BLOCK : Items.GREEN_STAIN
+ED_GLASS_PANE);
+                                                                                                                      ^
+    绗﹀彿:   鍙橀噺 GREEN_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaPreviewMenu.java:85: 閿欒: 鎵句笉鍒扮鍙?           
+       net.minecraft.world.item.Item icon = (currentRarity.equals("common") ? Items.IRON_BLOCK : Items.WHITE_STAINED_GL
+ASS_PANE);
+                                                                                                                 ^
+    绗﹀彿:   鍙橀噺 WHITE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:49: 閿欒: 鎵句笉鍒扮鍙?        
+  ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+                                                  ^
+    绗﹀彿:   鍙橀噺 GRAY_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:56: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(10, createNamedItem(Items.RED_STAINED_GLASS_PANE, "搂c搂l鏉冮噸 -100"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 RED_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:57: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(11, createNamedItem(Items.ORANGE_STAINED_GLASS_PANE, "搂6搂l鏉冮噸 -10"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 ORANGE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:58: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(12, createNamedItem(Items.YELLOW_STAINED_GLASS_PANE, "搂e搂l鏉冮噸 -1"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 YELLOW_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:76: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(14, createNamedItem(Items.LIGHT_BLUE_STAINED_GLASS_PANE, "搂b搂l鏉冮噸 +1"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 LIGHT_BLUE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:77: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(15, createNamedItem(Items.BLUE_STAINED_GLASS_PANE, "搂9搂l鏉冮噸 +10"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 BLUE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\gacha\gui\GachaWeightEditMenu.java:78: 閿欒: 鎵句笉鍒扮鍙?        
+  container.setItem(16, createNamedItem(Items.PURPLE_STAINED_GLASS_PANE, "搂d搂l鏉冮噸 +100"));
+                                                     ^
+    绗﹀彿:   鍙橀噺 PURPLE_STAINED_GLASS_PANE
+    浣嶇疆: 绫?Items
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\item\VillagerCageItem.java:186: 閿欒: 鎵句笉鍒扮鍙?          Villa
+ger villager = net.minecraft.world.entity.EntityType.VILLAGER.create(serverLevel,
+                                                                   ^
+    绗﹀彿:   鍙橀噺 VILLAGER
+    浣嶇疆: 绫?EntityType
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\GuiMixin.java:32: 閿欒: 鎵句笉鍒扮鍙?          if (this.mine
+craft.options.hideGui) return;
+                                    ^
+    绗﹀彿:   鍙橀噺 hideGui
+    浣嶇疆: 绫诲瀷涓篛ptions鐨勫彉閲?options
+  娉? 鏈夊叧璇︾粏淇℃伅, 璇蜂娇鐢?-Xlint:unchecked 閲嶆柊缂栬瘧銆?
+  娉? 鏌愪簺杈撳叆鏂囦欢浣跨敤鎴栬鐩栦簡宸茶繃鏃剁殑 API銆?
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\entity\TrialDummyEntity.java:354: 閿欒: 鏂规硶涓嶄細瑕嗙洊鎴栧疄鐜拌秴绫诲瀷鐨勬柟
+娉?      @Override
+      ^
+  娉? 鏌愪簺娑堟伅宸茬粡杩囩畝鍖? 璇蜂娇鐢?-Xdiags:verbose 閲嶆柊缂栬瘧浠ヨ幏寰楀畬鏁磋緭鍑?
+  娉? 鏌愪簺杈撳叆鏂囦欢浣跨敤浜嗘湭缁忔鏌ユ垨涓嶅畨鍏ㄧ殑鎿嶄綔銆?
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\TuanzisModClient.java:102: 閿欒: 鎵句笉鍒扮鍙?             
+     context.client().setScreen(new me.tuanzi.client.gui.screens.TravelersNotebookBookScreen(hand));
+                                  ^
+    绗﹀彿:   鏂规硶 setScreen(TravelersNotebookBookScreen)
+    浣嶇疆: 绫?Minecraft
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:55: 閿欒: 鎵句笉鍒扮鍙?    
+              Button.builder(Component.literal("绋嶅悗閲嶅惎"), button -> this.minecraft.setScreen(this.parent))
+                                                                                    ^
+    绗﹀彿:   鏂规硶 setScreen(Screen)
+    浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:95: 閿欒: 鎵句笉鍒扮鍙?    
+              this.minecraft.setScreen(this.parent);
+                                ^
+    绗﹀彿:   鏂规硶 setScreen(Screen)
+    浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\client\update\UpdateConfirmScreen.java:105: 閿欒: 鎵句笉鍒扮鍙?   
+               this.minecraft.setScreen(this.parent);
+                                ^
+    绗﹀彿:   鏂规硶 setScreen(Screen)
+    浣嶇疆: 绫诲瀷涓篗inecraft鐨勫彉閲?minecraft
+  F:\Development\Java\tuanzis_mods\src\main\java\me\tuanzi\mixin\client\TitleScreenMixin.java:28: 閿欒: 鎵句笉鍒扮鍙?        
+      Minecraft.getInstance().setScreen(new UpdateConfirmScreen((TitleScreen) (Object) this));
+                                     ^
+    绗﹀彿:   鏂规硶 setScreen(UpdateConfirmScreen)
+    浣嶇疆: 绫?Minecraft
+  43 涓敊璇?
+
+* Try:
+> Check your code and dependencies to fix the compilation error(s)
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 2s

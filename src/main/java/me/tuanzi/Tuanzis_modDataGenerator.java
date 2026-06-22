@@ -375,6 +375,58 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "樱花祭卡牌包");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "樱花祭卡牌箱");
 
+			// 裂虚之痕中文翻译
+			translationBuilder.add(ModItems.RIFT_SCAR, "裂虚之痕");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.1", "外观: §a无形");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.2", "外观: §e涟漪");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.3", "外观: §6蚀痕");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.4", "外观: §c崩解");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.5", "外观: §4残响");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.1", "§7刚从虚空抽出，锋刃无形，完美无瑕。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.2", "§7剑脊浮现虚空涟漪，切割轨迹略带滞涩。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.3", "§7裂痕如蛛网蔓延，剑身呈现半透明紫色。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.4", "§7结构剧烈波动，每次挥砍都崩落细碎虚空尘。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.5", "§7几乎完全透明，仅余一道暗影轮廓，轻触即散。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.1", "§8在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.2", "§8与折断的龙息碎片融合，锻造出这柄剑。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.3", "§8它能察觉敌人护甲的缺失，一旦目标毫无防备，");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.4", "§8剑刃便穿透现实，直接撕扯灵魂。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8据说剑中的虚空回响渴求着每次完美的切割。");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			
+			String riftScarDesc = "【裂虚之痕】\n在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影与折断的龙息碎片融合，锻造出这柄剑。它能察觉敌人护甲的缺失，一旦目标毫无防备，剑刃便穿透现实，直接撕扯灵魂。据说剑中的虚空回响渴求着每次完美的切割。\n\n§e属性：§r\n1. §a攻击力§r: 5.12 点。\n2. §a攻击速度§r: 2.0。\n\n§e虚无切割被动：§r\n1. 当攻击的目标当前护甲值为 0 时，你造成的伤害会提升至 175%。\n2. 若目标拥有护甲，则伤害保持原始值。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (无形、涟漪、蚀痕、崩解、残响) 并在挥动/击中时具有独特的粒子和音效。";
+			translationBuilder.add("jei.tuanzis_mod.rift_scar.description", riftScarDesc);
+
+			// 钢御壁垒 (Steel Barrier) 与 坚盾之赐 (Steel Shield Gift) 翻译
+			translationBuilder.add(ModItems.STEEL_BARRIER, "钢御壁垒");
+			translationBuilder.add(ModStatusEffects.STEEL_SHIELD.value(), "钢盾");
+			translationBuilder.add("enchantment.tuanzis_mod.steel_shield_gift", "坚盾之赐");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.1", "外观: §a崭新铸成");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.2", "外观: §e初经战阵");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.3", "外观: §6裂痕蔓延");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.4", "外观: §c千钧壁垒");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.5", "外观: §4濒毁残御");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.1", "§7刀身镜面般光洁，钢盾符文流转不息，散发出坚实的金属光泽。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.2", "§7刃口微卷，守护铭文泛起热锻青光，散发战斗初期的温热感。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.3", "§7护手处隐现发丝细纹，剑脊上的钢盾似在低鸣。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.4", "§7剑身斑驳蚀刻，布满裂痕，每道伤痕都记录着守卫的不屈。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.5", "§7符文破碎闪烁，钢盾虚影薄如蝉翼，似乎随时都会消散。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.1", "§8这是最后一位城墙守卫遗留的断刃之剑。其身虽殒，其志犹存。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.2", "§8匠人以秘法将骑士残魂与他的碎盾熔入剑脊，重新锻造。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.3", "§8挥动此剑时，钢盾虚影在身周流转加持，牢不可破。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.4", "§8一如当年，他以身为盾，不退半步。");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			
+			String steelBarrierJeiDesc = "【钢御壁垒】\n最后一位城墙守卫的遗剑，其身虽殒，其志犹存。匠人以秘法将骑士残魂与碎盾熔入剑脊，挥动时钢盾虚影加身，一如当年他以身为盾，不退半步。\n\n§e属性：§r\n1. §a攻击力§r: 7.7 点。\n2. §a攻击速度§r: 1.6。\n\n§e钢盾被动：§r\n1. 每次持剑攻击命中目标时，获得1层“钢盾”状态效果，最高叠加至 5 层。\n2. 每层钢盾提供 §a+2 护甲值§r（可突破原版20上限）。\n3. 持续时间（5秒）结束后，钢盾层数衰减 1 层，衰减后仍持续 5 秒，而非直接消失，形成平缓的防御消退。";
+			translationBuilder.add("jei.tuanzis_mod.steel_barrier.description", steelBarrierJeiDesc);
+			
+			String steelShieldGiftJeiDesc = "【坚盾之赐】\n最大等级 IV。对近战武器与工具生效。此附魔与其他归一化附魔互斥。\n\n§e属性：§r\n1. 提供 §a+0.5 × 等级 护甲值§r。\n2. 当持有者的护甲值超过 20 点时，每 1 点溢出护甲值使你的攻击伤害增加 §c0.0625 / 0.125 / 0.1875 / 0.25 × 溢出点数§r 的数值。";
+			translationBuilder.add("jei.tuanzis_mod.steel_shield_gift.description", steelShieldGiftJeiDesc);
+
 			// 蜂刺余响翻译
 			translationBuilder.add(ModItems.BEE_STING_ECHO, "蜂刺余响");
 			translationBuilder.add(ModStatusEffects.BEE_POISON.value(), "蜂毒");
@@ -401,6 +453,11 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			
 			String beeStingEchoDesc = "【蜂刺余响】\n由蜂后的最后一根螫针锻造而成的绝影薄刃。拥有极快的攻速与独特的叠刺爆毒被动。\n\n§e属性：§r\n1. §a攻击力§r: 7 点（比下界合金剑低 1 点）。\n2. §a攻击速度§r: 2.1（显著快于下界合金剑的 1.6）。\n3. §a限制§r: 该武器的攻击距离缩短 0.25 格，且无法触发横扫攻击。\n\n§e叠刺被动：§r\n1. 每次成功命中目标时，为其叠加一层 §6蜂毒§r 效果，持续 5 秒，最高叠加 5 层。\n2. 每层蜂毒使目标受到的下一次伤害提升 §a3%§r（对真实伤害同样有效）。如果是非蜂刺余响造成的伤害，会在触发增幅后立即消耗（清空）所有层数。\n3. 当蜂毒叠满 5 层时，会立刻引爆所有层数，造成合计 §c15%§r 该次命中最终伤害的§4额外真实伤害§r，并清空层数。\n4. 引爆后，目标进入 §e8 秒的引爆冷却§r 状态，期间无法再被叠加蜂毒。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (初振之锋、微疲之纹、劳损之痕、衰振之音、残响空巢) 以及不同频率的蜂鸣声。";
 			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", beeStingEchoDesc);
+
+			// 虚无共鸣 (Void Resonance) 翻译
+			translationBuilder.add("enchantment.tuanzis_mod.void_resonance", "虚无共鸣");
+			String voidResonanceJeiDesc = "【虚无共鸣】\n最大等级 V。攻击护甲为0的目标时，攻击力增加 (0.8×等级) × (攻击速度 ÷ 武器基础攻击力) 点。此效果对所有武器生效方式完全相同。此附魔与其他归一化附魔互斥。";
+			translationBuilder.add("jei.tuanzis_mod.void_resonance.description", voidResonanceJeiDesc);
 
 			// 幽匿裂片（Scully Shard）与 共振脉冲（Resonance Pulse）翻译
 			translationBuilder.add(ModItems.SCULLY_SHARD, "幽匿裂片");
@@ -507,6 +564,28 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "Sakura Festival Card Pack");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
 
+			// Rift Scar English translations
+			translationBuilder.add(ModItems.RIFT_SCAR, "Fractured Void Scar");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.1", "Appearance: §aIntangible");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.2", "Appearance: §eRipple");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.3", "Appearance: §6Corrosion");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.4", "Appearance: §cDecaying");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.status.5", "Appearance: §4Echo");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.1", "§7Freshly drawn from the void, the edge is intangible and flawless.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.2", "§7Void ripples emerge on the spine, making the cutting path slightly sluggish.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.3", "§7Cracks spread like a spiderweb, and the blade is translucent purple.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.4", "§7Structure fluctuates violently, shedding fine void dust with every slash.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.desc.5", "§7Almost completely transparent, leaving only a shadow outline that dissipates at a touch.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.1", "§8In the rift of nothingness at the outer edge of the End, an End Knight fused");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.2", "§8their own shadow with shattered dragon breath fragments to forge this blade.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.3", "§8It senses the lack of armor on enemies, and once the target is defenseless,");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.4", "§8the blade pierces reality to directly tear the soul.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8It is said the void echo within the sword craves every perfect cut.");
+			translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.rift_scar.description", "A void sword forged by an End Knight. Deals 175% damage when the target has 0 armor. Random wear appearance on birth.");
+
 			// Bee Sting Echo translations
 			translationBuilder.add(ModItems.BEE_STING_ECHO, "Bee Sting Echo");
 			translationBuilder.add(ModStatusEffects.BEE_POISON.value(), "Bee Poison");
@@ -531,6 +610,34 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion.player", "%s was terminated by the detonated bee poison in a battle with %s");
 			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.shift_hint", "§7[Hold Shift for details & lore]");
 			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", "A thin blade forged from the queen bee's last stinger. Extremely fast attack speed and poison accumulation.");
+
+			// Void Resonance translations
+			translationBuilder.add("enchantment.tuanzis_mod.void_resonance", "Void Resonance");
+			translationBuilder.add("jei.tuanzis_mod.void_resonance.description", "Void Resonance: Max Level V. When attacking a target with 0 armor, increases attack damage by (0.8 * level) * (attack speed / base weapon damage). Works identically on all weapons. Exclusive with other normalization enchantments.");
+
+			// Steel Barrier & Steel Shield Gift translations
+			translationBuilder.add(ModItems.STEEL_BARRIER, "Steel Barrier");
+			translationBuilder.add(ModStatusEffects.STEEL_SHIELD.value(), "Steel Shield");
+			translationBuilder.add("enchantment.tuanzis_mod.steel_shield_gift", "Gift of the Shield");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.1", "Appearance: §aPristine Forged");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.2", "Appearance: §eFirst Battle");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.3", "Appearance: §6Spreading Cracks");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.4", "Appearance: §cMottled Rampart");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.status.5", "Appearance: §4Near Ruined Shield");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.1", "§7The blade is clean and reflective, with steel shield runes flowing constantly, radiating a sturdy metallic luster.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.2", "§7The edge is slightly rolled, and the protection inscription glows with hot forged cyan light.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.3", "§7Fine hairline cracks appear on the guard, and the steel shield inside the spine hums softly.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.4", "§7Mottled and scarred blade, full of cracks, each recording the guard's unyielding spirit.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.desc.5", "§7Runes flicker and fracture, and the steel shield phantom is thin as a wing, about to fade.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.1", "§8The remnant sword of the last wall defender. Though he fell, his will remains.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.2", "§8A smith forged the knight's soul and his broken shield into the blade spine.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.3", "§8When swinging it, a phantom steel shield wraps the wielder, impenetrable.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.lore.4", "§8Just like back then, he stood as a shield, never retreating a single step.");
+			translationBuilder.add("item.tuanzis_mod.steel_barrier.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.steel_barrier.description", "The sword of the last wall defender. Every hit grants a stacking Steel Shield effect (max 5 layers), each layer giving +2 armor. On expiration, layers decay one by one every 5 seconds.");
+			translationBuilder.add("jei.tuanzis_mod.steel_shield_gift.description", "Gift of the Shield: Max Level IV. Grants +0.5 armor per level. When wielder's armor exceeds 20, each point of overflow armor increases attack damage by 0.0625/0.125/0.1875/0.25 point.");
 
 			// Scully Shard & Resonance Pulse translations
 			translationBuilder.add(ModItems.SCULLY_SHARD, "Scully Shard");

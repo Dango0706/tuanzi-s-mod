@@ -55,6 +55,32 @@ public class ModItems {
             .attributes(modifiers));
     });
 
+    public static final Item STEEL_BARRIER = register("steel_barrier", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.7, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .build();
+        return new SteelBarrierItem(properties
+            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.7F, -2.4F)
+            .durability(2031)
+            .rarity(Rarity.EPIC)
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.NETHERITE_INGOT.builtInRegistryHolder())))
+            .attributes(modifiers));
+    });
+
+    public static final Item RIFT_SCAR = register("rift_scar", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 4.12, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .build();
+        return new RiftScarItem(properties
+            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 4.12F, -2.0F)
+            .durability(2031)
+            .rarity(Rarity.EPIC)
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.ENDER_EYE.builtInRegistryHolder())))
+            .attributes(modifiers));
+    });
+
     public static final Item SCULLY_SHARD = register("scully_shard", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
             .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 9.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)

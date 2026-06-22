@@ -19,6 +19,8 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> BUZZING_RHYTHM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "buzzing_rhythm"));
     public static final ResourceKey<Enchantment> RESONANCE_PULSE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "resonance_pulse"));
     public static final ResourceKey<Enchantment> ABYSSAL_RHYTHM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "abyssal_rhythm"));
+    public static final ResourceKey<Enchantment> VOID_RESONANCE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "void_resonance"));
+    public static final ResourceKey<Enchantment> STEEL_SHIELD_GIFT = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "steel_shield_gift"));
 
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
 

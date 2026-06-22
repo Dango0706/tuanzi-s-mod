@@ -77,10 +77,22 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.client.BeeStingEchoTintSource.MAP_CODEC
         );
 
+        // 注册裂虚之痕自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "rift_scar"),
+            me.tuanzi.client.RiftScarTintSource.MAP_CODEC
+        );
+
         // 注册幽匿裂片自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
             net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "scully_shard"),
             me.tuanzi.client.ScullyShardTintSource.MAP_CODEC
+        );
+
+        // 注册钢御壁垒自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "steel_barrier"),
+            me.tuanzi.client.SteelBarrierTintSource.MAP_CODEC
         );
 
         // 注册潮汐切割者自定义 Wear TintSource

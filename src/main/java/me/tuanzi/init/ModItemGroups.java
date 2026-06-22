@@ -81,6 +81,16 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(abyssalRhythmBook, mutable -> mutable.set(abyssalRhythm, 4));
                 entries.accept(abyssalRhythmBook);
 
+                var voidResonance = enchantmentRegistry.getOrThrow(ModEnchantments.VOID_RESONANCE);
+                ItemStack voidResonanceBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(voidResonanceBook, mutable -> mutable.set(voidResonance, 5));
+                entries.accept(voidResonanceBook);
+
+                var steelShieldGift = enchantmentRegistry.getOrThrow(ModEnchantments.STEEL_SHIELD_GIFT);
+                ItemStack steelShieldGiftBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(steelShieldGiftBook, mutable -> mutable.set(steelShieldGift, 4));
+                entries.accept(steelShieldGiftBook);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -97,6 +107,10 @@ public class ModItemGroups {
                 entries.accept(ModItems.ECHO_BREAKER);
                 // 加入蜂刺余响
                 entries.accept(ModItems.BEE_STING_ECHO);
+                // 加入钢御壁垒
+                entries.accept(ModItems.STEEL_BARRIER);
+                // 加入裂虚之痕
+                entries.accept(ModItems.RIFT_SCAR);
                 // 加入幽匿裂片
                 entries.accept(ModItems.SCULLY_SHARD);
                 // 加入潮汐切割者

@@ -51,6 +51,52 @@ public class DamageCalculator {
                 || source.is(DamageTypes.MOB_ATTACK) 
                 || source.is(DamageTypes.MACE_SMASH);
             if (isMelee) {
+                // 坚盾之赐 (Steel Shield Gift) 附魔逻辑
+                ItemStack steelShieldGiftStack = attacker.getMainHandItem();
+                if (!steelShieldGiftStack.isEmpty()) {
+                    var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var steelShieldGiftEnch = registry.getOrThrow(ModEnchantments.STEEL_SHIELD_GIFT);
+                    int level = EnchantmentHelper.getItemEnchantmentLevel(steelShieldGiftEnch, steelShieldGiftStack);
+                    if (level > 0) {
+                        float armor = attacker.getArmorValue();
+                        if (armor > 20.0f) {
+                            float overflowArmor = armor - 20.0f;
+                            float bonusDmg = overflowArmor * (0.0625f * level);
+                            amount += bonusDmg;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【坚盾之赐】附魔触发！等级: " + level + "，攻击者护甲值: " + String.format("%.2f", armor) + "，溢出护甲值: " + String.format("%.2f", overflowArmor) + "，造成额外伤害: " + String.format("%.2f", bonusDmg) + " 点。");
+                        }
+                    }
+                }
+
+                // 虚无共鸣 (Void Resonance) 附魔逻辑
+                ItemStack voidResonanceStack = attacker.getMainHandItem();
+                if (!voidResonanceStack.isEmpty()) {
+                    var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var voidResonanceEnch = registry.getOrThrow(ModEnchantments.VOID_RESONANCE);
+                    int level = EnchantmentHelper.getItemEnchantmentLevel(voidResonanceEnch, voidResonanceStack);
+                    if (level > 0 && target.getArmorValue() == 0) {
+                        final float[] attackDamageBox = {1.0f};
+                        final float[] attackSpeedBox = {4.0f};
+                        voidResonanceStack.forEachModifier(net.minecraft.world.entity.EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                            if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) {
+                                if (modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                                    attackDamageBox[0] += (float) modifier.amount();
+                                }
+                            } else if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED)) {
+                                if (modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                                    attackSpeedBox[0] += (float) modifier.amount();
+                                }
+                            }
+                        });
+                        float baseDmg = attackDamageBox[0];
+                        float speed = attackSpeedBox[0];
+                        float bonusDmg = (0.8f * level) * (speed / Math.max(0.0001f, baseDmg));
+                        amount += bonusDmg;
+
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【虚无共鸣】附魔触发！等级: " + level + "，武器基础攻击力: " + String.format("%.2f", baseDmg) + "，武器攻击速度: " + String.format("%.2f", speed) + "，基础伤害增加: " + String.format("%.2f", bonusDmg) + " 点。");
+                    }
+                }
+
                 if (attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.TideCleaverItem) {
                     ItemStack mainHand = attacker.getMainHandItem();
                     net.minecraft.world.item.component.CustomData customData = mainHand.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
@@ -146,6 +192,13 @@ public class DamageCalculator {
                             ));
                             me.tuanzi.util.ModLog.debug(attacker, target, "【潮汐侵蚀】附带魔法伤害 DOT 施加/刷新。");
                         }
+                    }
+                }
+
+                if (attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.RiftScarItem) {
+                    if (target.getArmorValue() == 0) {
+                        attackerMultiplier += 0.75f;
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【裂虚之痕】触发虚无切割！目标护甲为 0，造成的伤害提升 75% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
                     }
                 }
 

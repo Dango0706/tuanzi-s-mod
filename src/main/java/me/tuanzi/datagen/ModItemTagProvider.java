@@ -21,7 +21,9 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
         builder(ItemTags.SWORDS)
             .add(ModItems.ECHO_BREAKER.builtInRegistryHolder().key())
             .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key())
+            .add(ModItems.RIFT_SCAR.builtInRegistryHolder().key())
             .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
-            .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key());
+            .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
+            .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key());
     }
 }

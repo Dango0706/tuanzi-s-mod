@@ -426,6 +426,14 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.BEE_STING_ECHO), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.bee_sting_echo.description"));
 
+        // 注册裂虚之痕介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.RIFT_SCAR), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.rift_scar.description"));
+
+        // 注册钢御壁垒介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.STEEL_BARRIER), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.steel_barrier.description"));
+
         // 注册幽匿裂片介绍页
         registration.addIngredientInfo(new ItemStack(ModItems.SCULLY_SHARD), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.scully_shard.description"));
@@ -478,6 +486,52 @@ public class TuanzisJeiPlugin implements IModPlugin {
         if (!abyssalRhythmBooks.isEmpty()) {
             registration.addIngredientInfo(abyssalRhythmBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.abyssal_rhythm.description"));
+        }
+
+        // 获取所有附有“虚无共鸣”附魔的附魔书并注册介绍页 (Void Resonance I-V)
+        List<ItemStack> voidResonanceBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.VOID_RESONANCE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!voidResonanceBooks.isEmpty()) {
+            registration.addIngredientInfo(voidResonanceBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.void_resonance.description"));
+        }
+
+        // 获取所有附有“坚盾之赐”附魔的附魔书并注册介绍页 (Steel Shield Gift I-IV)
+        List<ItemStack> steelShieldGiftBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.STEEL_SHIELD_GIFT)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!steelShieldGiftBooks.isEmpty()) {
+            registration.addIngredientInfo(steelShieldGiftBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.steel_shield_gift.description"));
         }
     }
 }

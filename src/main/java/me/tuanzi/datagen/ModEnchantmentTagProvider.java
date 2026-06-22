@@ -29,7 +29,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.BERSERKER)
             .addOptional(ModEnchantments.EXECUTE)
             .addOptional(ModEnchantments.BUZZING_RHYTHM)
-            .addOptional(ModEnchantments.RESONANCE_PULSE);
+            .addOptional(ModEnchantments.RESONANCE_PULSE)
+            .addOptional(ModEnchantments.VOID_RESONANCE)
+            .addOptional(ModEnchantments.STEEL_SHIELD_GIFT);
 
         builder(EnchantmentTags.ON_RANDOM_LOOT)
             .addOptional(ModEnchantments.EXPERIENCE)
@@ -39,7 +41,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.CHAIN_PAIN)
             .addOptional(ModEnchantments.SEEKING_ARROW)
             .addOptional(ModEnchantments.BUZZING_RHYTHM)
-            .addOptional(ModEnchantments.RESONANCE_PULSE);
+            .addOptional(ModEnchantments.RESONANCE_PULSE)
+            .addOptional(ModEnchantments.VOID_RESONANCE)
+            .addOptional(ModEnchantments.STEEL_SHIELD_GIFT);
 
         builder(EnchantmentTags.TRADEABLE)
             .addOptional(ModEnchantments.EXPERIENCE)
@@ -47,7 +51,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.BERSERKER)
             .addOptional(ModEnchantments.EXECUTE)
             .addOptional(ModEnchantments.BUZZING_RHYTHM)
-            .addOptional(ModEnchantments.RESONANCE_PULSE);
+            .addOptional(ModEnchantments.RESONANCE_PULSE)
+            .addOptional(ModEnchantments.VOID_RESONANCE)
+            .addOptional(ModEnchantments.STEEL_SHIELD_GIFT);
             
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入
@@ -55,6 +61,8 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
         builder(ModEnchantments.EXCLUSIVE_NORMALIZATION)
             .addOptional(ModEnchantments.RESONANCE_PULSE)
             .addOptional(ModEnchantments.ABYSSAL_RHYTHM)
-            .addOptional(ModEnchantments.BUZZING_RHYTHM);
+            .addOptional(ModEnchantments.BUZZING_RHYTHM)
+            .addOptional(ModEnchantments.VOID_RESONANCE)
+            .addOptional(ModEnchantments.STEEL_SHIELD_GIFT);
     }
 }

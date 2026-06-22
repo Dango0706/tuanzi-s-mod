@@ -227,6 +227,45 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
             )
         )
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "buzzing_rhythm")));
+
+        // 虚无共鸣 (Void Resonance)
+        entries.add(ModEnchantments.VOID_RESONANCE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(net.minecraft.tags.ItemTags.WEAPON_ENCHANTABLE),
+                2,    // weight
+                5,    // max level (V)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "void_resonance")));
+
+        // 坚盾之赐 (Steel Shield Gift)
+        entries.add(ModEnchantments.STEEL_SHIELD_GIFT, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(net.minecraft.tags.ItemTags.WEAPON_ENCHANTABLE),
+                2,    // weight
+                4,    // max level (IV)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+            new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.steel_shield_gift.armor"),
+                net.minecraft.world.entity.ai.attributes.Attributes.ARMOR,
+                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.5F),
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+            )
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "steel_shield_gift")));
     }
 
     @Override

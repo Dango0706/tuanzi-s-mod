@@ -29,6 +29,7 @@ public class ModStatusEffects {
     public static final Holder<MobEffect> BUZZING_RHYTHM = register("buzzing_rhythm", new me.tuanzi.effect.BuzzingRhythmStatusEffect());
     public static final Holder<MobEffect> RESONANCE = register("resonance", new me.tuanzi.effect.ResonanceStatusEffect());
     public static final Holder<MobEffect> TIDE_EROSION = register("tide_erosion", new me.tuanzi.effect.TideErosionStatusEffect());
+    public static final Holder<MobEffect> STEEL_SHIELD = register("steel_shield", new me.tuanzi.effect.SteelShieldStatusEffect());
 
     private static Holder<MobEffect> register(String name, MobEffect effect) {
         return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, name), effect);
