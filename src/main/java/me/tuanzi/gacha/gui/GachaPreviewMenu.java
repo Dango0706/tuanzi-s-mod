@@ -55,7 +55,7 @@ public class GachaPreviewMenu extends ChestMenu {
         if (totalPages == 0) totalPages = 1;
 
         // 2. 绘制翻页与实时保底概率展示栏，以及品质板块切换导航台 (第 6 行: Slot 45-53)
-        ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
 
         for (int i = 45; i < 54; i++) {
@@ -63,26 +63,26 @@ public class GachaPreviewMenu extends ChestMenu {
                 container.setItem(i, createNamedItem(Items.ARROW, "§e◀ 上一页"));
             } else if (i == 46) {
                 String name = (currentRarity.equals("legendary") ? "§6§l★ 传说板块 ★" : "§7传说大奖板块 §e◀点击切换");
-                net.minecraft.world.item.Item icon = (currentRarity.equals("legendary") ? Items.GOLD_BLOCK : Items.ORANGE_STAINED_GLASS_PANE);
+                net.minecraft.world.item.Item icon = (currentRarity.equals("legendary") ? Items.GOLD_BLOCK : Items.STAINED_GLASS_PANE.orange());
                 container.setItem(i, createNamedItem(icon, name));
             } else if (i == 47) {
                 String name = (currentRarity.equals("epic") ? "§d§l★ 史诗板块 ★" : "§7史诗特赏板块 §e◀点击切换");
-                net.minecraft.world.item.Item icon = (currentRarity.equals("epic") ? Items.AMETHYST_BLOCK : Items.PURPLE_STAINED_GLASS_PANE);
+                net.minecraft.world.item.Item icon = (currentRarity.equals("epic") ? Items.AMETHYST_BLOCK : Items.STAINED_GLASS_PANE.purple());
                 container.setItem(i, createNamedItem(icon, name));
             } else if (i == 48) {
                 String name = (currentRarity.equals("rare") ? "§b§l★ 稀有板块 ★" : "§7稀有精品板块 §e◀点击切换");
-                net.minecraft.world.item.Item icon = (currentRarity.equals("rare") ? Items.LAPIS_BLOCK : Items.BLUE_STAINED_GLASS_PANE);
+                net.minecraft.world.item.Item icon = (currentRarity.equals("rare") ? Items.LAPIS_BLOCK : Items.STAINED_GLASS_PANE.blue());
                 container.setItem(i, createNamedItem(icon, name));
             } else if (i == 49) {
                 List<String> statsLore = getPlayerStatsLore();
                 container.setItem(i, createDetailedItem(Items.BOOK, "§6§l✦ 你的实时出货概率与保底 ✦", statsLore));
             } else if (i == 50) {
                 String name = (currentRarity.equals("uncommon") ? "§2§l★ 优秀板块 ★" : "§7优秀卓越板块 §e◀点击切换");
-                net.minecraft.world.item.Item icon = (currentRarity.equals("uncommon") ? Items.EMERALD_BLOCK : Items.GREEN_STAINED_GLASS_PANE);
+                net.minecraft.world.item.Item icon = (currentRarity.equals("uncommon") ? Items.EMERALD_BLOCK : Items.STAINED_GLASS_PANE.green());
                 container.setItem(i, createNamedItem(icon, name));
             } else if (i == 51) {
                 String name = (currentRarity.equals("common") ? "§f§l★ 普通板块 ★" : "§7普通大众板块 §e◀点击切换");
-                net.minecraft.world.item.Item icon = (currentRarity.equals("common") ? Items.IRON_BLOCK : Items.WHITE_STAINED_GLASS_PANE);
+                net.minecraft.world.item.Item icon = (currentRarity.equals("common") ? Items.IRON_BLOCK : Items.STAINED_GLASS_PANE.white());
                 container.setItem(i, createNamedItem(icon, name));
             } else if (i == 53) {
                 container.setItem(i, createNamedItem(Items.ARROW, "§e下一页 ▶"));

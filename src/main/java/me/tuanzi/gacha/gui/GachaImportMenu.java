@@ -48,7 +48,7 @@ public class GachaImportMenu extends ChestMenu {
         
         // 我们只在非 0-26 的格子填充装饰与控制项。因为 0-26 是由玩家放置的物品。
         // 第 4 行 (Slot 27-35)：分隔与功能
-        ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
         
         for (int i = 27; i < 36; i++) {

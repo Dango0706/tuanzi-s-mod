@@ -46,16 +46,16 @@ public class GachaWeightEditMenu extends ChestMenu {
         }
 
         // 2. 绘制背景 (灰色染色玻璃板)
-        ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
         for (int i = 0; i < 27; i++) {
             container.setItem(i, grayPane.copy());
         }
 
         // 3. 放置减少权重的控制块
-        container.setItem(10, createNamedItem(Items.RED_STAINED_GLASS_PANE, "§c§l权重 -100"));
-        container.setItem(11, createNamedItem(Items.ORANGE_STAINED_GLASS_PANE, "§6§l权重 -10"));
-        container.setItem(12, createNamedItem(Items.YELLOW_STAINED_GLASS_PANE, "§e§l权重 -1"));
+        container.setItem(10, createNamedItem(Items.STAINED_GLASS_PANE.red(), "§c§l权重 -100"));
+        container.setItem(11, createNamedItem(Items.STAINED_GLASS_PANE.orange(), "§6§l权重 -10"));
+        container.setItem(12, createNamedItem(Items.STAINED_GLASS_PANE.yellow(), "§e§l权重 -1"));
 
         // 4. 中心展示槽位
         ItemStack displayStack = targetItem.getItem().copy();
@@ -73,9 +73,9 @@ public class GachaWeightEditMenu extends ChestMenu {
         container.setItem(13, displayStack);
 
         // 5. 放置增加权重的控制块
-        container.setItem(14, createNamedItem(Items.LIGHT_BLUE_STAINED_GLASS_PANE, "§b§l权重 +1"));
-        container.setItem(15, createNamedItem(Items.BLUE_STAINED_GLASS_PANE, "§9§l权重 +10"));
-        container.setItem(16, createNamedItem(Items.PURPLE_STAINED_GLASS_PANE, "§d§l权重 +100"));
+        container.setItem(14, createNamedItem(Items.STAINED_GLASS_PANE.lightBlue(), "§b§l权重 +1"));
+        container.setItem(15, createNamedItem(Items.STAINED_GLASS_PANE.blue(), "§9§l权重 +10"));
+        container.setItem(16, createNamedItem(Items.STAINED_GLASS_PANE.purple(), "§d§l权重 +100"));
 
         // 6. 功能操作栏
         container.setItem(20, createNamedItem(Items.EMERALD_BLOCK, "§a§l✔ 确认修改"));

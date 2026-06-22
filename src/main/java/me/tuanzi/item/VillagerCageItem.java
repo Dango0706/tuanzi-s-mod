@@ -183,7 +183,7 @@ public class VillagerCageItem extends Item {
         villagerTag.putDouble("Pos[1]", spawnPos.getY());
         villagerTag.putDouble("Pos[2]", spawnPos.getZ() + 0.5);
 
-        Villager villager = net.minecraft.world.entity.EntityType.VILLAGER.create(serverLevel,
+        Villager villager = net.minecraft.world.entity.EntityTypes.VILLAGER.create(serverLevel,
                 net.minecraft.world.entity.EntitySpawnReason.LOAD);
         if (villager == null) return InteractionResult.FAIL;
 

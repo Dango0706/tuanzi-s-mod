@@ -3,6 +3,7 @@ package me.tuanzi.mixin;
 import me.tuanzi.client.TuanzisModClient;
 import me.tuanzi.init.ModEnchantments;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -19,17 +20,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class GuiMixin {
 
     @Shadow @Final private Minecraft minecraft;
-
-    @Shadow public abstract Font getFont();
+    @Shadow public abstract boolean isHidden();
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void tuanzis_mod$onExtractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (this.minecraft.player == null) return;
-        if (this.minecraft.options.hideGui) return;
+        if (this.isHidden()) return;
 
         // 1. 连锁采掘激活提示
         if (TuanzisModClient.isHoldingChainMiningKey()) {
@@ -42,7 +42,7 @@ public abstract class GuiMixin {
 
                 if (levelVal > 0) {
                     // 3. 渲染 HUD 提示
-                    Font font = this.getFont();
+                    Font font = this.minecraft.font;
                     Component text = Component.translatable("hud.tuanzis_mod.chain_mining.active");
                     int width = font.width(text);
                     int height = 9;

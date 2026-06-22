@@ -1,6 +1,6 @@
 package me.tuanzi.item;
 
-import java.util.function.Consumer;
+import net.minecraft.world.entity.PostSpawnProcessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -40,7 +40,7 @@ public class ScarecrowItem extends Item {
             AABB box = ModEntities.SCARECROW.getDimensions().makeBoundingBox(pos.x(), pos.y(), pos.z());
             if (level.noCollision(null, box) && level.getEntities(null, box).isEmpty()) {
                 if (level instanceof ServerLevel serverLevel) {
-                    Consumer<ScarecrowEntity> entityConfig = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
+                    PostSpawnProcessor<ScarecrowEntity> entityConfig = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
                     ScarecrowEntity entity = ModEntities.SCARECROW.create(serverLevel, entityConfig, blockPos, EntitySpawnReason.SPAWN_ITEM_USE, true, true);
                     if (entity == null) {
                         return InteractionResult.FAIL;

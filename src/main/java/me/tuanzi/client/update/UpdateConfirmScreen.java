@@ -52,7 +52,7 @@ public class UpdateConfirmScreen extends Screen {
                     .build()
             );
             this.addRenderableWidget(
-                Button.builder(Component.literal("稍后重启"), button -> this.minecraft.setScreen(this.parent))
+                Button.builder(Component.literal("稍后重启"), button -> this.minecraft.setScreenAndShow(this.parent))
                     .bounds(this.width / 2 + 10, panelY + panelHeight - 35, 100, 20)
                     .build()
             );
@@ -92,7 +92,7 @@ public class UpdateConfirmScreen extends Screen {
             Button.builder(Component.literal("忽略更新一天"), button -> {
                 UpdateChecker.saveIgnoreTime();
                 UpdateChecker.setAlreadyNotified(true); // 确保当次关闭阻断
-                this.minecraft.setScreen(this.parent);
+                this.minecraft.setScreenAndShow(this.parent);
             })
             .bounds(panelX + 120, btnY, btnWidth, 20)
             .build()
@@ -102,7 +102,7 @@ public class UpdateConfirmScreen extends Screen {
         this.addRenderableWidget(
             Button.builder(Component.literal("暂不更新"), button -> {
                 UpdateChecker.setAlreadyNotified(true); // 本次游戏不再弹窗
-                this.minecraft.setScreen(this.parent);
+                this.minecraft.setScreenAndShow(this.parent);
             })
             .bounds(panelX + 215, btnY, btnWidth, 20)
             .build()

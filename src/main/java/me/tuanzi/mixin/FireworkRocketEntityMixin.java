@@ -19,6 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.world.entity.player.Player;
 import java.util.UUID;
+import net.minecraft.world.scores.TeamColor;
+import java.util.Optional;
 
 @Mixin(FireworkRocketEntity.class)
 public class FireworkRocketEntityMixin implements IGachaFirework {
@@ -88,14 +90,14 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
                 PlayerTeam team = scoreboard.getPlayerTeam(teamName);
                 if (team == null) {
                     team = scoreboard.addPlayerTeam(teamName);
-                    ChatFormatting color = switch (this.tuanziGachaRarity.toLowerCase()) {
-                        case "legendary" -> ChatFormatting.GOLD;
-                        case "epic" -> ChatFormatting.LIGHT_PURPLE;
-                        case "rare" -> ChatFormatting.AQUA;
-                        case "uncommon" -> ChatFormatting.GREEN;
-                        default -> ChatFormatting.WHITE;
+                    TeamColor color = switch (this.tuanziGachaRarity.toLowerCase()) {
+                        case "legendary" -> TeamColor.GOLD;
+                        case "epic" -> TeamColor.LIGHT_PURPLE;
+                        case "rare" -> TeamColor.AQUA;
+                        case "uncommon" -> TeamColor.GREEN;
+                        default -> TeamColor.WHITE;
                     };
-                    team.setColor(color);
+                    team.setColor(Optional.of(color));
                 }
                 scoreboard.addPlayerToTeam(itemEntity.getScoreboardName(), team);
             } catch (Exception e) {

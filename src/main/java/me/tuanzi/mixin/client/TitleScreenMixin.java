@@ -25,7 +25,7 @@ public abstract class TitleScreenMixin extends Screen {
         // 如果检测到新版本，并且没有忽略，那么自动弹出更新界面
         if (UpdateChecker.shouldNotify()) {
             UpdateChecker.setAlreadyNotified(true);
-            Minecraft.getInstance().setScreen(new UpdateConfirmScreen((TitleScreen) (Object) this));
+            Minecraft.getInstance().setScreenAndShow(new UpdateConfirmScreen((TitleScreen) (Object) this));
         }
     }
 

@@ -104,7 +104,7 @@ public class GachaHistoryMenu extends ChestMenu {
         if (totalPages == 0) totalPages = 1;
 
         // 2. 绘制下层功能翻页栏 (第 6 行: Slot 45-53)
-        ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
         for (int i = 45; i < 54; i++) {
             if (i == 45) {
@@ -315,11 +315,11 @@ public class GachaHistoryMenu extends ChestMenu {
 
     private ItemStack getBorderPane(String rarity) {
         return switch (rarity.toLowerCase()) {
-            case "legendary" -> new ItemStack(Items.ORANGE_STAINED_GLASS_PANE);  // 传说用橙色玻璃
-            case "epic" -> new ItemStack(Items.PURPLE_STAINED_GLASS_PANE);       // 史诗用紫色玻璃
-            case "rare" -> new ItemStack(Items.BLUE_STAINED_GLASS_PANE);         // 稀有用蓝色玻璃
-            case "uncommon" -> new ItemStack(Items.GREEN_STAINED_GLASS_PANE);    // 优秀用绿色玻璃
-            default -> new ItemStack(Items.WHITE_STAINED_GLASS_PANE);           // 普通用白色玻璃
+            case "legendary" -> new ItemStack(Items.STAINED_GLASS_PANE.orange());  // 传说用橙色玻璃
+            case "epic" -> new ItemStack(Items.STAINED_GLASS_PANE.purple());       // 史诗用紫色玻璃
+            case "rare" -> new ItemStack(Items.STAINED_GLASS_PANE.blue());         // 稀有用蓝色玻璃
+            case "uncommon" -> new ItemStack(Items.STAINED_GLASS_PANE.green());    // 优秀用绿色玻璃
+            default -> new ItemStack(Items.STAINED_GLASS_PANE.white());           // 普通用白色玻璃
         };
     }
 

@@ -106,7 +106,6 @@ public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, T
                 tagComponent,
                 true,
                 state.lightCoords,
-                state.distanceToCameraSq,
                 camera
             );
             poseStack.popPose();

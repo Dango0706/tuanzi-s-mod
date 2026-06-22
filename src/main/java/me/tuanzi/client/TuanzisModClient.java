@@ -99,7 +99,7 @@ public class TuanzisModClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {
                 net.minecraft.world.InteractionHand hand = payload.isMainHand() ? net.minecraft.world.InteractionHand.MAIN_HAND : net.minecraft.world.InteractionHand.OFF_HAND;
-                context.client().setScreen(new me.tuanzi.client.gui.screens.TravelersNotebookBookScreen(hand));
+                context.client().setScreenAndShow(new me.tuanzi.client.gui.screens.TravelersNotebookBookScreen(hand));
             });
         });
 

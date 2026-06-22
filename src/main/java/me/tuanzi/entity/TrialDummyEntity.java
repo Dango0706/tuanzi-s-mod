@@ -352,7 +352,7 @@ public class TrialDummyEntity extends LivingEntity {
     }
 
     @Override
-    public void knockback(double strength, double x, double z) {
+    public void knockback(double power, double xd, double zd, net.minecraft.world.damagesource.DamageSource source, float damage) {
         // 彻底屏蔽击退力，稳如泰山！
     }
 

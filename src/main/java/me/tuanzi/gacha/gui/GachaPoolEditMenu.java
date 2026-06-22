@@ -43,13 +43,13 @@ public class GachaPoolEditMenu extends ChestMenu {
         }
 
         // 2. 绘制背景与切板 (行 1: Slot 0-8)
-        container.setItem(0, createNamedItem(Items.YELLOW_GLAZED_TERRACOTTA, "§6★ 传说品质物品 (Legendary) §7[点击切换]"));
-        container.setItem(1, createNamedItem(Items.PURPLE_GLAZED_TERRACOTTA, "§d★ 史诗品质物品 (Epic) §7[点击切换]"));
-        container.setItem(2, createNamedItem(Items.BLUE_GLAZED_TERRACOTTA, "§b★ 稀有品质物品 (Rare) §7[点击切换]"));
-        container.setItem(3, createNamedItem(Items.GREEN_GLAZED_TERRACOTTA, "§2★ 优秀品质物品 (Uncommon) §7[点击切换]"));
-        container.setItem(4, createNamedItem(Items.WHITE_GLAZED_TERRACOTTA, "§f★ 普通品质物品 (Common) §7[点击切换]"));
+        container.setItem(0, createNamedItem(Items.GLAZED_TERRACOTTA.yellow(), "§6★ 传说品质物品 (Legendary) §7[点击切换]"));
+        container.setItem(1, createNamedItem(Items.GLAZED_TERRACOTTA.purple(), "§d★ 史诗品质物品 (Epic) §7[点击切换]"));
+        container.setItem(2, createNamedItem(Items.GLAZED_TERRACOTTA.blue(), "§b★ 稀有品质物品 (Rare) §7[点击切换]"));
+        container.setItem(3, createNamedItem(Items.GLAZED_TERRACOTTA.green(), "§2★ 优秀品质物品 (Uncommon) §7[点击切换]"));
+        container.setItem(4, createNamedItem(Items.GLAZED_TERRACOTTA.white(), "§f★ 普通品质物品 (Common) §7[点击切换]"));
 
-        ItemStack grayGlass = createNamedItem(Items.GRAY_STAINED_GLASS_PANE, " ");
+        ItemStack grayGlass = createNamedItem(Items.STAINED_GLASS_PANE.gray(), " ");
         for (int i = 5; i < 9; i++) {
             container.setItem(i, grayGlass);
         }

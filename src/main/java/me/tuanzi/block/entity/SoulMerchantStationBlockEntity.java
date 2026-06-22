@@ -53,7 +53,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             }
         }
 
-        this.cachedVillager = new StationVillager(net.minecraft.world.entity.EntityType.VILLAGER, serverLevel);
+        this.cachedVillager = new StationVillager(net.minecraft.world.entity.EntityTypes.VILLAGER, serverLevel);
         if (this.cachedVillager != null) {
             net.minecraft.util.ProblemReporter reporter = net.minecraft.util.ProblemReporter.DISCARDING;
             net.minecraft.world.level.storage.ValueInput tagValueInput = 
@@ -143,7 +143,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
 
             // 1. 如果世界实体没找到（服务器重启、区块重载、意外被清理），我们重新在世界里 spawn 并绑定它！
             if (villager == null) {
-                villager = new me.tuanzi.entity.StationVillager(net.minecraft.world.entity.EntityType.VILLAGER, serverLevel);
+                villager = new me.tuanzi.entity.StationVillager(net.minecraft.world.entity.EntityTypes.VILLAGER, serverLevel);
                 if (be.storedVillagerNbt != null && !be.storedVillagerNbt.isEmpty()) {
                     net.minecraft.util.ProblemReporter reporter = net.minecraft.util.ProblemReporter.DISCARDING;
                     net.minecraft.world.level.storage.ValueInput tagValueInput = 

@@ -44,14 +44,14 @@ public class GachaFateConfirmMenu extends ChestMenu {
     public void refreshSlots() {
         Container container = this.getContainer();
         // 1. 先用灰色玻璃板填充背景
-        ItemStack grayPane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE);
+        ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
         for (int i = 0; i < 27; i++) {
             container.setItem(i, grayPane.copy());
         }
 
         // 2. 绘制确认按钮 (Slot 11)
-        ItemStack confirmButton = new ItemStack(Items.GREEN_STAINED_GLASS_PANE);
+        ItemStack confirmButton = new ItemStack(Items.STAINED_GLASS_PANE.green());
         confirmButton.set(DataComponents.CUSTOM_NAME, Component.literal("§a§l✔ 确认"));
         List<Component> confirmLore = new ArrayList<>();
         if (isCancel) {
@@ -81,7 +81,7 @@ public class GachaFateConfirmMenu extends ChestMenu {
         container.setItem(13, displayStack);
 
         // 4. 绘制返回按钮 (Slot 15)
-        ItemStack backButton = new ItemStack(Items.RED_STAINED_GLASS_PANE);
+        ItemStack backButton = new ItemStack(Items.STAINED_GLASS_PANE.red());
         backButton.set(DataComponents.CUSTOM_NAME, Component.literal("§c§l✘ 返回"));
         List<Component> backLore = new ArrayList<>();
         backLore.add(Component.literal("§7点击返回卡池预览"));
