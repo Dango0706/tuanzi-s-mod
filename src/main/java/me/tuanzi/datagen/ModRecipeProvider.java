@@ -98,6 +98,15 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_blaze_powder", has(Items.BLAZE_POWDER))
                     .save(exporter);
 
+                // 工匠护符无序合成：1个工作台 + 2个黑曜石 + 1个紫水晶碎片 + 1个下界石英
+                shapeless(RecipeCategory.MISC, ModItems.CRAFTSMAN_CHARM, 1)
+                    .requires(Items.CRAFTING_TABLE)
+                    .requires(Items.OBSIDIAN, 2)
+                    .requires(Items.AMETHYST_SHARD)
+                    .requires(Items.QUARTZ)
+                    .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
+                    .save(exporter);
+
                 // 战狼护符无序合成
                 shapeless(RecipeCategory.COMBAT, ModItems.WOLF_COMMAND, 1)
                     .requires(Items.BONE_BLOCK)

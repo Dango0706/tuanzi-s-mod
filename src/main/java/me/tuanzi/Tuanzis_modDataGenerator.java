@@ -51,6 +51,10 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.berserk_charm.tooltip", "放入副手，当生命值低于 30% 时自动激活。获得 15 秒的力量 II 与速度 II，并消耗一个护符。");
 			translationBuilder.add(ModItems.WOLF_COMMAND, "战狼护符");
 			translationBuilder.add("item.tuanzis_mod.wolf_command.tooltip", "放入副手时，驯服的狼获得额外生命值、撕裂攻击及致命伤害保护。");
+			translationBuilder.add(ModItems.CRAFTSMAN_CHARM, "工匠护符");
+			translationBuilder.add("item.tuanzis_mod.craftsman_charm.tooltip", "右键打开便携 3x3 合成，关闭时保留格内材料。");
+			translationBuilder.add("container.tuanzis_mod.craftsman_charm", "工匠护符");
+			translationBuilder.add("jei.tuanzis_mod.craftsman_charm.description", "【工匠护符】\n一个实用的便携合成道具，主体拥有工作台纹理的浅棕色金属质感，边缘镶嵌着紫水晶和黑曜石。\n\n§e功能机制：\n1. §b便携合成：手持护符并右键点击，可直接打开 3x3 的便携合成界面。\n2. §b缓存保护：护符内部带有 9 个缓存格子。关闭界面时，已放置在合成格里的材料会安全保留在护符内部，不会掉落。\n3. §b物品限制：无法把工匠护符自身放入护符内部的缓存格。且该护符只支持玩家手动操作，无法被漏斗或投掷器等自动化设备交互。\n4. §b防灾防篡关闭：当玩家在 GUI 界面内拖拽或移开正在操作的工匠护符（即护符不在原本手持的格子中时），GUI 界面将自动强制关闭。");
 			translationBuilder.add(ModItems.WARDEN_HEART, "坚守者的心脏");
 			translationBuilder.add(ModItems.ECHO_BREAKER, "回响破障者");
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "飞行");
@@ -555,6 +559,10 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.berserk_charm.tooltip", "Place in off-hand to activate automatically when health falls below 30%. Grants Strength II and Speed II for 15 seconds, and consumes one charm.");
 			translationBuilder.add(ModItems.WOLF_COMMAND, "Wolf Command");
 			translationBuilder.add("item.tuanzis_mod.wolf_command.tooltip", "Equip in off-hand to grant tamed wolves bonus health, tearing attacks, and death protection.");
+			translationBuilder.add(ModItems.CRAFTSMAN_CHARM, "Craftsman Charm");
+			translationBuilder.add("item.tuanzis_mod.craftsman_charm.tooltip", "Right-click to open 3x3 crafting grid. Retains items inside on close.");
+			translationBuilder.add("container.tuanzis_mod.craftsman_charm", "Craftsman Charm");
+			translationBuilder.add("jei.tuanzis_mod.craftsman_charm.description", "【Craftsman Charm】\nA portable crafting table. Light brown wood texture with amethyst and obsidian trims.\n\n§eFeatures:\n1. §bPortable Crafting: Right-click to open a 3x3 crafting screen directly.\n2. §bBuffer Retention: Retains all grid items inside when closed instead of dropping them.\n3. §bInteraction Restriction: The Craftsman Charm cannot be placed inside its own buffer slots. It does not interact with automation devices.\n4. §bSafety Closing: If the item is moved away from the slot that opened the screen, the GUI will close automatically.");
 			translationBuilder.add(ModItems.WARDEN_HEART, "Warden Heart");
 			translationBuilder.add(ModItems.ECHO_BREAKER, "Echo Breaker");
 

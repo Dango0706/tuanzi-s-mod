@@ -109,6 +109,7 @@ public class ModItems {
 
     public static final Item VILLAGER_CAGE = register("villager_cage", (properties) -> new me.tuanzi.item.VillagerCageItem(properties.stacksTo(1).durability(1).rarity(Rarity.UNCOMMON)));
     public static final Item TRAVELERS_NOTEBOOK = register("travelers_notebook", (properties) -> new me.tuanzi.item.TravelersNotebookItem(properties.stacksTo(1).rarity(Rarity.RARE)));
+    public static final Item CRAFTSMAN_CHARM = register("craftsman_charm", (properties) -> new me.tuanzi.item.CraftsmanCharmItem(properties.stacksTo(1).rarity(Rarity.RARE)));
     public static final Item TELEPORTATION_PAPER = register("teleportation_paper", (properties) -> new me.tuanzi.item.TeleportationPaperItem(properties.stacksTo(64).rarity(net.minecraft.world.item.Rarity.COMMON)));
     public static final Item SIGNPOST_RUNE = register("signpost_rune", (properties) -> new me.tuanzi.item.SignpostRuneItem(properties.stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final Item SHURIKEN = register("shuriken", (properties) -> new me.tuanzi.item.ShurikenItem(properties));

@@ -9,6 +9,9 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IRecipeTransferRegistration;
+import me.tuanzi.world.inventory.CraftsmanCharmMenu;
+import me.tuanzi.init.ModMenuTypes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -29,6 +32,19 @@ public class TuanzisJeiPlugin implements IModPlugin {
 
     @Override
     public Identifier getPluginUid() { return PLUGIN_ID; }
+
+    @Override
+    public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
+        registration.addRecipeTransferHandler(
+            CraftsmanCharmMenu.class,
+            ModMenuTypes.CRAFTSMAN_CHARM,
+            RecipeTypes.CRAFTING,
+            1,  // recipeSlotStart
+            9,  // recipeSlotCount
+            10, // inventorySlotStart
+            36  // inventorySlotCount
+        );
+    }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
@@ -393,6 +409,8 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.soul_merchant_station.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.TRAVELERS_NOTEBOOK), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.travelers_notebook.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.CRAFTSMAN_CHARM), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.craftsman_charm.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.TELEPORTATION_PAPER), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.teleportation_paper.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.SIGNPOST_RUNE), VanillaTypes.ITEM_STACK,

@@ -71,6 +71,12 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.client.gui.screens.inventory.TravelersNotebookScreen::new
         );
 
+        // 注册工匠护符界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.CRAFTSMAN_CHARM,
+            me.tuanzi.client.gui.screens.inventory.CraftsmanCharmScreen::new
+        );
+
         // 注册蜂刺余响自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
             net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "bee_sting_echo"),

@@ -126,6 +126,7 @@ public class ModItemGroups {
 
                 // 加入旅者手札、传送纸与道标符石
                 entries.accept(ModItems.TRAVELERS_NOTEBOOK);
+                entries.accept(ModItems.CRAFTSMAN_CHARM);
                 entries.accept(ModItems.TELEPORTATION_PAPER);
                 entries.accept(ModItems.SIGNPOST_RUNE);
                 entries.accept(ModItems.SHURIKEN);
