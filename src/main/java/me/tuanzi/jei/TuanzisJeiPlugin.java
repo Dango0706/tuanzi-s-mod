@@ -483,6 +483,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.TIDE_CLEAVER), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.tide_cleaver.description"));
 
+        // 注册潮汐织靴介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.TIDAL_WEAVE_BOOTS), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.tidal_weave_boots.description"));
+
         // 获取所有附有“深渊律动”附魔的附魔书并注册介绍页 (Abyssal Rhythm I-IV)
         List<ItemStack> abyssalRhythmBooks = registration.getIngredientManager()
             .getAllIngredients(VanillaTypes.ITEM_STACK)

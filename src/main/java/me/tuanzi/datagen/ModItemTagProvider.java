@@ -25,5 +25,14 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
             .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
             .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
             .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key());
+
+        // 将潮汐织靴加入原版 boots 标签
+        builder(ItemTags.FOOT_ARMOR)
+            .add(ModItems.TIDAL_WEAVE_BOOTS.builtInRegistryHolder().key());
+
+        // 注册潮汐织靴的修补材料标签
+        builder(me.tuanzi.init.ModArmorMaterials.REPAIRS_TIDAL_WEAVE_BOOTS)
+            .add(net.minecraft.world.item.Items.PHANTOM_MEMBRANE.builtInRegistryHolder().key())
+            .add(net.minecraft.world.item.Items.PRISMARINE_CRYSTALS.builtInRegistryHolder().key());
     }
 }

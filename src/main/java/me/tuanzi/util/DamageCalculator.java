@@ -35,6 +35,13 @@ public class DamageCalculator {
             return 0.0f;
         }
 
+        // 0.1 潮汐织靴免受摔落伤害
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) 
+                && target.getItemBySlot(EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
+            me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！触发【潮汐织靴】摔落免疫，计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: 0.00");
+            return 0.0f;
+        }
+
         float attackerMultiplier = 1.0f;
         float victimMultiplier = 1.0f;
 

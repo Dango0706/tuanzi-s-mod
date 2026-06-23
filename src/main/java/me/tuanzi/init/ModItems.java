@@ -16,6 +16,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
+import net.minecraft.world.item.equipment.ArmorType;
+
 import java.util.function.Function;
 
 public class ModItems {
@@ -126,6 +128,10 @@ public class ModItems {
     public static final Item STAR_TRAVEL_CARD_CHEST = register("star_travel_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.RARE), "normal", true));
     public static final Item SAKURA_FESTIVAL_CARD_PACK = register("sakura_festival_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", false));
     public static final Item SAKURA_FESTIVAL_CARD_CHEST = register("sakura_festival_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", true));
+    public static final Item TIDAL_WEAVE_BOOTS = register("tidal_weave_boots", (properties) -> new Item(properties
+        .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
+        .rarity(Rarity.EPIC)
+    ));
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));

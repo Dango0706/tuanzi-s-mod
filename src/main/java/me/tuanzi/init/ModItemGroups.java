@@ -115,6 +115,8 @@ public class ModItemGroups {
                 entries.accept(ModItems.SCULLY_SHARD);
                 // 加入潮汐切割者
                 entries.accept(ModItems.TIDE_CLEAVER);
+                // 加入潮汐织靴
+                entries.accept(ModItems.TIDAL_WEAVE_BOOTS);
                 // 加入稻草人与假目标
                 entries.accept(ModItems.SCARECROW);
                 entries.accept(ModItems.TRIAL_DUMMY);

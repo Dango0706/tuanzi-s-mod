@@ -138,6 +138,21 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_crimson_fungus", has(Items.CRIMSON_FUNGUS))
                     .unlockedBy("has_warped_fungus", has(Items.WARPED_FUNGUS))
                     .save(exporter);
+
+                // 潮汐织靴有序合成：
+                shaped(RecipeCategory.COMBAT, ModItems.TIDAL_WEAVE_BOOTS, 1)
+                    .pattern(" D ")
+                    .pattern("MHM")
+                    .pattern("P P")
+                    .define('D', Items.DIAMOND_BOOTS)
+                    .define('M', Items.NETHERITE_SCRAP)
+                    .define('H', Items.HEART_OF_THE_SEA)
+                    .define('P', Items.PRISMARINE_CRYSTALS)
+                    .unlockedBy("has_diamond_boots", has(Items.DIAMOND_BOOTS))
+                    .unlockedBy("has_netherite_scrap", has(Items.NETHERITE_SCRAP))
+                    .unlockedBy("has_heart_of_the_sea", has(Items.HEART_OF_THE_SEA))
+                    .unlockedBy("has_prismarine_crystals", has(Items.PRISMARINE_CRYSTALS))
+                    .save(exporter);
             }
         };
     }

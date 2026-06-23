@@ -537,6 +537,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"§e获取方式：§r\n" +
 				"最高等级 IV 级。通用剑附魔，可与其它增伤附魔兼容。";
 			translationBuilder.add("jei.tuanzis_mod.abyssal_rhythm.description", abyssalRhythmDesc);
+
+			// 潮汐织靴翻译
+			translationBuilder.add(ModItems.TIDAL_WEAVE_BOOTS, "潮汐织靴");
+			translationBuilder.add("item.tuanzis_mod.tidal_weave_boots.tooltip", "由海晶砂与幻翼膜编织，流淌着海洋之心的脉动光晕。");
+			translationBuilder.add("jei.tuanzis_mod.tidal_weave_boots.description", "【潮汐织靴】\n一双由海晶砂与幻翼膜编织的轻盈长靴，靴面流淌着海洋之心的脉动光晕。\n\n§e功能与效果：\n1. §b凌波微步：装备在靴子栏时，能如踩在陆地上一般在水面上自由行走、疾跑和跳跃。\n2. §b潜水切换：在水面行走时，按住潜行键（Shift）可主动沉入水中进行游泳.放开并游回水面后，会自动重新恢复在水面行走的能力。\n3. §b摔落免伤：从高空落下触及水面时，免受所有摔落伤害。");
+
+			// 不死药水翻译
+			translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "【不死药水】\n赋予“不死”状态效果的药水，拥有普通与延长版变体。\n\n§e1.0.3 更新说明：§r\n现在“不死”状态效果仅对 §b玩家§r 以及 §b被玩家驯服的生物§r（如驯服后的狼、猫等）生效。对其它野生生物或敌对生物不再起作用，防止意外“保护”了敌人。");
+
+			// 物品标签翻译
+			translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "潮汐织靴修补材料");
 		}
 	}
 
@@ -1030,6 +1041,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"§eAcquisition:§r\n" +
 				"Max Level IV. General sword enchantment, compatible with other damage enchantments.";
 			translationBuilder.add("jei.tuanzis_mod.abyssal_rhythm.description", abyssalRhythmDescEn);
+
+			// Tidal Weave Boots translations
+			translationBuilder.add(ModItems.TIDAL_WEAVE_BOOTS, "Tidal Weave Boots");
+			translationBuilder.add("item.tuanzis_mod.tidal_weave_boots.tooltip", "Woven from prismarine crystals and phantom membranes, flowing with the pulsing aura of the heart of the sea.");
+			translationBuilder.add("jei.tuanzis_mod.tidal_weave_boots.description", "[Tidal Weave Boots]\nA pair of lightweight boots woven from prismarine crystals and phantom membranes. The surface flows with a pulsing aura of the heart of the sea.\n\n§eEffects & Mechanics:\n1. §bWater Walking: Walk, sprint, and jump freely on the surface of water as if it were a solid block when equipped in the feet slot.\n2. §bDiving Toggle: Press the sneak key (Shift) while walking on water to submerge into swimming. Release and swim back to the surface to automatically resume water walking.\n3. §bFall Damage Mitigation: Immune to all fall damage when falling onto the surface of water.");
+
+			// Undying Potion translations
+			translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "[Undying Potion]\nPotions granting the \"Undying\" status effect, available in normal and extended variants.\n\n§e1.0.3 Update Notes:§r\nThe \"Undying\" status effect now only applies to §bPlayers§r and §bTamed Mobs§r (e.g., tamed wolves, cats). It no longer works on wild or hostile mobs, preventing accidental protection of enemies.");
+
+			// Item Tag translations
+			translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "Tidal Weave Boots Repair Materials");
 		}
 	}
 }

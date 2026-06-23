@@ -99,11 +99,29 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker 
             }
         }
 
-        // 无论何种状态，在每一 tick 最终结算时，强制将当前最新坐标锁定为跨 tick 持久化对比坐标
+        // 无论是何种状态，在每一 tick 最终结算时，强制将当前最新坐标锁定为跨 tick 持久化对比坐标
         tuanzis_mod$persistentX = entity.getX();
         tuanzis_mod$persistentY = entity.getY();
         tuanzis_mod$persistentZ = entity.getZ();
         tuanzis_mod$hasPersistentPos = true;
+
+        // 潮汐织靴水面足迹粒子效果
+        if (!entity.level().isClientSide() && entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
+            if (entity.level().getFluidState(entity.blockPosition()).is(net.minecraft.tags.FluidTags.WATER) 
+                    || entity.level().getFluidState(entity.blockPosition().below()).is(net.minecraft.tags.FluidTags.WATER)) {
+                double horizontalSpeed = entity.getDeltaMovement().horizontalDistanceSqr();
+                if (horizontalSpeed > 0.001 && entity.tickCount % 3 == 0) {
+                    if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, 
+                            entity.getX(), entity.getY(), entity.getZ(), 
+                            2, 0.1, 0.0, 0.1, 0.02);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE, 
+                            entity.getX(), entity.getY(), entity.getZ(), 
+                            3, 0.1, 0.0, 0.1, 0.01);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -234,6 +252,72 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker 
                 if (entity.getRandom().nextFloat() < 0.10f) {
                     tuanzis_mod$shakeOffShuriken();
                 }
+            }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+        method = "canStandOnFluid(Lnet/minecraft/world/level/material/FluidState;)Z",
+        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+        cancellable = true
+    )
+    private void tuanzis_mod$canStandOnWater(net.minecraft.world.level.material.FluidState fluid, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (fluid.is(net.minecraft.tags.FluidTags.WATER)) {
+            if (entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
+                // 只有当没有按住潜行，且玩家的眼睛不在水中（即头部在水面上方）时，才允许站在水面上。
+                // 这保证了在水面正常行走、疾跑或跳跃时绝对不会意外沉没，而在下潜至水底时能正常游动且恢复水的阻力。
+                if (!entity.isDescending() && !entity.isEyeInFluid(net.minecraft.tags.FluidTags.WATER)) {
+                    cir.setReturnValue(true);
+                }
+            }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+        method = "getLiquidCollisionShape()Lnet/minecraft/world/phys/shapes/VoxelShape;",
+        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+        cancellable = true
+    )
+    private void tuanzis_mod$getLiquidCollisionShape(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.phys.shapes.VoxelShape> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
+            if (!entity.isDescending() && !entity.isEyeInFluid(net.minecraft.tags.FluidTags.WATER)) {
+                cir.setReturnValue(net.minecraft.world.level.block.Block.column(16.0, 0.0, 8.0));
+            }
+        }
+    }
+
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+        method = "causeFallDamage(DFLnet/minecraft/world/damagesource/DamageSource;)Z",
+        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+        cancellable = true
+    )
+    private void tuanzis_mod$onCauseFallDamage(double fallDistance, float damageModifier, net.minecraft.world.damagesource.DamageSource damageSource, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
+            if (entity.level().getFluidState(entity.blockPosition()).is(net.minecraft.tags.FluidTags.WATER)
+                    || entity.level().getFluidState(entity.blockPosition().below()).is(net.minecraft.tags.FluidTags.WATER)) {
+                
+                if (fallDistance > 0.5) {
+                    double bounceSpeed = Math.min(0.45, Math.max(0.18, Math.sqrt(fallDistance) * 0.12));
+                    entity.setDeltaMovement(entity.getDeltaMovement().x, bounceSpeed, entity.getDeltaMovement().z);
+                    
+                    if (!entity.level().isClientSide() && entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, 
+                            entity.getX(), entity.getY(), entity.getZ(), 
+                            18, 0.35, 0.1, 0.35, 0.1);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE, 
+                            entity.getX(), entity.getY(), entity.getZ(), 
+                            12, 0.25, 0.1, 0.25, 0.05);
+                        serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                            net.minecraft.sounds.SoundEvents.PLAYER_SPLASH, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.2f);
+                    }
+                    
+                    me.tuanzi.util.ModLog.debug(null, entity, "【潮汐织靴】落水判定！已从高度 " + String.format("%.2f", fallDistance) + " 弹起（弹起初速度: " + String.format("%.2f", bounceSpeed) + "）。");
+                }
+                cir.setReturnValue(false);
             }
         }
     }
