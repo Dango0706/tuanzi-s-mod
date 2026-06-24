@@ -163,6 +163,17 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.VOID_INK_INGOT), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.void_ink_ingot.description"));
 
+        registration.addIngredientInfo(new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.compressed_build_slurry.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.BLANK_BLUEPRINT), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.blank_blueprint.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.STRUCTURE_BLUEPRINT), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.structure_blueprint.description"));
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.blueprint_cannon.description"));
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.blueprint_table.description"));
+
         // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
         List<ItemStack> experienceBooks = registration.getIngredientManager()
             .getAllIngredients(VanillaTypes.ITEM_STACK)

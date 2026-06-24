@@ -2,7 +2,11 @@ package me.tuanzi.init;
 
 import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.block.SoulMerchantStationBlock;
+import me.tuanzi.block.BlueprintCannonBlock;
+import me.tuanzi.block.BlueprintTableBlock;
 import me.tuanzi.block.entity.SoulMerchantStationBlockEntity;
+import me.tuanzi.block.entity.BlueprintCannonBlockEntity;
+import me.tuanzi.block.entity.BlueprintTableBlockEntity;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -18,6 +22,11 @@ public class ModBlocks {
     public static final Block SOUL_MERCHANT_STATION = registerBlock("soul_merchant_station", 
         properties -> new SoulMerchantStationBlock(properties.strength(3.5f, 1200.0f).noOcclusion())); // 免疫爆炸
 
+    public static final Block BLUEPRINT_CANNON = registerBlock("blueprint_cannon",
+        properties -> new BlueprintCannonBlock(properties.strength(3.0f, 6.0f).noOcclusion()));
+
+    public static final Block BLUEPRINT_TABLE = registerBlock("blueprint_table",
+        properties -> new BlueprintTableBlock(properties.strength(2.5f, 5.0f).noOcclusion()));
 
     public static final BlockEntityType<SoulMerchantStationBlockEntity> SOUL_MERCHANT_STATION_BLOCK_ENTITY = 
         Registry.register(
@@ -25,6 +34,24 @@ public class ModBlocks {
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "soul_merchant_station_be"),
             net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
                 SoulMerchantStationBlockEntity::new, SOUL_MERCHANT_STATION
+            ).build()
+        );
+
+    public static final BlockEntityType<BlueprintCannonBlockEntity> BLUEPRINT_CANNON_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                BlueprintCannonBlockEntity::new, BLUEPRINT_CANNON
+            ).build()
+        );
+
+    public static final BlockEntityType<BlueprintTableBlockEntity> BLUEPRINT_TABLE_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                BlueprintTableBlockEntity::new, BLUEPRINT_TABLE
             ).build()
         );
 

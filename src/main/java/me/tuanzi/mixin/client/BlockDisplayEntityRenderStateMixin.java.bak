@@ -1,0 +1,9 @@
+package me.tuanzi.mixin.client;
+
+import net.minecraft.client.renderer.entity.state.BlockDisplayEntityRenderState;
+import org.spongepowered.asm.mixin.Mixin;
+
+@Mixin(BlockDisplayEntityRenderState.class)
+public class BlockDisplayEntityRenderStateMixin {
+    public boolean tuanzis_mod$isBlueprintGhost = false;
+}

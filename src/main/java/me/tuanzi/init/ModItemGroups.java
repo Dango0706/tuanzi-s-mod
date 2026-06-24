@@ -126,6 +126,13 @@ public class ModItemGroups {
                 // 加入灵笼贸易站
                 entries.accept(ModBlocks.SOUL_MERCHANT_STATION);
 
+                // 加入蓝图构筑系统
+                entries.accept(ModItems.COMPRESSED_BUILD_SLURRY);
+                entries.accept(ModItems.BLANK_BLUEPRINT);
+                entries.accept(ModItems.STRUCTURE_BLUEPRINT);
+                entries.accept(ModBlocks.BLUEPRINT_CANNON);
+                entries.accept(ModBlocks.BLUEPRINT_TABLE);
+
                 // 加入旅者手札、传送纸与道标符石
                 entries.accept(ModItems.TRAVELERS_NOTEBOOK);
                 entries.accept(ModItems.CRAFTSMAN_CHARM);

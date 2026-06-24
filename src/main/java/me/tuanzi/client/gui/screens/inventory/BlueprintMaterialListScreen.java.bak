@@ -1,0 +1,273 @@
+package me.tuanzi.client.gui.screens.inventory;
+
+import me.tuanzi.init.ModItems;
+import me.tuanzi.world.inventory.BlueprintCannonMenu;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.NonNullList;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+
+import java.util.*;
+
+public class BlueprintMaterialListScreen extends Screen {
+    private static final Identifier BOOK_TEXTURE = Identifier.withDefaultNamespace("textures/gui/book.png");
+
+    private final BlueprintCannonScreen parentScreen;
+    private final BlueprintCannonMenu menu;
+
+    // 物料清单统计数据
+    private final Map<Item, Integer> availableMap = new HashMap<>();
+    private final List<MaterialItem> neededList = new ArrayList<>();
+    private final List<MaterialItem> filteredList = new ArrayList<>();
+    private int listOffset = 0;
+
+    // 视图模式：0 = 按Y轴分层 (0-15, 16-31等), 1 = 全局汇总
+    private int viewMode = 1; 
+    private int selectedLayer = 0; // Y轴分层选择，0代表全部
+
+    public BlueprintMaterialListScreen(BlueprintCannonScreen parentScreen) {
+        super(Component.translatable("gui.tuanzis_mod.material_list.title"));
+        this.parentScreen = parentScreen;
+        this.menu = parentScreen.getMenu();
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        int x = this.width / 2;
+        int y = this.height / 2;
+
+        // 切换视图模式按钮
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.tuanzis_mod.material_list.toggle_view"), btn -> {
+            this.viewMode = 1 - this.viewMode;
+            recalculateMaterials();
+        }).bounds(x - 68, y + 60, 60, 16).build());
+
+        // 翻页/滚动按钮
+        this.addRenderableWidget(Button.builder(Component.literal("↑"), btn -> {
+            listOffset = Math.max(0, listOffset - 1);
+        }).bounds(x + 50, y - 50, 16, 16).build());
+
+        this.addRenderableWidget(Button.builder(Component.literal("↓"), btn -> {
+            listOffset = Math.min(Math.max(0, filteredList.size() - 8), listOffset + 1);
+        }).bounds(x + 50, y + 30, 16, 16).build());
+
+        // 统计材料
+        recalculateMaterials();
+    }
+
+    private void recalculateMaterials() {
+        availableMap.clear();
+        neededList.clear();
+        filteredList.clear();
+
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null) return;
+
+        BlockPos cannonPos = menu.getCannonPos();
+
+        // 1. 扫描 5 格容器以建立 AvailableMap
+        int radius = 5;
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    BlockPos p = cannonPos.offset(x, y, z);
+                    BlockEntity be = mc.level.getBlockEntity(p);
+                    if (be instanceof Container container && be != mc.level.getBlockEntity(cannonPos)) {
+                        scanContainerItems(container, 1);
+                    }
+                }
+            }
+        }
+
+        // 2. 统计蓝图所需的物品数量
+        ItemStack bp = menu.getBlueprint();
+        if (bp.isEmpty()) return;
+
+        CustomData cd = bp.get(DataComponents.CUSTOM_DATA);
+        if (cd == null) return;
+
+        CompoundTag blueprintTag = cd.copyTag();
+        if (!blueprintTag.contains("Width")) return;
+
+        int width = blueprintTag.getIntOr("Width", 0);
+        int height = blueprintTag.getIntOr("Height", 0);
+        int length = blueprintTag.getIntOr("Length", 0);
+        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
+        int currentIndex = menu.getCurrentIndex();
+
+        ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
+        BlockState[] blockStates = new BlockState[paletteNbt.size()];
+        for (int i = 0; i < paletteNbt.size(); i++) {
+            CompoundTag stateNbt = paletteNbt.getCompoundOrEmpty(i);
+            blockStates[i] = BlockState.CODEC.parse(NbtOps.INSTANCE, stateNbt).result().orElse(Blocks.AIR.defaultBlockState());
+        }
+
+        // 临时累加器
+        Map<Item, Integer> neededCount = new HashMap<>();
+        Map<Item, Integer> placedCount = new HashMap<>();
+
+        for (int i = 0; i < blocks.length; i++) {
+            int y = i / (width * length);
+            // 分层校验
+            if (viewMode == 0) {
+                // Y每16格为一层
+                int layer = y / 16;
+                if (selectedLayer != layer) {
+                    continue;
+                }
+            }
+
+            int paletteIdx = blocks[i];
+            if (paletteIdx < 0 || paletteIdx >= blockStates.length) continue;
+
+            BlockState state = blockStates[paletteIdx];
+            if (state.isAir()) continue;
+
+            Item item = state.getBlock().asItem();
+            if (item == Blocks.AIR.asItem()) continue;
+
+            if (i < currentIndex) {
+                placedCount.put(item, placedCount.getOrDefault(item, 0) + 1);
+            } else {
+                neededCount.put(item, neededCount.getOrDefault(item, 0) + 1);
+            }
+        }
+
+        // 组装所需物品列表
+        Set<Item> allItems = new HashSet<>();
+        allItems.addAll(neededCount.keySet());
+        allItems.addAll(placedCount.keySet());
+
+        for (Item item : allItems) {
+            int needed = neededCount.getOrDefault(item, 0);
+            int placed = placedCount.getOrDefault(item, 0);
+            int avail = availableMap.getOrDefault(item, 0);
+            neededList.add(new MaterialItem(item, needed, avail, placed));
+        }
+
+        this.filteredList.addAll(neededList);
+        this.listOffset = 0;
+    }
+
+    private void scanContainerItems(Container container, int depth) {
+        if (depth > 3) return;
+
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.isEmpty()) continue;
+
+            if (isShulkerBox(stack)) {
+                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+                if (contents != null) {
+                    NonNullList<ItemStack> list = NonNullList.withSize(27, ItemStack.EMPTY);
+                    contents.copyInto(list);
+                    SimpleContainer virtualContainer = new SimpleContainer(list.toArray(new ItemStack[0]));
+                    scanContainerItems(virtualContainer, depth + 1);
+                }
+            } else {
+                Item item = stack.getItem();
+                availableMap.put(item, availableMap.getOrDefault(item, 0) + stack.getCount());
+            }
+        }
+    }
+
+    private boolean isShulkerBox(ItemStack stack) {
+        return stack.is(ItemTags.SHULKER_BOXES);
+    }
+
+    @Override
+    public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
+        int x = this.width / 2;
+        int y = this.height / 2;
+
+        // 绘制精美的书本背景 (146 x 180)
+        graphics.blit(RenderPipelines.GUI_TEXTURED, BOOK_TEXTURE, x - 73, y - 90, 0.0F, 0.0F, 146, 180, 256, 256);
+
+        // 绘制标题
+        graphics.text(this.font, Component.translatable("gui.tuanzis_mod.material_list.title"), x - 54, y - 80, 0x000000, false);
+
+        // 绘制当前分层视图指示
+        String viewStr = viewMode == 1 ? "全局视图" : "分层 Y:" + (selectedLayer * 16) + "~" + (selectedLayer * 16 + 15);
+        graphics.text(this.font, Component.literal(viewStr).withStyle(ChatFormatting.DARK_GRAY), x - 54, y - 70, 0x333333, false);
+
+        // 绘制表格表头
+        graphics.text(this.font, Component.literal("物品"), x - 54, y - 56, 0x111111, false);
+        graphics.text(this.font, Component.literal("需要/就绪/已置"), x - 10, y - 56, 0x111111, false);
+
+        // 绘制列表条目 (最多显示 8 行)
+        int drawCount = Math.min(8, filteredList.size() - listOffset);
+        for (int i = 0; i < drawCount; i++) {
+            MaterialItem mat = filteredList.get(listOffset + i);
+            int rowY = y - 44 + i * 12;
+
+            // 绘制物品图标 (16x16 缩放到 10x10，用 Pose 堆叠实现)
+            ItemStack displayStack = mat.item.getDefaultInstance();
+            // 用 graphics.item 渲染原始 16x16 图标，对齐到 rowY-2
+            graphics.item(displayStack, x - 54, rowY - 2);
+
+            // 绘制物品名称 (图标后面 +18)
+            String itemName = displayStack.getHoverName().getString();
+            if (this.font.width(itemName) > 30) {
+                itemName = this.font.plainSubstrByWidth(itemName, 24) + "..";
+            }
+            graphics.text(this.font, Component.literal(itemName), x - 54 + 18, rowY, 0x333333, false);
+
+            // 绘制数量: 需要 / 就绪 / 已置
+            ChatFormatting neededColor = mat.available >= mat.needed ? ChatFormatting.DARK_GREEN : ChatFormatting.RED;
+            String amountStr = mat.needed + "/" + neededColor + mat.available + ChatFormatting.RESET + "/" + mat.placed;
+            graphics.text(this.font, Component.literal(amountStr), x - 10, rowY, 0x444444, false);
+        }
+    }
+
+    @Override
+    public boolean keyPressed(net.minecraft.client.input.KeyEvent event) {
+        // 按下 Tab 键快速切回大炮界面
+        // GLFW_KEY_TAB 对应的键码为 258
+        if (event.key() == 258) {
+            if (this.minecraft != null) {
+                this.minecraft.setScreenAndShow(this.parentScreen);
+            }
+            return true;
+        }
+        return super.keyPressed(event);
+    }
+
+    // 内部类用以数据汇总记录
+    private static class MaterialItem {
+        public final Item item;
+        public final int needed;
+        public final int available;
+        public final int placed;
+
+        public MaterialItem(Item item, int needed, int available, int placed) {
+            this.item = item;
+            this.needed = needed;
+            this.available = available;
+            this.placed = placed;
+        }
+    }
+}

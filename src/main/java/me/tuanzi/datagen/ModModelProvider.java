@@ -17,57 +17,68 @@ public class ModModelProvider extends FabricModelProvider {
     @Override
     public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
         // 使用代理拦截模式动态在方块模型生成阶段注入带有幽蓝半透明力场屏障的 3D 实体模型
+        java.util.function.Function<String, com.google.gson.JsonObject> readModelJson = (filename) -> {
+            try {
+                java.io.File rootDir = new java.io.File(".").getAbsoluteFile();
+                java.io.File srcDir = null;
+                for (int i = 0; i < 5; i++) {
+                    java.io.File check = new java.io.File(rootDir, "src/main/resources");
+                    if (check.exists() && check.isDirectory()) {
+                        srcDir = check;
+                        break;
+                    }
+                    rootDir = rootDir.getParentFile();
+                    if (rootDir == null) break;
+                }
+                if (srcDir != null) {
+                    java.io.File file = new java.io.File(srcDir, "assets/tuanzis_mod/models/block/" + filename);
+                    if (file.exists()) {
+                        try (java.io.FileReader reader = new java.io.FileReader(file)) {
+                            return com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        };
+
         java.util.function.BiConsumer<net.minecraft.resources.Identifier, net.minecraft.client.data.models.model.ModelInstance> decoratedOutput = 
             (id, modelInstance) -> {
                 if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/soul_merchant_station")) {
                     net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
-                        try {
-                            // 使用极其稳健的递归父级目录寻址器，在各种诡异的工作目录下自适应定位项目资源根目录
-                            java.io.File rootDir = new java.io.File(".").getAbsoluteFile();
-                            java.io.File srcDir = null;
-                            for (int i = 0; i < 5; i++) {
-                                java.io.File check = new java.io.File(rootDir, "src/main/resources");
-                                if (check.exists() && check.isDirectory()) {
-                                    srcDir = check;
-                                    break;
-                                }
-                                rootDir = rootDir.getParentFile();
-                                if (rootDir == null) break;
-                            }
-                            
-                            java.io.File file = null;
-                            if (srcDir != null) {
-                                file = new java.io.File(srcDir, "assets/tuanzis_mod/models/block/soul_merchant_station.json");
-                            }
-                            
-                            if (file != null && file.exists()) {
-                                try (java.io.FileReader reader = new java.io.FileReader(file)) {
-                                    com.google.gson.JsonObject obj = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
-                                    // 动态注入 parent 依赖与半透明渲染类型，确保在游戏里完美渲染且不消失
-                                    obj.addProperty("parent", "minecraft:block/block");
-                                    obj.addProperty("render_type", "minecraft:translucent");
-                                    return obj;
-                                }
-                            } else {
-                                System.err.println("[DataGen 错误] 递归查找 5 级父目录后，依然无法准确定位贸易站的原始 Blockbench JSON 模型文件！");
-                                if (file != null) {
-                                    System.err.println("[DataGen 错误] 尝试过的绝对路径为: " + file.getAbsolutePath());
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        // Fallback: 如果读取失败，返回一个简易模型
-                        com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
-                        modelJson.addProperty("parent", "minecraft:block/block");
-                        modelJson.addProperty("render_type", "minecraft:translucent");
-                        return modelJson;
+                        com.google.gson.JsonObject obj = readModelJson.apply("soul_merchant_station.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        obj.addProperty("render_type", "minecraft:translucent");
+                        return obj;
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customInstance);
-                } else if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("item/soul_merchant_station")) {
+                } else if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/blueprint_cannon")) {
+                    net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                        com.google.gson.JsonObject obj = readModelJson.apply("blueprint_cannon.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        return obj;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                } else if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/blueprint_table")) {
+                    net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                        com.google.gson.JsonObject obj = readModelJson.apply("blueprint_table.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        return obj;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                } else if (id.getNamespace().equals("tuanzis_mod") && 
+                           (id.getPath().equals("item/soul_merchant_station") ||
+                            id.getPath().equals("item/blueprint_cannon") ||
+                            id.getPath().equals("item/blueprint_table"))) {
                     net.minecraft.client.data.models.model.ModelInstance customItemInstance = () -> {
                         com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
-                        modelJson.addProperty("parent", "tuanzis_mod:block/soul_merchant_station");
+                        String parentName = "tuanzis_mod:" + id.getPath().replace("item/", "block/");
+                        modelJson.addProperty("parent", parentName);
                         
                         com.google.gson.JsonObject displayJson = new com.google.gson.JsonObject();
                         
@@ -181,11 +192,23 @@ public class ModModelProvider extends FabricModelProvider {
         // 调用生成器以生成标准的方块状态和拦截后的完美 3D 立体模型
         temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION);
 
-        // 显式触发生成包含完美手持 display 的 item/soul_merchant_station 物品模型 JSON
+        // 显式触发生成包含完美手持 display 的 item 物品模型 JSON
         decoratedOutput.accept(
             net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/soul_merchant_station"),
             () -> new com.google.gson.JsonObject()
         );
+        decoratedOutput.accept(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/blueprint_cannon"),
+            () -> new com.google.gson.JsonObject()
+        );
+        decoratedOutput.accept(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/blueprint_table"),
+            () -> new com.google.gson.JsonObject()
+        );
+
+        // 自动生成蓝图大炮与蓝图桌的简单 blockstate 并关联自定义拦截模型
+        temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON);
+        temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE);
     }
 
     @Override
@@ -215,5 +238,10 @@ public class ModModelProvider extends FabricModelProvider {
 
         // 虚空墨锭物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.VOID_INK_INGOT, ModelTemplates.FLAT_ITEM);
+
+        // 蓝图系统物品扁平模型生成
+        itemModelGenerator.generateFlatItem(ModItems.COMPRESSED_BUILD_SLURRY, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.BLANK_BLUEPRINT, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.STRUCTURE_BLUEPRINT, ModelTemplates.FLAT_ITEM);
     }
 }

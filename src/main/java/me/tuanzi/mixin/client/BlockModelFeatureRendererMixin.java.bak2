@@ -1,0 +1,27 @@
+package me.tuanzi.mixin.client;
+
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.tuanzi.client.renderer.GhostRenderRegistry;
+import me.tuanzi.client.renderer.TranslucentVertexConsumer;
+import net.minecraft.client.renderer.feature.BlockModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
+
+@Mixin(BlockModelFeatureRenderer.class)
+public class BlockModelFeatureRendererMixin {
+
+    @Redirect(
+        method = "buildGroup(Lnet/minecraft/client/renderer/feature/FeatureFrameContext;Ljava/util/List;)V",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/feature/BlockModelFeatureRenderer;getVertexBuilder(Lnet/minecraft/client/renderer/rendertype/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;")
+    )
+    private VertexConsumer tuanzis_mod$redirectGetVertexBuilder(BlockModelFeatureRenderer instance, RenderType renderType) {
+        GhostRenderRegistry.GhostRenderInfo info = GhostRenderRegistry.getInfo(renderType);
+        if (info != null) {
+            VertexConsumer rawBuffer = ((RenderTypeFeatureRendererAccessor) instance).invokeGetVertexBuilder(info.original);
+            return new TranslucentVertexConsumer(rawBuffer, info.alpha);
+        }
+        return ((RenderTypeFeatureRendererAccessor) instance).invokeGetVertexBuilder(renderType);
+    }
+}

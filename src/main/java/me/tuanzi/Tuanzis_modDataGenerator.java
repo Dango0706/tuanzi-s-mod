@@ -65,6 +65,110 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.DECOY_TOTEM, "假目标");
 			translationBuilder.add("entity.tuanzis_mod.decoy", "假目标幻影");
 
+			// 蓝图系统中文翻译
+			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "压缩建造浆料");
+			translationBuilder.add(ModItems.BLANK_BLUEPRINT, "空白蓝图");
+			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "结构蓝图");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "蓝图大炮");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "蓝图桌");
+			
+			translationBuilder.add("container.tuanzis_mod.blueprint_cannon", "蓝图大炮");
+			translationBuilder.add("container.tuanzis_mod.blueprint_table", "蓝图桌");
+
+			// 蓝图大炮 GUI 按钮
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.start", "▶ 开始");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.continue", "▶ 继续");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.pause", "⏸ 暂停");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.terminate", "⏹ 终止");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.settings", "⚙ 设置");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.material_list", "清单");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.mode_destroy", "模式:破坏");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.mode_drop", "模式:清除");
+
+			// 材料清单 GUI
+			translationBuilder.add("gui.tuanzis_mod.material_list.title", "材料清单");
+			translationBuilder.add("gui.tuanzis_mod.material_list.toggle_view", "切换视图");
+
+			// 蓝图桌 GUI 按钮
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.search_hint", "搜索文件...");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.preview", "预览");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.cancel_preview", "取消预览");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.import", "导入蓝图");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.export", "导出蓝图");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.parsing", "解析中...");
+
+			// 蓝图桌消息
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.preview_success", "预览解析成功，虚影已就绪。");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.parse_fail", "文件解析失败，请检查文件格式是否正确！");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.import_success", "蓝图导入成功！");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.export_success", "蓝图已导出到: %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.export_fail", "导出失败，请检查文件系统权限！");
+
+			translationBuilder.add("message.tuanzis_mod.blueprint.pos1_set", "已设定角点 1: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.pos2_set", "已设定角点 2: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.dim_mismatch", "两个角点必须处于同一维度！");
+			translationBuilder.add("message.tuanzis_mod.blueprint.confirm_btn", "[确认构筑]");
+			translationBuilder.add("message.tuanzis_mod.blueprint.confirm_prompt", "已选定区域，点击此处");
+			translationBuilder.add("message.tuanzis_mod.blueprint.cleared", "已清除设定的角点。");
+			translationBuilder.add("message.tuanzis_mod.blueprint.invalid", "此蓝图未包含任何有效的结构数据！");
+			translationBuilder.add("message.tuanzis_mod.blueprint.ghost_placed", "已放置虚影预览，基点位置: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.ghost_cleared", "已清除虚影预览。");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.size", "尺寸: %s x %s x %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.blocks", "总方块数: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.ghost_active", "虚影已激活，当前基准位置: %s, %s, %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.empty", "空白的结构蓝图");
+
+			// 快捷键翻译
+			translationBuilder.add("key.tuanzis_mod.blueprint_toggle_ghost", "显示/隐藏虚影");
+			translationBuilder.add("key.tuanzis_mod.blueprint_open_controller", "打开虚影控制面板");
+			translationBuilder.add("key.tuanzis_mod.blueprint_rotate", "旋转虚影");
+			translationBuilder.add("key.tuanzis_mod.blueprint_mirror", "镜像虚影");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_north", "虚影向北平移");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_south", "虚影向南平移");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_west", "虚影向西平移");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_east", "虚影向东平移");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_up", "虚影向上平移");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_down", "虚影向下平移");
+
+			// 蓝图大炮与蓝图桌 UI 各种翻译键
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.fuel_status", "燃料: %d/64");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.no_blueprint", "无蓝图");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.fuel_insufficient", "燃料不足！");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.block_missing", "缺少方块！");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.running", "运行中");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.paused", "已暂停");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.terminated", "已终止");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.status_prefix", "状态: %s");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.destroy", "销毁");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.drop", "掉落");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.backpack", "背包");
+
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.import_btn", "导入");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.export_btn", "导出");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.preview_btn", "预览");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.cancel_btn", "取消");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.title", "蓝图桌");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.backpack", "背包");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.saved_blueprints", "已存蓝图");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "尺寸: %s x %s x %s");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "共 %d 个方块");
+
+			// 实体捕获的 Tooltip
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "包含生物 (数量: %s):");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entity_entry", "  - %s [相对: %.1f, %.1f, %.1f]");
+
+			translationBuilder.add("message.tuanzis_mod.blueprint.not_holding", "必须手持空白蓝图！");
+			translationBuilder.add("message.tuanzis_mod.blueprint.no_points", "尚未设定任何角点！");
+			translationBuilder.add("message.tuanzis_mod.blueprint.incomplete_points", "设定不完整，请设定两个角点后再确认！");
+			translationBuilder.add("message.tuanzis_mod.blueprint.too_large", "选择区域过大！体积上限为 262,144 格。");
+			translationBuilder.add("message.tuanzis_mod.blueprint.record_success", "成功将 %s x %s x %s 区域录制为结构蓝图！");
+
+			translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n由 1 个烈焰粉、4 个红石粉、4 个砂砾无序合成。");
+			translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。");
+			translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【结构蓝图】\n记录了特定建筑三维结构的蓝图。\n\n§e功能机制：\n1. §b虚影预览§r：手持它右键地面，可在点击处上方产生透明虚影预览。再次右键可以清除虚影.按 V 键显示/隐藏虚影，按 G 键可以打开虚影控制悬浮面板。\n2. §b快捷键调整§r：手持它时，按 R 旋转虚影，按 F 水平镜像。按住 Ctrl 配合方向键平移，PageUp/PageDown 上下调整高度。\n3. §b大炮构建§r：将结构蓝图放入蓝图大炮中作为建造模板。");
+			translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【蓝图大炮】\n自动且精准构筑建筑的机械方块。主要用于大中型建筑的后期自动化建造。\n\n§e工作流程：\n1. 放好蓝图大炮，将录制好的结构蓝图放入蓝图槽，自动锁定要建造的基准位置。\n2. 放入压缩建造浆料作为燃料（大炮工作 5 ticks/方块，每次放置/移除方块都消耗 1 点浆料耐久。创造模式免燃料）。\n3. 大炮会自动检索周围 5 格内的箱子/木桶/潜影盒中的物料并将其消耗以进行构筑。支持自动匹配与提取嵌套潜影盒里的物资。\n4. 打开 GUI，可以控制开始、暂停、终止，并支持“非匹配方块移除”和“精准NBT匹配”功能。");
+			translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在模组文件夹 `blueprints` 下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `blueprints` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b3D旋转预览§r：在导入和导出时，蓝图桌上方会自动产生缩小版的 3D 旋转方块虚影供您预览建筑外观。");
+
 			translationBuilder.add("jei.tuanzis_mod.smelting.description", "【熔炼附魔】\n省去回家烧炉子的繁琐步骤。使用该工具挖掘“可在熔炉中烧炼的方块”时，直接掉落其烧炼后的产物。\n\n§e功能：§r\n1. §b自动熔炼§r：挖掘矿石或原木等可熔炼方块时直接掉落成品。\n2. §b完美兼容§r：与 §b时运 (Fortune)§r 完美兼容，可以获得更多掉落物。\n\n§e限制与惩罚：§r\n1. §b互斥机制§r：与 §b精准采集 (Silk Touch)§r 互斥。\n2. §b耐久消耗§r：每挖掘一个可熔炼方块，额外消耗 §c1§r 点耐久（共计消耗 2 点）。\n\n§7获取方式：无法从附魔台中直接获得。属于“宝藏附魔”，仅能通过搜刮下界要塞遗迹箱子、沙漠神殿宝箱或高等级图书管理员村民交易（极罕见，需 40-64 绿宝石）获取。");
 
 			// 药水翻译
@@ -596,6 +700,110 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "Star Travel Card Chest");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "Sakura Festival Card Pack");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
+
+			// Blueprint system English translations
+			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "Compressed Build Slurry");
+			translationBuilder.add(ModItems.BLANK_BLUEPRINT, "Blank Blueprint");
+			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "Structure Blueprint");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "Blueprint Cannon");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "Blueprint Table");
+
+			translationBuilder.add("container.tuanzis_mod.blueprint_cannon", "Blueprint Cannon");
+			translationBuilder.add("container.tuanzis_mod.blueprint_table", "Blueprint Table");
+
+			// Blueprint Cannon GUI buttons
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.start", "▶ Start");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.continue", "▶ Resume");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.pause", "⏸ Pause");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.terminate", "⏹ Stop");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.settings", "⚙ Settings");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.material_list", "List");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.mode_destroy", "Mode:Destroy");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.mode_drop", "Mode:Drop");
+
+			// Material List GUI
+			translationBuilder.add("gui.tuanzis_mod.material_list.title", "Material List");
+			translationBuilder.add("gui.tuanzis_mod.material_list.toggle_view", "Toggle View");
+
+			// Blueprint Table GUI buttons
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.search_hint", "Search files...");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.preview", "Preview");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.cancel_preview", "Clear Preview");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.import", "Import Blueprint");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.export", "Export Blueprint");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.parsing", "Parsing...");
+
+			// Blueprint Table messages
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.preview_success", "Preview parsed successfully, ghost is ready.");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.parse_fail", "File parsing failed, please check the file format!");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.import_success", "Blueprint imported successfully!");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.export_success", "Blueprint exported to: %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint_table.export_fail", "Export failed, please check filesystem permissions!");
+
+			translationBuilder.add("message.tuanzis_mod.blueprint.pos1_set", "Pos 1 set to: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.pos2_set", "Pos 2 set to: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.dim_mismatch", "Both coordinates must be in the same dimension!");
+			translationBuilder.add("message.tuanzis_mod.blueprint.confirm_btn", "[Confirm Construction]");
+			translationBuilder.add("message.tuanzis_mod.blueprint.confirm_prompt", "Region selected, click here");
+			translationBuilder.add("message.tuanzis_mod.blueprint.cleared", "Cleared coordinates.");
+			translationBuilder.add("message.tuanzis_mod.blueprint.invalid", "This blueprint contains no valid structure data!");
+			translationBuilder.add("message.tuanzis_mod.blueprint.ghost_placed", "Ghost preview placed at base: %s, %s, %s");
+			translationBuilder.add("message.tuanzis_mod.blueprint.ghost_cleared", "Cleared ghost preview.");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.size", "Size: %s x %s x %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.blocks", "Total Blocks: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.ghost_active", "Ghost active at base: %s, %s, %s");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.empty", "Empty Structure Blueprint");
+
+			// Keybindings English translations
+			translationBuilder.add("key.tuanzis_mod.blueprint_toggle_ghost", "Show/Hide Ghost Preview");
+			translationBuilder.add("key.tuanzis_mod.blueprint_open_controller", "Open Ghost Controller Panel");
+			translationBuilder.add("key.tuanzis_mod.blueprint_rotate", "Rotate Ghost Preview");
+			translationBuilder.add("key.tuanzis_mod.blueprint_mirror", "Mirror Ghost Preview");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_north", "Shift Ghost North");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_south", "Shift Ghost South");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_west", "Shift Ghost West");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_east", "Shift Ghost East");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_up", "Shift Ghost Up");
+			translationBuilder.add("key.tuanzis_mod.blueprint_move_down", "Shift Ghost Down");
+
+			// Blueprint Cannon & Table GUI translations
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.fuel_status", "Fuel: %d/64");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.no_blueprint", "No Blueprint");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.fuel_insufficient", "Insufficient Fuel!");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.block_missing", "Missing Blocks!");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.running", "Running");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.paused", "Paused");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.terminated", "Terminated");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.status_prefix", "Status: %s");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.destroy", "Destroy");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.drop", "Drop");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.backpack", "Backpack");
+
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.import_btn", "Import");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.export_btn", "Export");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.preview_btn", "Preview");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.cancel_btn", "Cancel");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.title", "Blueprint Table");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.backpack", "Backpack");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.saved_blueprints", "Saved Blueprints");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "Size: %s x %s x %s");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "%d Blocks Total");
+
+			// Entity capture Tooltip
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "Contains Entities (Count: %s):");
+			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entity_entry", "  - %s [Relative: %.1f, %.1f, %.1f]");
+
+			translationBuilder.add("message.tuanzis_mod.blueprint.not_holding", "Must hold a blank blueprint!");
+			translationBuilder.add("message.tuanzis_mod.blueprint.no_points", "No coordinates set yet!");
+			translationBuilder.add("message.tuanzis_mod.blueprint.incomplete_points", "Incomplete coordinates! Set both corners before confirming.");
+			translationBuilder.add("message.tuanzis_mod.blueprint.too_large", "Selected region too large! Volume limit is 262,144 blocks.");
+			translationBuilder.add("message.tuanzis_mod.blueprint.record_success", "Successfully recorded %s x %s x %s region to structure blueprint!");
+
+			translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.");
+			translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.");
+			translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【Structure Blueprint】\nContains the recorded three-dimensional block layouts.\n\n§eUsage:\n1. Right-click ground to place a 0.4 alpha transparent ghost preview. Right-click again to clear.\n2. Press V to toggle visibility. Press G to open the offset controller.\n3. Shortcut keys: R to rotate, F to mirror. Ctrl + Arrows to shift offset, PageUp/PageDown to adjust height.");
+			translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【Blueprint Cannon】\nAn automated block placing machine that automatically builds a structure based on a Blueprint.\n\n§eUsage:\n1. Place down the cannon, insert a recorded Structure Blueprint.\n2. Put Compressed Build Slurry into the fuel slot. The cannon processes at 5 ticks/block. Free in creative mode.\n3. The cannon scans chests, barrels, and shulkers within 5 blocks recursively (up to 3 levels deep) to consume items.\n4. GUI provides options to start, pause, terminate, toggle block destruction, and toggle exact NBT checks.");
+			translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `blueprints/`.\n2. Import: Put `.litematic` or `.schem` files in `blueprints/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. 3D Preview: The table displays a slowly rotating miniature preview of the structure when a blueprint is loaded.");
 
 			// Rift Scar English translations
 			translationBuilder.add(ModItems.RIFT_SCAR, "Fractured Void Scar");

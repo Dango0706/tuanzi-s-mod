@@ -1,0 +1,81 @@
+{
+	"parent": "minecraft:block/block",
+	"textures": {
+		"bottom": "tuanzis_mod:block/blueprint_cannon_bottom",
+		"side": "tuanzis_mod:block/blueprint_cannon_side",
+		"top": "tuanzis_mod:block/blueprint_cannon_top",
+		"particle": "tuanzis_mod:block/blueprint_cannon_side"
+	},
+	"elements": [
+		{
+			"from": [ 1, 0, 1 ],
+			"to": [ 15, 4, 15 ],
+			"faces": {
+				"north": { "uv": [ 1, 12, 15, 16 ], "texture": "#side" },
+				"east": { "uv": [ 1, 12, 15, 16 ], "texture": "#side" },
+				"south": { "uv": [ 1, 12, 15, 16 ], "texture": "#side" },
+				"west": { "uv": [ 1, 12, 15, 16 ], "texture": "#side" },
+				"up": { "uv": [ 1, 1, 15, 15 ], "texture": "#top" },
+				"down": { "uv": [ 1, 1, 15, 15 ], "texture": "#bottom" }
+			}
+		},
+		{
+			"from": [ 2, 4, 3 ],
+			"to": [ 4, 12, 13 ],
+			"faces": {
+				"north": { "uv": [ 2, 4, 4, 12 ], "texture": "#side" },
+				"east": { "uv": [ 3, 4, 13, 12 ], "texture": "#side" },
+				"south": { "uv": [ 2, 4, 4, 12 ], "texture": "#side" },
+				"west": { "uv": [ 3, 4, 13, 12 ], "texture": "#side" },
+				"up": { "uv": [ 2, 3, 4, 13 ], "texture": "#top" },
+				"down": { "uv": [ 2, 3, 4, 13 ], "texture": "#bottom" }
+			}
+		},
+		{
+			"from": [ 12, 4, 3 ],
+			"to": [ 14, 12, 13 ],
+			"faces": {
+				"north": { "uv": [ 12, 4, 14, 12 ], "texture": "#side" },
+				"east": { "uv": [ 3, 4, 13, 12 ], "texture": "#side" },
+				"south": { "uv": [ 12, 4, 14, 12 ], "texture": "#side" },
+				"west": { "uv": [ 3, 4, 13, 12 ], "texture": "#side" },
+				"up": { "uv": [ 12, 3, 14, 13 ], "texture": "#top" },
+				"down": { "uv": [ 12, 3, 14, 13 ], "texture": "#bottom" }
+			}
+		},
+		{
+			"from": [ 4, 4, 4 ],
+			"to": [ 12, 10, 12 ],
+			"faces": {
+				"north": { "uv": [ 4, 6, 12, 12 ], "texture": "#side" },
+				"east": { "uv": [ 4, 6, 12, 12 ], "texture": "#side" },
+				"south": { "uv": [ 4, 6, 12, 12 ], "texture": "#side" },
+				"west": { "uv": [ 4, 6, 12, 12 ], "texture": "#side" },
+				"up": { "uv": [ 4, 4, 12, 12 ], "texture": "#top" }
+			}
+		},
+		{
+			"from": [ 6, 10, 4 ],
+			"to": [ 10, 13, 10 ],
+			"faces": {
+				"north": { "uv": [ 6, 7, 10, 10 ], "texture": "#side" },
+				"east": { "uv": [ 4, 7, 10, 10 ], "texture": "#side" },
+				"south": { "uv": [ 6, 7, 10, 10 ], "texture": "#side" },
+				"west": { "uv": [ 4, 7, 10, 10 ], "texture": "#side" },
+				"up": { "uv": [ 6, 4, 10, 10 ], "texture": "#top" }
+			}
+		},
+		{
+			"from": [ 6.5, 12, 1 ],
+			"to": [ 9.5, 15, 6 ],
+			"faces": {
+				"north": { "uv": [ 6.5, 9, 9.5, 12 ], "texture": "#side" },
+				"east": { "uv": [ 1, 9, 6, 12 ], "texture": "#side" },
+				"south": { "uv": [ 6.5, 9, 9.5, 12 ], "texture": "#side" },
+				"west": { "uv": [ 1, 9, 6, 12 ], "texture": "#side" },
+				"up": { "uv": [ 6.5, 1, 9.5, 6 ], "texture": "#top" },
+				"down": { "uv": [ 6.5, 1, 9.5, 6 ], "texture": "#bottom" }
+			}
+		}
+	]
+}

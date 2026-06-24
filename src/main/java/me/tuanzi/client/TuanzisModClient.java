@@ -27,6 +27,28 @@ public class TuanzisModClient implements ClientModInitializer {
     private static boolean lastHoldingState = false;
     private static KeyMapping.Category tuanzisModCategory;
 
+    private static KeyMapping toggleGhostKey;
+    private static KeyMapping openControllerKey;
+    private static KeyMapping rotateGhostKey;
+    private static KeyMapping mirrorGhostKey;
+    private static KeyMapping moveNorthKey;
+    private static KeyMapping moveSouthKey;
+    private static KeyMapping moveWestKey;
+    private static KeyMapping moveEastKey;
+    private static KeyMapping moveUpKey;
+    private static KeyMapping moveDownKey;
+
+    private static boolean lastVState = false;
+    private static boolean lastGState = false;
+    private static boolean lastRState = false;
+    private static boolean lastFState = false;
+    private static boolean lastUpState = false;
+    private static boolean lastDownState = false;
+    private static boolean lastLeftState = false;
+    private static boolean lastRightState = false;
+    private static boolean lastPgUpState = false;
+    private static boolean lastPgDnState = false;
+
     @Override
     public void onInitializeClient() {
         // 启动异步更新检查
@@ -47,6 +69,66 @@ public class TuanzisModClient implements ClientModInitializer {
         chainMiningKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.chain_mining",
             GLFW.GLFW_KEY_GRAVE_ACCENT,
+            tuanzisModCategory
+        ));
+
+        toggleGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_toggle_ghost",
+            GLFW.GLFW_KEY_V,
+            tuanzisModCategory
+        ));
+
+        openControllerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_open_controller",
+            GLFW.GLFW_KEY_G,
+            tuanzisModCategory
+        ));
+
+        rotateGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_rotate",
+            GLFW.GLFW_KEY_R,
+            tuanzisModCategory
+        ));
+
+        mirrorGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_mirror",
+            GLFW.GLFW_KEY_F,
+            tuanzisModCategory
+        ));
+
+        moveNorthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_north",
+            GLFW.GLFW_KEY_UP,
+            tuanzisModCategory
+        ));
+
+        moveSouthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_south",
+            GLFW.GLFW_KEY_DOWN,
+            tuanzisModCategory
+        ));
+
+        moveWestKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_west",
+            GLFW.GLFW_KEY_LEFT,
+            tuanzisModCategory
+        ));
+
+        moveEastKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_east",
+            GLFW.GLFW_KEY_RIGHT,
+            tuanzisModCategory
+        ));
+
+        moveUpKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_up",
+            GLFW.GLFW_KEY_PAGE_UP,
+            tuanzisModCategory
+        ));
+
+        moveDownKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.blueprint_move_down",
+            GLFW.GLFW_KEY_PAGE_DOWN,
             tuanzisModCategory
         ));
 
@@ -86,6 +168,18 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.gui.screens.MenuScreens.register(
             me.tuanzi.init.ModMenuTypes.CRAFTSMAN_CHARM,
             me.tuanzi.client.gui.screens.inventory.CraftsmanCharmScreen::new
+        );
+
+        // 注册蓝图大炮界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.BLUEPRINT_CANNON,
+            me.tuanzi.client.gui.screens.inventory.BlueprintCannonScreen::new
+        );
+
+        // 注册蓝图桌界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.BLUEPRINT_TABLE,
+            me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen::new
         );
 
         // 注册蜂刺余响自定义 TintSource
@@ -163,6 +257,108 @@ public class TuanzisModClient implements ClientModInitializer {
             if (isHolding != lastHoldingState) {
                 lastHoldingState = isHolding;
                 ClientPlayNetworking.send(new ChainMiningKeyPacket(isHolding));
+            }
+
+            // 执行虚影管理器 Tick
+            ClientGhostManager.tick(client);
+
+            // 手持结构蓝图且无界面时的快捷键控制
+            if (client.gui.screen() == null) {
+                ItemStack mainHand = client.player.getMainHandItem();
+                ItemStack offHand = client.player.getOffhandItem();
+                ItemStack targetStack = ItemStack.EMPTY;
+
+                if (mainHand.getItem() instanceof me.tuanzi.item.StructureBlueprintItem) {
+                    targetStack = mainHand;
+                } else if (offHand.getItem() instanceof me.tuanzi.item.StructureBlueprintItem) {
+                    targetStack = offHand;
+                }
+
+                boolean vPressed = toggleGhostKey.isDown();
+                boolean gPressed = openControllerKey.isDown();
+                boolean rPressed = rotateGhostKey.isDown();
+                boolean fPressed = mirrorGhostKey.isDown();
+                boolean upPressed = moveNorthKey.isDown();
+                boolean downPressed = moveSouthKey.isDown();
+                boolean leftPressed = moveWestKey.isDown();
+                boolean rightPressed = moveEastKey.isDown();
+                boolean pgUpPressed = moveUpKey.isDown();
+                boolean pgDnPressed = moveDownKey.isDown();
+                long window = client.getWindow().handle();
+                boolean ctrlPressed = org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS ||
+                                      org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+
+                if (!targetStack.isEmpty()) {
+                    net.minecraft.world.item.component.CustomData customData = targetStack.get(DataComponents.CUSTOM_DATA);
+                    if (customData != null) {
+                        CompoundTag tag = customData.copyTag();
+                        if (tag.getBooleanOr("GhostPlaced", false)) {
+                            int ox = tag.getIntOr("OffsetX", 0);
+                            int oy = tag.getIntOr("OffsetY", 0);
+                            int oz = tag.getIntOr("OffsetZ", 0);
+                            int rot = tag.getIntOr("Rotation", 0);
+                            boolean mir = tag.getBooleanOr("Mirrored", false);
+
+                            boolean changed = false;
+
+                            if (vPressed && !lastVState) {
+                                ClientGhostManager.toggleVisibility();
+                            }
+                            if (gPressed && !lastGState) {
+                                client.setScreenAndShow(new me.tuanzi.client.gui.screens.inventory.GhostControllerScreen());
+                            }
+                            if (rPressed && !lastRState) {
+                                rot = (rot + 1) % 4;
+                                changed = true;
+                            }
+                            if (fPressed && !lastFState) {
+                                mir = !mir;
+                                changed = true;
+                            }
+                            if (ctrlPressed) {
+                                if (upPressed && !lastUpState) {
+                                    oz -= 1;
+                                    changed = true;
+                                }
+                                if (downPressed && !lastDownState) {
+                                    oz += 1;
+                                    changed = true;
+                                }
+                                if (leftPressed && !lastLeftState) {
+                                    ox -= 1;
+                                    changed = true;
+                                }
+                                if (rightPressed && !lastRightState) {
+                                    ox += 1;
+                                    changed = true;
+                                }
+                                if (pgUpPressed && !lastPgUpState) {
+                                    oy += 1;
+                                    changed = true;
+                                }
+                                if (pgDnPressed && !lastPgDnState) {
+                                    oy -= 1;
+                                    changed = true;
+                                }
+                            }
+
+                            if (changed) {
+                                ClientPlayNetworking.send(new me.tuanzi.network.GhostTransformPacket(new BlockPos(ox, oy, oz), rot, mir));
+                            }
+                        }
+                    }
+                }
+
+                lastVState = vPressed;
+                lastGState = gPressed;
+                lastRState = rPressed;
+                lastFState = fPressed;
+                lastUpState = upPressed;
+                lastDownState = downPressed;
+                lastLeftState = leftPressed;
+                lastRightState = rightPressed;
+                lastPgUpState = pgUpPressed;
+                lastPgDnState = pgDnPressed;
             }
         });
 

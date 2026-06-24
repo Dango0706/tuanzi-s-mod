@@ -1,0 +1,7 @@
+import os
+
+cc_path = r"f:\Development\Java\tuanzis_mods\MinecraftSources\net\minecraft\world\level\block\ColorCollection.java"
+
+with open(cc_path, "r", encoding="utf-8") as f:
+    for i, line in enumerate(f, 1):
+        print(f"{i}: {line.strip()}")

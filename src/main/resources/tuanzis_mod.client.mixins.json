@@ -9,7 +9,18 @@
 		"AbstractContainerScreenMixin",
 		"WorldSculptorsPenRendererMixin",
 		"MinecraftMixin",
-		"AnvilScreenMixin"
+		"AnvilScreenMixin",
+		"EntityRenderStateMixin",
+		"EntityRendererMixin",
+		"EntityRenderDispatcherMixin",
+		"EntityGhostTickMixin",
+		"DisplayRendererMixin",
+		"DisplayMixin",
+		"BlockDisplayMixin",
+		"ItemDisplayMixin",
+		"RenderTypeFeatureRendererMixin",
+		"RenderTypeFeatureRendererAccessor",
+		"RenderTypeAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

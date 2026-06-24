@@ -10,6 +10,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,6 +31,10 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, me.tuanzi.network.OpenBookScreenS2CPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.TeleportRequestPacket.TYPE, me.tuanzi.network.TeleportRequestPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.WorldSculptorsPenModePacket.TYPE, me.tuanzi.network.WorldSculptorsPenModePacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostTransformPacket.TYPE, me.tuanzi.network.GhostTransformPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, me.tuanzi.network.BlueprintMaterialBookPacket.CODEC);
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(ChainMiningKeyPacket.TYPE, (payload, context) -> {
@@ -52,6 +58,74 @@ public class Tuanzis_mod implements ModInitializer {
 				}
 				if (stack.is(me.tuanzi.init.ModItems.WORLD_SCULPTORS_PEN)) {
 					me.tuanzi.item.WorldSculptorsPenItem.toggleMode(stack, player);
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.GhostTransformPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.item.ItemStack stack = player.getMainHandItem();
+				if (!stack.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
+					stack = player.getOffhandItem();
+				}
+				if (stack.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
+					net.minecraft.world.item.component.CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+					net.minecraft.nbt.CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
+					tag.putInt("OffsetX", payload.offset().getX());
+					tag.putInt("OffsetY", payload.offset().getY());
+					tag.putInt("OffsetZ", payload.offset().getZ());
+					tag.putInt("Rotation", payload.rotation());
+					tag.putBoolean("Mirrored", payload.mirrored());
+					stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+					me.tuanzi.util.ModLog.debug(player, null, "收到虚影变换：offset=" + payload.offset() + ", rotation=" + payload.rotation() + ", mirrored=" + payload.mirrored());
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
+				if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe) {
+					cannonBe.handleAction(payload.action(), payload.destroyMode(), payload.exactMatch());
+					me.tuanzi.util.ModLog.debug(player, null, "收到大炮控制：action=" + payload.action() + ", destroyMode=" + payload.destroyMode() + ", exactMatch=" + payload.exactMatch());
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintTableImportPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.tablePos());
+				if (be instanceof me.tuanzi.block.entity.BlueprintTableBlockEntity tableBe) {
+					net.minecraft.world.item.ItemStack inputStack = tableBe.getItems().get(1);
+					if (inputStack.is(me.tuanzi.init.ModItems.BLANK_BLUEPRINT)) {
+						inputStack.shrink(1);
+						ItemStack result = new ItemStack(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT);
+						result.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(payload.blueprintData()));
+						
+						ItemStack slot0 = tableBe.getItems().get(0);
+						if (slot0.isEmpty()) {
+							tableBe.getItems().set(0, result);
+						} else {
+							if (!player.getInventory().add(result)) {
+								player.drop(result, false);
+							}
+						}
+						tableBe.setChanged();
+						me.tuanzi.util.ModLog.debug(player, null, "成功导入结构数据写入结构蓝图！");
+					}
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
+				if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe) {
+					cannonBe.writeMaterialBook(player.level(), payload.pos());
 				}
 			});
 		});
@@ -99,6 +173,7 @@ public class Tuanzis_mod implements ModInitializer {
 		// 注册抽卡系统指令
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			me.tuanzi.gacha.GachaCommands.register(dispatcher);
+			me.tuanzi.command.BlueprintCommand.register(dispatcher);
 		});
 
 		ModLog.debug("Mod initialization started in development mode!");

@@ -149,6 +149,10 @@ public class ModItems {
         }
     });
 
+    public static final Item COMPRESSED_BUILD_SLURRY = register("compressed_build_slurry", CompressedBuildSlurryItem::new);
+    public static final Item BLANK_BLUEPRINT = register("blank_blueprint", BlankBlueprintItem::new);
+    public static final Item STRUCTURE_BLUEPRINT = register("structure_blueprint", StructureBlueprintItem::new);
+
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));

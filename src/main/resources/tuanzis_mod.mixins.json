@@ -43,7 +43,8 @@
 		"GachaItemEntityMixin",
 		"PlayerSweepMixin",
 		"BeeStingEchoTooltipMixin",
-		"PlayerCooldownMixin"
+		"PlayerCooldownMixin",
+		"BlockAttachedEntityAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

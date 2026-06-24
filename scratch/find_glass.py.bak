@@ -1,0 +1,8 @@
+import os
+
+blocks_path = r"f:\Development\Java\tuanzis_mods\MinecraftSources\net\minecraft\world\level\block\Blocks.java"
+
+with open(blocks_path, "r", encoding="utf-8") as f:
+    for i, line in enumerate(f, 1):
+        if "concrete" in line.lower() and "public static" in line:
+            print(f"{i}: {line.strip()}")

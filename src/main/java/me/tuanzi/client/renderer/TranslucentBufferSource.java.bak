@@ -1,0 +1,26 @@
+package me.tuanzi.client.renderer;
+
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
+public class TranslucentBufferSource implements MultiBufferSource {
+    private final MultiBufferSource parent;
+    private final float alpha;
+
+    public TranslucentBufferSource(MultiBufferSource parent, float alpha) {
+        this.parent = parent;
+        this.alpha = alpha;
+    }
+
+    @Override
+    public VertexConsumer getBuffer(RenderType type) {
+        RenderType targetType = type;
+        String name = type.toString();
+        // 将普通非半透明渲染类型转换为 translucent 渲染类型，以启用 Shader 混合
+        if (!name.contains("translucent") && !name.contains("text")) {
+            targetType = RenderType.translucent();
+        }
+        return new TranslucentVertexConsumer(this.parent.getBuffer(targetType), this.alpha);
+    }
+}
