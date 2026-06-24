@@ -590,29 +590,11 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             loadNbt.remove("UUID");
                             loadNbt.remove("Pos");
                             loadNbt.remove("Motion");
-                            loadNbt.remove("block_pos");
-                            loadNbt.remove("TileX");
-                            loadNbt.remove("TileY");
-                            loadNbt.remove("TileZ");
                             entity.load(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), loadNbt));
 
-                            if (entity instanceof net.minecraft.world.entity.decoration.BlockAttachedEntity attached) {
-                                attached.rotate(rot);
-                                attached.mirror(mir);
-
-                                net.minecraft.core.Direction dir = attached.getDirection();
-                                int px = net.minecraft.util.Mth.floor(finalX + dir.getStepX() * 0.46875);
-                                int py = net.minecraft.util.Mth.floor(finalY + dir.getStepY() * 0.46875);
-                                int pz = net.minecraft.util.Mth.floor(finalZ + dir.getStepZ() * 0.46875);
-                                BlockPos targetBlockPos = new BlockPos(px, py, pz);
-
-                                ((me.tuanzi.mixin.BlockAttachedEntityAccessor) attached).setPos(targetBlockPos);
-                                ((me.tuanzi.mixin.BlockAttachedEntityAccessor) attached).invokeRecalculateBoundingBox();
-                            } else {
-                                entity.setPos(finalX, finalY, finalZ);
-                                entity.rotate(rot);
-                                entity.mirror(mir);
-                            }
+                            entity.setPos(finalX, finalY, finalZ);
+                            entity.rotate(rot);
+                            entity.mirror(mir);
 
                             level.addFreshEntity(entity);
                             level.playSound(null, new BlockPos((int)finalX, (int)finalY, (int)finalZ), SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);

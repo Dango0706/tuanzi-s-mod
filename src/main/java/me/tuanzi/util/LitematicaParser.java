@@ -106,14 +106,15 @@ public class LitematicaParser {
             int regionY = regionPos.getIntOr("y", 0);
             int regionZ = regionPos.getIntOr("z", 0);
 
-            CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
-            int minX = Math.min(regionX, regionX + sizeTag.getIntOr("x", 0));
-            int minY = Math.min(regionY, regionY + sizeTag.getIntOr("y", 0));
-            int minZ = Math.min(regionZ, regionZ + sizeTag.getIntOr("z", 0));
+            int teX = te.getIntOr("x", 0) - regionX;
+            int teY = te.getIntOr("y", 0) - regionY;
+            int teZ = te.getIntOr("z", 0) - regionZ;
 
-            int teX = te.getIntOr("x", 0) - minX;
-            int teY = te.getIntOr("y", 0) - minY;
-            int teZ = te.getIntOr("z", 0) - minZ;
+            // 范围修正（如果是负数，可能说明 size.x/y/z 是负数，即反向划定区域）
+            CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
+            if (sizeTag.getIntOr("x", 0) < 0) teX = -teX - 1;
+            if (sizeTag.getIntOr("y", 0) < 0) teY = -teY - 1;
+            if (sizeTag.getIntOr("z", 0) < 0) teZ = -teZ - 1;
 
             entityNbt.putIntArray("pos", new int[]{teX, teY, teZ});
             CompoundTag innerNbt = te.copy();
@@ -147,56 +148,20 @@ public class LitematicaParser {
                     int regionY = regionPos.getIntOr("y", 0);
                     int regionZ = regionPos.getIntOr("z", 0);
                     
-                    CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
-                    double minX = Math.min(regionX, regionX + sizeTag.getIntOr("x", 0));
-                    double minY = Math.min(regionY, regionY + sizeTag.getIntOr("y", 0));
-                    double minZ = Math.min(regionZ, regionZ + sizeTag.getIntOr("z", 0));
+                    double rx = ex - regionX;
+                    double ry = ey - regionY;
+                    double rz = ez - regionZ;
                     
-                    double rx = ex - minX;
-                    double ry = ey - minY;
-                    double rz = ez - minZ;
+                    CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
+                    if (sizeTag.getIntOr("x", 0) < 0) rx = -rx;
+                    if (sizeTag.getIntOr("y", 0) < 0) ry = -ry;
+                    if (sizeTag.getIntOr("z", 0) < 0) rz = -rz;
                     
                     ListTag relativePos = new ListTag();
                     relativePos.add(DoubleTag.valueOf(rx));
                     relativePos.add(DoubleTag.valueOf(ry));
                     relativePos.add(DoubleTag.valueOf(rz));
                     entityNbt.put("Pos", relativePos);
-                }
-
-                // 转换 NBT 中的附着方块坐标为局部相对坐标
-                if (entityNbt.contains("block_pos")) {
-                    int[] bp = entityNbt.getIntArray("block_pos").orElse(new int[0]);
-                    if (bp.length == 3) {
-                        CompoundTag regionPos = region.getCompoundOrEmpty("Position");
-                        int regionX = regionPos.getIntOr("x", 0);
-                        int regionY = regionPos.getIntOr("y", 0);
-                        int regionZ = regionPos.getIntOr("z", 0);
-                        
-                        CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
-                        int minX = Math.min(regionX, regionX + sizeTag.getIntOr("x", 0));
-                        int minY = Math.min(regionY, regionY + sizeTag.getIntOr("y", 0));
-                        int minZ = Math.min(regionZ, regionZ + sizeTag.getIntOr("z", 0));
-                        
-                        int rbx = bp[0] - minX;
-                        int rby = bp[1] - minY;
-                        int rbz = bp[2] - minZ;
-                        entityNbt.putIntArray("block_pos", new int[]{rbx, rby, rbz});
-                    }
-                }
-                if (entityNbt.contains("TileX") && entityNbt.contains("TileY") && entityNbt.contains("TileZ")) {
-                    CompoundTag regionPos = region.getCompoundOrEmpty("Position");
-                    int regionX = regionPos.getIntOr("x", 0);
-                    int regionY = regionPos.getIntOr("y", 0);
-                    int regionZ = regionPos.getIntOr("z", 0);
-                    
-                    CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
-                    int minX = Math.min(regionX, regionX + sizeTag.getIntOr("x", 0));
-                    int minY = Math.min(regionY, regionY + sizeTag.getIntOr("y", 0));
-                    int minZ = Math.min(regionZ, regionZ + sizeTag.getIntOr("z", 0));
-                    
-                    entityNbt.putInt("TileX", entityNbt.getIntOr("TileX", 0) - minX);
-                    entityNbt.putInt("TileY", entityNbt.getIntOr("TileY", 0) - minY);
-                    entityNbt.putInt("TileZ", entityNbt.getIntOr("TileZ", 0) - minZ);
                 }
                 
                 // 剔除 UUID，避免放置冲突

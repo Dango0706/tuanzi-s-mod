@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ClientGhostManager {
-    private static final List<net.minecraft.world.entity.Entity> activeGhosts = new ArrayList<>();
+    private static final List<Display.BlockDisplay> activeGhosts = new ArrayList<>();
     private static ItemStack lastCheckedStack = ItemStack.EMPTY;
     private static BlockPos lastGhostPos = null;
     private static BlockPos lastOffset = null;
@@ -37,7 +37,7 @@ public class ClientGhostManager {
 
     public static void toggleVisibility() {
         isHidden = !isHidden;
-        for (net.minecraft.world.entity.Entity ghost : activeGhosts) {
+        for (Display.BlockDisplay ghost : activeGhosts) {
             ghost.setInvisible(isHidden);
         }
     }
@@ -47,7 +47,7 @@ public class ClientGhostManager {
     }
 
     public static void clearGhosts() {
-        for (net.minecraft.world.entity.Entity ghost : activeGhosts) {
+        for (Display.BlockDisplay ghost : activeGhosts) {
             ghost.discard();
         }
         activeGhosts.clear();
@@ -116,7 +116,7 @@ public class ClientGhostManager {
 
     private static void rebuildGhosts(ClientLevel level, CompoundTag blueprintTag, BlockPos basePos, BlockPos offset, int rotationIdx, boolean mirrored) {
         // 清理旧虚影
-        for (net.minecraft.world.entity.Entity ghost : activeGhosts) {
+        for (Display.BlockDisplay ghost : activeGhosts) {
             ghost.discard();
         }
         activeGhosts.clear();
@@ -204,108 +204,6 @@ public class ClientGhostManager {
                     if (count >= MAX_GHOST_BLOCKS) {
                         // 达到上限，截断并警告
                         return;
-                    }
-                }
-            }
-        }
-
-        // 5. 生成生物/实体虚影
-        ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
-        if (!entitiesTag.isEmpty()) {
-            for (int i = 0; i < entitiesTag.size(); i++) {
-                CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
-                String id = entityNbt.getStringOr("id", "");
-                ListTag posList = entityNbt.getListOrEmpty("Pos");
-                if (posList.size() < 3) continue;
-
-                double ex = posList.getDoubleOr(0, 0.0);
-                double ey = posList.getDoubleOr(1, 0.0);
-                double ez = posList.getDoubleOr(2, 0.0);
-
-                // 连续坐标旋转与镜像计算
-                double rx = ex;
-                double rz = ez;
-                double wRot = width;
-                if (rot == Rotation.CLOCKWISE_90) {
-                    rx = length - ez;
-                    rz = ex;
-                    wRot = length;
-                } else if (rot == Rotation.CLOCKWISE_180) {
-                    rx = width - ex;
-                    rz = length - ez;
-                    wRot = width;
-                } else if (rot == Rotation.COUNTERCLOCKWISE_90) {
-                    rx = ez;
-                    rz = width - ex;
-                    wRot = length;
-                }
-
-                if (mirrored) {
-                    rx = wRot - rx;
-                }
-
-                double finalX = basePos.getX() + offset.getX() + rx;
-                double finalY = basePos.getY() + offset.getY() + ey;
-                double finalZ = basePos.getZ() + offset.getZ() + rz;
-
-                net.minecraft.world.entity.EntityType<?> entityType = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id)).orElse(null);
-                if (entityType != null) {
-                    net.minecraft.world.entity.Entity entity = entityType.create(level, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
-                    if (entity != null) {
-                        entity.setId(nextGhostId--);
-
-                        CompoundTag loadNbt = entityNbt.copy();
-                        loadNbt.remove("UUID");
-                        loadNbt.remove("Pos");
-                        loadNbt.remove("Motion");
-                        loadNbt.remove("block_pos");
-                        loadNbt.remove("TileX");
-                        loadNbt.remove("TileY");
-                        loadNbt.remove("TileZ");
-                        entity.load(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), loadNbt));
-
-                        if (entity instanceof net.minecraft.world.entity.decoration.BlockAttachedEntity attached) {
-                            attached.rotate(rot);
-                            attached.mirror(mir);
-
-                            net.minecraft.core.Direction dir = attached.getDirection();
-                            int px = net.minecraft.util.Mth.floor(finalX + dir.getStepX() * 0.46875);
-                            int py = net.minecraft.util.Mth.floor(finalY + dir.getStepY() * 0.46875);
-                            int pz = net.minecraft.util.Mth.floor(finalZ + dir.getStepZ() * 0.46875);
-                            BlockPos targetBlockPos = new BlockPos(px, py, pz);
-
-                            ((me.tuanzi.mixin.BlockAttachedEntityAccessor) attached).setPos(targetBlockPos);
-                            ((me.tuanzi.mixin.BlockAttachedEntityAccessor) attached).invokeRecalculateBoundingBox();
-
-                            double calculatedX = entity.getX();
-                            double calculatedY = entity.getY();
-                            double calculatedZ = entity.getZ();
-
-                            entity.setPosRaw(calculatedX, calculatedY, calculatedZ);
-                            entity.xOld = calculatedX;
-                            entity.yOld = calculatedY;
-                            entity.zOld = calculatedZ;
-                            entity.xo = calculatedX;
-                            entity.yo = calculatedY;
-                            entity.zo = calculatedZ;
-                        } else {
-                            entity.setPos(finalX, finalY, finalZ);
-                            entity.setPosRaw(finalX, finalY, finalZ);
-                            entity.xOld = finalX;
-                            entity.yOld = finalY;
-                            entity.zOld = finalZ;
-                            entity.xo = finalX;
-                            entity.yo = finalY;
-                            entity.zo = finalZ;
-                            entity.rotate(rot);
-                            entity.mirror(mir);
-                        }
-
-                        entity.addTag("blueprint_ghost");
-                        entity.setSilent(true);
-
-                        level.addEntity(entity);
-                        activeGhosts.add(entity);
                     }
                 }
             }
