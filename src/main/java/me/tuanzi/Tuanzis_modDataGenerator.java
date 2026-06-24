@@ -548,6 +548,20 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
 			// 物品标签翻译
 			translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "潮汐织靴修补材料");
+			translationBuilder.add(ModItems.WORLD_SCULPTORS_PEN, "塑世之笔");
+			translationBuilder.add("tooltip.tuanzis_mod.world_sculptors_pen.mode", "当前填充模式: %s");
+			translationBuilder.add("tuanzis_mod.mode.full_replace", "完全替换");
+			translationBuilder.add("tuanzis_mod.mode.air_only", "填充空气");
+			translationBuilder.add("tuanzis_mod.mode.semi_replace", "半替换");
+			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "仅替换空气");
+			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6塑世之笔切换为: %s 模式");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒中扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，潜行 (Shift) + 右键（空气或方块）可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
+			translationBuilder.add(ModItems.VOID_INK_INGOT, "虚空墨锭");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "一方由龙息凝华与回响粉末压制的深紫色墨锭，");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line3", "持之凑近塑世之笔，笔身会微微震颤，仿佛墨锭在呼唤它的笔锋。");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.incompatible", "墨不相容");
+			translationBuilder.add("jei.tuanzis_mod.void_ink_ingot.description", "【虚空墨锭】\n一方由龙息凝华与回响粉末压制的深紫色墨锭，表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。\n\n§e墨笔一体：§r\n虚空墨锭仅匹配塑世之笔的紫水晶笔尖与回响墨囊系统，对其他工具、武器、护甲均无修复效果。放入非塑世之笔的物品时，铁砧会显示“墨不相容”的暗红提示并阻止拿取。");
 		}
 	}
 
@@ -1052,6 +1066,23 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
 			// Item Tag translations
 			translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "Tidal Weave Boots Repair Materials");
+			translationBuilder.add(ModItems.WORLD_SCULPTORS_PEN, "World Sculptor's Pen");
+			translationBuilder.add("tooltip.tuanzis_mod.world_sculptors_pen.mode", "Current Fill Mode: %s");
+			translationBuilder.add("tuanzis_mod.mode.full_replace", "Full Replace");
+			translationBuilder.add("tuanzis_mod.mode.air_only", "Air Only");
+			translationBuilder.add("tuanzis_mod.mode.semi_replace", "Semi Replace");
+			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "Replace Air Only");
+			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6World Sculptor's Pen toggled to: %s Mode");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it. The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory and shulker boxes inside. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click within 60 seconds to undo. Only returns blocks and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
+			translationBuilder.add(ModItems.VOID_INK_INGOT, "Void Ink Ingot");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "A deep purple ink ingot pressed from condensed dragon's breath and echo shards,");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line3", "Holding it close to the World Sculptor's Pen makes the pen tremble slightly, as if the ingot is calling out to its nib.");
+			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.incompatible", "Ink Incompatible");
+			translationBuilder.add("jei.tuanzis_mod.void_ink_ingot.description", "[Void Ink Ingot]\n" +
+				"A deep purple ink ingot pressed from condensed dragon's breath and echo shards, with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.\n\n" +
+				"§eInk-Pen Affinity:§r\n" +
+				"The Void Ink Ingot only matches the amethyst nib and echo ink sac system of the World Sculptor's Pen. It has no repair effect on other tools, weapons, or armor. Placing other items will display a dark red \"Ink Incompatible\" warning in the anvil output slot and prevent pick-up.");
 		}
 	}
 }

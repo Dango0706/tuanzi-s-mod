@@ -24,6 +24,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
     private CompoundTag storedVillagerNbt = null;
     private Villager cachedVillager = null;
     private long lastRestockCheckDay = -1L;
+    private int restockTimer = 0;
     private java.util.UUID villagerUuid = null;
     private float villagerYaw = 0.0f;
 
@@ -210,18 +211,12 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                     }
                 }
 
-                // 时间流逝刷新交易锁定
-                long clockTime = level.getOverworldClockTime();
-                long currentDay = clockTime / 24000L;
-                if (be.lastRestockCheckDay == -1) {
-                    be.lastRestockCheckDay = currentDay;
-                }
-                if (currentDay > be.lastRestockCheckDay) {
-                    be.lastRestockCheckDay = currentDay;
+                // 方块实体自身 Tick 计时刷新交易锁定，每 8000 ticks (8小时游戏时间) 补货一次
+                be.restockTimer++;
+                if (be.restockTimer >= 8000) {
+                    me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站已持续运行 8000 ticks (8小时游戏时间)，触发补货。");
+                    be.restockTimer = 0;
                     be.tryRestock(serverLevel);
-                    be.setChanged();
-                } else if (currentDay < be.lastRestockCheckDay) {
-                    be.lastRestockCheckDay = currentDay;
                     be.setChanged();
                 }
             }
@@ -342,6 +337,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
         super.loadAdditional(input);
         this.storedVillagerNbt = input.read("StoredVillager", CompoundTag.CODEC).orElse(null);
         this.lastRestockCheckDay = input.getLongOr("LastRestockCheckDay", -1L);
+        this.restockTimer = input.getIntOr("RestockTimer", 0);
         this.villagerUuid = input.read("VillagerUuid", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
         this.villagerYaw = input.getFloatOr("VillagerYaw", 0.0f);
         this.cachedVillager = null;
@@ -355,6 +351,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             output.store("StoredVillager", CompoundTag.CODEC, this.storedVillagerNbt);
         }
         output.putLong("LastRestockCheckDay", this.lastRestockCheckDay);
+        output.putInt("RestockTimer", this.restockTimer);
         if (this.villagerUuid != null) {
             output.store("VillagerUuid", net.minecraft.core.UUIDUtil.CODEC, this.villagerUuid);
         }

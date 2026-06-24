@@ -6,7 +6,10 @@
 	"mixins": [
 		"EntityClientGlowingMixin",
 		"TitleScreenMixin",
-		"AbstractContainerScreenMixin"
+		"AbstractContainerScreenMixin",
+		"WorldSculptorsPenRendererMixin",
+		"MinecraftMixin",
+		"AnvilScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

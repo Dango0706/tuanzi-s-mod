@@ -28,6 +28,7 @@ public class Tuanzis_mod implements ModInitializer {
 		// 注册手札书本及传送请求网络包
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, me.tuanzi.network.OpenBookScreenS2CPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.TeleportRequestPacket.TYPE, me.tuanzi.network.TeleportRequestPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.WorldSculptorsPenModePacket.TYPE, me.tuanzi.network.WorldSculptorsPenModePacket.CODEC);
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(ChainMiningKeyPacket.TYPE, (payload, context) -> {
@@ -39,6 +40,19 @@ public class Tuanzis_mod implements ModInitializer {
 		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				me.tuanzi.world.teleport.TeleportManager.handleTeleportRequest(context.player(), payload.slotIdx(), payload.isMainHand());
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.WorldSculptorsPenModePacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.item.ItemStack stack = player.getMainHandItem();
+				if (!stack.is(me.tuanzi.init.ModItems.WORLD_SCULPTORS_PEN)) {
+					stack = player.getOffhandItem();
+				}
+				if (stack.is(me.tuanzi.init.ModItems.WORLD_SCULPTORS_PEN)) {
+					me.tuanzi.item.WorldSculptorsPenItem.toggleMode(stack, player);
+				}
 			});
 		});
 

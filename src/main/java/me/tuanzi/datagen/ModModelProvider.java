@@ -209,5 +209,11 @@ public class ModModelProvider extends FabricModelProvider {
 
         // 潮汐织靴物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.TIDAL_WEAVE_BOOTS, ModelTemplates.FLAT_ITEM);
+
+        // 塑世之笔物品模型生成
+        itemModelGenerator.generateFlatItem(ModItems.WORLD_SCULPTORS_PEN, ModelTemplates.FLAT_ITEM);
+
+        // 虚空墨锭物品模型生成
+        itemModelGenerator.generateFlatItem(ModItems.VOID_INK_INGOT, ModelTemplates.FLAT_ITEM);
     }
 }

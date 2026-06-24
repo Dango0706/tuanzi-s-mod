@@ -9,7 +9,18 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
-
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.util.ARGB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
 
 public class TuanzisModClient implements ClientModInitializer {
     private static KeyMapping chainMiningKey;
@@ -152,6 +163,49 @@ public class TuanzisModClient implements ClientModInitializer {
             if (isHolding != lastHoldingState) {
                 lastHoldingState = isHolding;
                 ClientPlayNetworking.send(new ChainMiningKeyPacket(isHolding));
+            }
+        });
+
+        // 注册塑世之笔起点红色边缘高亮渲染
+        LevelRenderEvents.BEFORE_GIZMOS.register((LevelRenderContext context) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+
+            // 遍历主副手寻找塑世之笔
+            ItemStack penStack = ItemStack.EMPTY;
+            if (mc.player.getMainHandItem().is(me.tuanzi.init.ModItems.WORLD_SCULPTORS_PEN)) {
+                penStack = mc.player.getMainHandItem();
+            } else if (mc.player.getOffhandItem().is(me.tuanzi.init.ModItems.WORLD_SCULPTORS_PEN)) {
+                penStack = mc.player.getOffhandItem();
+            }
+
+            if (penStack.isEmpty()) return;
+
+            // 读取起点数据
+            CustomData customData = penStack.get(DataComponents.CUSTOM_DATA);
+            if (customData == null) return;
+
+            CompoundTag tag = customData.copyTag();
+            if (!tag.getInt("pos1_x").isPresent()) return;
+
+            // 维度匹配校验
+            String dimStr = tag.getStringOr("pos1_dim", "");
+            if (!dimStr.equals(mc.level.dimension().identifier().toString())) return;
+
+            int x = tag.getIntOr("pos1_x", 0);
+            int y = tag.getIntOr("pos1_y", 0);
+            int z = tag.getIntOr("pos1_z", 0);
+            BlockPos pos1 = new BlockPos(x, y, z);
+
+            // 直接使用 Mojang 官方 Gizmos API 提交外框线，支持 setAlwaysOnTop 完美实现透视高亮线框
+            try {
+                Gizmos.cuboid(
+                    pos1, 
+                    0.002F, 
+                    GizmoStyle.stroke(ARGB.colorFromFloat(1.0F, 1.0F, 0.0F, 0.0F))
+                ).setAlwaysOnTop();
+            } catch (IllegalStateException e) {
+                // 回退以防极端情况下没有 GizmoCollector
             }
         });
     }

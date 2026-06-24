@@ -128,6 +128,18 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/echo_breaker_repair")
         ));
 
+        // 手动注册塑世之笔的铁砧修复配方 (虚空墨锭修复 1000 耐久)
+        ItemStack damagedPen = new ItemStack(ModItems.WORLD_SCULPTORS_PEN);
+        damagedPen.setDamageValue(1500);
+        ItemStack repairedPen = new ItemStack(ModItems.WORLD_SCULPTORS_PEN);
+        repairedPen.setDamageValue(500); // 修复 1000 耐久
+        recipes.add(factory.createAnvilRecipe(
+            List.of(damagedPen),
+            List.of(new ItemStack(ModItems.VOID_INK_INGOT)),
+            List.of(repairedPen),
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/world_sculptors_pen_repair")
+        ));
+
         registration.addRecipes(RecipeTypes.ANVIL, recipes);
         
         registration.addIngredientInfo(new ItemStack(ModItems.RAINBOW_SPONGE), VanillaTypes.ITEM_STACK, 
@@ -146,6 +158,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.warden_heart.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.ECHO_BREAKER), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.echo_breaker.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.WORLD_SCULPTORS_PEN), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.world_sculptors_pen.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.VOID_INK_INGOT), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.void_ink_ingot.description"));
 
         // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
         List<ItemStack> experienceBooks = registration.getIngredientManager()

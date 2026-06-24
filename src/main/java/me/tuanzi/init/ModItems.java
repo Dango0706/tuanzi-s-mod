@@ -132,6 +132,23 @@ public class ModItems {
         .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
         .rarity(Rarity.EPIC)
     ));
+    public static final Item WORLD_SCULPTORS_PEN = register("world_sculptors_pen", (properties) -> new me.tuanzi.item.WorldSculptorsPenItem(properties
+        .stacksTo(1)
+        .durability(8192)
+        .rarity(Rarity.EPIC)
+    ));
+    public static final Item VOID_INK_INGOT = register("void_ink_ingot", (properties) -> new Item(properties
+        .rarity(Rarity.EPIC)
+    ) {
+        @Override
+        public void appendHoverText(net.minecraft.world.item.ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, net.minecraft.world.item.component.TooltipDisplay tooltipDisplay, java.util.function.Consumer<net.minecraft.network.chat.Component> tooltipComponents, net.minecraft.world.item.TooltipFlag tooltipFlag) {
+            tooltipComponents.accept(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.void_ink_ingot.desc_line1").withStyle(net.minecraft.ChatFormatting.GRAY));
+            tooltipComponents.accept(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.void_ink_ingot.desc_line2").withStyle(net.minecraft.ChatFormatting.GRAY));
+            tooltipComponents.accept(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.void_ink_ingot.desc_line3").withStyle(net.minecraft.ChatFormatting.GRAY));
+            super.appendHoverText(stack, context, tooltipDisplay, tooltipComponents, tooltipFlag);
+        }
+    });
+
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));

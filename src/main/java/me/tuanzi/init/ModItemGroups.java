@@ -133,6 +133,8 @@ public class ModItemGroups {
                 entries.accept(ModItems.SIGNPOST_RUNE);
                 entries.accept(ModItems.SHURIKEN);
                 entries.accept(ModItems.NETHER_STEW);
+                entries.accept(ModItems.WORLD_SCULPTORS_PEN);
+                entries.accept(ModItems.VOID_INK_INGOT);
 
                 // 加入抽卡道具
                 entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);

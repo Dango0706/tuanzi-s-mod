@@ -7,10 +7,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AnvilMenu;
-import net.minecraft.world.inventory.DataSlot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,15 +21,27 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Mixin(AnvilMenu.class)
-public abstract class AnvilMixin {
-    @Shadow @Final private DataSlot cost;
-    @Shadow private String itemName;
+public abstract class AnvilMixin extends ItemCombinerMenu {
+    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("#[0-9a-fA-F]{6}");
+    private static final Pattern FORMAT_PATTERN = Pattern.compile("&[0-9a-fk-o]");
+    private static final Pattern GRADIENT_PATTERN = Pattern.compile("&q(\\d+)(#[0-9a-fA-F]{6})(?:-(#[0-9a-fA-F]{6}))?");
+    private final Random random = new Random();
+    @Shadow
+    @Final
+    private DataSlot cost;
+    @Shadow
+    private String itemName;
+    @Shadow
+    private int repairItemCountCost;
+    public AnvilMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
+        super(type, syncId, playerInventory, access, slotDefinition);
+    }
 
     /**
      * 移除服务端铁砧名称验证的 50 字符限制。
@@ -39,11 +52,6 @@ public abstract class AnvilMixin {
         cir.setReturnValue(string);
     }
 
-    private static final Pattern HEX_COLOR_PATTERN = Pattern.compile("#[0-9a-fA-F]{6}");
-    private static final Pattern FORMAT_PATTERN = Pattern.compile("&[0-9a-fk-o]");
-    private static final Pattern GRADIENT_PATTERN = Pattern.compile("&q(\\d+)(#[0-9a-fA-F]{6})(?:-(#[0-9a-fA-F]{6}))?");
-    private final Random random = new Random();
-
     @ModifyConstant(method = "createResult", constant = @org.spongepowered.asm.mixin.injection.Constant(intValue = 40))
     private int tuanzis_mod$removeLevelLimit(int constant) {
         return Integer.MAX_VALUE;
@@ -51,6 +59,17 @@ public abstract class AnvilMixin {
 
     @Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$alwaysMayPickup(Player player, boolean present, CallbackInfoReturnable<Boolean> cir) {
+        ItemStack result = this.resultSlots.getItem(0);
+        if (!result.isEmpty()) {
+            net.minecraft.world.item.component.CustomData customData = result.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                net.minecraft.nbt.CompoundTag tag = customData.copyTag();
+                if (tag.getBooleanOr("ink_incompatible", false)) {
+                    cir.setReturnValue(false);
+                    return;
+                }
+            }
+        }
         if (!player.getAbilities().instabuild) {
             cir.setReturnValue(player.experienceLevel >= this.cost.get());
         }
@@ -59,14 +78,83 @@ public abstract class AnvilMixin {
     @Inject(method = "createResult", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$handleColorSpongeCustom(CallbackInfo ci) {
         AnvilMenu menu = (AnvilMenu) (Object) this;
-        ItemStack left = menu.getSlot(0).getItem();
-        ItemStack right = menu.getSlot(1).getItem();
+        // 采用原生的 inputSlots 影子字段获取物品，解决受保护访问权限问题
+        ItemStack left = this.inputSlots.getItem(0);
+        ItemStack right = this.inputSlots.getItem(1);
+
+        // 4. 墨水不相容提示：左侧为非塑世之笔，右侧为虚空墨锭，输出槽显示红石粉“墨不相容”红字提示且不可拾取
+        if (!left.isEmpty() && !left.is(ModItems.WORLD_SCULPTORS_PEN) && !right.isEmpty() && right.is(ModItems.VOID_INK_INGOT)) {
+            ItemStack incompatibleTip = new ItemStack(net.minecraft.world.item.Items.REDSTONE);
+            incompatibleTip.set(DataComponents.CUSTOM_NAME, Component.translatable("tooltip.tuanzis_mod.void_ink_ingot.incompatible").withStyle(ChatFormatting.RED));
+            
+            net.minecraft.world.item.component.CustomData customData = net.minecraft.world.item.component.CustomData.of(new net.minecraft.nbt.CompoundTag());
+            net.minecraft.nbt.CompoundTag tag = customData.copyTag();
+            tag.putBoolean("ink_incompatible", true);
+            incompatibleTip.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+
+            this.resultSlots.setItem(0, incompatibleTip);
+            this.cost.set(0);
+            this.repairItemCountCost = 0;
+            menu.broadcastChanges();
+            ci.cancel();
+            return;
+        }
+
+        // 输出逻辑调试日志，方便在控制台排查未成功命中配方的真正条件原因
+        if (!left.isEmpty() && left.is(ModItems.WORLD_SCULPTORS_PEN)) {
+            me.tuanzi.util.ModLog.debug("AnvilMenu", "createResult", "[塑世之笔铁砧] 触发 createResult! 左侧: " + left + ", 右侧: " + right + ", 损坏耐久值: " + left.getDamageValue() + ", 是否为虚空墨锭: " + right.is(ModItems.VOID_INK_INGOT));
+        }
+
+        // 塑世之笔特殊修复与防附魔限制
+        if (!left.isEmpty() && left.is(ModItems.WORLD_SCULPTORS_PEN)) {
+            // 1. 防附魔：拒绝跟附魔书或任何带有附魔的物品合并（排除合法的修复物虚空墨锭以及彩色海绵，防止其因默认存在或附带的其它特殊组件被误判为附魔物品）
+            if (!right.is(ModItems.VOID_INK_INGOT)
+                    && !right.is(ModItems.RAINBOW_SPONGE)
+                    && (right.is(net.minecraft.world.item.Items.ENCHANTED_BOOK) || !EnchantmentHelper.getEnchantmentsForCrafting(right).isEmpty())) {
+                me.tuanzi.util.ModLog.debug("AnvilMenu", "createResult", "[塑世之笔铁砧] 检测到附魔行为，强制清空输出槽。");
+                this.resultSlots.setItem(0, ItemStack.EMPTY);
+                this.cost.set(0);
+                menu.broadcastChanges();
+                ci.cancel();
+                return;
+            }
+
+            // 2. 修复：仅能使用虚空墨锭进行定额 1000 耐久修复
+            if (right.is(ModItems.VOID_INK_INGOT) && left.getDamageValue() > 0) {
+                int damage = left.getDamageValue();
+                int neededIngots = (int) Math.ceil(damage / 1000.0);
+                int usedIngots = Math.min(right.getCount(), neededIngots);
+
+                ItemStack result = left.copy();
+                result.setDamageValue(Math.max(0, damage - usedIngots * 1000));
+
+                this.cost.set(usedIngots * 2); // 每次修复消耗虚空墨锭数 * 2 的经验等级
+                this.repairItemCountCost = usedIngots;
+
+                me.tuanzi.util.ModLog.debug("AnvilMenu", "createResult", "[塑世之笔铁砧] 成功匹配虚空墨锭修复！需要墨锭数: " + neededIngots + ", 实际使用墨锭数: " + usedIngots + ", 修复后耐久损伤: " + result.getDamageValue() + ", 经验消耗: " + (usedIngots * 2));
+
+                this.resultSlots.setItem(0, result);
+                menu.broadcastChanges();
+                ci.cancel();
+                return;
+            }
+
+            // 3. 安全屏蔽：拒绝其它任何合并逻辑（改名除外，当右侧为空时可改名）
+            if (!right.isEmpty() && !right.is(ModItems.VOID_INK_INGOT) && !right.is(ModItems.RAINBOW_SPONGE)) {
+                me.tuanzi.util.ModLog.debug("AnvilMenu", "createResult", "[塑世之笔铁砧] 尝试与其它无用物品合并，进行合成阻断屏蔽。");
+                this.resultSlots.setItem(0, ItemStack.EMPTY);
+                this.cost.set(0);
+                menu.broadcastChanges();
+                ci.cancel();
+                return;
+            }
+        }
 
         // 场景1：仅重命名彩虹海绵
         if (left.is(ModItems.RAINBOW_SPONGE) && right.isEmpty()) {
             if (this.itemName != null && !this.itemName.isBlank()) {
                 ItemStack result = left.copy();
-                
+
                 // 检查是否为渐变色指令
                 Matcher gradM = GRADIENT_PATTERN.matcher(this.itemName);
                 if (gradM.find()) {
@@ -90,12 +178,13 @@ public abstract class AnvilMixin {
                     }
                     this.cost.set(calculateRenamingCost(this.itemName));
                 }
-                
-                menu.getSlot(2).set(result);
+
+                this.resultSlots.setItem(0, result);
+                menu.broadcastChanges();
                 ci.cancel();
             }
         }
-        
+
         // 场景2：给物品应用样式 (此处逻辑保持不变)
         if (!left.isEmpty() && right.is(ModItems.RAINBOW_SPONGE)) {
             Component spongeNameComp = right.get(DataComponents.CUSTOM_NAME);
@@ -110,9 +199,9 @@ public abstract class AnvilMixin {
                 if (gradM.find()) {
                     int n = Integer.parseInt(gradM.group(1));
                     TextColor startColor = TextColor.parseColor(gradM.group(2)).result().orElse(TextColor.fromRgb(0xFFFFFF));
-                    TextColor endColor = gradM.group(3) != null ? 
-                        TextColor.parseColor(gradM.group(3)).result().orElse(TextColor.fromRgb(0xFFFFFF)) : 
-                        generateRandomSimilarColor(startColor);
+                    TextColor endColor = gradM.group(3) != null ?
+                            TextColor.parseColor(gradM.group(3)).result().orElse(TextColor.fromRgb(0xFFFFFF)) :
+                            generateRandomSimilarColor(startColor);
 
                     for (int i = 0; i < itemText.length(); i++) {
                         if (i < n) {
@@ -124,7 +213,8 @@ public abstract class AnvilMixin {
                     }
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(n * 32);
-                    menu.getSlot(2).set(result);
+                    this.resultSlots.setItem(0, result);
+                    menu.broadcastChanges();
                     ci.cancel();
                     return;
                 }
@@ -138,7 +228,8 @@ public abstract class AnvilMixin {
                     }
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(calculateMergingCost(spongeText));
-                    menu.getSlot(2).set(result);
+                    this.resultSlots.setItem(0, result);
+                    menu.broadcastChanges();
                     ci.cancel();
                     return;
                 }
@@ -149,7 +240,8 @@ public abstract class AnvilMixin {
                     finalComp.append(Component.literal(itemText).withStyle(style));
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(calculateMergingCost(spongeText));
-                    menu.getSlot(2).set(result);
+                    this.resultSlots.setItem(0, result);
+                    menu.broadcastChanges();
                     ci.cancel();
                 }
             }
@@ -159,14 +251,14 @@ public abstract class AnvilMixin {
     private TextColor interpolate(TextColor start, TextColor end, int step, int total) {
         if (total <= 1) return start;
         float ratio = (float) step / (total - 1);
-        float jitter = (random.nextFloat() * 0.1f - 0.05f); 
+        float jitter = (random.nextFloat() * 0.1f - 0.05f);
         ratio = Math.clamp(ratio + jitter, 0.0f, 1.0f);
         Color c1 = new Color(start.getValue());
         Color c2 = new Color(end.getValue());
         return TextColor.fromRgb(new Color(
-            (int) (c1.getRed() + ratio * (c2.getRed() - c1.getRed())),
-            (int) (c1.getGreen() + ratio * (c2.getGreen() - c1.getGreen())),
-            (int) (c1.getBlue() + ratio * (c2.getBlue() - c1.getBlue()))
+                (int) (c1.getRed() + ratio * (c2.getRed() - c1.getRed())),
+                (int) (c1.getGreen() + ratio * (c2.getGreen() - c1.getGreen())),
+                (int) (c1.getBlue() + ratio * (c2.getBlue() - c1.getBlue()))
         ).getRGB());
     }
 
