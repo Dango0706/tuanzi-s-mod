@@ -105,7 +105,7 @@ public class WorldSculptorsPenItem extends Item {
             if (!level.isClientSide()) {
                 BlockState state = level.getBlockState(pos);
                 Item blockItem = state.getBlock().asItem();
-                if (blockItem != net.minecraft.world.item.Items.AIR) {
+                if (blockItem != net.minecraft.world.item.Items.AIR && state.getDestroySpeed(level, pos) >= 0.0F) {
                     CompoundTag tag = new CompoundTag();
                     CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
                     if (customData != null) {
@@ -151,6 +151,11 @@ public class WorldSculptorsPenItem extends Item {
                 targetBlock = BuiltInRegistries.BLOCK.getValue(Identifier.tryParse(selectedBlockId));
                 if (targetBlock == null || targetBlock == Blocks.AIR) {
                     player.sendSystemMessage(Component.literal("§c选定的填充方块无效，请重新选定！"));
+                    return InteractionResult.SUCCESS;
+                }
+                if (targetBlock.defaultBlockState().getDestroySpeed(level, pos) < 0.0F) {
+                    player.sendSystemMessage(Component.literal("§c禁止填充硬度为-1的不可破坏方块！"));
+                    me.tuanzi.util.ModLog.debug(player, null, "塑世之笔尝试填充硬度小于0的方块: " + selectedBlockId);
                     return InteractionResult.SUCCESS;
                 }
             }
@@ -466,6 +471,9 @@ public class WorldSculptorsPenItem extends Item {
             for (WorldSculptorsPenManager.BlockStateRecord bRecord : record.blockRecords) {
                 BlockState currentState = level.getBlockState(bRecord.pos);
                 if (currentState.is(targetBlock)) {
+                    if (currentState.getDestroySpeed(level, bRecord.pos) < 0.0F) {
+                        continue;
+                    }
                     level.setBlock(bRecord.pos, bRecord.oldState, Block.UPDATE_ALL);
                     restoredCount++;
                 }
