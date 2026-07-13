@@ -21,7 +21,8 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
         builder(BlockTags.MINEABLE_WITH_PICKAXE)
             .add(ModBlocks.SOUL_MERCHANT_STATION.builtInRegistryHolder().key())
             .add(ModBlocks.BLUEPRINT_CANNON.builtInRegistryHolder().key())
-            .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key());
+            .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
+            .add(ModBlocks.PLAYER_SIMULATOR.builtInRegistryHolder().key());
 
         // 鉴于贸易站是高级黑科技设备且有防爆性能，设定其需要铁镐及以上工具挖掘
         builder(BlockTags.NEEDS_IRON_TOOL)

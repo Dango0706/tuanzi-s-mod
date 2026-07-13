@@ -182,6 +182,12 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen::new
         );
 
+        // 注册玩家模拟器界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.PLAYER_SIMULATOR,
+            me.tuanzi.client.gui.screens.inventory.PlayerSimulatorScreen::new
+        );
+
         // 注册蜂刺余响自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
             net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "bee_sting_echo"),
@@ -248,6 +254,84 @@ public class TuanzisModClient implements ClientModInitializer {
         me.tuanzi.entity.DecoyEntity.constructor = (type, level) -> 
             new me.tuanzi.client.entity.ClientDecoyEntity(level, me.tuanzi.client.renderer.DecoyRenderer.skinRenderCache);
 
+        // 注册彩色方块、半砖、楼梯的 BLOCK 颜色处理器
+        // 注册方块和楼梯的第 0 层颜色
+        net.minecraft.client.color.block.BlockTintSource defaultColorSource = new net.minecraft.client.color.block.BlockTintSource() {
+            @Override
+            public int colorInWorld(net.minecraft.world.level.block.state.BlockState state, net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
+                if (level != null && pos != null) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(pos);
+                    me.tuanzi.util.ModLog.debug("[defaultColorSource] colorInWorld called at " + pos + ", be: " + (be == null ? "null" : be.getClass().getName()));
+                    if (be instanceof me.tuanzi.block.entity.ColorBlockBlockEntity colorBe) {
+                        int col = colorBe.getColor();
+                        me.tuanzi.util.ModLog.debug("[defaultColorSource] Returning color: " + String.format("#%06X", col));
+                        return col;
+                    }
+                }
+                return 0xFFFFFF;
+            }
+
+            @Override
+            public int color(net.minecraft.world.level.block.state.BlockState state) {
+                me.tuanzi.util.ModLog.debug("[defaultColorSource] color(state) called");
+                return 0xFFFFFF;
+            }
+        };
+        net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry.register(
+            java.util.List.of(defaultColorSource), 
+            me.tuanzi.init.ModBlocks.COLOR_BLOCK, 
+            me.tuanzi.init.ModBlocks.COLOR_STAIRS
+        );
+
+        // 注册半砖的第 0 层和第 1 层颜色
+        net.minecraft.client.color.block.BlockTintSource slabBottomSource = new net.minecraft.client.color.block.BlockTintSource() {
+            @Override
+            public int colorInWorld(net.minecraft.world.level.block.state.BlockState state, net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
+                if (level != null && pos != null) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(pos);
+                    me.tuanzi.util.ModLog.debug("[slabBottomSource] colorInWorld called at " + pos + ", be: " + (be == null ? "null" : be.getClass().getName()));
+                    if (be instanceof me.tuanzi.block.entity.ColorSlabBlockEntity slabBe) {
+                        int col = slabBe.getBottomColor();
+                        me.tuanzi.util.ModLog.debug("[slabBottomSource] Returning color: " + String.format("#%06X", col));
+                        return col;
+                    }
+                }
+                return 0xFFFFFF;
+            }
+
+            @Override
+            public int color(net.minecraft.world.level.block.state.BlockState state) {
+                me.tuanzi.util.ModLog.debug("[slabBottomSource] color(state) called");
+                return 0xFFFFFF;
+            }
+        };
+
+        net.minecraft.client.color.block.BlockTintSource slabTopSource = new net.minecraft.client.color.block.BlockTintSource() {
+            @Override
+            public int colorInWorld(net.minecraft.world.level.block.state.BlockState state, net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
+                if (level != null && pos != null) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(pos);
+                    me.tuanzi.util.ModLog.debug("[slabTopSource] colorInWorld called at " + pos + ", be: " + (be == null ? "null" : be.getClass().getName()));
+                    if (be instanceof me.tuanzi.block.entity.ColorSlabBlockEntity slabBe) {
+                        int col = slabBe.getTopColor();
+                        me.tuanzi.util.ModLog.debug("[slabTopSource] Returning color: " + String.format("#%06X", col));
+                        return col;
+                    }
+                }
+                return 0xFFFFFF;
+            }
+
+            @Override
+            public int color(net.minecraft.world.level.block.state.BlockState state) {
+                me.tuanzi.util.ModLog.debug("[slabTopSource] color(state) called");
+                return 0xFFFFFF;
+            }
+        };
+
+        net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry.register(
+            java.util.List.of(slabBottomSource, slabTopSource), 
+            me.tuanzi.init.ModBlocks.COLOR_SLAB
+        );
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) {
                 lastHoldingState = false;

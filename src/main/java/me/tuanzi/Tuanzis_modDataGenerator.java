@@ -69,11 +69,30 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "压缩建造浆料");
 			translationBuilder.add(ModItems.BLANK_BLUEPRINT, "空白蓝图");
 			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "结构蓝图");
+			translationBuilder.add(ModItems.LOGIC_CORE, "逻辑核心");
+			translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "玩家控制核心");
+			translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【逻辑核心】\n这是合成玩家模拟器所必需的关键控制硬件。\n\n主体是一个精密的微芯片电路板，外部带有钢制外壳，内部密布着闪烁幽红光芒的微缩红石走线，能够稳定处理各种复杂的高速脉冲逻辑计算。");
+			translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【玩家控制核心】\n这是用于读取并解析玩家行为模式的高级智能运算核心，是合成玩家模拟器的神经中枢。\n\n其核心是一个微型人类头颅模样的生物电子芯片，通过外部的红石电路和红石能量流，能够高度模拟并映射在线玩家的左键、右键以及充能攻击等各种交互逻辑行为。");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "蓝图大炮");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "蓝图大炮");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "蓝图桌");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE.asItem(), "蓝图桌");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, "玩家模拟器");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR.asItem(), "玩家模拟器");
 			
 			translationBuilder.add("container.tuanzis_mod.blueprint_cannon", "蓝图大炮");
 			translationBuilder.add("container.tuanzis_mod.blueprint_table", "蓝图桌");
+			translationBuilder.add("container.tuanzis_mod.player_simulator", "玩家模拟器");
+
+			// 虚影控制面板 GUI 翻译
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.title", "虚影控制面板");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.rotate", "旋转");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.mirror", "镜像");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.toggle", "显示/隐藏虚影");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_x", "X 平移");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_y", "Y 平移");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_z", "Z 平移");
+			translationBuilder.add("jei.tuanzis_mod.player_simulator.description", "【玩家模拟器】\n一个可以模拟真实玩家行为的高级红石方块，正面印有玩家面庞，侧面为红石管道。\n\n§e工作机制：\n1. §b3x3 快捷栏：内部可存放 9 个物品，充当模拟玩家的快捷栏。顶面/侧面输入，底面抽出。\n2. §b红石上升沿触发：每次接收到红石上升沿脉冲，按行优先顺序（轮流/Round-Robin）执行其中一个非空槽位内的假玩家交互。\n3. §b假玩家模拟：\n   - §6右键使用优先：尝试对朝向面进行 useOn（放置方块、使用骨粉、装水/放水、点火等），或 use（使用空气：食用食物、喝药水、蓄力射弓等）。\n   - §6左键攻击与挖掘：若右键无效，如有实体则执行物理攻击；如是可挖方块，则开始挖掘。\n4. §b持续阻塞与冷却：\n   - 如果挖掘需要时间或武器（弓/弩/三叉戟）需要蓄力，序列将阻塞挂起并花费实际游戏 tick 进行模拟，期间无视任何其他红石信号。\n   - 动作执行完或超时后，指针顺延移动，模拟器进入 2 ticks 冷却。");
 
 			// 蓝图大炮 GUI 按钮
 			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.start", "▶ 开始");
@@ -666,6 +685,24 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line3", "持之凑近塑世之笔，笔身会微微震颤，仿佛墨锭在呼唤它的笔锋。");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.incompatible", "墨不相容");
 			translationBuilder.add("jei.tuanzis_mod.void_ink_ingot.description", "【虚空墨锭】\n一方由龙息凝华与回响粉末压制的深紫色墨锭，表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。\n\n§e墨笔一体：§r\n虚空墨锭仅匹配塑世之笔的紫水晶笔尖与回响墨囊系统，对其他工具、武器、护甲均无修复效果。放入非塑世之笔的物品时，铁砧会显示“墨不相容”的暗红提示并阻止拿取。");
+
+			// 彩色方块与油漆桶翻译
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_BLOCK, "彩色方块");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_SLAB, "彩色半砖");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS, "彩色楼梯");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_BLOCK.asItem(), "彩色方块");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_SLAB.asItem(), "彩色半砖");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), "彩色楼梯");
+			translationBuilder.add(me.tuanzi.init.ModItems.PAINT_BUCKET, "油漆桶");
+
+			// GUI 界面翻译
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.title", "油漆桶调色盘");
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.confirm", "确认");
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.cancel", "取消");
+
+			// JEI 信息页说明中文
+			translationBuilder.add("jei.tuanzis_mod.color_block.description", "【彩色方块/半砖/楼梯】\n一类可由油漆桶染成各种自定义颜色的装饰性建材，表面纯净无任何边框杂质。\n\n§e核心机制：\n1. §b方块染色：把需要染色的彩色方块、半砖或楼梯与装有颜料的油漆桶一起放入合成栏即可完成染色。每染一个消耗 1 点油漆桶耐久。\n2. §b半砖叠加：允许将不同颜色的彩色半砖叠加放置为双半砖。其上下两个半砖将各自保留并独立渲染其原本染上的颜色，挖掘时亦会自动拆分掉落原本各自颜色的半砖物品。\n3. §b地图显示：彩色方块、楼梯和单半砖会在地图上直接显示其对应染色颜色。在叠加双半砖状态下，地图上会智能呈现§6顶部半砖§r的颜色。\n4. §b合成继承：使用带颜色的彩色方块来合成彩色楼梯（产出4个）或彩色半砖（产出6个）时，合成出来的楼梯或半砖将自动继承并融合（计算平均色）所有输入原料的颜色。");
+			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "【油漆桶】\n用于为彩色方块进行染色的实用工具。最大耐久度为 256 次。\n\n§e功能操作：\n1. §b打开调色盘：右键使用油漆桶，可打开客户端独占 of RGB 调色盘界面。拖动三个红/绿/蓝滑块可精确调节（0-255）颜料颜色，并有大方块实时预览。\n2. §b原版预设：提供 16 种原版染料色彩的快捷预设按钮，点击可一键快速换色。\n3. §b确认与取消：点击“取消”或按 ESC 关闭可回退到打开界面前的初始颜色；点击“确认”将保存当前设置并播放染色音效。\n4. §b染色消耗：在合成栏内为彩色方块进行染色时，每次合成扣减 1 点油漆桶耐久并将其留在格内，当耐久降至 0 时会销毁消失。");
 		}
 	}
 
@@ -705,11 +742,30 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "Compressed Build Slurry");
 			translationBuilder.add(ModItems.BLANK_BLUEPRINT, "Blank Blueprint");
 			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "Structure Blueprint");
+			translationBuilder.add(ModItems.LOGIC_CORE, "Logic Core");
+			translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "Player Control Core");
+			translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【Logic Core】\nA critical control hardware component required to craft the Player Simulator.\n\nIt features a precise microchip circuit board enclosed in a steel casing with glowing redstone wires. Specially optimized for processing complex high-speed pulse logic calculations.");
+			translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【Player Control Core】\nAn advanced bio-electronic computing core used to read and map player behavior patterns. Serves as the neural hub of the Player Simulator.\n\nFormed by a skull-shaped microchip integrated with external redstone circuitry, it maps and replicates various user interactions such as left-clicks, right-clicks, and charge-attacks.");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "Blueprint Cannon");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "Blueprint Cannon");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "Blueprint Table");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE.asItem(), "Blueprint Table");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, "Player Simulator");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR.asItem(), "Player Simulator");
 
 			translationBuilder.add("container.tuanzis_mod.blueprint_cannon", "Blueprint Cannon");
 			translationBuilder.add("container.tuanzis_mod.blueprint_table", "Blueprint Table");
+			translationBuilder.add("container.tuanzis_mod.player_simulator", "Player Simulator");
+
+			// Ghost Control Panel GUI translations
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.title", "Ghost Control Panel");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.rotate", "Rotate");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.mirror", "Mirror");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.toggle", "Toggle Ghost");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_x", "X Offset");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_y", "Y Offset");
+			translationBuilder.add("gui.tuanzis_mod.ghost_control.move_z", "Z Offset");
+			translationBuilder.add("jei.tuanzis_mod.player_simulator.description", "【Player Simulator】\nAn advanced redstone block that simulates real player interactions. Features a player face on the front and redstone pipes on the sides.\n\n§eMechanics:\n1. §b3x3 Hotbar: Holds up to 9 items, acting as the simulated player's hotbar. Top/side input, bottom output.\n2. §bRedstone Pulse Trigger: Executes one non-empty slot operation per redstone rising-edge pulse in a round-robin manner.\n3. §bFake Player Simulation:\n   - §6Right-Click Priority: Performs block placing, bonemealing, bucketing, igniting (useOn), or using items like eating, drinking, drawing bows (use).\n   - §6Left-Click Attack & Mining: If right-click is invalid, attacks entities or mines block.\n4. §bBlock & Cooldown:\n   - Mining or drawing weapons (bow/trident/crossbow) will block and suspend the sequence, occupying actual game ticks. Additional redstone pulses are ignored during execution.\n   - Pointer increments to next slot upon action completion/timeout, and enters a 2-tick cooldown.");
 
 			// Blueprint Cannon GUI buttons
 			translationBuilder.add("gui.tuanzis_mod.blueprint_cannon.start", "▶ Start");
@@ -1291,6 +1347,24 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A deep purple ink ingot pressed from condensed dragon's breath and echo shards, with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.\n\n" +
 				"§eInk-Pen Affinity:§r\n" +
 				"The Void Ink Ingot only matches the amethyst nib and echo ink sac system of the World Sculptor's Pen. It has no repair effect on other tools, weapons, or armor. Placing other items will display a dark red \"Ink Incompatible\" warning in the anvil output slot and prevent pick-up.");
+
+			// Color Blocks & Paint Bucket translations
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_BLOCK, "Color Block");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_SLAB, "Color Slab");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS, "Color Stairs");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_BLOCK.asItem(), "Color Block");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_SLAB.asItem(), "Color Slab");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), "Color Stairs");
+			translationBuilder.add(me.tuanzi.init.ModItems.PAINT_BUCKET, "Paint Bucket");
+
+			// GUI Translations
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.title", "Paint Bucket Palette");
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.confirm", "Confirm");
+			translationBuilder.add("gui.tuanzis_mod.paint_bucket.cancel", "Cancel");
+
+			// JEI Description English
+			translationBuilder.add("jei.tuanzis_mod.color_block.description", "[Color Block/Slab/Stairs]\nDecorative blocks that can be dyed into custom colors using a Paint Bucket. The surface is pure with no borders or impurities.\n\n§eMechanics:\n1. §bBlock Dyeing: Place a Color Block, Slab, or Stairs in the crafting grid together with a Paint Bucket containing pigment to dye it. Each dyeing action consumes 1 durability from the Paint Bucket.\n2. §bSlab Stacking: Allows stacking Color Slabs of different colors into a double slab. Each half preserves and renders its own color. Mining them splits them back into their respective colored items.\n3. §bMap Display: Colored blocks, stairs, and single slabs render their actual color on maps. Double slabs intelligently display the color of the §6top slab§r on the map.\n4. §bCrafting Inheritance: Crafting Color Stairs (yields 4) or Color Slabs (yields 6) using colored blocks will automatically inherit and blend (average color) the colors of all inputs.");
+			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "[Paint Bucket]\nA utility tool used for dyeing Color Blocks. Has a maximum durability of 256 uses.\n\n§eUsage:\n1. §bOpen Palette: Right-click the Paint Bucket to open the client-side RGB palette GUI. Drag Red/Green/Blue sliders to adjust color (0-255) with real-time preview.\n2. §bVanilla Presets: Offers 16 quick preset buttons matching vanilla dyes.\n3. §bConfirm & Cancel: Click Cancel or press ESC to roll back to the previous color. Click Confirm to save changes and play a dyeing sound.\n4. §bCrafting Consumption: Remains in the crafting grid and loses 1 durability per block dyed. Destroyed when durability drops to 0.");
 		}
 	}
 }

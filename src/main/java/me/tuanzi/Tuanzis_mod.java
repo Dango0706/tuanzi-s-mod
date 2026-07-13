@@ -25,6 +25,8 @@ public class Tuanzis_mod implements ModInitializer {
 	public void onInitialize() {
 		// 注册连锁采掘按键网络包
 		PayloadTypeRegistry.serverboundPlay().register(ChainMiningKeyPacket.TYPE, ChainMiningKeyPacket.CODEC);
+		// 注册油漆桶颜色修改包
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.PaintBucketColorPacket.TYPE, me.tuanzi.network.PaintBucketColorPacket.CODEC);
 		// 注册伤害飘字网络同步包
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.TrialDummyDamagePacket.TYPE, me.tuanzi.network.TrialDummyDamagePacket.CODEC);
 		// 注册手札书本及传送请求网络包
@@ -42,6 +44,31 @@ public class Tuanzis_mod implements ModInitializer {
 				playerKeyStates.put(context.player(), payload.holding());
 			});
 		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.PaintBucketColorPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				net.minecraft.world.InteractionHand hand = payload.isMainHand() ? net.minecraft.world.InteractionHand.MAIN_HAND : net.minecraft.world.InteractionHand.OFF_HAND;
+				ItemStack stack = player.getItemInHand(hand);
+				if (stack.is(me.tuanzi.init.ModItems.PAINT_BUCKET)) {
+					stack.set(net.minecraft.core.component.DataComponents.DYED_COLOR, new net.minecraft.world.item.component.DyedItemColor(payload.rgb()));
+					player.level().playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.DYE_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.0f);
+					me.tuanzi.util.ModLog.debug(player, null, "油漆桶颜色修改成功: " + String.format("#%06X", payload.rgb()));
+				}
+			});
+		});
+
+		// 注册自定义合成配方序列化器
+		net.minecraft.core.Registry.register(
+			net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER,
+			net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "color_block_dye"),
+			me.tuanzi.world.item.crafting.ColorBlockDyeRecipe.SERIALIZER
+		);
+		net.minecraft.core.Registry.register(
+			net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER,
+			net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "color_block_shaped"),
+			me.tuanzi.world.item.crafting.ColorBlockShapedRecipe.SERIALIZER
+		);
 
 		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
 			context.server().execute(() -> {

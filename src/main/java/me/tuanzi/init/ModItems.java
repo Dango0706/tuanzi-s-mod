@@ -152,6 +152,9 @@ public class ModItems {
     public static final Item COMPRESSED_BUILD_SLURRY = register("compressed_build_slurry", CompressedBuildSlurryItem::new);
     public static final Item BLANK_BLUEPRINT = register("blank_blueprint", BlankBlueprintItem::new);
     public static final Item STRUCTURE_BLUEPRINT = register("structure_blueprint", StructureBlueprintItem::new);
+    public static final Item LOGIC_CORE = register("logic_core", (properties) -> new Item(properties.rarity(Rarity.COMMON)));
+    public static final Item PLAYER_CONTROL_CORE = register("player_control_core", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
+    public static final Item PAINT_BUCKET = register("paint_bucket", (properties) -> new me.tuanzi.item.PaintBucketItem(properties.stacksTo(1).durability(256)));
 
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {

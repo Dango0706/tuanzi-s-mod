@@ -132,6 +132,9 @@ public class ModItemGroups {
                 entries.accept(ModItems.STRUCTURE_BLUEPRINT);
                 entries.accept(ModBlocks.BLUEPRINT_CANNON);
                 entries.accept(ModBlocks.BLUEPRINT_TABLE);
+                entries.accept(ModBlocks.PLAYER_SIMULATOR);
+                entries.accept(ModItems.LOGIC_CORE);
+                entries.accept(ModItems.PLAYER_CONTROL_CORE);
 
                 // 加入旅者手札、传送纸与道标符石
                 entries.accept(ModItems.TRAVELERS_NOTEBOOK);
@@ -142,6 +145,10 @@ public class ModItemGroups {
                 entries.accept(ModItems.NETHER_STEW);
                 entries.accept(ModItems.WORLD_SCULPTORS_PEN);
                 entries.accept(ModItems.VOID_INK_INGOT);
+                entries.accept(ModBlocks.COLOR_BLOCK);
+                entries.accept(ModBlocks.COLOR_SLAB);
+                entries.accept(ModBlocks.COLOR_STAIRS);
+                entries.accept(ModItems.PAINT_BUCKET);
 
                 // 加入抽卡道具
                 entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);

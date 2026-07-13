@@ -28,6 +28,18 @@ public class ModBlocks {
     public static final Block BLUEPRINT_TABLE = registerBlock("blueprint_table",
         properties -> new BlueprintTableBlock(properties.strength(2.5f, 5.0f).noOcclusion()));
 
+    public static final Block PLAYER_SIMULATOR = registerBlock("player_simulator", 
+        properties -> new me.tuanzi.block.PlayerSimulatorBlock(properties.strength(3.5f, 6.0f).noOcclusion().isRedstoneConductor((state, level, pos) -> false)));
+
+    public static final Block COLOR_BLOCK = registerBlock("color_block",
+        properties -> new me.tuanzi.block.  ColorBlock(properties.strength(0.5f, 3.0f)));
+
+    public static final Block COLOR_SLAB = registerBlock("color_slab",
+        properties -> new me.tuanzi.block.ColorSlab(properties.strength(0.5f, 3.0f)));
+
+    public static final Block COLOR_STAIRS = registerBlock("color_stairs",
+        properties -> new me.tuanzi.block.ColorStairs(COLOR_BLOCK.defaultBlockState(), properties.strength(0.5f, 3.0f)));
+
     public static final BlockEntityType<SoulMerchantStationBlockEntity> SOUL_MERCHANT_STATION_BLOCK_ENTITY = 
         Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
@@ -52,6 +64,33 @@ public class ModBlocks {
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table_be"),
             net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
                 BlueprintTableBlockEntity::new, BLUEPRINT_TABLE
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.PlayerSimulatorBlockEntity> PLAYER_SIMULATOR_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "player_simulator_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.PlayerSimulatorBlockEntity::new, PLAYER_SIMULATOR
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.ColorBlockBlockEntity> COLOR_BLOCK_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_block_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.ColorBlockBlockEntity::new, COLOR_BLOCK, COLOR_STAIRS
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.ColorSlabBlockEntity> COLOR_SLAB_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_slab_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.ColorSlabBlockEntity::new, COLOR_SLAB
             ).build()
         );
 

@@ -8,8 +8,47 @@ import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.PropertyDispatch;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.core.Direction;
+import net.minecraft.client.data.models.MultiVariant;
+import net.minecraft.client.resources.model.sprite.Material;
 
 public class ModModelProvider extends FabricModelProvider {
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_CUBE_ALL = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_cube_all")),
+        java.util.Optional.empty(),
+        TextureSlot.ALL
+    );
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_SLAB_BOTTOM = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_slab")),
+        java.util.Optional.empty(),
+        TextureSlot.BOTTOM, TextureSlot.TOP, TextureSlot.SIDE
+    );
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_SLAB_TOP = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_slab_top")),
+        java.util.Optional.of("_top"),
+        TextureSlot.BOTTOM, TextureSlot.TOP, TextureSlot.SIDE
+    );
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_STAIRS_STRAIGHT = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_stairs")),
+        java.util.Optional.empty(),
+        TextureSlot.BOTTOM, TextureSlot.TOP, TextureSlot.SIDE
+    );
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_STAIRS_INNER = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_inner_stairs")),
+        java.util.Optional.of("_inner"),
+        TextureSlot.BOTTOM, TextureSlot.TOP, TextureSlot.SIDE
+    );
+    private static final net.minecraft.client.data.models.model.ModelTemplate TINTED_STAIRS_OUTER = new net.minecraft.client.data.models.model.ModelTemplate(
+        java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/tinted_outer_stairs")),
+        java.util.Optional.of("_outer"),
+        TextureSlot.BOTTOM, TextureSlot.TOP, TextureSlot.SIDE
+    );
+
     public ModModelProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output);
     }
@@ -46,7 +85,8 @@ public class ModModelProvider extends FabricModelProvider {
 
         java.util.function.BiConsumer<net.minecraft.resources.Identifier, net.minecraft.client.data.models.model.ModelInstance> decoratedOutput = 
             (id, modelInstance) -> {
-                if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/soul_merchant_station")) {
+                String path = id.getPath();
+                if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/soul_merchant_station")) {
                     net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
                         com.google.gson.JsonObject obj = readModelJson.apply("soul_merchant_station.json");
                         if (obj == null) obj = new com.google.gson.JsonObject();
@@ -55,7 +95,7 @@ public class ModModelProvider extends FabricModelProvider {
                         return obj;
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customInstance);
-                } else if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/blueprint_cannon")) {
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/blueprint_cannon")) {
                     net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
                         com.google.gson.JsonObject obj = readModelJson.apply("blueprint_cannon.json");
                         if (obj == null) obj = new com.google.gson.JsonObject();
@@ -63,7 +103,7 @@ public class ModModelProvider extends FabricModelProvider {
                         return obj;
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customInstance);
-                } else if (id.getNamespace().equals("tuanzis_mod") && id.getPath().equals("block/blueprint_table")) {
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/blueprint_table")) {
                     net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
                         com.google.gson.JsonObject obj = readModelJson.apply("blueprint_table.json");
                         if (obj == null) obj = new com.google.gson.JsonObject();
@@ -72,12 +112,12 @@ public class ModModelProvider extends FabricModelProvider {
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customInstance);
                 } else if (id.getNamespace().equals("tuanzis_mod") && 
-                           (id.getPath().equals("item/soul_merchant_station") ||
-                            id.getPath().equals("item/blueprint_cannon") ||
-                            id.getPath().equals("item/blueprint_table"))) {
+                           (path.equals("item/soul_merchant_station") ||
+                            path.equals("item/blueprint_cannon") ||
+                            path.equals("item/blueprint_table"))) {
                     net.minecraft.client.data.models.model.ModelInstance customItemInstance = () -> {
                         com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
-                        String parentName = "tuanzis_mod:" + id.getPath().replace("item/", "block/");
+                        String parentName = "tuanzis_mod:" + path.replace("item/", "block/");
                         modelJson.addProperty("parent", parentName);
                         
                         com.google.gson.JsonObject displayJson = new com.google.gson.JsonObject();
@@ -177,6 +217,61 @@ public class ModModelProvider extends FabricModelProvider {
                         return modelJson;
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customItemInstance);
+
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("item/paint_bucket")) {
+                    net.minecraft.client.data.models.model.ModelInstance bucketInstance = () -> {
+                        com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
+                        modelJson.addProperty("parent", "minecraft:item/generated");
+                        
+                        com.google.gson.JsonObject textures = new com.google.gson.JsonObject();
+                        textures.addProperty("layer0", "tuanzis_mod:item/paint_bucket_under");
+                        textures.addProperty("layer1", "tuanzis_mod:item/paint_bucket_over");
+                        modelJson.add("textures", textures);
+                        
+                        com.google.gson.JsonArray tints = new com.google.gson.JsonArray();
+                        
+                        com.google.gson.JsonObject tint0 = new com.google.gson.JsonObject();
+                        tint0.addProperty("type", "minecraft:constant");
+                        tint0.addProperty("value", -1);
+                        tints.add(tint0);
+                        
+                        com.google.gson.JsonObject tint1 = new com.google.gson.JsonObject();
+                        tint1.addProperty("type", "minecraft:dye");
+                        tint1.addProperty("default", -1);
+                        tints.add(tint1);
+                        
+                        modelJson.add("tints", tints);
+                        return modelJson;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, bucketInstance);
+
+
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("item/paint_bucket")) {
+                    net.minecraft.client.data.models.model.ModelInstance bucketInstance = () -> {
+                        com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
+                        modelJson.addProperty("parent", "minecraft:item/generated");
+                        
+                        com.google.gson.JsonObject textures = new com.google.gson.JsonObject();
+                        textures.addProperty("layer0", "tuanzis_mod:item/paint_bucket_under");
+                        textures.addProperty("layer1", "tuanzis_mod:item/paint_bucket_over");
+                        modelJson.add("textures", textures);
+
+                        com.google.gson.JsonArray tints = new com.google.gson.JsonArray();
+                        
+                        com.google.gson.JsonObject tint0 = new com.google.gson.JsonObject();
+                        tint0.addProperty("type", "minecraft:constant");
+                        tint0.addProperty("value", -1);
+                        tints.add(tint0);
+
+                        com.google.gson.JsonObject tint1 = new com.google.gson.JsonObject();
+                        tint1.addProperty("type", "minecraft:dye");
+                        tint1.addProperty("default", -1);
+                        tints.add(tint1);
+
+                        modelJson.add("tints", tints);
+                        return modelJson;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, bucketInstance);
                 } else {
                     blockStateModelGenerator.modelOutput.accept(id, modelInstance);
                 }
@@ -209,6 +304,72 @@ public class ModModelProvider extends FabricModelProvider {
         // 自动生成蓝图大炮与蓝图桌的简单 blockstate 并关联自定义拦截模型
         temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON);
         temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE);
+
+        // 自动生成玩家模拟器的方向性方块模型和状态
+        TextureMapping simulatorHorizontalTextures = new TextureMapping()
+            .put(TextureSlot.TOP, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "block/furnace_top")))
+            .put(TextureSlot.BOTTOM, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "block/furnace_top")))
+            .put(TextureSlot.SIDE, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/player_simulator_side")))
+            .put(TextureSlot.FRONT, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/player_simulator_front")));
+
+        TextureMapping simulatorVerticalTextures = new TextureMapping()
+            .put(TextureSlot.SIDE, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/player_simulator_side")))
+            .put(TextureSlot.FRONT, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "block/dispenser_front_vertical")));
+
+        MultiVariant horizontalModel = BlockModelGenerators.plainVariant(ModelTemplates.CUBE_ORIENTABLE_TOP_BOTTOM.create(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, simulatorHorizontalTextures, blockStateModelGenerator.modelOutput));
+        MultiVariant verticalModel = BlockModelGenerators.plainVariant(ModelTemplates.CUBE_ORIENTABLE_VERTICAL.create(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, simulatorVerticalTextures, blockStateModelGenerator.modelOutput));
+
+        blockStateModelGenerator.blockStateOutput.accept(
+            MultiVariantGenerator.dispatch(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR)
+                .with(
+                    PropertyDispatch.initial(BlockStateProperties.FACING)
+                        .select(Direction.DOWN, verticalModel.with(BlockModelGenerators.X_ROT_180))
+                        .select(Direction.UP, verticalModel)
+                        .select(Direction.NORTH, horizontalModel)
+                        .select(Direction.EAST, horizontalModel.with(BlockModelGenerators.Y_ROT_90))
+                        .select(Direction.SOUTH, horizontalModel.with(BlockModelGenerators.Y_ROT_180))
+                        .select(Direction.WEST, horizontalModel.with(BlockModelGenerators.Y_ROT_270))
+                )
+        );
+        blockStateModelGenerator.registerSimpleItemModel(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, net.minecraft.client.data.models.model.ModelLocationUtils.getModelLocation(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR));
+
+        // 自动生成彩色方块、半砖、楼梯的模型与状态 (使用自定义带 tintindex 的模型基底)
+        net.minecraft.resources.Identifier blockModelId = TINTED_CUBE_ALL.create(me.tuanzi.init.ModBlocks.COLOR_BLOCK, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        MultiVariant blockVariant = BlockModelGenerators.plainVariant(blockModelId);
+
+        // 注册半砖
+        net.minecraft.resources.Identifier slabBottomId = TINTED_SLAB_BOTTOM.create(me.tuanzi.init.ModBlocks.COLOR_SLAB, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        net.minecraft.resources.Identifier slabTopId = TINTED_SLAB_TOP.create(me.tuanzi.init.ModBlocks.COLOR_SLAB, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        blockStateModelGenerator.blockStateOutput.accept(
+            BlockModelGenerators.createSlab(
+                me.tuanzi.init.ModBlocks.COLOR_SLAB, 
+                BlockModelGenerators.plainVariant(slabBottomId), 
+                BlockModelGenerators.plainVariant(slabTopId), 
+                BlockModelGenerators.plainVariant(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/color_slab_double"))
+            )
+        );
+
+        // 注册楼梯
+        net.minecraft.resources.Identifier stairsStraightId = TINTED_STAIRS_STRAIGHT.create(me.tuanzi.init.ModBlocks.COLOR_STAIRS, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        net.minecraft.resources.Identifier stairsInnerId = TINTED_STAIRS_INNER.create(me.tuanzi.init.ModBlocks.COLOR_STAIRS, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        net.minecraft.resources.Identifier stairsOuterId = TINTED_STAIRS_OUTER.create(me.tuanzi.init.ModBlocks.COLOR_STAIRS, TextureMapping.cube(me.tuanzi.init.ModBlocks.COLOR_BLOCK), blockStateModelGenerator.modelOutput);
+        blockStateModelGenerator.blockStateOutput.accept(
+            BlockModelGenerators.createStairs(
+                me.tuanzi.init.ModBlocks.COLOR_STAIRS, 
+                BlockModelGenerators.plainVariant(stairsInnerId), 
+                BlockModelGenerators.plainVariant(stairsStraightId), 
+                BlockModelGenerators.plainVariant(stairsOuterId)
+            )
+        );
+
+        // 注册彩色方块的 BlockState
+        blockStateModelGenerator.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(me.tuanzi.init.ModBlocks.COLOR_BLOCK, blockVariant));
+
+        // 显式触发生成油漆桶物品模型 JSON（由代理拦截覆写为双层 tints 局部着色）
+        decoratedOutput.accept(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/paint_bucket"),
+            () -> new com.google.gson.JsonObject()
+        );
     }
 
     @Override
@@ -223,6 +384,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.WOLF_COMMAND, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.SHURIKEN, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.NETHER_STEW, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.LOGIC_CORE, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PLAYER_CONTROL_CORE, ModelTemplates.FLAT_ITEM);
 
         // 抽卡包/箱模型生成
         itemModelGenerator.generateFlatItem(ModItems.STAR_TRAVEL_CARD_PACK, ModelTemplates.FLAT_ITEM);
@@ -243,5 +406,38 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.COMPRESSED_BUILD_SLURRY, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.BLANK_BLUEPRINT, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.STRUCTURE_BLUEPRINT, ModelTemplates.FLAT_ITEM);
+
+        // 注册油漆桶带有双层 tints (常色+染色) 的物品配置
+        itemModelGenerator.itemModelOutput.accept(
+            ModItems.PAINT_BUCKET,
+            net.minecraft.client.data.models.model.ItemModelUtils.tintedModel(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/paint_bucket"),
+                net.minecraft.client.data.models.model.ItemModelUtils.constantTint(-1),
+                new net.minecraft.client.color.item.Dye(-1)
+            )
+        );
+
+        // 注册彩色方块、半砖、楼梯带有染色 tints 的物品配置
+        itemModelGenerator.itemModelOutput.accept(
+            me.tuanzi.init.ModBlocks.COLOR_BLOCK.asItem(),
+            net.minecraft.client.data.models.model.ItemModelUtils.tintedModel(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/color_block"),
+                new net.minecraft.client.color.item.Dye(-1)
+            )
+        );
+        itemModelGenerator.itemModelOutput.accept(
+            me.tuanzi.init.ModBlocks.COLOR_SLAB.asItem(),
+            net.minecraft.client.data.models.model.ItemModelUtils.tintedModel(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/color_slab"),
+                new net.minecraft.client.color.item.Dye(-1)
+            )
+        );
+        itemModelGenerator.itemModelOutput.accept(
+            me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(),
+            net.minecraft.client.data.models.model.ItemModelUtils.tintedModel(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/color_stairs"),
+                new net.minecraft.client.color.item.Dye(-1)
+            )
+        );
     }
 }

@@ -85,10 +85,10 @@ public class GhostControllerScreen extends Screen {
         graphics.fill(x - 70, y - 5, x + 70, y + 115, 0xAA000000);
 
         // 绘制标题与各项控制标签
-        graphics.text(this.font, this.title, x - this.font.width(this.title) / 2, y, 0xFFFFFF, false);
-        graphics.text(this.font, Component.literal("X 平移"), x - 20, y + 14, 0xCCCCCC, false);
-        graphics.text(this.font, Component.literal("Y 平移"), x - 20, y + 34, 0xCCCCCC, false);
-        graphics.text(this.font, Component.literal("Z 平移"), x - 20, y + 54, 0xCCCCCC, false);
+        graphics.text(this.font, this.title, x - this.font.width(this.title) / 2, y, 0xFFFFFFFF, false);
+        graphics.text(this.font, Component.translatable("gui.tuanzis_mod.ghost_control.move_x"), x - 20, y + 14, 0xFFCCCCCC, false);
+        graphics.text(this.font, Component.translatable("gui.tuanzis_mod.ghost_control.move_y"), x - 20, y + 34, 0xFFCCCCCC, false);
+        graphics.text(this.font, Component.translatable("gui.tuanzis_mod.ghost_control.move_z"), x - 20, y + 54, 0xFFCCCCCC, false);
     }
 
     @Override

@@ -163,6 +163,15 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.VOID_INK_INGOT), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.void_ink_ingot.description"));
 
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.COLOR_BLOCK), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.color_block.description"));
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.COLOR_SLAB), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.color_block.description"));
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.COLOR_STAIRS), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.color_block.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.PAINT_BUCKET), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.paint_bucket.description"));
+
         registration.addIngredientInfo(new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.compressed_build_slurry.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.BLANK_BLUEPRINT), VanillaTypes.ITEM_STACK,
@@ -582,5 +591,12 @@ public class TuanzisJeiPlugin implements IModPlugin {
             registration.addIngredientInfo(steelShieldGiftBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.steel_shield_gift.description"));
         }
+
+        registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.player_simulator.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.LOGIC_CORE), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.logic_core.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.PLAYER_CONTROL_CORE), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.player_control_core.description"));
     }
 }

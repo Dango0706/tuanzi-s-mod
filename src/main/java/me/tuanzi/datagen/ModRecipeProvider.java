@@ -8,6 +8,20 @@ import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.world.item.Items;
+import net.minecraft.tags.ItemTags;
+
+import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -89,6 +103,47 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_villager_cage", has(ModItems.VILLAGER_CAGE))
                     .save(exporter);
 
+                // 逻辑核心有序合成
+                shaped(RecipeCategory.MISC, ModItems.LOGIC_CORE, 1)
+                    .pattern("RRR")
+                    .pattern(" I ")
+                    .pattern("RRR")
+                    .define('R', Items.REDSTONE)
+                    .define('I', Items.IRON_INGOT)
+                    .unlockedBy("has_redstone", has(Items.REDSTONE))
+                    .save(exporter);
+
+                // 玩家控制核心有序合成
+                shaped(RecipeCategory.MISC, ModItems.PLAYER_CONTROL_CORE, 1)
+                    .pattern(" R ")
+                    .pattern("BH ")
+                    .pattern(" R ")
+                    .define('R', Items.REDSTONE)
+                    .define('B', Items.REDSTONE_BLOCK)
+                    .define('H', Items.PLAYER_HEAD)
+                    .unlockedBy("has_player_head", has(Items.PLAYER_HEAD))
+                    .save(exporter);
+
+                // 玩家模拟器有序合成配方修改
+                shaped(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, 1)
+                    .pattern("ROR")
+                    .pattern("PDC")
+                    .pattern("ROR")
+                    .define('R', Items.REDSTONE)
+                    .define('O', Items.OBSERVER)
+                    .define('P', ModItems.PLAYER_CONTROL_CORE)
+                    .define('D', Items.DISPENSER)
+                    .define('C', ModItems.LOGIC_CORE)
+                    .unlockedBy("has_player_control_core", has(ModItems.PLAYER_CONTROL_CORE))
+                    .unlockedBy("has_logic_core", has(ModItems.LOGIC_CORE))
+                    .save(exporter);
+
+                // 玩家模拟器无序净化合成：大炮自身 -> 清除标签大炮自身
+                shapeless(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, 1)
+                    .requires(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR)
+                    .unlockedBy("has_player_simulator", has(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR))
+                    .save(exporter, "tuanzis_mod:player_simulator_clean");
+
                 // 狂暴护符无序合成：铁锭 + 2个烈焰粉 + 红石
                 shapeless(RecipeCategory.MISC, ModItems.BERSERK_CHARM, 1)
                     .requires(Items.IRON_INGOT)
@@ -154,7 +209,67 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .unlockedBy("has_prismarine_crystals", has(Items.PRISMARINE_CRYSTALS))
                     .save(exporter);
 
+                // 特殊配方：油漆桶染色彩色方块/半砖/楼梯
+                SpecialRecipeBuilder.special(() -> new me.tuanzi.world.item.crafting.ColorBlockDyeRecipe()).save(exporter, "tuanzis_mod:color_block_dye");
 
+                // 彩色楼梯有序合成继承颜色
+                ShapedRecipePattern stairsPattern = ShapedRecipePattern.of(
+                    java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
+                    "#  ",
+                    "## ",
+                    "###"
+                );
+                ItemStackTemplate stairsResult = new ItemStackTemplate(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), 4);
+                Recipe.CommonInfo stairsInfo = new Recipe.CommonInfo(true);
+                CraftingRecipe.CraftingBookInfo stairsBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "");
+                ColorBlockShapedRecipe stairsRecipe = new ColorBlockShapedRecipe(stairsInfo, stairsBook, stairsPattern, stairsResult);
+                exporter.accept(
+                    ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_stairs")),
+                    stairsRecipe,
+                    null
+                );
+
+                // 彩色半砖有序合成继承颜色
+                ShapedRecipePattern slabPattern = ShapedRecipePattern.of(
+                    java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
+                    "###"
+                );
+                ItemStackTemplate slabResult = new ItemStackTemplate(me.tuanzi.init.ModBlocks.COLOR_SLAB.asItem(), 6);
+                Recipe.CommonInfo slabInfo = new Recipe.CommonInfo(true);
+                CraftingRecipe.CraftingBookInfo slabBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "");
+                ColorBlockShapedRecipe slabRecipe = new ColorBlockShapedRecipe(slabInfo, slabBook, slabPattern, slabResult);
+                exporter.accept(
+                    ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_slab")),
+                    slabRecipe,
+                    null
+                );
+
+                var itemLookup = registryLookup.lookupOrThrow(net.minecraft.core.registries.Registries.ITEM);
+                var concretePowderTag = itemLookup.getOrThrow(ItemTags.CONCRETE_POWDERS);
+
+                // 新增彩色方块合成配方（任意颜色混凝土粉末*6 + 水桶*2 + 粘土球 => 彩色方块*6，水桶返还）
+                shaped(RecipeCategory.BUILDING_BLOCKS, me.tuanzi.init.ModBlocks.COLOR_BLOCK, 6)
+                    .pattern("PPP")
+                    .pattern("WCW")
+                    .pattern("PPP")
+                    .define('P', Ingredient.of(concretePowderTag))
+                    .define('W', Items.WATER_BUCKET)
+                    .define('C', Items.CLAY_BALL)
+                    .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
+                    .save(exporter);
+
+                // 新增油漆桶合成配方
+                shaped(RecipeCategory.MISC, ModItems.PAINT_BUCKET, 1)
+                    .pattern("YYG")
+                    .pattern("KBG")
+                    .pattern("KUU")
+                    .define('Y', Items.DYE.yellow())
+                    .define('G', Items.DYE.green())
+                    .define('K', Items.DYE.black())
+                    .define('B', Items.BUCKET)
+                    .define('U', Items.DYE.blue())
+                    .unlockedBy("has_bucket", has(Items.BUCKET))
+                    .save(exporter);
             }
         };
     }

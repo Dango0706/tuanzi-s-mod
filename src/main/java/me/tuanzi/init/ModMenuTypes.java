@@ -15,6 +15,7 @@ public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> CRAFTSMAN_CHARM_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "craftsman_charm"));
     public static final ResourceKey<MenuType<?>> BLUEPRINT_CANNON_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon"));
     public static final ResourceKey<MenuType<?>> BLUEPRINT_TABLE_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table"));
+    public static final ResourceKey<MenuType<?>> PLAYER_SIMULATOR_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "player_simulator"));
 
     public static final MenuType<TravelersNotebookMenu> TRAVELERS_NOTEBOOK = Registry.register(
             BuiltInRegistries.MENU,
@@ -38,6 +39,12 @@ public class ModMenuTypes {
             BuiltInRegistries.MENU,
             BLUEPRINT_TABLE_KEY,
             new MenuType<>(me.tuanzi.world.inventory.BlueprintTableMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.PlayerSimulatorMenu> PLAYER_SIMULATOR = Registry.register(
+            BuiltInRegistries.MENU,
+            PLAYER_SIMULATOR_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.PlayerSimulatorMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static void initialize() {

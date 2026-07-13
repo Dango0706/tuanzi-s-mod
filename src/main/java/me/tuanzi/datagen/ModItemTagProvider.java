@@ -17,7 +17,7 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
 
     @Override
     protected void addTags(HolderLookup.Provider registries) {
-        // 将回响破障者和蜂刺余响归入“剑 (swords)”这一类 Item 标签中
+        // 将回响破障者和蜂刺余响归入"剑 (swords)"这一类 Item 标签中
         builder(ItemTags.SWORDS)
             .add(ModItems.ECHO_BREAKER.builtInRegistryHolder().key())
             .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key())
