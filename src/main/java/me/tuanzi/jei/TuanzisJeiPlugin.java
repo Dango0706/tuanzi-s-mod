@@ -25,6 +25,12 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 
 import java.util.ArrayList;
 import java.util.List;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
+import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 
 @JeiPlugin
 public class TuanzisJeiPlugin implements IModPlugin {
@@ -598,5 +604,40 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.logic_core.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.PLAYER_CONTROL_CORE), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.player_control_core.description"));
+    }
+
+    @Override
+    public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
+        IExtendableCraftingRecipeCategory craftingCategory = registration.getCraftingCategory();
+        craftingCategory.addExtension(
+            me.tuanzi.world.item.crafting.ColorBlockShapedRecipe.class,
+            new ICraftingCategoryExtension<me.tuanzi.world.item.crafting.ColorBlockShapedRecipe>() {
+                @Override
+                public List<SlotDisplay> getIngredients(RecipeHolder<me.tuanzi.world.item.crafting.ColorBlockShapedRecipe> recipeHolder) {
+                    List<RecipeDisplay> displays = recipeHolder.value().display();
+                    if (displays.isEmpty()) return List.of();
+                    RecipeDisplay display = displays.getFirst();
+                    if (display instanceof net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay shaped) {
+                        return ((net.minecraft.world.item.crafting.display.ShapedCraftingRecipeDisplay) display).ingredients();
+                    }
+                    return List.of();
+                }
+
+                @Override
+                public int getWidth(RecipeHolder<me.tuanzi.world.item.crafting.ColorBlockShapedRecipe> recipeHolder) {
+                    return recipeHolder.value().getWidth();
+                }
+
+                @Override
+                public int getHeight(RecipeHolder<me.tuanzi.world.item.crafting.ColorBlockShapedRecipe> recipeHolder) {
+                    return recipeHolder.value().getHeight();
+                }
+
+                @Override
+                public boolean isHandled(RecipeHolder<me.tuanzi.world.item.crafting.ColorBlockShapedRecipe> recipeHolder) {
+                    return recipeHolder.value() instanceof me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
+                }
+            }
+        );
     }
 }

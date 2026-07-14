@@ -1,6 +1,7 @@
 package me.tuanzi.datagen;
 
 import me.tuanzi.init.ModItems;
+import me.tuanzi.world.item.crafting.ColorBlockDyeRecipe;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
@@ -210,7 +211,7 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .save(exporter);
 
                 // 特殊配方：油漆桶染色彩色方块/半砖/楼梯
-                SpecialRecipeBuilder.special(() -> new me.tuanzi.world.item.crafting.ColorBlockDyeRecipe()).save(exporter, "tuanzis_mod:color_block_dye");
+                SpecialRecipeBuilder.special(ColorBlockDyeRecipe::new).save(exporter, "tuanzis_mod:color_block_dye");
 
                 // 彩色楼梯有序合成继承颜色
                 ShapedRecipePattern stairsPattern = ShapedRecipePattern.of(
@@ -247,14 +248,14 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 var itemLookup = registryLookup.lookupOrThrow(net.minecraft.core.registries.Registries.ITEM);
                 var concretePowderTag = itemLookup.getOrThrow(ItemTags.CONCRETE_POWDERS);
 
-                // 新增彩色方块合成配方（任意颜色混凝土粉末*6 + 水桶*2 + 粘土球 => 彩色方块*6，水桶返还）
+                // 新增彩色方块合成配方（任意颜色混凝土粉末*6 + 水桶*1 + 粘土球*2 => 彩色方块*6，水桶返还）
                 shaped(RecipeCategory.BUILDING_BLOCKS, me.tuanzi.init.ModBlocks.COLOR_BLOCK, 6)
                     .pattern("PPP")
                     .pattern("WCW")
                     .pattern("PPP")
                     .define('P', Ingredient.of(concretePowderTag))
-                    .define('W', Items.WATER_BUCKET)
-                    .define('C', Items.CLAY_BALL)
+                    .define('W', Items.CLAY_BALL)
+                    .define('C', Items.WATER_BUCKET)
                     .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
                     .save(exporter);
 
@@ -263,12 +264,12 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .pattern("YYG")
                     .pattern("KBG")
                     .pattern("KUU")
-                    .define('Y', Items.DYE.yellow())
+                    .define('Y', Items.DYE.red())
                     .define('G', Items.DYE.green())
                     .define('K', Items.DYE.black())
-                    .define('B', Items.BUCKET)
+                    .define('B', Items.WATER_BUCKET)
                     .define('U', Items.DYE.blue())
-                    .unlockedBy("has_bucket", has(Items.BUCKET))
+                    .unlockedBy("has_water_bucket", has(Items.WATER_BUCKET))
                     .save(exporter);
             }
         };
