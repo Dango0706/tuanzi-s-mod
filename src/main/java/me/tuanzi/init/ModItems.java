@@ -53,7 +53,7 @@ public class ModItems {
             .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.0F, -1.9F)
             .durability(2031)
             .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HONEYCOMB_BLOCK.builtInRegistryHolder())))
             .attributes(modifiers));
     });
 
@@ -79,7 +79,7 @@ public class ModItems {
             .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 4.12F, -2.0F)
             .durability(2031)
             .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.ENDER_EYE.builtInRegistryHolder())))
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.ECHO_SHARD.builtInRegistryHolder())))
             .attributes(modifiers));
     });
 
@@ -106,6 +106,19 @@ public class ModItems {
             .durability(2031)
             .rarity(Rarity.EPIC)
             .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HEART_OF_THE_SEA.builtInRegistryHolder())))
+            .attributes(modifiers));
+    });
+
+    public static final Item PULSE_RESONANCE_SWORD = register("pulse_resonance_sword", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+            .build();
+        return new me.tuanzi.item.PulseResonanceSwordItem(properties
+            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 5.0F, -1.5F)
+            .durability(2031)
+            .rarity(Rarity.EPIC)
+            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.AMETHYST_BLOCK.builtInRegistryHolder())))
             .attributes(modifiers));
     });
 
@@ -155,6 +168,8 @@ public class ModItems {
     public static final Item LOGIC_CORE = register("logic_core", (properties) -> new Item(properties.rarity(Rarity.COMMON)));
     public static final Item PLAYER_CONTROL_CORE = register("player_control_core", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
     public static final Item PAINT_BUCKET = register("paint_bucket", (properties) -> new me.tuanzi.item.PaintBucketItem(properties.stacksTo(1).durability(256)));
+    public static final Item CHROMATIC_SKULL = register("chromatic_skull", (properties) -> new ChromaticSkullItem(properties.stacksTo(16).rarity(Rarity.RARE)));
+    public static final Item CODEX_OF_ENCHANTING = register("codex_of_enchanting", CodexOfEnchantingItem::new);
 
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {

@@ -37,6 +37,7 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, me.tuanzi.network.BlueprintMaterialBookPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.ChromaticSkullRequestPacket.TYPE, me.tuanzi.network.ChromaticSkullRequestPacket.CODEC);
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(ChainMiningKeyPacket.TYPE, (payload, context) -> {
@@ -54,6 +55,29 @@ public class Tuanzis_mod implements ModInitializer {
 					stack.set(net.minecraft.core.component.DataComponents.DYED_COLOR, new net.minecraft.world.item.component.DyedItemColor(payload.rgb()));
 					player.level().playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.DYE_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.0f);
 					me.tuanzi.util.ModLog.debug(player, null, "油漆桶颜色修改成功: " + String.format("#%06X", payload.rgb()));
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.ChromaticSkullRequestPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				String name = payload.playerName().trim();
+				if (name.length() < 3 || name.length() > 16 || !name.matches("^[a-zA-Z0-9_]+$")) {
+					me.tuanzi.util.ModLog.debug(player, null, "彩色变化头颅输入玩家名非法: " + name);
+					return;
+				}
+				net.minecraft.world.InteractionHand hand = payload.isMainHand() ? net.minecraft.world.InteractionHand.MAIN_HAND : net.minecraft.world.InteractionHand.OFF_HAND;
+				ItemStack heldStack = player.getItemInHand(hand);
+				if (heldStack.is(me.tuanzi.init.ModItems.CHROMATIC_SKULL)) {
+					heldStack.shrink(1);
+					ItemStack playerHead = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
+					playerHead.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(name));
+					if (!player.getInventory().add(playerHead)) {
+						player.drop(playerHead, false);
+					}
+					player.level().playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
+					me.tuanzi.util.ModLog.debug(player, null, "彩色变化头颅转换成功，获得正版玩家头颅: " + name);
 				}
 			});
 		});

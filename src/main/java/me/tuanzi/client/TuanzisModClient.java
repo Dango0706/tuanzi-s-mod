@@ -224,6 +224,37 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.client.TideCleaverEnergyTintSource.MAP_CODEC
         );
 
+        // 注册脉冲谐振剑自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "pulse_resonance_sword"),
+            me.tuanzi.client.PulseResonanceSwordTintSource.MAP_CODEC
+        );
+
+        // 为附魔了“过载协议”的普通武器添加脉冲层数 Tooltip 显示
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+            if (!(stack.getItem() instanceof me.tuanzi.item.PulseResonanceSwordItem)) {
+                var enchantments = stack.getEnchantments();
+                if (enchantments != null && !enchantments.isEmpty()) {
+                    boolean hasOverload = false;
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(me.tuanzi.init.ModEnchantments.OVERLOAD_PROTOCOL)) {
+                            hasOverload = true;
+                            break;
+                        }
+                    }
+                    if (hasOverload) {
+                        net.minecraft.world.item.component.CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                        int pulse = 0;
+                        if (customData != null) {
+                            pulse = customData.copyTag().getIntOr("PulseLevel", 0);
+                        }
+                        String color = pulse >= 3 ? "§c" : "§b";
+                        lines.add(net.minecraft.network.chat.Component.translatable("item.tuanzis_mod.pulse_resonance_sword.pulse_info", color + pulse));
+                    }
+                }
+            }
+        });
+
         // 注册 S2C 打开手札书本界面接收器
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {

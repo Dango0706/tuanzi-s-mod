@@ -91,6 +91,20 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(steelShieldGiftBook, mutable -> mutable.set(steelShieldGift, 4));
                 entries.accept(steelShieldGiftBook);
 
+                var overloadProtocol = enchantmentRegistry.getOrThrow(ModEnchantments.OVERLOAD_PROTOCOL);
+                ItemStack overloadProtocolBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(overloadProtocolBook, mutable -> mutable.set(overloadProtocol, 5));
+                entries.accept(overloadProtocolBook);
+
+                var bloodLeech = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH);
+                ItemStack bloodLeechBook1 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(bloodLeechBook1, mutable -> mutable.set(bloodLeech, 1));
+                entries.accept(bloodLeechBook1);
+
+                ItemStack bloodLeechBook4 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(bloodLeechBook4, mutable -> mutable.set(bloodLeech, 4));
+                entries.accept(bloodLeechBook4);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -115,6 +129,8 @@ public class ModItemGroups {
                 entries.accept(ModItems.SCULLY_SHARD);
                 // 加入潮汐切割者
                 entries.accept(ModItems.TIDE_CLEAVER);
+                // 加入脉冲谐振剑
+                entries.accept(ModItems.PULSE_RESONANCE_SWORD);
                 // 加入潮汐织靴
                 entries.accept(ModItems.TIDAL_WEAVE_BOOTS);
                 // 加入稻草人与假目标
@@ -149,6 +165,8 @@ public class ModItemGroups {
                 entries.accept(ModBlocks.COLOR_SLAB);
                 entries.accept(ModBlocks.COLOR_STAIRS);
                 entries.accept(ModItems.PAINT_BUCKET);
+                entries.accept(ModItems.CHROMATIC_SKULL);
+                entries.accept(ModItems.CODEX_OF_ENCHANTING);
 
                 // 加入抽卡道具
                 entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);

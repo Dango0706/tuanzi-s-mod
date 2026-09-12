@@ -58,7 +58,7 @@ public class ShurikenEntity extends ThrowableItemProjectile {
         super.onHitEntity(hitResult);
         Entity entity = hitResult.getEntity();
         if (entity instanceof LivingEntity target && !this.level().isClientSide()) {
-            float baseDamage = 2.0f;
+            float baseDamage = 4.0f;
             DamageSource source = this.damageSources().thrown(this, this.getOwner());
             float finalDamage = me.tuanzi.util.DamageCalculator.calculateDamage(baseDamage, source, target);
             

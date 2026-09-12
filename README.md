@@ -1,8 +1,8 @@
 # 团子的模组 (Tuanzi's Mod)
 
-[![Minecraft Version](https://img.shields.io/badge/Minecraft-26.1-blue.svg)](https://minecraft.net)
-[![Fabric Loader](https://img.shields.io/badge/Fabric-0.18.4-lightgrey.svg)](https://fabricmc.net)
-[![Mod Version](https://img.shields.io/badge/Mod_Version-1.0.4-green.svg)](https://github.com/tuanzi/tuanzis_mods)
+[![Minecraft Version](https://img.shields.io/badge/Minecraft-26.2-blue.svg)](https://minecraft.net)
+[![Fabric Loader](https://img.shields.io/badge/Fabric-0.19.3-lightgrey.svg)](https://fabricmc.net)
+[![Mod Version](https://img.shields.io/badge/Mod_Version-1.0.7-green.svg)](https://github.com/tuanzi/tuanzis_mods)
 
 **团子的模组** 是一个基于 **Fabric Loader** 开发的高级功能与玩法拓展模组，专为 Minecraft **26.1 (Tiny Takeover)** 版本量身定制。本模组集成了炫酷的彩虹海绵染色系统、颠覆性的无 AI 灵笼贸易站、多款战术护符与专属武器、数十种极富创意的奇特附魔，以及针对炼金与铁砧体验的深度重构。
 

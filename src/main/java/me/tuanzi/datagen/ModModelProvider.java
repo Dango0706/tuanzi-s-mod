@@ -406,6 +406,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.COMPRESSED_BUILD_SLURRY, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.BLANK_BLUEPRINT, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.STRUCTURE_BLUEPRINT, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CHROMATIC_SKULL, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CODEX_OF_ENCHANTING, ModelTemplates.FLAT_ITEM);
 
         // 注册油漆桶带有双层 tints (常色+染色) 的物品配置
         itemModelGenerator.itemModelOutput.accept(

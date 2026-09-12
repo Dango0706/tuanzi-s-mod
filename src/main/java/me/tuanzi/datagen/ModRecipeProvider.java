@@ -271,6 +271,20 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .define('U', Items.DYE.blue())
                     .unlockedBy("has_water_bucket", has(Items.WATER_BUCKET))
                     .save(exporter);
+
+                // 智慧法典合成配方
+                shaped(RecipeCategory.MISC, ModItems.CODEX_OF_ENCHANTING, 1)
+                    .pattern(" L ")
+                    .pattern("NSB")
+                    .pattern(" L ")
+                    .define('L', Items.LAPIS_BLOCK)
+                    .define('N', Items.NETHER_STAR)
+                    .define('S', Items.BOOK)
+                    .define('B', Items.DRAGON_BREATH)
+                    .unlockedBy("has_lapis_block", has(Items.LAPIS_BLOCK))
+                    .unlockedBy("has_nether_star", has(Items.NETHER_STAR))
+                    .unlockedBy("has_book", has(Items.BOOK))
+                    .save(exporter);
             }
         };
     }

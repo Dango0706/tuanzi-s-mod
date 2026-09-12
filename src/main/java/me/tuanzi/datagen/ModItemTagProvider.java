@@ -24,7 +24,8 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
             .add(ModItems.RIFT_SCAR.builtInRegistryHolder().key())
             .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
             .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
-            .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key());
+            .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key())
+            .add(ModItems.PULSE_RESONANCE_SWORD.builtInRegistryHolder().key());
 
         // 将潮汐织靴加入原版 boots 标签
         builder(ItemTags.FOOT_ARMOR)

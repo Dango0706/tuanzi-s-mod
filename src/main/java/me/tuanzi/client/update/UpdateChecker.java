@@ -4,11 +4,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.authlib.GameProfile;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.impl.game.GameProvider;
+import net.fabricmc.loader.impl.game.GameProviderHelper;
+import net.minecraft.SharedConstants;
+import net.minecraft.client.Minecraft;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -34,7 +39,7 @@ public class UpdateChecker {
     private static String downloadUrl = "";
     private static String downloadFilename = "";
     private static String errorMessage = "";
-    
+
     // 用于记录是否需要弹出提醒
     private static boolean alreadyNotified = false;
     private static long ignoredTime = 0L;
@@ -43,7 +48,7 @@ public class UpdateChecker {
     private static long failedNotificationStartTime = -1L;
 
     private static final String MODRINTH_PROJECT_ID = "zJPSl9H6";
-    private static final String GAME_VERSION = "26.1";
+    private static final String GAME_VERSION = SharedConstants.getCurrentVersion().name();
 
     public static boolean isHasShownFailedNotification() {
         return hasShownFailedNotification;
@@ -94,6 +99,7 @@ public class UpdateChecker {
             return;
         }
         ModLog.info("[自动更新检测] 正在加载本地更新历史配置...");
+        ModLog.info("检测到的Minecraft版本:" + GAME_VERSION);
         try {
             Path configPath = FabricLoader.getInstance().getConfigDir().resolve("tuanzis_mod_update.json");
             if (Files.exists(configPath)) {
@@ -137,12 +143,12 @@ public class UpdateChecker {
         if (alreadyNotified) {
             return false;
         }
-        
+
         // 开发沙箱环境：每次重启游戏启动时都会强制显示弹窗提醒，方便调试
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             return status == Status.HAS_UPDATE;
         }
-        
+
         // 检查“忽略更新一天”是否在 24 小时 (86400000 毫秒) 保护期内
         if (ignoredTime > 0L) {
             long elapsed = System.currentTimeMillis() - ignoredTime;
@@ -151,7 +157,7 @@ public class UpdateChecker {
                 return false;
             }
         }
-        
+
         return status == Status.HAS_UPDATE;
     }
 
@@ -216,7 +222,7 @@ public class UpdateChecker {
             for (JsonElement element : versions) {
                 if (!element.isJsonObject()) continue;
                 JsonObject ver = element.getAsJsonObject();
-                
+
                 String verNum = ver.has("version_number") ? ver.get("version_number").getAsString() : "未知版本";
                 ModLog.info("[自动更新检测] 正在解析版本候选: v" + verNum);
 
@@ -269,10 +275,10 @@ public class UpdateChecker {
             }
 
             String remoteVer = targetVersion.get("version_number").getAsString();
-            String realChangelog = targetVersion.has("changelog") && !targetVersion.get("changelog").isJsonNull() 
-                    ? targetVersion.get("changelog").getAsString() 
+            String realChangelog = targetVersion.has("changelog") && !targetVersion.get("changelog").isJsonNull()
+                    ? targetVersion.get("changelog").getAsString()
                     : "无更新日志";
-            
+
             String realDownloadUrl = "";
             String realDownloadFilename = "";
             if (targetVersion.has("files")) {
@@ -389,15 +395,15 @@ public class UpdateChecker {
                 if (Files.exists(modsFolder)) {
                     try (java.util.stream.Stream<Path> list = Files.list(modsFolder)) {
                         originPath = list.filter(p -> Files.isRegularFile(p)
-                                && p.getFileName().toString().startsWith("tuanzis_mod-")
-                                && p.getFileName().toString().endsWith(".jar"))
+                                        && p.getFileName().toString().startsWith("tuanzis_mod-")
+                                        && p.getFileName().toString().endsWith(".jar"))
                                 .findFirst()
                                 .orElse(null);
                     } catch (Exception ex) {
                         ModLog.warn("[自动更新下载] 物理扫描 mods 文件夹寻找旧包失败: " + ex.getMessage());
                     }
                 }
-                
+
                 if (originPath != null) {
                     bakPath = originPath.resolveSibling(originPath.getFileName().toString() + ".bak");
                 }
@@ -409,7 +415,7 @@ public class UpdateChecker {
                     // Windows 平台：使用预先异步调起的锁检测批处理脚本，在游戏进程以任意方式关闭释放文件锁时瞬间完成替换
                     Path tmpTargetPath = targetPath.resolveSibling(downloadFilename + ".tmp");
                     ModLog.info("[自动更新下载] 运行系统检测为 Windows，为防运行中文件锁定，将新包暂存至: " + tmpTargetPath.getFileName());
-                    
+
                     try (InputStream is = response.body()) {
                         Files.copy(is, tmpTargetPath, StandardCopyOption.REPLACE_EXISTING);
                     }
@@ -435,7 +441,7 @@ public class UpdateChecker {
                             "    move /y \"" + tmpFileStr + "\" \"" + targetFileStr + "\" >nul 2>nul\r\n" +
                             ")\r\n" +
                             "del \"%~f0\"\r\n";
-                    
+
                     Files.writeString(batPath, batContent);
                     ModLog.info("[自动更新下载] Windows 锁检测延迟替换脚本生成成功: " + batPath.toAbsolutePath());
 

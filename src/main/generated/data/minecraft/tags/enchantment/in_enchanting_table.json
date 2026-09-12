@@ -17,19 +17,7 @@
       "required": false
     },
     {
-      "id": "tuanzis_mod:buzzing_rhythm",
-      "required": false
-    },
-    {
-      "id": "tuanzis_mod:resonance_pulse",
-      "required": false
-    },
-    {
-      "id": "tuanzis_mod:void_resonance",
-      "required": false
-    },
-    {
-      "id": "tuanzis_mod:steel_shield_gift",
+      "id": "tuanzis_mod:ancient_scroll_blood_leech",
       "required": false
     }
   ]

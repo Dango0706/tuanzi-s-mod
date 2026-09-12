@@ -75,14 +75,12 @@ public class ServerPlayerMixin {
     private void tuanzis_mod$onPlayerDie(DamageSource source, CallbackInfo ci) {
         ServerPlayer player = (ServerPlayer) (Object) this;
         if (!player.level().isClientSide() && source.getEntity() instanceof net.minecraft.world.entity.monster.Creeper creeper && creeper.isPowered()) {
-            net.minecraft.world.item.ItemStack headStack = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
-            net.minecraft.world.item.component.ResolvableProfile resolvableProfile = net.minecraft.world.item.component.ResolvableProfile.createResolved(player.getGameProfile());
-            headStack.set(net.minecraft.core.component.DataComponents.PROFILE, resolvableProfile);
+            net.minecraft.world.item.ItemStack skullStack = new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.CHROMATIC_SKULL);
             
             // 输出调试日志
-            me.tuanzi.util.ModLog.debug("[玩家头颅掉落] 玩家 " + player.getName().getString() + " 被闪电苦力怕炸死，掉落其正版头颅。");
+            me.tuanzi.util.ModLog.debug("[彩色变化头颅掉落] 玩家 " + player.getName().getString() + " 被闪电苦力怕炸死，掉落彩色变化头颅。");
             
-            player.spawnAtLocation((ServerLevel) player.level(), headStack);
+            player.spawnAtLocation((ServerLevel) player.level(), skullStack);
         }
     }
 }

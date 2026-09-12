@@ -177,6 +177,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.color_block.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.PAINT_BUCKET), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.paint_bucket.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.CHROMATIC_SKULL), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.chromatic_skull.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.CODEX_OF_ENCHANTING), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.codex_of_enchanting.description"));
 
         registration.addIngredientInfo(new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.compressed_build_slurry.description"));
@@ -498,6 +502,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.SCULLY_SHARD), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.scully_shard.description"));
 
+        // 注册脉冲谐振剑介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.PULSE_RESONANCE_SWORD), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.pulse_resonance_sword.description"));
+
         // 获取所有附有“共振脉冲”附魔的附魔书并注册介绍页 (Resonance Pulse I-III)
         List<ItemStack> resonancePulseBooks = registration.getIngredientManager()
             .getAllIngredients(VanillaTypes.ITEM_STACK)
@@ -596,6 +604,52 @@ public class TuanzisJeiPlugin implements IModPlugin {
         if (!steelShieldGiftBooks.isEmpty()) {
             registration.addIngredientInfo(steelShieldGiftBooks, VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.steel_shield_gift.description"));
+        }
+
+        // 获取所有附有“过载协议”附魔的附魔书并注册介绍页 (Overload Protocol I-V)
+        List<ItemStack> overloadProtocolBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.OVERLOAD_PROTOCOL)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!overloadProtocolBooks.isEmpty()) {
+            registration.addIngredientInfo(overloadProtocolBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.overload_protocol.description"));
+        }
+
+        // 获取所有附有“古卷附魔-汲血”附魔的附魔书并注册介绍页 (Ancient Scroll - Blood Leech I-IV)
+        List<ItemStack> bloodLeechBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!bloodLeechBooks.isEmpty()) {
+            registration.addIngredientInfo(bloodLeechBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.ancient_scroll_blood_leech.description"));
         }
 
         registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR), VanillaTypes.ITEM_STACK,

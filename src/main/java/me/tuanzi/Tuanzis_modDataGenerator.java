@@ -304,7 +304,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// 试炼假人翻译资源
 			translationBuilder.add(me.tuanzi.init.ModItems.TRIAL_DUMMY, "试炼假人");
 			translationBuilder.add("entity.tuanzis_mod.trial_dummy", "试炼假人");
-			translationBuilder.add("jei.tuanzis_mod.trial_dummy.description", "【试炼假人】\n用于测试玩家伤害输出与DPS的专业实体辅助工具。\n\n§e使用规则：§r\n1. §b放置§r：手持右键方块表面放置，生成假人。只能放置在固体方块上方，且半径 10 格内同一玩家最多只能放置 1 个（放置第二个时第一个瞬间自动无损收回）。\n2. §b回收§r：空手且潜行状态下右键点击假人可将其收回为物品。每次回收消耗 1 点物品耐久度。耐久归零时物品消失，假人消散并掉落木棍和干草块。收回时身上穿戴的全部盔甲也将无损掉落！\n3. §b无敌与防御继承§r：假人实体本身无敌（除创造模式左键一击即碎），不受任何火烧、跌落等环境伤害。允许玩家右键为其穿戴/对换任意盔甲防具与武器，假人将完美继承所有盔甲防御值、韧性、附魔保护及药水减免，提供100%最真实的伤害测试环境！\n4. §b武器与箭矢保护§r：攻击假不消耗玩家武器工具耐久，射击不消耗箭矢。\n5. §bDPS统计§r：受击时头顶生成橙色伤害跳字。Action bar 实时显示累计伤害与DPS。未攻击 4 秒自动归档重置。空手非潜行右键可向聊天栏输出上一轮（或进行中）的极其详尽的伤害测试数据！");
+			translationBuilder.add("jei.tuanzis_mod.trial_dummy.description", "【试炼假人】\n用于测试玩家伤害输出与DPS的专业实体辅助工具。\n\n§e使用规则：§r\n1. §b放置§r：手持右键方块表面放置，生成假人。只能放置在固体方块上方。\n2. §b回收§r：空手且潜行状态下右键点击假人可将其收回为物品。每次回收消耗 1 点物品耐久度。耐久归零时物品消失，假人消散并掉落木棍和干草块。收回时身上穿戴的全部盔甲也将无损掉落！\n3. §b无敌与防御继承§r：假人实体本身无敌（除创造模式左键一击即碎），不受任何火烧、跌落等环境伤害。允许玩家右键为其穿戴/对换任意盔甲防具与武器，假人将完美继承所有盔甲防御值、韧性、附魔保护及药水减免，提供100%最真实的伤害测试环境！\n4. §b武器与箭矢保护§r：攻击假不消耗玩家武器工具耐久，射击不消耗箭矢。\n5. §bDPS统计§r：受击时头顶生成橙色伤害跳字。Action bar 实时显示累计伤害与DPS。未攻击 4 秒自动归档重置。空手非潜行右键可向聊天栏输出上一轮（或进行中）的极其详尽的伤害测试数据！");
 			translationBuilder.add("hud.tuanzis_mod.trial_dummy.actionbar", "⚔ 累计伤害: %s | DPS: %s");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.reset", "§c[试炼假人] 测试结束，DPS 统计已归档重置。");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.no_tests", "§6[试炼假人] 当前没有任何测试数据。攻击假人以开启测试。");
@@ -426,7 +426,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			String shurikenDesc = "【手里剑】\n" +
 				"一种轻巧且飞行速度极快的极速远程投掷武器。\n\n" +
 				"§e特殊投掷：§r\n" +
-				"1. §b极速普通投掷§r：伤害为 2，飞行速度是箭的 1.5 倍，无任何抛物线下坠。单发右键有 0.2 秒的投掷冷却。\n" +
+				"1. §b极速普通投掷§r：伤害为 4，飞行速度是箭的 1.5 倍，无任何抛物线下坠。单发右键有 0.2 秒的投掷冷却。\n" +
 				"2. §b潜行三连发§r：按住潜行 (Shift) + 右键可一次性消耗 3 枚，向前方的扇形区域射出 3 枚手里剑。每发手里剑独立计算并造成伤害。使用后进入 0.6 秒的额外整体冷却。\n\n" +
 				"§e手里剑嵌入负面效果：§r\n" +
 				"1. §b移动惩罚§r：击中目标时，有 20% 的概率对目标施加“手里剑嵌入”效果。每一枚嵌入的手里剑使目标移动速度 -10%，最多嵌入 3 枚（即移速 -30% 限制）。\n" +
@@ -523,7 +523,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8据说剑中的虚空回响渴求着每次完美的切割。");
 			translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
 			
-			String riftScarDesc = "【裂虚之痕】\n在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影与折断的龙息碎片融合，锻造出这柄剑。它能察觉敌人护甲的缺失，一旦目标毫无防备，剑刃便穿透现实，直接撕扯灵魂。据说剑中的虚空回响渴求着每次完美的切割。\n\n§e属性：§r\n1. §a攻击力§r: 5.12 点。\n2. §a攻击速度§r: 2.0。\n\n§e虚无切割被动：§r\n1. 当攻击的目标当前护甲值为 0 时，你造成的伤害会提升至 175%。\n2. 若目标拥有护甲，则伤害保持原始值。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (无形、涟漪、蚀痕、崩解、残响) 并在挥动/击中时具有独特的粒子和音效。";
+			String riftScarDesc = "【裂虚之痕】\n在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影与折断的龙息碎片融合，锻造出这柄剑。它能察觉敌人护甲的缺失，一旦目标毫无防备，剑刃便穿透现实，直接撕扯灵魂。据说剑中的虚空回响渴求着每次完美的切割。\n\n§e属性：§r\n1. §a攻击力§r: 5.12 点。\n2. §a攻击速度§r: 2.0。\n\n§e虚无切割被动：§r\n1. 当攻击的目标当前护甲值为 0 时，你造成的伤害会提升至 175%。\n2. 若目标拥有护甲，则伤害保持原始值。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (无形、涟漪、蚀痕、崩解、残响) 并在挥动/击中时具有独特的粒子和音效。\n\n§e修复与维护：§r\n可在铁砧中使用§b回响碎片§r修复其耐久度。";
 			translationBuilder.add("jei.tuanzis_mod.rift_scar.description", riftScarDesc);
 
 			// 钢御壁垒 (Steel Barrier) 与 坚盾之赐 (Steel Shield Gift) 翻译
@@ -578,13 +578,60 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion", "%s 被引爆的蜂毒噬体而亡");
 			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion.player", "%s 在与 %s 的战斗中，被满层蜂毒的爆破真实伤害终结了生命");
 			
-			String beeStingEchoDesc = "【蜂刺余响】\n由蜂后的最后一根螫针锻造而成的绝影薄刃。拥有极快的攻速与独特的叠刺爆毒被动。\n\n§e属性：§r\n1. §a攻击力§r: 7 点（比下界合金剑低 1 点）。\n2. §a攻击速度§r: 2.1（显著快于下界合金剑的 1.6）。\n3. §a限制§r: 该武器的攻击距离缩短 0.25 格，且无法触发横扫攻击。\n\n§e叠刺被动：§r\n1. 每次成功命中目标时，为其叠加一层 §6蜂毒§r 效果，持续 5 秒，最高叠加 5 层。\n2. 每层蜂毒使目标受到的下一次伤害提升 §a3%§r（对真实伤害同样有效）。如果是非蜂刺余响造成的伤害，会在触发增幅后立即消耗（清空）所有层数。\n3. 当蜂毒叠满 5 层时，会立刻引爆所有层数，造成合计 §c15%§r 该次命中最终伤害的§4额外真实伤害§r，并清空层数。\n4. 引爆后，目标进入 §e8 秒的引爆冷却§r 状态，期间无法再被叠加蜂毒。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (初振之锋、微疲之纹、劳损之痕、衰振之音、残响空巢) 以及不同频率的蜂鸣声。";
+			String beeStingEchoDesc = "【蜂刺余响】\n由蜂后的最后一根螫针锻造而成的绝影薄刃。拥有极快的攻速与独特的叠刺爆毒被动。\n\n§e属性：§r\n1. §a攻击力§r: 7 点（比下界合金剑低 1 点）。\n2. §a攻击速度§r: 2.1（显著快于下界合金剑的 1.6）。\n3. §a限制§r: 该武器的攻击距离缩短 0.25 格，且无法触发横扫攻击。\n\n§e叠刺被动：§r\n1. 每次成功命中目标时，为其叠加一层 §6蜂毒§r 效果，持续 5 秒，最高叠加 5 层。\n2. 每层蜂毒使目标受到的下一次伤害提升 §a3%§r（对真实伤害同样有效）。如果是非蜂刺余响造成的伤害，会在触发增幅后立即消耗（清空）所有层数。\n3. 当蜂毒叠满 5 层时，会立刻引爆所有层数，造成合计 §c15%§r 该次命中最终伤害的§4额外真实伤害§r，并清空层数。\n4. 引爆后，目标进入 §e8 秒的引爆冷却§r 状态，期间无法再被叠加蜂毒。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (初振之锋、微疲之纹、劳损之痕、衰振之音、残响空巢) 以及不同频率的蜂鸣声。\n\n§e修复与维护：§r\n可在铁砧中使用§b蜜脾块§r修复其耐久度。";
 			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", beeStingEchoDesc);
+
+			// 脉冲谐振剑翻译
+			translationBuilder.add(ModItems.PULSE_RESONANCE_SWORD, "脉冲谐振剑");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.wear", "磨损值: %s");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.unidentified", "§7[未鉴定磨损度]");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.pulse_info", "§b内部电容脉冲: %s §7/ 3");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.1", "外观: §a线圈校准");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.2", "外观: §e电容微漏");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.3", "外观: §6齿轮微滞");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.4", "外观: §c绝缘破损");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.5", "外观: §4核心崩溃");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.1", "§7电容充放电完美同步，剑身无一丝杂音。崭新的黄铜齿轮高速咬合，脉冲线圈流淌着纯净璀璨的青蓝电光。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.2", "§7外壳出现细微擦痕，脉冲偶发微弱杂波。黄铜光泽微退，线圈辉光偶有微小杂色与轻微衰减。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.3", "§7传动机构产生细微卡顿，攻击时能感到轻微延迟。黄铜出现氧化暗斑，线圈能量流出现轻微断续。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.4", "§7漏电现象频发，剑身周围可闻噼啪声。绝缘层剥落破损，线圈外露，伴有紊乱的电火花溅射。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.5", "§7脉冲紊乱，线圈过热，随时可能永久停机。剑身焦黑炭化，核心线圈过载赤红发烫，濒临融毁。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.1", "§8它诞生于红石研究院废墟的最底层，由一位被遗忘的机械师用黄铜齿轮与脉冲线圈铸成。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.2", "§8剑刃并非为了切割，而是为了传导。每一次斩击都在为内部电容充能。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.3", "§8三击之后，过载的电流将化为一道致命电弧。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.4", "§8精密机械的轰鸣，是废墟深处永不熄灭的科技余火。");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
+			
+			String pulseResonanceSwordDesc = "【脉冲谐振剑】\n诞生于红石研究院废墟最底层的机械遗刃。由被遗忘的机械师用黄铜齿轮与脉冲线圈铸成。剑刃并非为了切割，而是为了传导。\n\n§e属性：§r\n1. §a基础攻击力§r: 6 点。\n2. §a攻击速度§r: 2.5。\n3. §a基础DPS§r: 6 × 2.5 = 15.0。\n\n§e脉冲充能被动：§r\n1. 每次普通近战攻击命中目标后，剑身内部电容自动叠加 1 层“脉冲”（当攻击蓄力时间 < 80% 时，无法叠加电容脉冲）。\n2. 当脉冲达到 3 层时，下一次攻击将额外释放一次 §c脉冲电击§r，对主目标造成相当于基础攻击力 50%（即 3 点）的额外伤害，随后脉冲层数清零。\n3. 该机制使这把剑在高攻速下能高频触发额外电击，形成“普攻穿插爆发”的高频快攻节奏。\n\n§e磨损度外观机制：§r\n此剑诞生时随机决定磨损度 (0-1)，永久不可变更。不同的磨损度对应五种外观阶段（线圈校准、电容微漏、齿轮微滞、绝缘破损、核心崩溃）与动态材质渐变，击中音效也会随磨损程度产生变化。\n\n§e修复与维护：§r\n可在铁砧中使用§b紫水晶块§r修复其耐久度。";
+			translationBuilder.add("jei.tuanzis_mod.pulse_resonance_sword.description", pulseResonanceSwordDesc);
 
 			// 虚无共鸣 (Void Resonance) 翻译
 			translationBuilder.add("enchantment.tuanzis_mod.void_resonance", "虚无共鸣");
 			String voidResonanceJeiDesc = "【虚无共鸣】\n最大等级 V。攻击护甲为0的目标时，攻击力增加 (0.8×等级) × (攻击速度 ÷ 武器基础攻击力) 点。此效果对所有武器生效方式完全相同。此附魔与其他归一化附魔互斥。";
 			translationBuilder.add("jei.tuanzis_mod.void_resonance.description", voidResonanceJeiDesc);
+
+			// 过载协议 (Overload Protocol) 翻译
+			translationBuilder.add("enchantment.tuanzis_mod.overload_protocol", "过载协议");
+			String overloadProtocolJeiDesc = "【过载协议】\n最大等级 V。归一化专属附魔。可附魔于近战武器与工具。\n\n§e机制：§r\n1. 攻击时有 §b5% + 5% × 等级§r 的概率为武器叠加 1 层“脉冲”（与脉冲谐振剑脉冲机制相同，最高叠加至 3 层；当攻击蓄力时间 < 80% 时，无法叠加电容脉冲；若附魔于脉冲谐振剑，移除概率叠加脉冲判定，保持普攻固定叠加 1 层）。\n2. 当脉冲达到 3 层时，下一次近战攻击将额外造成一次 §c脉冲电击伤害§r：基础固定伤害为 §e武器基础伤害 × (10% + 5% × 等级)§r，每级额外提升 §a0.85 点§r 伤害（若附魔于脉冲谐振剑，在此基础上额外叠加其固有的 3.0 点武器被动电击伤害），随后脉冲层数清零。\n3. 该效果对所有武器/工具生效，不绑定特定武器，也不限定攻击环境。\n\n§e互斥规则：§r\n此附魔与其他归一化附魔互斥。";
+			translationBuilder.add("jei.tuanzis_mod.overload_protocol.description", overloadProtocolJeiDesc);
+
+			// 古卷附魔-汲血 (Ancient Scroll - Blood Leech) 翻译
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_blood_leech", "古卷附魔-汲血");
+			String bloodLeechJeiDesc = "【古卷附魔-汲血】\n" +
+				"失落古卷中记载的禁忌血炼秘术。最高等级 IV 级。适用类型：剑、斧。\n\n" +
+				"§e核心效果：§r\n" +
+				"造成近战伤害时，根据最终造成的伤害值恢复生命值：\n" +
+				"§a恢复生命值 = 造成伤害值 × (5% + 5% × 等级)§r\n" +
+				"- §b等级 I§r：恢复造成伤害的 §a10%§r\n" +
+				"- §b等级 II§r：恢复造成伤害的 §a15%§r\n" +
+				"- §b等级 III§r：恢复造成伤害的 §a20%§r\n" +
+				"- §b等级 IV§r：恢复造成伤害的 §a25%§r\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_blood_leech.description", bloodLeechJeiDesc);
 
 			// 幽匿裂片（Scully Shard）与 共振脉冲（Resonance Pulse）翻译
 			translationBuilder.add(ModItems.SCULLY_SHARD, "幽匿裂片");
@@ -678,7 +725,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("tuanzis_mod.mode.semi_replace", "半替换");
 			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "仅替换空气");
 			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6塑世之笔切换为: %s 模式");
-			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒中扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，潜行 (Shift) + 右键（空气或方块）可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型（优先更换方块而非撤销）。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒中扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，面对空气潜行 (Shift) + 右键可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
 			translationBuilder.add(ModItems.VOID_INK_INGOT, "虚空墨锭");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "一方由龙息凝华与回响粉末压制的深紫色墨锭，");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。");
@@ -703,6 +750,28 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// JEI 信息页说明中文
 			translationBuilder.add("jei.tuanzis_mod.color_block.description", "【彩色方块/半砖/楼梯】\n一类可由油漆桶染成各种自定义颜色的装饰性建材，表面纯净无任何边框杂质。\n\n§e核心机制：\n1. §b方块染色：把需要染色的彩色方块、半砖或楼梯与装有颜料的油漆桶一起放入合成栏即可完成染色。每染一个消耗 1 点油漆桶耐久。\n2. §b半砖叠加：允许将不同颜色的彩色半砖叠加放置为双半砖。其上下两个半砖将各自保留并独立渲染其原本染上的颜色，挖掘时亦会自动拆分掉落原本各自颜色的半砖物品。\n3. §b地图显示：彩色方块、楼梯和单半砖会在地图上直接显示其对应染色颜色。在叠加双半砖状态下，地图上会智能呈现§6顶部半砖§r的颜色。\n4. §b合成继承：使用带颜色的彩色方块来合成彩色楼梯（产出4个）或彩色半砖（产出6个）时，合成出来的楼梯或半砖将自动继承并融合（计算平均色）所有输入原料的颜色。");
 			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "【油漆桶】\n用于为彩色方块进行染色的实用工具。最大耐久度为 256 次。\n\n§e功能操作：\n1. §b打开调色盘：右键使用油漆桶，可打开客户端独占 of RGB 调色盘界面。拖动三个红/绿/蓝滑块可精确调节（0-255）颜料颜色，并有大方块实时预览。\n2. §b原版预设：提供 16 种原版染料色彩的快捷预设按钮，点击可一键快速换色。\n3. §b确认与取消：点击“取消”或按 ESC 关闭可回退到打开界面前的初始颜色；点击“确认”将保存当前设置并播放染色音效。\n4. §b染色消耗：在合成栏内为彩色方块进行染色时，每次合成扣减 1 点油漆桶耐久并将其留在格内，当耐久降至 0 时会销毁消失。");
+
+			// 彩色变化头颅中文翻译
+			translationBuilder.add(ModItems.CHROMATIC_SKULL, "彩色变化头颅");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.title", "彩色变化头颅");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.instruction", "请输入正版玩家名称：");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.confirm", "确认");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.claim", "获取该头颅");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.preview_title", "头颅预览");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.unconfirmed", "待确认");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.cancel", "取消");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.hint", "玩家名称 (3-16字符)");
+			translationBuilder.add("jei.tuanzis_mod.chromatic_skull.description", "【彩色变化头颅】\n一颗散发着斑斓色彩的神秘头颅，蕴含着连接跨界维度的灵魂印记。\n\n§e功能与用法：\n1. §b右键交互：手持彩色变化头颅右键点击，将呼出玩家名称输入面板。\n2. §b预览与确认：在输入框中输入任意正版 Minecraft 玩家名称并点击【确认】，右侧面板将加载并展示该正版头颅的皮肤预览，且按钮切换为【获取该头颅】。\n3. §b头颅获取：再次点击【获取该头颅】后，将消耗手中 1 个彩色变化头颅并获得对应玩家的正版皮肤头颅。\n4. §b取消退出：点击【取消】或按 Esc 键关闭面板，无事发生且不消耗头颅。\n5. §b获取方式：玩家被闪电苦力怕炸死时必定掉落。");
+
+			// 智慧法典中文翻译
+			translationBuilder.add(ModItems.CODEX_OF_ENCHANTING, "智慧法典");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line1", "放在副手使用");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line2", "打开附魔台时，新增刷新附魔按钮。");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "点击后消耗 1 级经验即可重置附魔选项。");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "刷新附魔（消耗 1 级经验）");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_item", "请先放入可附魔的物品");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_exp", "经验不足（需要 1 级经验）");
+			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "【智慧法典】\n一本蕴含古老奥术符文与附魔权柄的深蓝魔法典籍，由下界之星、龙息与青金石精炼铸成。\n\n§e核心功能：\n1. §b副手生效：将智慧法典放置在副手栏时，打开附魔台界面将在青金石槽正下方额外显示一个“刷新附魔”按钮（绿金循环箭头图标）。\n2. §b经验刷新：在附魔台中放入待附魔物品后，点击刷新按钮仅需消耗 §a1 级经验值§r（创造模式免消耗，且不消耗青金石），即可随机生成全新的玩家附魔种子并当场刷新三个附魔选项与提示。\n3. §b状态校验：若槽位内无物品、物品不可附魔或经验不足 1 级时，按钮将自动处于禁用保护状态并提供对应悬浮提示，防止误触浪费经验。");
 		}
 	}
 
@@ -881,7 +950,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.4", "§8the blade pierces reality to directly tear the soul.");
 			translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8It is said the void echo within the sword craves every perfect cut.");
 			translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[Hold Shift for details & lore]");
-			translationBuilder.add("jei.tuanzis_mod.rift_scar.description", "A void sword forged by an End Knight. Deals 175% damage when the target has 0 armor. Random wear appearance on birth.");
+			translationBuilder.add("jei.tuanzis_mod.rift_scar.description", "A void sword forged by an End Knight. Deals 175% damage when the target has 0 armor. Random wear appearance on birth.\n\n§eRepair & Maintenance:§r\nCan be repaired in an anvil using §bEcho Shards§r.");
 
 			// Bee Sting Echo translations
 			translationBuilder.add(ModItems.BEE_STING_ECHO, "Bee Sting Echo");
@@ -906,7 +975,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion", "%s was destroyed by detonating bee poison");
 			translationBuilder.add("death.attack.tuanzis_mod.bee_sting_explosion.player", "%s was terminated by the detonated bee poison in a battle with %s");
 			translationBuilder.add("item.tuanzis_mod.bee_sting_echo.shift_hint", "§7[Hold Shift for details & lore]");
-			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", "A thin blade forged from the queen bee's last stinger. Extremely fast attack speed and poison accumulation.");
+			translationBuilder.add("jei.tuanzis_mod.bee_sting_echo.description", "A thin blade forged from the queen bee's last stinger. Extremely fast attack speed and poison accumulation.\n\n§eRepair & Maintenance:§r\nCan be repaired in an anvil using §bHoneycomb Blocks§r.");
 
 			// Void Resonance translations
 			translationBuilder.add("enchantment.tuanzis_mod.void_resonance", "Void Resonance");
@@ -990,6 +1059,72 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("item.tuanzis_mod.tide_cleaver.lore.4", "§8But if the rhythm breaks, the out-of-control currents will backlash and ruin the blade.");
 			translationBuilder.add("item.tuanzis_mod.tide_cleaver.shift_hint", "§7[Hold Shift for details & lore]");
 			translationBuilder.add("jei.tuanzis_mod.tide_cleaver.description", tideCleaverJeiDescEn);
+
+			// Pulse Resonance Sword English translations
+			String pulseResonanceSwordDescEn = "[Pulse Resonance Sword]\n" +
+				"A mechanical relic forged in the deepest ruins of the Redstone Institute by a forgotten mechanist using brass gears and pulse coils. The blade was not designed to cut, but to conduct.\n\n" +
+				"§eAttributes:§r\n" +
+				"1. §aBase Attack Damage§r: 6.\n" +
+				"2. §aAttack Speed§r: 2.5.\n" +
+				"3. §aBase DPS§r: 6 × 2.5 = 15.0.\n\n" +
+				"§ePulse Charging Passive:§r\n" +
+				"1. Each successful melee attack automatically adds 1 stack of \"Pulse\" to the internal capacitor (cannot accumulate capacitor pulses when attack charge is < 80%).\n" +
+				"2. Upon reaching 3 stacks, the next attack unleashes an additional §cPulse Shock§r dealing 50% base attack damage (3 extra damage) to the primary target, resetting pulse stacks to 0.\n" +
+				"3. Provides a rhythmic, rapid-strike burst combat cadence.\n\n" +
+				"§eWear & Appearance Mechanics:§r\n" +
+				"Wear value (0-1) is permanently determined upon creation. Features five appearance tiers (Coil Calibrated, Capacitor Leaking, Gear Lagging, Insulation Damaged, Core Meltdown) with dynamic smooth gradient rendering and pitch-shifting sound effects.\n\n" +
+				"§eRepair & Maintenance:§r\n" +
+				"Can be repaired in an anvil using §bAmethyst Blocks§r.";
+			translationBuilder.add(ModItems.PULSE_RESONANCE_SWORD, "Pulse Resonance Sword");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.wear", "Wear Value: %s");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.unidentified", "§7[Unidentified Wear]");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.pulse_info", "§bInternal Capacitor Pulse: %s §7/ 3");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.1", "Appearance: §aCoil Calibrated");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.2", "Appearance: §eCapacitor Leaking");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.3", "Appearance: §6Gear Lagging");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.4", "Appearance: §cInsulation Damaged");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.status.5", "Appearance: §4Core Meltdown");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.1", "§7Capacitor charge and discharge are perfectly synchronized with zero noise. Pristine brass gears mesh smoothly, and pulse coils pulse with pure cyan arc.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.2", "§7Minor scratches on casing, occasional pulse interference. Brass luster slightly faded with subtle harmonic noise.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.3", "§7Transmission mechanism experiences slight lag, introducing a noticeable delay when striking. Oxidized brass with intermittent energy surges.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.4", "§7Frequent current leakage with crackling sounds around the blade. Stripped insulation and exposed coils throwing chaotic sparks.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.desc.5", "§7Disordered pulses, overheated coils, on the verge of permanent shutdown. Charred frame with glowing red-hot meltdown core.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.1", "§8Forged in the deepest ruins of the Redstone Institute by a forgotten mechanist, using brass gears and pulse coils.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.2", "§8The blade was not made to cut, but to conduct. Every strike charges its internal capacitor.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.3", "§8After three strikes, the overloaded current erupts into a lethal electric arc.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.lore.4", "§8The rhythmic whir of machinery is the immortal spark of lost technology.");
+			translationBuilder.add("item.tuanzis_mod.pulse_resonance_sword.shift_hint", "§7[Hold Shift for details & lore]");
+			translationBuilder.add("jei.tuanzis_mod.pulse_resonance_sword.description", pulseResonanceSwordDescEn);
+
+			// Overload Protocol English translations
+			translationBuilder.add("enchantment.tuanzis_mod.overload_protocol", "Overload Protocol");
+			String overloadProtocolJeiDescEn = "[Overload Protocol Enchantment]\n" +
+				"Max Level V. A Normalization Combat Enchantment applicable to melee weapons and tools.\n\n" +
+				"§eMechanics:§r\n" +
+				"1. Attacks have a §b(5% + 5% × Level)§r chance to stack 1 \"Pulse\" layer on the weapon (identical to the Pulse Resonance Sword, max 3 stacks; cannot accumulate capacitor pulses when attack charge is < 80%; when applied to the Pulse Resonance Sword, removes the chance-based pulse gain and retains guaranteed 1-stack gain).\n" +
+				"2. Upon reaching 3 stacks, the next melee attack deals extra §cElectric Shock Damage§r: base fixed damage equal to §eBase Weapon Damage × (10% + 5% × Level)§r plus §a+0.85 damage per level§r (stacks with the intrinsic +3.0 electric damage if equipped on the Pulse Resonance Sword), resetting pulse stacks to 0.\n" +
+				"3. Effective on all weapons and tools, not bound to any specific weapon, and not restricted by combat environment.\n\n" +
+				"§eExclusion:§r\n" +
+				"Mutually exclusive with other Normalization enchantments.";
+			translationBuilder.add("jei.tuanzis_mod.overload_protocol.description", overloadProtocolJeiDescEn);
+
+			// Ancient Scroll - Blood Leech English translations
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_blood_leech", "Ancient Scroll - Blood Leech");
+			String bloodLeechJeiDescEn = "[Ancient Scroll - Blood Leech]\n" +
+				"A forbidden blood-forging art preserved in ancient tomes. Max Level IV. Applicable to: Swords, Axes.\n\n" +
+				"§eCore Effect:§r\n" +
+				"When dealing melee damage, restores health based on the final damage dealt:\n" +
+				"§aHeal Amount = Damage Dealt × (5% + 5% × Level)§r\n" +
+				"- §bLevel I§r: Restores §a10%§r of damage dealt\n" +
+				"- §bLevel II§r: Restores §a15%§r of damage dealt\n" +
+				"- §bLevel III§r: Restores §a20%§r of damage dealt\n" +
+				"- §bLevel IV§r: Restores §a25%§r of damage dealt\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient Scroll enchantments can only appear in the Enchanting Table. Cannot be obtained via villager trades, loot chests, or mob spawns.\n" +
+				"2. §bLevel 30 Requirement§r: Strictly requires an enchanting table level of §630 or higher§r (Slot 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel I§r can ever be rolled directly from the Enchanting Table.\n" +
+				"4. §bAnvil Upgrades§r: Higher tiers (up to Level IV) must be combined and upgraded using an Anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_blood_leech.description", bloodLeechJeiDescEn);
 
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
@@ -1096,7 +1231,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// Trial Dummy English Translations
 			translationBuilder.add(me.tuanzi.init.ModItems.TRIAL_DUMMY, "Trial Dummy");
 			translationBuilder.add("entity.tuanzis_mod.trial_dummy", "Trial Dummy");
-			translationBuilder.add("jei.tuanzis_mod.trial_dummy.description", "[Trial Dummy]\nA highly specialized helper tool used for testing damage output and DPS.\n\n§eRules:§r\n1. §bPlacement§r: Right-click to place on a solid block. Max 1 per player within a 10-block radius (placing a 2nd instantly recovers the 1st without durability loss).\n2. §bRecovery§r: Shift + Right-click with empty hand to recover. Consumes 1 durability. Drop rate on zero durability: 0-2 sticks and 1 hay block. All worn armors safely drop on recovery!\n3. §bInvulnerability & Armor Inheritance§r: Immune to all environment damages (except Creative Player instant break). Right-click with any armor/weapon to swap and dress it. The dummy inherits all armor values, toughness, protection enchantments, and active effects to simulate a 100% real combat defense!\n4. §bWeapon & Projectile Protection§r: Attacking doesn't consume weapon durability or arrows.\n5. §bDPS Testing§r: Floating damage indicators, action bar real-time stats (Total Damage | DPS). Auto-archive on 4s idle. Right-click with empty hand to print ultra-detailed statistics in chat!");
+			translationBuilder.add("jei.tuanzis_mod.trial_dummy.description", "[Trial Dummy]\nA highly specialized helper tool used for testing damage output and DPS.\n\n§eRules:§r\n1. §bPlacement§r: Right-click to place on a solid block.\n2. §bRecovery§r: Shift + Right-click with empty hand to recover. Consumes 1 durability. Drop rate on zero durability: 0-2 sticks and 1 hay block. All worn armors safely drop on recovery!\n3. §bInvulnerability & Armor Inheritance§r: Immune to all environment damages (except Creative Player instant break). Right-click with any armor/weapon to swap and dress it. The dummy inherits all armor values, toughness, protection enchantments, and active effects to simulate a 100% real combat defense!\n4. §bWeapon & Projectile Protection§r: Attacking doesn't consume weapon durability or arrows.\n5. §bDPS Testing§r: Floating damage indicators, action bar real-time stats (Total Damage | DPS). Auto-archive on 4s idle. Right-click with empty hand to print ultra-detailed statistics in chat!");
 			translationBuilder.add("hud.tuanzis_mod.trial_dummy.actionbar", "⚔ Total Damage: %s | DPS: %s");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.reset", "§c[Trial Dummy] Session ended. DPS stats archived and reset.");
 			translationBuilder.add("message.tuanzis_mod.trial_dummy.no_tests", "§6[Trial Dummy] No testing data found. Strike the dummy to start.");
@@ -1236,7 +1371,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			String shurikenDescEn = "[Shuriken]\n" +
 				"A lightweight and extremely fast ranged throwing weapon.\n\n" +
 				"§eSpecial Throwing:§r\n" +
-				"1. §bRapid Normal Throw§r: Deals 2 damage. Flying speed is 1.5 times that of an arrow without any gravity drop. Single right-click has a 0.2s throwing cooldown.\n" +
+				"1. §bRapid Normal Throw§r: Deals 4 damage. Flying speed is 1.5 times that of an arrow without any gravity drop. Single right-click has a 0.2s throwing cooldown.\n" +
 				"2. §bSneak Fan-Out Burst§r: Hold Sneak (Shift) + Right-click to consume 3 shurikens and launch 3 shurikens in a forward fan arc. Each shuriken calculates damage independently. Triggers a 0.6s overall cooldown after the burst.\n\n" +
 				"§eShuriken Stuck Status Effect:§r\n" +
 				"1. §bMovement Penalty§r: Hits have a 20% chance to apply the \"Shuriken Stuck\" debuff. Each stuck shuriken reduces movement speed by -10%, stacking up to 3 times (max -30% speed).\n" +
@@ -1337,7 +1472,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("tuanzis_mod.mode.semi_replace", "Semi Replace");
 			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "Replace Air Only");
 			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6World Sculptor's Pen toggled to: %s Mode");
-			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it. The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory and shulker boxes inside. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click within 60 seconds to undo. Only returns blocks and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it (prioritizes selecting/changing block over undo). The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory and shulker boxes inside. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click in the air within 60 seconds to undo. Only returns blocks and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
 			translationBuilder.add(ModItems.VOID_INK_INGOT, "Void Ink Ingot");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "A deep purple ink ingot pressed from condensed dragon's breath and echo shards,");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.");
@@ -1365,6 +1500,28 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// JEI Description English
 			translationBuilder.add("jei.tuanzis_mod.color_block.description", "[Color Block/Slab/Stairs]\nDecorative blocks that can be dyed into custom colors using a Paint Bucket. The surface is pure with no borders or impurities.\n\n§eMechanics:\n1. §bBlock Dyeing: Place a Color Block, Slab, or Stairs in the crafting grid together with a Paint Bucket containing pigment to dye it. Each dyeing action consumes 1 durability from the Paint Bucket.\n2. §bSlab Stacking: Allows stacking Color Slabs of different colors into a double slab. Each half preserves and renders its own color. Mining them splits them back into their respective colored items.\n3. §bMap Display: Colored blocks, stairs, and single slabs render their actual color on maps. Double slabs intelligently display the color of the §6top slab§r on the map.\n4. §bCrafting Inheritance: Crafting Color Stairs (yields 4) or Color Slabs (yields 6) using colored blocks will automatically inherit and blend (average color) the colors of all inputs.");
 			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "[Paint Bucket]\nA utility tool used for dyeing Color Blocks. Has a maximum durability of 256 uses.\n\n§eUsage:\n1. §bOpen Palette: Right-click the Paint Bucket to open the client-side RGB palette GUI. Drag Red/Green/Blue sliders to adjust color (0-255) with real-time preview.\n2. §bVanilla Presets: Offers 16 quick preset buttons matching vanilla dyes.\n3. §bConfirm & Cancel: Click Cancel or press ESC to roll back to the previous color. Click Confirm to save changes and play a dyeing sound.\n4. §bCrafting Consumption: Remains in the crafting grid and loses 1 durability per block dyed. Destroyed when durability drops to 0.");
+
+			// Chromatic Skull translations
+			translationBuilder.add(ModItems.CHROMATIC_SKULL, "Chromatic Skull");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.title", "Chromatic Skull");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.instruction", "Enter player username:");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.confirm", "Confirm");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.claim", "Claim Skull");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.preview_title", "Preview");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.unconfirmed", "Unconfirmed");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.cancel", "Cancel");
+			translationBuilder.add("gui.tuanzis_mod.chromatic_skull.hint", "Username (3-16 chars)");
+			translationBuilder.add("jei.tuanzis_mod.chromatic_skull.description", "[Chromatic Skull]\nA mysterious skull glowing with shifting rainbow colors, bearing the spiritual imprint connecting across dimensions.\n\n§eFeatures & Usage:\n1. §bRight-Click Interaction: Right-click holding the Chromatic Skull to open the player name input panel.\n2. §bPreview & Confirmation: Type any official Minecraft player username and click [Confirm]. The right panel will load and display a preview of the player skull, and the button will switch to [Claim Skull].\n3. §bSkull Acquisition: Click [Claim Skull] to consume 1 Chromatic Skull from your hand and receive the player's skull with their official skin.\n4. §bCancel Action: Click [Cancel] or press Esc to close the panel with no effect or item consumption.\n5. §bAcquisition: Guaranteed drop when a player is killed by a charged creeper.");
+
+			// Codex of Enchanting translations
+			translationBuilder.add(ModItems.CODEX_OF_ENCHANTING, "Codex of Enchanting");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line1", "Hold in offhand to use");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line2", "Adds a refresh button when opening enchanting table.");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "Click to reroll enchanting options for 1 exp level.");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "Reroll Enchantments (Cost: 1 Level)");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_item", "Place an enchantable item first");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_exp", "Not enough experience (Requires Level 1)");
+			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "[Codex of Enchanting]\nA deep blue magical tome inscribed with ancient arcane runes, forged from a Nether Star, Dragon's Breath, and Lapis Lazuli.\n\n§eCore Mechanics:\n1. §bOffhand Activation: Place the Codex in your offhand. When opening an Enchanting Table, an additional 'Reroll Enchantments' button (with a green-gold circular arrow icon) appears directly beneath the lapis lazuli slot.\n2. §bExperience Reroll: With an enchantable item placed in the table, clicking the button consumes §a1 experience level§r (free in Creative mode, no lapis lazuli required) to generate a new player enchantment seed and immediately refresh all three enchantment options.\n3. §bSafety Checks: If the slot has no enchantable item or the player lacks the required experience level, the button is automatically disabled with an informative tooltip to prevent accidental waste of experience.");
 		}
 	}
 }

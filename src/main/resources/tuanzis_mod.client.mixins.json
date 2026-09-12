@@ -9,7 +9,8 @@
 		"AbstractContainerScreenMixin",
 		"WorldSculptorsPenRendererMixin",
 		"MinecraftMixin",
-		"AnvilScreenMixin"
+		"AnvilScreenMixin",
+		"EnchantmentScreenMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

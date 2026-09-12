@@ -2,6 +2,7 @@ package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModStatusEffects;
 import net.minecraft.core.Holder;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -165,7 +166,7 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker 
 
                     // 播放虚脱副作用音效
                     entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), 
-                        net.minecraft.sounds.SoundEvents.WITHER_SHOOT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.8f);
+                        SoundEvents.AMBIENT_UNDERWATER_ENTER, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.5f);
 
                     me.tuanzi.util.ModLog.debug(entity, null, "肾上腺素药水效果结束：透支副作用触发！已获得 " + (level * 30) + " 秒的虚弱 I 与挖掘疲劳 I（透支等级: " + level + " 级）。");
 

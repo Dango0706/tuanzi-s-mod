@@ -266,6 +266,34 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
             )
         )
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "steel_shield_gift")));
+
+        // 过载协议 (Overload Protocol)
+        entries.add(ModEnchantments.OVERLOAD_PROTOCOL, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(net.minecraft.tags.ItemTags.WEAPON_ENCHANTABLE),
+                2,    // weight
+                5,    // max level (V)
+                Enchantment.dynamicCost(15, 9), 
+                Enchantment.dynamicCost(65, 9), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "overload_protocol")));
+
+        // 古卷附魔-汲血 (Ancient Scroll - Blood Leech)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                1,    // weight (最高稀有度)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(30, 100), 
+                Enchantment.dynamicCost(80, 100), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_blood_leech")));
     }
 
     @Override

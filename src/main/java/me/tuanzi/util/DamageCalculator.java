@@ -36,7 +36,7 @@ public class DamageCalculator {
         }
 
         // 0.1 潮汐织靴免受摔落伤害
-        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) 
+        if (source.is(net.minecraft.tags.DamageTypeTags.IS_FALL)
                 && target.getItemBySlot(EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
             me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！触发【潮汐织靴】摔落免疫，计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: 0.00");
             return 0.0f;
@@ -52,11 +52,11 @@ public class DamageCalculator {
                 attackerMultiplier += 0.4f;
                 me.tuanzi.util.ModLog.debug(attacker, target, "伤害更改触发：攻击者拥有血怒效果，攻击力增加 40% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
             }
-            
+
             // 攻击者穿戴狂战士附魔胸甲，近战伤害随已损失生命值比例获得提升 (I级每损失10%增伤5%，II级增伤8%)
-            boolean isMelee = source.is(DamageTypes.PLAYER_ATTACK) 
-                || source.is(DamageTypes.MOB_ATTACK) 
-                || source.is(DamageTypes.MACE_SMASH);
+            boolean isMelee = source.is(DamageTypes.PLAYER_ATTACK)
+                    || source.is(DamageTypes.MOB_ATTACK)
+                    || source.is(DamageTypes.MACE_SMASH);
             if (isMelee) {
                 // 坚盾之赐 (Steel Shield Gift) 附魔逻辑
                 ItemStack steelShieldGiftStack = attacker.getMainHandItem();
@@ -104,25 +104,145 @@ public class DamageCalculator {
                     }
                 }
 
+                // 脉冲谐振剑 (Pulse Resonance Sword) 与 过载协议 (Overload Protocol) 附魔逻辑
+                ItemStack pulseWeaponStack = attacker.getMainHandItem();
+                boolean isPulseSword = pulseWeaponStack.getItem() instanceof me.tuanzi.item.PulseResonanceSwordItem;
+                int overloadLevel = 0;
+                if (!pulseWeaponStack.isEmpty()) {
+                    var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var overloadProtocolEnch = registry.getOrThrow(ModEnchantments.OVERLOAD_PROTOCOL);
+                    overloadLevel = EnchantmentHelper.getItemEnchantmentLevel(overloadProtocolEnch, pulseWeaponStack);
+                }
+
+                if (isPulseSword || overloadLevel > 0) {
+                    net.minecraft.world.item.component.CustomData customData = pulseWeaponStack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                    CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
+                    int pulse = tag.getIntOr("PulseLevel", 0);
+                    double wearValue = tag.getDoubleOr("WearValue", 0.0);
+
+                    if (pulse >= 3) {
+                        // 获取武器基础面板攻击力
+                        final float[] dmgBox = {1.0f};
+                        pulseWeaponStack.forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                            if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) {
+                                if (modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                                    dmgBox[0] += (float) modifier.amount();
+                                }
+                            }
+                        });
+                        float baseWeaponDmg = Math.max(1.0f, dmgBox[0]);
+
+                        // 满 3 层脉冲：触发脉冲电击爆发！
+                        // 1. 脉冲谐振剑固有武器被动伤害 (+3.0)
+                        float pulseSwordPassiveDmg = isPulseSword ? 3.0f : 0.0f;
+                        // 2. 过载协议基础固定伤害：武器基础伤害 * (10% + 5% * 等级)
+                        float overloadFixedDmg = (overloadLevel > 0) ? (baseWeaponDmg * (0.10f + 0.05f * overloadLevel)) : 0.0f;
+                        // 3. 过载协议附魔等级额外伤害：0.85 * 等级
+                        float overloadBonusDmg = (overloadLevel > 0) ? (0.85f * overloadLevel) : 0.0f;
+
+                        float totalElectricDmg = pulseSwordPassiveDmg + overloadFixedDmg + overloadBonusDmg;
+
+                        amount += totalElectricDmg;
+                        tag.putInt("PulseLevel", 0);
+                        pulseWeaponStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+
+                        if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                            float pitch = 1.3f - (float) wearValue * 0.5f;
+                            target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                                    SoundEvents.LIGHTNING_BOLT_THUNDER, net.minecraft.sounds.SoundSource.PLAYERS, 0.7f, pitch);
+                            target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                                    SoundEvents.COPPER_BULB_TURN_ON, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, pitch);
+
+                            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                                    target.getX(), target.getY() + 1.0, target.getZ(),
+                                    24, 0.35, 0.35, 0.35, 0.15);
+                            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,
+                                    target.getX(), target.getY() + 1.0, target.getZ(),
+                                    12, 0.25, 0.25, 0.25, 0.1);
+                            if (wearValue >= 0.6) {
+                                serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                                        target.getX(), target.getY() + 1.0, target.getZ(),
+                                        8, 0.2, 0.2, 0.2, 0.02);
+                            }
+                        }
+
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【脉冲电击】满层释放！武器基础攻击力: " + String.format("%.2f", baseWeaponDmg)
+                                + "，武器被动(脉冲谐振剑): " + String.format("%.2f", pulseSwordPassiveDmg)
+                                + "，过载协议固定值(基础伤害*(10%+5%*等级)): " + String.format("%.2f", overloadFixedDmg)
+                                + "，过载协议等级加成(0.85*等级): " + String.format("%.2f", overloadBonusDmg)
+                                + "，总电击额外伤害: " + String.format("%.2f", totalElectricDmg)
+                                + " 点，算上普攻最终预期伤害: " + String.format("%.2f", amount)
+                                + " 点，脉冲层数重置为 0。");
+                    } else {
+                        // 未满 3 层脉冲：充能判定！
+                        boolean canCharge = true;
+                        if (attacker instanceof net.minecraft.world.entity.player.Player player) {
+                            me.tuanzi.util.TideCleaverPlayerTracker tracker = (me.tuanzi.util.TideCleaverPlayerTracker) player;
+                            float attackStrength = tracker.tuanzis_mod$getLastAttackStrength();
+                            if (attackStrength < 0.8f) {
+                                canCharge = false;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【脉冲充能】攻击蓄力时间不足 80%（当前蓄力比例: " + String.format("%.2f%%", attackStrength * 100) + "），无法叠加电容脉冲。");
+                            }
+                        }
+
+                        if (canCharge) {
+                            int add = 0;
+                            if (isPulseSword) {
+                                // 脉冲谐振剑固有机制：每次命中固定叠加 1 层脉冲，附魔过载协议时不叠加概率充能
+                                add = 1;
+                            } else if (overloadLevel > 0) {
+                                // 普通武器附魔过载协议：按概率判定是否叠加 1 层脉冲
+                                float chance = 0.05f + 0.05f * overloadLevel;
+                                if (attacker.getRandom().nextFloat() < chance) {
+                                    add = 1;
+                                    me.tuanzi.util.ModLog.debug(attacker, target, "【过载协议】概率判定成功 (概率 " + String.format("%.0f", chance * 100) + "%)，充能 1 层！");
+                                } else {
+                                    me.tuanzi.util.ModLog.debug(attacker, target, "【过载协议】概率判定未触发 (概率 " + String.format("%.0f", chance * 100) + "%)。");
+                                }
+                            }
+
+                            if (add > 0) {
+                                int newPulse = Math.min(3, pulse + add);
+                                tag.putInt("PulseLevel", newPulse);
+                                pulseWeaponStack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+
+                                if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                                    float basePitch = 0.9f + 0.3f * newPulse - (float) wearValue * 0.25f;
+                                    target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                                            SoundEvents.NOTE_BLOCK_CHIME.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, basePitch);
+                                    target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
+                                            SoundEvents.REDSTONE_TORCH_BURNOUT, net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, basePitch);
+
+                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                                            target.getX(), target.getY() + 1.0, target.getZ(),
+                                            5 * newPulse, 0.2, 0.2, 0.2, 0.05);
+                                }
+
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【脉冲充能】成功！增加 " + add + " 层，当前脉冲层数: " + newPulse + "/3。");
+                            }
+                        }
+                    }
+                }
+
                 if (attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.TideCleaverItem) {
                     ItemStack mainHand = attacker.getMainHandItem();
                     net.minecraft.world.item.component.CustomData customData = mainHand.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
                     CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
-                    
+
                     int charge = tag.getIntOr("ChargeLevel", 0);
                     long gameTime = attacker.level().getGameTime();
                     long cooldownEnd = tag.getLongOr("BurstCooldownEnd", 0L);
                     boolean hasCooldown = gameTime < cooldownEnd;
-                    
+
                     int nextCharge = charge;
                     boolean onBeat = false;
                     boolean offBeat = false;
-                    
+
                     if (attacker instanceof net.minecraft.world.entity.player.Player player) {
                         me.tuanzi.util.TideCleaverPlayerTracker tracker = (me.tuanzi.util.TideCleaverPlayerTracker) player;
                         float strength = tracker.tuanzis_mod$getLastAttackStrength();
                         int fullyChargedTicks = tracker.tuanzis_mod$getLastAttackFullyChargedTicks();
-                        
+
                         if (strength >= 0.8f && strength < 1.0f) {
                             onBeat = true;
                         } else if (strength >= 1.0f && fullyChargedTicks <= 4) {
@@ -133,69 +253,69 @@ public class DamageCalculator {
                     } else {
                         onBeat = true;
                     }
-                    
+
                     if (onBeat) {
                         if (charge == 5 && !hasCooldown) {
                             nextCharge = 1;
                             attackerMultiplier += 5 * 0.02f; // 享受 5 层 10% 增伤
-                            
+
                             if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                                 var magicType = attacker.registryAccess()
-                                    .lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                                    .getOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
+                                        .lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                                        .getOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
                                 net.minecraft.world.damagesource.DamageSource burstSrc = new net.minecraft.world.damagesource.DamageSource(magicType, attacker);
-                                
+
                                 int invTime = target.invulnerableTime;
                                 target.invulnerableTime = 0;
                                 target.hurtServer(serverLevel, burstSrc, 3.0f);
                                 target.invulnerableTime = invTime;
-                                
+
                                 tag.putLong("BurstCooldownEnd", gameTime + 140);
                                 if (attacker instanceof net.minecraft.world.entity.player.Player player) {
                                     player.getCooldowns().addCooldown(mainHand, 140);
                                 }
-                                
+
                                 serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH,
-                                    target.getX(), target.getY() + 1.0, target.getZ(),
-                                    20, 0.4, 0.4, 0.4, 0.2);
+                                        target.getX(), target.getY() + 1.0, target.getZ(),
+                                        20, 0.4, 0.4, 0.4, 0.2);
                                 serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE,
-                                    target.getX(), target.getY() + 1.0, target.getZ(),
-                                    15, 0.3, 0.3, 0.3, 0.1);
+                                        target.getX(), target.getY() + 1.0, target.getZ(),
+                                        15, 0.3, 0.3, 0.3, 0.1);
                                 serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(),
-                                    net.minecraft.sounds.SoundEvents.PLAYER_SPLASH_HIGH_SPEED, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.2f);
-                                
+                                        net.minecraft.sounds.SoundEvents.PLAYER_SPLASH_HIGH_SPEED, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.2f);
+
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【潮涌爆发】额外造成 3.0 点魔法伤害，冷却重置 7 秒，充能重置为 1。");
                             }
                         } else {
                             nextCharge = Math.min(5, charge + 1);
                             attackerMultiplier += nextCharge * 0.02f;
-                            
+
                             if (!attacker.level().isClientSide()) {
                                 attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),
-                                    net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.5f);
+                                        net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.5f);
                             }
                             me.tuanzi.util.ModLog.debug(attacker, target, "【潮汐节拍】合拍击中！充能等级：" + nextCharge);
                         }
                     } else if (offBeat) {
                         nextCharge = Math.max(0, charge - 1);
                         attackerMultiplier -= 0.15f;
-                        
+
                         if (!attacker.level().isClientSide()) {
                             attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),
-                                net.minecraft.sounds.SoundEvents.SHIELD_BLOCK, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 0.5f);
+                                    net.minecraft.sounds.SoundEvents.SHIELD_BLOCK, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 0.5f);
                         }
                         me.tuanzi.util.ModLog.debug(attacker, target, "【潮汐节拍】失拍击中！充能等级：" + nextCharge + "，伤害降低 15%");
                     } else {
                         me.tuanzi.util.ModLog.debug(attacker, target, "【潮汐节拍】正常击中（冷却充能超过宽限期），充能等级：" + charge);
                     }
-                    
+
                     tag.putInt("ChargeLevel", nextCharge);
                     mainHand.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
-                    
+
                     if (nextCharge >= 2) {
                         if (!attacker.level().isClientSide()) {
                             target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                                me.tuanzi.init.ModStatusEffects.TIDE_EROSION, 40, 0, false, false, true
+                                    me.tuanzi.init.ModStatusEffects.TIDE_EROSION, 40, 0, false, false, true
                             ));
                             me.tuanzi.util.ModLog.debug(attacker, target, "【潮汐侵蚀】附带魔法伤害 DOT 施加/刷新。");
                         }
@@ -255,8 +375,8 @@ public class DamageCalculator {
                         if (!attacker.level().isClientSide()) {
                             float backlashDamage = execLevel * 1.0f;
                             var typeHolder = attacker.registryAccess()
-                                .lookupOrThrow(Registries.DAMAGE_TYPE)
-                                .getOrThrow(DamageTypes.GENERIC);
+                                    .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                    .getOrThrow(DamageTypes.GENERIC);
                             me.tuanzi.util.ExecuteBacklashDamageSource backlashSrc = new me.tuanzi.util.ExecuteBacklashDamageSource(typeHolder);
 
                             float newHealth = attacker.getHealth() - backlashDamage;
@@ -280,35 +400,35 @@ public class DamageCalculator {
                             // 击杀目标后，对其周围 5 格内敌人造成该次溢出伤害的 50%，最多连锁 5 个目标，由近到远排序。
                             if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                                 // 查找目标周围 5 格内的敌人（非自身，非攻击者，必须是 LivingEntity 且存活）
-                                var targets = serverLevel.getEntitiesOfClass(LivingEntity.class, 
-                                    target.getBoundingBox().inflate(5.0), 
-                                    entity -> entity != target && entity != attacker && entity.isAlive()
+                                var targets = serverLevel.getEntitiesOfClass(LivingEntity.class,
+                                        target.getBoundingBox().inflate(5.0),
+                                        entity -> entity != target && entity != attacker && entity.isAlive()
                                 );
-                                
+
                                 // 由近到远排序
                                 targets.sort((e1, e2) -> Double.compare(target.distanceToSqr(e1), target.distanceToSqr(e2)));
-                                
+
                                 // 最多连锁 5 个目标
                                 int count = 0;
                                 for (LivingEntity victim : targets) {
                                     if (count >= 5) break;
-                                    
+
                                     // 造成伤害
                                     var typeHolder = attacker.registryAccess()
-                                        .lookupOrThrow(Registries.DAMAGE_TYPE)
-                                        .getOrThrow(DamageTypes.MAGIC);
-                                    
+                                            .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                            .getOrThrow(DamageTypes.MAGIC);
+
                                     me.tuanzi.util.ChainPainDamageSource chainSrc = new me.tuanzi.util.ChainPainDamageSource(typeHolder);
-                                    
+
                                     victim.hurtServer(serverLevel, chainSrc, splashDamage);
-                                    
+
                                     me.tuanzi.util.ModLog.debug(attacker, victim, "连锁苦痛：苦痛震荡波伤害连锁触发！对其造成了 " + String.format("%.2f", splashDamage) + " 点溢出波及伤害（连锁计数: " + (count + 1) + "/5）。");
-                                    
+
                                     // 产生附魔打击粒子效果
-                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT, 
-                                        victim.getX(), victim.getY() + 1.0, victim.getZ(), 
-                                        5, 0.2, 0.2, 0.2, 0.1);
-                                        
+                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANTED_HIT,
+                                            victim.getX(), victim.getY() + 1.0, victim.getZ(),
+                                            5, 0.2, 0.2, 0.2, 0.1);
+
                                     count++;
                                 }
                             }
@@ -320,8 +440,8 @@ public class DamageCalculator {
                 var buzzingRhythmEnch = registry.getOrThrow(ModEnchantments.BUZZING_RHYTHM);
                 int rhythmLevel = EnchantmentHelper.getItemEnchantmentLevel(buzzingRhythmEnch, mainHand);
                 if (rhythmLevel > 0) {
-                    boolean hasBeePoison = target.hasEffect(ModStatusEffects.BEE_POISON) 
-                        || target.hasEffect(ModStatusEffects.BEE_POISON_COOLDOWN);
+                    boolean hasBeePoison = target.hasEffect(ModStatusEffects.BEE_POISON)
+                            || target.hasEffect(ModStatusEffects.BEE_POISON_COOLDOWN);
                     if (hasBeePoison) {
                         if (attacker instanceof me.tuanzi.util.RhythmTracker tracker) {
                             java.util.UUID lastTargetUuid = tracker.tuanzis_mod$getLastRhythmTarget();
@@ -358,64 +478,64 @@ public class DamageCalculator {
                 // 幽匿裂片 (Scully Shard) 与 共振脉冲 (Resonance Pulse) 附魔逻辑
                 if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                     boolean isScullyShard = mainHand.getItem() instanceof me.tuanzi.item.ScullyShardItem;
-                    
+
                     var resonancePulseEnch = registry.getOrThrow(ModEnchantments.RESONANCE_PULSE);
                     int pulseLevel = EnchantmentHelper.getItemEnchantmentLevel(resonancePulseEnch, mainHand);
-                    
+
                     if (isScullyShard || pulseLevel > 0) {
                         boolean hasResonance = target.hasEffect(ModStatusEffects.RESONANCE);
-                        
+
                         if (hasResonance) {
                             // 移除共鸣效果
                             target.removeEffect(ModStatusEffects.RESONANCE);
                             me.tuanzi.util.ModLog.debug(attacker, target, "【共鸣消耗】目标已带共鸣，移除其共鸣效果！");
-                            
+
                             // 重置无敌时间，确保音波魔法伤害不被免疫
                             int originalInvulnerableTime = target.invulnerableTime;
                             target.invulnerableTime = 0;
-                            
+
                             var magicType = attacker.registryAccess()
-                                .lookupOrThrow(Registries.DAMAGE_TYPE)
-                                .getOrThrow(DamageTypes.MAGIC);
+                                    .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                    .getOrThrow(DamageTypes.MAGIC);
                             me.tuanzi.util.SonicDamageSource sonicSrc = new me.tuanzi.util.SonicDamageSource(magicType, attacker);
-                            
+
                             // 1. 触发幽匿裂片 2.0 点单体音波魔法伤害
                             if (isScullyShard) {
                                 target.hurtServer(serverLevel, sonicSrc, 2.0f);
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【幽匿裂片】造成额外 2 点音波魔法伤害！");
                             }
-                            
+
                             // 2. 触发共振脉冲附魔伤害及周围 2 格敌人波及
                             if (pulseLevel > 0) {
                                 float pulseDamage = 0.2f + 0.4f * pulseLevel;
-                                
+
                                 // 查找目标及周围 2 格内所有 LivingEntity 敌人（非攻击者，非目标本身在循环中由 hurtServer 重新处理）
                                 var area = target.getBoundingBox().inflate(2.0);
-                                var nearbyEntities = serverLevel.getEntitiesOfClass(LivingEntity.class, area, 
-                                    entity -> entity.isAlive() && entity != attacker
+                                var nearbyEntities = serverLevel.getEntitiesOfClass(LivingEntity.class, area,
+                                        entity -> entity.isAlive() && entity != attacker
                                 );
-                                
+
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【共振脉冲】附魔触发！等级: " + pulseLevel + "，对范围 " + nearbyEntities.size() + " 个敌人造成 " + String.format("%.2f", pulseDamage) + " 点音波魔法伤害。");
-                                
+
                                 for (LivingEntity nearby : nearbyEntities) {
                                     // 同样重置周围敌人的受伤冷却，以防被吞
                                     nearby.invulnerableTime = 0;
                                     nearby.hurtServer(serverLevel, sonicSrc, pulseDamage);
-                                    
+
                                     // 产生声波爆轰粒子效果
-                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM, 
-                                        nearby.getX(), nearby.getY() + 1.0, nearby.getZ(), 
-                                        1, 0.0, 0.0, 0.0, 0.0);
+                                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
+                                            nearby.getX(), nearby.getY() + 1.0, nearby.getZ(),
+                                            1, 0.0, 0.0, 0.0, 0.0);
                                 }
-                                
+
                                 // 播放共鸣声波爆震音效
                                 serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(),
-                                    SoundEvents.WARDEN_SONIC_BOOM, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
+                                        SoundEvents.WARDEN_SONIC_BOOM, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
                             }
-                            
+
                             // 恢复原本的无敌时间
                             target.invulnerableTime = originalInvulnerableTime;
-                            
+
                         } else {
                             // 没有共鸣，施加共鸣
                             boolean applyResonance = false;
@@ -431,13 +551,13 @@ public class DamageCalculator {
                                     me.tuanzi.util.ModLog.debug(attacker, target, "【共振脉冲】共鸣施加判定未命中（概率: " + String.format("%.1f", chance * 100) + "%）。");
                                 }
                             }
-                            
+
                             if (applyResonance) {
                                 target.addEffect(new net.minecraft.world.effect.MobEffectInstance(ModStatusEffects.RESONANCE, 50, 0, false, false, true));
-                                
+
                                 // 播放清脆的回响声音，作为施加提示
                                 serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(),
-                                    SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 0.7f);
+                                        SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 0.7f);
                             }
                         }
                     }
@@ -452,7 +572,7 @@ public class DamageCalculator {
                             CompoundTag tag = customData.copyTag();
                             charge = tag.getIntOr("ChargeLevel", 0);
                         }
-                        
+
                         float baseDmg = 0.0f;
                         switch (abyssalLevel) {
                             case 1 -> baseDmg = 0.1f;
@@ -463,19 +583,19 @@ public class DamageCalculator {
                         }
                         float bonusDmg = charge > 0 ? (0.05f * abyssalLevel) * charge : 0.0f;
                         float totalExtraDmg = baseDmg + bonusDmg;
-                        
+
                         int originalInvulnerableTime = target.invulnerableTime;
                         target.invulnerableTime = 0;
-                        
+
                         var magicType = attacker.registryAccess()
-                            .lookupOrThrow(Registries.DAMAGE_TYPE)
-                            .getOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
+                                .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                .getOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
                         net.minecraft.world.damagesource.DamageSource magicSrc = new net.minecraft.world.damagesource.DamageSource(magicType, attacker);
-                        
+
                         target.hurtServer(serverLevel, magicSrc, totalExtraDmg);
-                        
+
                         target.invulnerableTime = originalInvulnerableTime;
-                        
+
                         me.tuanzi.util.ModLog.debug(attacker, target, "【深渊律动】附魔触发！等级: " + abyssalLevel + "，当前潮汐共鸣层数: " + charge + "，造成额外魔法伤害: " + String.format("%.2f", totalExtraDmg) + " 点。");
                     }
                 }
@@ -500,6 +620,7 @@ public class DamageCalculator {
 
         float finalDamage = amount * attackerMultiplier * victimMultiplier;
 
+
         // 蜂毒引爆与消耗处理
         if (target.hasEffect(ModStatusEffects.BEE_POISON) && !(source instanceof me.tuanzi.util.BeeStingExplosionDamageSource)) {
             if (source.getEntity() instanceof LivingEntity attacker && attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.BeeStingEchoItem) {
@@ -512,10 +633,10 @@ public class DamageCalculator {
 
                     if (!target.level().isClientSide() && target.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                         float explodeDamage = finalDamage * 0.15f;
-                        
+
                         var typeHolder = attacker.registryAccess()
-                            .lookupOrThrow(Registries.DAMAGE_TYPE)
-                            .getOrThrow(DamageTypes.GENERIC);
+                                .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                .getOrThrow(DamageTypes.GENERIC);
                         me.tuanzi.util.BeeStingExplosionDamageSource explosionSrc = new me.tuanzi.util.BeeStingExplosionDamageSource(typeHolder, attacker);
 
                         target.hurtServer(serverLevel, explosionSrc, explodeDamage);
@@ -525,20 +646,43 @@ public class DamageCalculator {
 
                         // 播放引爆粒子效果
                         serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.COMPOSTER,
-                            target.getX(), target.getY() + 1.0, target.getZ(),
-                            15, 0.3, 0.3, 0.3, 0.1);
+                                target.getX(), target.getY() + 1.0, target.getZ(),
+                                15, 0.3, 0.3, 0.3, 0.1);
                         serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE,
-                            target.getX(), target.getY() + 1.0, target.getZ(),
-                            10, 0.2, 0.2, 0.2, 0.05);
+                                target.getX(), target.getY() + 1.0, target.getZ(),
+                                10, 0.2, 0.2, 0.2, 0.05);
                         // 播放引爆音效
                         serverLevel.playSound(null, target.getX(), target.getY(), target.getZ(),
-                            SoundEvents.BEE_DEATH, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.6f);
+                                SoundEvents.BEE_DEATH, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 0.6f);
                     }
                 }
             } else {
                 // 如果是其它伤害来源，生效后需要消耗掉（清空）蜂毒层数
                 target.removeEffect(ModStatusEffects.BEE_POISON);
                 me.tuanzi.util.ModLog.debug(source.getEntity(), target, "【蜂毒】被非蜂刺余响的伤害触发，已消耗清空蜂毒效果。");
+            }
+        }
+
+        // 古卷附魔-汲血 (Ancient Scroll - Blood Leech) 逻辑
+        if (source.getEntity() instanceof LivingEntity attacker && finalDamage > 0.0f) {
+            ItemStack bloodLeechWeapon = attacker.getMainHandItem();
+            if (!bloodLeechWeapon.isEmpty()) {
+                var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                var bloodLeechEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH);
+                int bloodLeechLevel = EnchantmentHelper.getItemEnchantmentLevel(bloodLeechEnch, bloodLeechWeapon);
+                if (bloodLeechLevel > 0) {
+                    float healPercent = 0.05f + 0.05f * bloodLeechLevel;
+                    float healAmount = finalDamage * healPercent;
+                    if (healAmount > 0.0f) {
+                        attacker.heal(healAmount);
+                        if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART,
+                                    attacker.getX(), attacker.getY() + 1.0, attacker.getZ(),
+                                    Math.max(1, (int) (healAmount / 2.0f)), 0.3, 0.3, 0.3, 0.1);
+                        }
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【古卷附魔-汲血】附魔触发！等级: " + bloodLeechLevel + "，造成伤害: " + String.format("%.2f", finalDamage) + "，吸血比例: " + String.format("%.1f", healPercent * 100) + "%，回复生命值: " + String.format("%.2f", healAmount) + " 点。");
+                    }
+                }
             }
         }
 
