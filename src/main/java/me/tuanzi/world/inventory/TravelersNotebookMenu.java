@@ -8,6 +8,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
@@ -128,7 +129,7 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
         // 2. 返还剩余燃料
         if (!paperStack.isEmpty()) {
             if (!player.getInventory().add(paperStack)) {
-                player.drop(paperStack, false);
+                player.drop(paperStack, false, Prediction.SERVER_ONLY);
             }
             this.container.setItem(0, ItemStack.EMPTY);
         }

@@ -91,6 +91,39 @@ public class ModEntities {
                     .build(SHURIKEN_KEY)
     );
 
+    public static final ResourceKey<EntityType<?>> GLASS_ITEM_FRAME_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "glass_item_frame")
+    );
+
+    public static final EntityType<me.tuanzi.entity.GlassItemFrameEntity> GLASS_ITEM_FRAME = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            GLASS_ITEM_FRAME_KEY,
+            EntityType.Builder.<me.tuanzi.entity.GlassItemFrameEntity>of(me.tuanzi.entity.GlassItemFrameEntity::new, MobCategory.MISC)
+                    .noLootTable()
+                    .sized(0.5F, 0.5F)
+                    .eyeHeight(0.0F)
+                    .clientTrackingRange(10)
+                    .noUpdateInterval()
+                    .dontTrackDeltas()
+                    .build(GLASS_ITEM_FRAME_KEY)
+    );
+
+    public static final ResourceKey<EntityType<?>> CRESCENT_AURA_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "crescent_aura")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CrescentAuraEntity> CRESCENT_AURA = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CRESCENT_AURA_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CrescentAuraEntity>of(me.tuanzi.entity.CrescentAuraEntity::new, MobCategory.MISC)
+                    .noLootTable()
+                    .sized(2.5F, 0.8F)
+                    .clientTrackingRange(8)
+                    .build(CRESCENT_AURA_KEY)
+    );
+
     public static void initialize() {
         FabricDefaultAttributeRegistry.register(DECOY, DecoyEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SCARECROW, LivingEntity.createLivingAttributes());

@@ -45,7 +45,7 @@ public class GachaLogic {
             return new ArrayList<>();
         }
 
-        boolean isSakura = poolId.equalsIgnoreCase("sakura_moon");
+        boolean isLimited = isLimitedPool(poolId);
         PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
         
         List<RollResult> results = new ArrayList<>();
@@ -57,7 +57,7 @@ public class GachaLogic {
                 // 判定是否是十连的最后一次保底 (第 10 抽，且前 9 抽没有任何稀有以上)
                 boolean isGuaranteedRare = isTenFold && (i == 9) && !hasRareOrAboveInTenFold;
                 
-                RollResult singleResult = rollSingle(player, state, pool, isSakura, isGuaranteedRare);
+                RollResult singleResult = rollSingle(player, state, pool, isLimited, isGuaranteedRare);
                 results.add(singleResult);
 
                 String rarity = singleResult.getRarity();
@@ -94,15 +94,15 @@ public class GachaLogic {
     /**
      * 单次抽卡概率计算与保底判定
      */
-    private static RollResult rollSingle(ServerPlayer player, PlayerGachaState state, GachaPool pool, boolean isSakura, boolean isGuaranteedRare) {
+    private static RollResult rollSingle(ServerPlayer player, PlayerGachaState state, GachaPool pool, boolean isLimited, boolean isGuaranteedRare) {
         // 1. 获取计数器
-        int legendaryCounter = isSakura ? state.getSakuraLegendaryCounter() : state.getNormalLegendaryCounter();
-        int epicCounter = isSakura ? state.getSakuraEpicCounter() : state.getNormalEpicCounter();
+        int legendaryCounter = isLimited ? state.getSakuraLegendaryCounter() : state.getNormalLegendaryCounter();
+        int epicCounter = isLimited ? state.getSakuraEpicCounter() : state.getNormalEpicCounter();
 
         // 2. 计算传说概率 (软保底与硬保底)
         double pLegendary = 0.02;
-        int hardLegendaryLimit = isSakura ? 90 : 80;
-        int softLegendaryStart = isSakura ? 70 : 60;
+        int hardLegendaryLimit = isLimited ? 90 : 80;
+        int softLegendaryStart = isLimited ? 70 : 60;
 
         if (legendaryCounter >= softLegendaryStart) {
             pLegendary = 0.02 + 0.05 * (legendaryCounter + 1 - softLegendaryStart);
@@ -224,7 +224,7 @@ public class GachaLogic {
                 }
                 
                 if (selectedItem == null) {
-                    if (isSakura && raritySelected.equals("legendary")) {
+                    if (isLimited && raritySelected.equals("legendary")) {
                         selectedItem = list.get(0);
                     } else {
                         selectedItem = selectWeightedItem(list);
@@ -240,7 +240,7 @@ public class GachaLogic {
                             PlayerGachaManager.saveStateSafe(state);
                         }
 //                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
-                        ModLog.debug(player, null, "提前抽中定轨目标！获得定轨目标: " + selectedItem.getId());
+                        ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
                     } else {
                         anchor.setFateValue(anchor.getFateValue() + 1);
                         state.setDirty(true);
@@ -253,7 +253,7 @@ public class GachaLogic {
         }
 
         if (!hasFateTargetAndMatched || selectedItem == null) {
-            if (isSakura && raritySelected.equals("legendary")) {
+            if (isLimited && raritySelected.equals("legendary")) {
                 selectedItem = list.get(0);
             } else {
                 selectedItem = selectWeightedItem(list);
@@ -268,7 +268,7 @@ public class GachaLogic {
 
         // 9. 更新状态计数器
         if (raritySelected.equals("legendary")) {
-            if (isSakura) {
+            if (isLimited) {
                 state.setSakuraLegendaryCounter(0);
                 state.setSakuraEpicCounter(0);
             } else {
@@ -276,7 +276,7 @@ public class GachaLogic {
                 state.setNormalEpicCounter(0);
             }
         } else if (raritySelected.equals("epic")) {
-            if (isSakura) {
+            if (isLimited) {
                 state.setSakuraLegendaryCounter(legendaryCounter + 1);
                 state.setSakuraEpicCounter(0);
             } else {
@@ -284,7 +284,7 @@ public class GachaLogic {
                 state.setNormalEpicCounter(0);
             }
         } else {
-            if (isSakura) {
+            if (isLimited) {
                 state.setSakuraLegendaryCounter(legendaryCounter + 1);
                 state.setSakuraEpicCounter(epicCounter + 1);
             } else {

@@ -294,6 +294,150 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 EquipmentSlotGroup.MAINHAND
             )
         ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_blood_leech")));
+
+        // 古卷附魔-切金断玉 (Ancient Scroll - Metal Cleaver)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                1,    // weight (最高稀有度)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(30, 100), 
+                Enchantment.dynamicCost(80, 100), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_metal_cutter")));
+
+        // 古卷附魔-贯革 (Ancient Scroll - Hide Piercer)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(me.tuanzi.init.ModItemTags.BOW_AND_CROSSBOW_ENCHANTABLE),
+                1,    // weight (最高稀有度)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(30, 100), 
+                Enchantment.dynamicCost(80, 100), 
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_leather_piercer")));
+
+        // 玄冥雨刃 (Rain Blade)
+        entries.add(ModEnchantments.RAIN_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                10,   // weight (普通)
+                5,    // max level (V)
+                Enchantment.dynamicCost(1, 10), 
+                Enchantment.dynamicCost(16, 10), 
+                2,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_WEATHER_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "rain_blade")));
+
+        // 青女霜刃 (Frost Blade)
+        entries.add(ModEnchantments.FROST_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                10,   // weight (普通)
+                5,    // max level (V)
+                Enchantment.dynamicCost(1, 10), 
+                Enchantment.dynamicCost(16, 10), 
+                2,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_WEATHER_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "frost_blade")));
+
+        // 雷公霆刃 (Thunder Blade)
+        entries.add(ModEnchantments.THUNDER_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                10,   // weight (普通)
+                5,    // max level (V)
+                Enchantment.dynamicCost(1, 10), 
+                Enchantment.dynamicCost(16, 10), 
+                2,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_WEATHER_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "thunder_blade")));
+
+        // 金乌炽刃 (Sun Blade)
+        entries.add(ModEnchantments.SUN_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                10,   // weight (普通)
+                5,    // max level (V)
+                Enchantment.dynamicCost(1, 10), 
+                Enchantment.dynamicCost(16, 10), 
+                2,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_WEATHER_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "sun_blade")));
+
+        // 羲和昼刃 (Day Blade)
+        entries.add(ModEnchantments.DAY_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                2,    // weight (稀有/Rare)
+                5,    // max level (V)
+                Enchantment.dynamicCost(10, 8), 
+                Enchantment.dynamicCost(60, 8), 
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_DAY_NIGHT_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "day_blade")));
+
+        // 望舒夜刃 (Night Blade)
+        entries.add(ModEnchantments.NIGHT_BLADE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE),
+                2,    // weight (稀有/Rare)
+                5,    // max level (V)
+                Enchantment.dynamicCost(10, 8), 
+                Enchantment.dynamicCost(60, 8), 
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_DAY_NIGHT_BLADES))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "night_blade")));
+
+        // 游侠速装 (Ranger Reload)
+        entries.add(ModEnchantments.RANGER_RELOAD, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CROSSBOW_ENCHANTABLE),
+                2,    // weight (rare)
+                1,    // max level (I)
+                Enchantment.constantCost(20),
+                Enchantment.constantCost(50),
+                4,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ranger_reload")));
+
+        // 古卷附魔-预备弹仓 (Ancient Scroll - Reserved Chamber)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CROSSBOW_ENCHANTABLE),
+                1,    // weight (最高稀有度/古卷附魔)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(30, 100),
+                Enchantment.dynamicCost(80, 100),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        )
+        .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_RESERVED_CHAMBER))
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_reserved_chamber")));
     }
 
     @Override

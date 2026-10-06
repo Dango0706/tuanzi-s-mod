@@ -17,6 +17,7 @@
 - `me.tuanzi.gacha`: Gacha mechanics, pools, roll state.
 - `me.tuanzi.command`: In-game commands.
 - `me.tuanzi.network`: Networking packets and sync.
+- `me.tuanzi.world`: Custom menus/screens, recipe matching, and world/teleport logic.
 - `me.tuanzi.util`: Utility classes (`DamageCalculator`, `ModLog`, math/helper utils).
 - `me.tuanzi.datagen`: Data generators for recipes, tags, loot tables, lang, models.
 

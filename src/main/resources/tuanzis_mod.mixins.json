@@ -13,7 +13,6 @@
 		"ImmortalTalismanMixin",
 		"ImmortalTalismanPlayerMixin",
 		"UndyingEffectMixin",
-		"BrewingRecipeMixin",
 		"WardenExperienceMixin",
 		"ExperienceEnchantmentMixin",
 		"WardenSoulboundDropMixin",
@@ -49,7 +48,9 @@
 		"EnderDragonMixin",
 		"PlayerAccessor",
 		"EnchantmentMenuMixin",
-		"EnchantmentMixin"
+		"EnchantmentMixin",
+		"CombatRulesMixin",
+		"ProjectileMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

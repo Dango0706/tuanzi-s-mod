@@ -21,8 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class BlueprintCannonBlock extends BaseEntityBlock {
-    public static final com.mojang.serialization.MapCodec<BlueprintCannonBlock> CODEC = simpleCodec(BlueprintCannonBlock::new);
-
     private static final VoxelShape SHAPE = Shapes.or(
         box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),    // 稳固底座
         box(2.0, 4.0, 2.0, 14.0, 12.0, 14.0),  // 机械主体
@@ -31,11 +29,6 @@ public class BlueprintCannonBlock extends BaseEntityBlock {
 
     public BlueprintCannonBlock(BlockBehaviour.Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -80,9 +80,9 @@ public class ScarecrowRenderer extends LivingEntityRenderer<ArmorStand, ArmorSta
 
     @Override
     protected void setupRotations(final ArmorStandRenderState state, final PoseStack poseStack, final float bodyRot, final float entityScale) {
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyRot));
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F - bodyRot));
         if (state.wiggle < 5.0F) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.sin(state.wiggle / 1.5F * (float) Math.PI) * 3.0F));
+            poseStack.rotate(Axis.YP.rotationDegrees(Mth.sin(state.wiggle / 1.5F * (float) Math.PI) * 3.0F));
         }
     }
 

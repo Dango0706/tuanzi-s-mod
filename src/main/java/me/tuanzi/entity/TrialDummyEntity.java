@@ -9,13 +9,16 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.ValueInput;
@@ -42,7 +45,7 @@ public class TrialDummyEntity extends LivingEntity {
 
     public TrialDummyEntity(EntityType<? extends LivingEntity> type, net.minecraft.world.level.Level level) {
         super(type, level);
-        this.setInvulnerable(false);
+        this.setPermanentlyInvulnerable(false);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -123,24 +126,49 @@ public class TrialDummyEntity extends LivingEntity {
         }
     }
 
+    /**
+     * 解析伤害的真实来源实体（优先解析投射物发射者/拥有者）。
+     */
+    @Nullable
+    public static Entity resolveSourceEntity(DamageSource source) {
+        Entity entity = source.getEntity();
+        if (entity != null && !(entity instanceof Projectile)) {
+            return entity;
+        }
+        if (source.getDirectEntity() instanceof Projectile projectile) {
+            Entity owner = projectile.getOwner();
+            if (owner != null) {
+                return owner;
+            }
+        }
+        return entity != null ? entity : source.getDirectEntity();
+    }
+
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         if (source.is(net.minecraft.world.damagesource.DamageTypes.FELL_OUT_OF_WORLD)) {
             return super.hurtServer(level, source, amount);
         }
 
-        // 创造模式玩家左键一击即碎
-        if (source.isCreativePlayer()) {
+        boolean isProjectile = source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                || source.getDirectEntity() instanceof Projectile;
+
+        // 创造模式玩家直接近战破坏一击即碎（投射物攻击不属于直接近战破坏）
+        if (source.isCreativePlayer() && !isProjectile) {
             this.trialDummyDestroyed(level, source, false, false);
             return true;
         }
 
-        // 仅允许玩家造成的近战、远程、魔法攻击参与实体化防御计算，免受所有火烧、掉落等环境伤害
-        if (source.getEntity() instanceof Player player) {
-            // 将玩家 UUID 放入防武器耐久磨损的临时集合
+        // 解析真实伤害来源实体（支持投射物拥有者/发射者）
+        Entity trueSource = resolveSourceEntity(source);
+
+        // 若来源是玩家，将其 UUID 放入防武器耐久磨损的临时集合
+        if (trueSource instanceof Player player) {
             ATTACKING_PLAYERS.add(player.getUUID());
-            
-            // 实体化伤害计算流：调用原版受到伤害的逻辑
+        }
+
+        // 允许所有投射物攻击以及玩家造成的攻击（近战、远程、魔法等）参与实体化防御与伤害计算，免受所有火烧、掉落等环境伤害
+        if (isProjectile || trueSource instanceof Player) {
             return super.hurtServer(level, source, amount);
         }
 
@@ -186,39 +214,65 @@ public class TrialDummyEntity extends LivingEntity {
         }
         finalDamage = this.getDamageAfterMagicAbsorb(source, finalDamage);
 
-        // 打印诊断，以便在开发控制台清晰直白地查阅
-        me.tuanzi.util.ModLog.info(String.format("[TrialDummy] Damage diagnostics - armor: %.1f (attribute: %.1f, box: %.1f), toughness: %.1f (attribute: %.1f, box: %.1f), rawAmount: %.1f, finalDamage: %.1f",
-                finalArmor, rawArmor, armorBox[0], finalToughness, rawToughness, toughnessBox[0], amount, finalDamage));
+        // 解析真实伤害来源实体
+        Entity trueSource = resolveSourceEntity(source);
+        long currentTime = System.currentTimeMillis();
 
-        if (source.getEntity() instanceof ServerPlayer player) {
-            long currentTime = System.currentTimeMillis();
+        // 统一使用 ModLog.debug 输出受击伤害诊断日志（严格遵守 GEMINI.md 规范）
+        me.tuanzi.util.ModLog.debug(trueSource, this, String.format(
+            "【试炼假人受击诊断】来源实体: %s, 投射物直接实体: %s, 护甲: %.1f (属性: %.1f, 装备: %.1f), 韧性: %.1f (属性: %.1f, 装备: %.1f), 原始伤害: %.1f, 减免后最终伤害: %.1f",
+            trueSource != null ? trueSource.getName().getString() : "未知来源",
+            source.getDirectEntity() != null ? source.getDirectEntity().getName().getString() : "无",
+            finalArmor, rawArmor, armorBox[0], finalToughness, rawToughness, toughnessBox[0], amount, finalDamage
+        ));
+
+        // 投射物箭矢免消耗处理（排除三叉戟等非消耗性投射物）
+        if (source.getDirectEntity() instanceof AbstractArrow arrow && !(arrow instanceof ThrownTrident)) {
+            boolean isCreativeShooter = (trueSource instanceof Player player && player.hasInfiniteMaterials())
+                    || arrow.pickup == AbstractArrow.Pickup.CREATIVE_ONLY;
+            if (!isCreativeShooter) {
+                // 生存模式：原位无损补偿射出的真实箭矢（支持光灵箭、药水箭等特殊箭矢）
+                ItemStack pickupItem = arrow.getPickupItemStackOrigin();
+                if (pickupItem == null || pickupItem.isEmpty()) {
+                    pickupItem = new ItemStack(Items.ARROW);
+                } else {
+                    pickupItem = pickupItem.copy();
+                }
+                this.spawnAtLocation(level, pickupItem);
+            }
+            arrow.discard();
+        }
+
+        // 伤害与 DPS 统计
+        if (trueSource instanceof ServerPlayer player) {
             UUID playerUuid = player.getUUID();
 
-            // 如果是弹射物（如箭矢），进行箭矢免消耗归还
-            if (source.getDirectEntity() instanceof AbstractArrow arrow) {
-                // 命中后原位无损补偿一根普通箭矢，并清除弹射物实体
-                this.spawnAtLocation(level, new ItemStack(Items.ARROW));
-                arrow.discard();
-            }
-
-            // 获取或创建测试会话
+            // 获取或创建玩家测试会话
             TrialDummyTestSession session = this.activeSessions.computeIfAbsent(playerUuid, 
                     uuid -> new TrialDummyTestSession(uuid, this.getUUID(), currentTime));
 
             session.recordHit(finalDamage, currentTime);
 
-            // 发送 S2C 跳字同步包
+            // 立刻实时刷新攻击玩家的 Action Bar HUD，提供零延迟打击反馈
+            String totalStr = String.format("%.1f", session.getTotalDamage());
+            String dpsStr = String.format("%.1f", session.getDPS(currentTime));
+            player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("hud.tuanzis_mod.trial_dummy.actionbar", totalStr, dpsStr), true);
+        } else if (trueSource != null) {
+            // 来源为非玩家实体（如怪物等）：记录测试会话便于调试与扩展
+            UUID sourceUuid = trueSource.getUUID();
+            TrialDummyTestSession session = this.activeSessions.computeIfAbsent(sourceUuid,
+                    uuid -> new TrialDummyTestSession(uuid, this.getUUID(), currentTime));
+            session.recordHit(finalDamage, currentTime);
+        }
+
+        // 无论来源为何，只要造成有效伤害，均向附近 64 格内的所有玩家广播浮空跳字
+        if (finalDamage > 0.0f) {
             TrialDummyDamagePacket packet = new TrialDummyDamagePacket(this.getId(), finalDamage);
             for (ServerPlayer nearby : level.players()) {
                 if (nearby.distanceToSqr(this) < 64 * 64) {
                     net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(nearby, packet);
                 }
             }
-
-            // 立刻实时刷新攻击玩家的 Action Bar HUD，提供零延迟高能打击反馈
-            String totalStr = String.format("%.1f", session.getTotalDamage());
-            String dpsStr = String.format("%.1f", session.getDPS(currentTime));
-            player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("hud.tuanzis_mod.trial_dummy.actionbar", totalStr, dpsStr), true);
         }
 
         // 执行原版受伤（展现红光受击硬直与声音）
@@ -226,7 +280,7 @@ public class TrialDummyEntity extends LivingEntity {
 
         // 立刻将血量回满，实现完美无敌！
         this.setHealth(this.getMaxHealth());
-        this.invulnerableTime = 0;
+        this.setInvulnerableTime(0);
     }
 
     @Override
@@ -354,6 +408,16 @@ public class TrialDummyEntity extends LivingEntity {
     @Override
     public void knockback(double power, double xd, double zd, net.minecraft.world.damagesource.DamageSource source, float damage) {
         // 彻底屏蔽击退力，稳如泰山！
+    }
+
+    @Override
+    public void die(DamageSource damageSource) {
+        if (damageSource.is(net.minecraft.world.damagesource.DamageTypes.FELL_OUT_OF_WORLD)) {
+            super.die(damageSource);
+            return;
+        }
+        // 试炼人偶免疫常规致命伤害，强制恢复满血存活
+        this.setHealth(this.getMaxHealth());
     }
 
 

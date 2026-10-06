@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.util.Prediction;
 import net.minecraft.nbt.CompoundTag;
 
 import java.util.Collections;
@@ -38,8 +39,42 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, me.tuanzi.network.BlueprintMaterialBookPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.ChromaticSkullRequestPacket.TYPE, me.tuanzi.network.ChromaticSkullRequestPacket.CODEC);
+		// 注册野太刀势槽同步与挥空网络包
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.NodachiSyncPacket.TYPE, me.tuanzi.network.NodachiSyncPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiMissPacket.TYPE, me.tuanzi.network.NodachiMissPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiBeatPacket.TYPE, me.tuanzi.network.NodachiBeatPacket.CODEC);
 
 		// 注册 C2S 接收器
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.NodachiBeatPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				if (player.getMainHandItem().getItem() instanceof me.tuanzi.item.NodachiItem) {
+					if (player instanceof me.tuanzi.util.NodachiPlayerTracker tracker) {
+						if (payload.onBeat()) {
+							// 给予 6 ticks (约 0.3 秒) 宽限期，覆盖本次攻击命中结算
+							tracker.tuanzis_mod$setNodachiRhythmGraceTicks(6);
+							me.tuanzi.util.ModLog.debug(player, null, "【野太刀·QTE网络包】收到客户端节奏窗口合拍信号，赋予 6 刻宽限期。");
+						} else {
+							// 不在节奏窗口内，显式清空宽限期
+							tracker.tuanzis_mod$setNodachiRhythmGraceTicks(0);
+							me.tuanzi.util.ModLog.debug(player, null, "【野太刀·QTE网络包】收到客户端非节奏窗口出刀信号，清空宽限期。");
+						}
+					}
+				}
+			});
+		});
+
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.NodachiMissPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				if (player.getMainHandItem().getItem() instanceof me.tuanzi.item.NodachiItem) {
+					if (player instanceof me.tuanzi.util.NodachiPlayerTracker tracker) {
+						tracker.tuanzis_mod$triggerNodachiExhaustion("客户端挥空同步 (未命中任何实体或方块)");
+					}
+				}
+			});
+		});
+
 		ServerPlayNetworking.registerGlobalReceiver(ChainMiningKeyPacket.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
 				playerKeyStates.put(context.player(), payload.holding());
@@ -74,7 +109,7 @@ public class Tuanzis_mod implements ModInitializer {
 					ItemStack playerHead = new ItemStack(net.minecraft.world.item.Items.PLAYER_HEAD);
 					playerHead.set(net.minecraft.core.component.DataComponents.PROFILE, net.minecraft.world.item.component.ResolvableProfile.createUnresolved(name));
 					if (!player.getInventory().add(playerHead)) {
-						player.drop(playerHead, false);
+						player.drop(playerHead, false, Prediction.SERVER_ONLY);
 					}
 					player.level().playSound(null, player.getX(), player.getY(), player.getZ(), net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
 					me.tuanzi.util.ModLog.debug(player, null, "彩色变化头颅转换成功，获得正版玩家头颅: " + name);
@@ -161,7 +196,7 @@ public class Tuanzis_mod implements ModInitializer {
 							tableBe.getItems().set(0, result);
 						} else {
 							if (!player.getInventory().add(result)) {
-								player.drop(result, false);
+								player.drop(result, false, Prediction.SERVER_ONLY);
 							}
 						}
 						tableBe.setChanged();

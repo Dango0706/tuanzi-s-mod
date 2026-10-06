@@ -60,9 +60,23 @@ public abstract class EnchantmentMenuMixin {
                 return;
             }
 
-            // 扣除 1 级经验
+            // 校验青金石（生存模式下需要消耗青金石槽位的 1 个青金石，无青金石时无法刷新）
+            ItemStack lapis = this.enchantSlots.getItem(1);
+            if (!player.hasInfiniteMaterials()) {
+                if (lapis.isEmpty() || !lapis.is(net.minecraft.world.item.Items.LAPIS_LAZULI) || lapis.getCount() < 1) {
+                    cir.setReturnValue(false);
+                    return;
+                }
+            }
+
+            // 扣除 1 级经验与 1 个青金石（创造模式免消耗）
             if (!player.hasInfiniteMaterials()) {
                 player.giveExperienceLevels(-1);
+                lapis.consume(1, player);
+                if (lapis.isEmpty()) {
+                    this.enchantSlots.setItem(1, ItemStack.EMPTY);
+                }
+                this.enchantSlots.setChanged();
             }
 
             // 随机生成新的附魔种子并同步
@@ -78,7 +92,7 @@ public abstract class EnchantmentMenuMixin {
                 level.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 1.2F);
             });
 
-            ModLog.debug(player, null, "使用智慧法典刷新了附魔选项，新附魔种子: " + newSeed);
+            ModLog.debug(player, null, "使用智慧法典刷新了附魔选项（消耗 1 级经验与 1 个青金石），新附魔种子: " + newSeed);
             cir.setReturnValue(true);
         }
     }

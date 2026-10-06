@@ -15,6 +15,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
@@ -190,7 +191,7 @@ public class BlueprintCommand {
         structureBlueprint.set(DataComponents.CUSTOM_DATA, CustomData.of(blueprintData));
 
         if (!player.getInventory().add(structureBlueprint)) {
-            player.drop(structureBlueprint, false);
+            player.drop(structureBlueprint, false, Prediction.SERVER_ONLY);
         }
 
         player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.record_success", width, height, length).withStyle(ChatFormatting.GREEN));

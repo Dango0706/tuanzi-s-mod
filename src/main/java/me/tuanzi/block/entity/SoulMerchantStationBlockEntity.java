@@ -64,7 +64,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             // 确保属性
             this.cachedVillager.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SCALE).setBaseValue(0.25);
             this.cachedVillager.setNoAi(true);
-            this.cachedVillager.setInvulnerable(true);
+            this.cachedVillager.setPermanentlyInvulnerable(true);
             this.cachedVillager.setSilent(true);
             this.cachedVillager.snapTo(this.worldPosition.getX() + 0.5, this.worldPosition.getY() + 0.33, this.worldPosition.getZ() + 0.5, this.villagerYaw, 0.0f);
             this.cachedVillager.setYRot(this.villagerYaw);
@@ -155,7 +155,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                 // 设为 0.25 缩小比例，无 AI，无敌，静音，浮空于平台中央
                 villager.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SCALE).setBaseValue(0.25);
                 villager.setNoAi(true);
-                villager.setInvulnerable(true);
+                villager.setPermanentlyInvulnerable(true);
                 villager.setSilent(true);
                 villager.snapTo(pos.getX() + 0.5, pos.getY() + 0.33, pos.getZ() + 0.5, be.villagerYaw, 0.0f);
                 villager.setYRot(be.villagerYaw);
@@ -176,7 +176,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                 villager.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
                 
                 villager.setNoAi(true);
-                villager.setInvulnerable(true);
+                villager.setPermanentlyInvulnerable(true);
                 villager.setSilent(true);
                 villager.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SCALE).setBaseValue(0.25);
                 
@@ -193,22 +193,6 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                     ((VillagerAccessor) villager).setLastTradedPlayer(null);
                     be.syncVillagerToNbt();
                     be.setChanged();
-                }
-
-                // 模拟升级倒计时
-                VillagerAccessor accessor = (VillagerAccessor) villager;
-                if (!villager.isTrading() && accessor.getUpdateMerchantTimer() > 0) {
-                    int timer = accessor.getUpdateMerchantTimer() - 1;
-                    accessor.setUpdateMerchantTimer(timer);
-                    if (timer <= 0) {
-                        if (accessor.getIncreaseProfessionLevelOnUpdate()) {
-                            accessor.invokeIncreaseMerchantCareer(serverLevel);
-                            accessor.setIncreaseProfessionLevelOnUpdate(false);
-                            serverLevel.broadcastEntityEvent(villager, (byte)14); // 再次播放升级成功的绿粒子
-                            be.syncVillagerToNbt();
-                            be.setChanged();
-                        }
-                    }
                 }
 
                 // 方块实体自身 Tick 计时刷新交易锁定，每 8000 ticks (8小时游戏时间) 补货一次
@@ -297,7 +281,7 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             if (villager != null) {
                 // 关闭无 AI、无敌与静音
                 villager.setNoAi(false);
-                villager.setInvulnerable(false);
+                villager.setPermanentlyInvulnerable(false);
                 villager.setSilent(false);
                 // 还原为 1.0 尺寸的正常人！
                 villager.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.SCALE).setBaseValue(1.0);

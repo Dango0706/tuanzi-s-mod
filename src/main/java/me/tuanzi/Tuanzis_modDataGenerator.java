@@ -501,6 +501,25 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "星旅卡牌箱");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "樱花祭卡牌包");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "樱花祭卡牌箱");
+			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_PACK, "国庆祭卡牌包");
+			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_CHEST, "国庆祭卡牌盒");
+			translationBuilder.add("jei.tuanzis_mod.national_day_card_pack.description",
+				"【国庆祭卡牌包】\n" +
+				"国庆祭限定抽卡消耗凭证（单抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b单抽体验§r：手持右键点击使用，消耗 1 个卡牌包并在面前发射烟花，抽取 1 次国庆祭限定卡池奖励。\n" +
+				"2. §b卡池预览§r：按住 Shift + 右键点击，可直接打开卡池详情与定轨设置面板，实时查看各品质物品与当前保底抽数。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.national_day_card_chest.description",
+				"【国庆祭卡牌盒】\n" +
+				"国庆祭限定抽卡礼盒（十连抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次国庆祭限定奖励！\n" +
+				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
+				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
 
 			// 裂虚之痕中文翻译
 			translationBuilder.add(ModItems.RIFT_SCAR, "裂虚之痕");
@@ -633,6 +652,196 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
 			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_blood_leech.description", bloodLeechJeiDesc);
 
+			// 古卷附魔-切金断玉 (Ancient Scroll - Metal Cleaver) 翻译
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_metal_cutter", "古卷附魔-切金断玉");
+			String metalCutterJeiDesc = "【古卷附魔-切金断玉】\n" +
+				"失落古卷中记载的锋刃破阵秘法。最高等级 IV 级。适用类型：剑、斧。\n\n" +
+				"§e核心效果：§r\n" +
+				"造成的近战伤害无视对方 §c(10 + 5 × 等级)%§r 的护甲值：\n" +
+				"- §b等级 I§r：无视对方 §c15%§r 的护甲值\n" +
+				"- §b等级 II§r：无视对方 §c20%§r 的护甲值\n" +
+				"- §b等级 III§r：无视对方 §c25%§r 的护甲值\n" +
+				"- §b等级 IV§r：无视对方 §c30%§r 的护甲值\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_metal_cutter.description", metalCutterJeiDesc);
+
+			// 古卷附魔-贯革 (Ancient Scroll - Hide Piercer) 翻译
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_leather_piercer", "古卷附魔-贯革");
+			String leatherPiercerJeiDesc = "【古卷附魔-贯革】\n" +
+				"失落古卷中记载的穿甲射艺秘录。最高等级 IV 级。适用类型：弓、弩。\n\n" +
+				"§e核心效果：§r\n" +
+				"射击造成的伤害无视对方 §c(10 + 5 × 等级)%§r 的护甲值：\n" +
+				"- §b等级 I§r：无视对方 §c15%§r 的护甲值\n" +
+				"- §b等级 II§r：无视对方 §c20%§r 的护甲值\n" +
+				"- §b等级 III§r：无视对方 §c25%§r 的护甲值\n" +
+				"- §b等级 IV§r：无视对方 §c30%§r 的护甲值\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_leather_piercer.description", leatherPiercerJeiDesc);
+
+			// 天气附魔：玄冥雨刃 (Rain Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.rain_blade", "玄冥雨刃");
+			String rainBladeJeiDesc = "【玄冥雨刃】\n" +
+				"引玄冥水泽之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与青女霜刃、雷公霆刃、金乌炽刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b雨意增幅§r：当使用者所在位置处于§9下雨天§r时，增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
+				"2. §c非雨衰减§r：若所在位置§c非下雨天§r，则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
+				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
+				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
+				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
+				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
+				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.rain_blade.description", rainBladeJeiDesc);
+
+			// 天气附魔：青女霜刃 (Frost Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.frost_blade", "青女霜刃");
+			String frostBladeJeiDesc = "【青女霜刃】\n" +
+				"引青女素霜之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与玄冥雨刃、雷公霆刃、金乌炽刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b霜雪增幅§r：当使用者所在位置处于§b下雪天§r时，增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
+				"2. §c非雪衰减§r：若所在位置§c非下雪天§r，则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
+				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
+				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
+				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
+				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
+				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.frost_blade.description", frostBladeJeiDesc);
+
+			// 天气附魔：雷公霆刃 (Thunder Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.thunder_blade", "雷公霆刃");
+			String thunderBladeJeiDesc = "【雷公霆刃】\n" +
+				"引雷公神霆之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与玄冥雨刃、青女霜刃、金乌炽刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b雷霆增幅§r：当使用者所在位置处于§e雷雨/雷雪天§r时，增加武器基础攻击力 §a(等级 × 1.45 + 1)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a2.45§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a3.90§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a5.35§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a6.80§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a8.25§r 的基础伤害\n" +
+				"2. §c非雷暴衰减§r：若所在位置§c非雷雨/雷雪天§r，则降低武器基础攻击力 §c(0.1825 × (6 - 等级))§r：\n" +
+				"   - §b等级 I§r：降低武器基础攻击力 × §c91.25%§r\n" +
+				"   - §b等级 II§r：降低武器基础攻击力 × §c73.00%§r\n" +
+				"   - §b等级 III§r：降低武器基础攻击力 × §c54.75%§r\n" +
+				"   - §b等级 IV§r：降低武器基础攻击力 × §c36.50%§r\n" +
+				"   - §b等级 V§r：降低武器基础攻击力 × §c18.25%§r\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.thunder_blade.description", thunderBladeJeiDesc);
+
+			// 天气附魔：金乌炽刃 (Sun Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.sun_blade", "金乌炽刃");
+			String sunBladeJeiDesc = "【金乌炽刃】\n" +
+				"引金乌烈阳之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与玄冥雨刃、青女霜刃、雷公霆刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b晴阳增幅§r：当使用者所在位置处于§6晴天§r时（包含沙漠等无降水群系及下界、末地），增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
+				"2. §c非晴衰减§r：若所在位置§c非晴天§r（处于雨雪中），则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
+				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
+				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
+				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
+				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
+				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.sun_blade.description", sunBladeJeiDesc);
+
+			// 昼夜附魔：羲和昼刃 (Day Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.day_blade", "羲和昼刃");
+			String dayBladeJeiDesc = "【羲和昼刃】\n" +
+				"引羲和御日神威之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与望舒夜刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b日光增幅§r：当使用者所在位置处于§6白天§r时（0 ~ 12000 ticks，有昼夜循环维度），增加武器基础攻击力 §a(等级 × 0.675 + 0.2)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a0.875§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a1.550§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a2.225§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a2.900§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a3.575§r 的基础伤害\n" +
+				"2. §7非白天状态§r：若所在位置非白天（黑夜或无昼夜循环维度），则保持原武器面板，不获得增伤。\n\n" +
+				"§e获取途径：§r\n" +
+				"稀有度为稀有（Rare），可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.day_blade.description", dayBladeJeiDesc);
+
+			// 昼夜附魔：望舒夜刃 (Night Blade)
+			translationBuilder.add("enchantment.tuanzis_mod.night_blade", "望舒夜刃");
+			String nightBladeJeiDesc = "【望舒夜刃】\n" +
+				"引望舒驭月玄妙之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
+				"与羲和昼刃互斥。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b月影增幅§r：当使用者所在位置处于§9黑夜§r时（12000 ~ 24000 ticks，有昼夜循环维度），增加武器基础攻击力 §a(等级 × 0.675 + 0.2)§r 的基础伤害：\n" +
+				"   - §b等级 I§r：增加武器基础攻击力 × §a0.875§r 的基础伤害\n" +
+				"   - §b等级 II§r：增加武器基础攻击力 × §a1.550§r 的基础伤害\n" +
+				"   - §b等级 III§r：增加武器基础攻击力 × §a2.225§r 的基础伤害\n" +
+				"   - §b等级 IV§r：增加武器基础攻击力 × §a2.900§r 的基础伤害\n" +
+				"   - §b等级 V§r：增加武器基础攻击力 × §a3.575§r 的基础伤害\n" +
+				"2. §7非黑夜状态§r：若所在位置非黑夜（白天或无昼夜循环维度），则保持原武器面板，不获得增伤。\n\n" +
+				"§e获取途径：§r\n" +
+				"稀有度为稀有（Rare），可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.night_blade.description", nightBladeJeiDesc);
+
+			// 游侠速装 (Ranger Reload)
+			translationBuilder.add("enchantment.tuanzis_mod.ranger_reload", "游侠速装");
+			String rangerReloadJeiDesc = "【游侠速装】\n" +
+				"赋予弩手如行云流水般迅捷身姿的专属射手附魔。最高等级 I 级。适用类型：弩。\n" +
+				"可与所有弩附魔（包括快速装填、多重射击、穿透等）完美兼容共存。\n\n" +
+				"§e核心机制：§r\n" +
+				"1. §b移除减速惩罚§r：彻底移除装填弩时的移动减速惩罚（使用速度倍率恢复为 100%），装填过程中可自由奔跑与疾跑，不再迟缓。\n" +
+				"2. §b疾跑加速窗口§r：装填完成后的 §a2.5 秒§r 内，玩家获得爆发性的短时间§e“速度 II”疾跑加速§r（+40% 移动速度），并在装填瞬间自动激活动态疾跑。\n" +
+				"3. §b射击保持疾跑§r：在 2.5 秒窗口期内，无论单发射击还是接续装填下一发箭矢，扣动扳机射击均§a绝不打断疾跑状态§r，保持高度机动性与拉扯作战优势。\n\n" +
+				"§e获取途径：§r\n" +
+				"稀有度为稀有（Rare），可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.ranger_reload.description", rangerReloadJeiDesc);
+
+			// 古卷附魔-预备弹仓 (Ancient Scroll - Reserved Chamber)
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_reserved_chamber", "古卷附魔-预备弹仓");
+			String reservedChamberJeiDesc = "【古卷附魔-预备弹仓】\n" +
+				"失落古卷中记载的弩手机括秘传。最高等级 IV 级。适用类型：弩。\n" +
+				"与快速装填、多重射击、游侠速装互斥。\n\n" +
+				"§e核心机制：§r\n" +
+				"1. §b多发连续射击§r：装填一次后可连续扣动扳机射击 §a(等级 + 1) 次§r（I级2发，II级3发，III级4发，IV级5发），射击期间无需重复拉弦装填。\n" +
+				"2. §b副发伤害衰减§r：第一箭保留 100% 完整伤害，第一箭之后的每一箭伤害同第一箭减少 §c(60 - 10 × 等级)%§r：\n" +
+				"   - §b等级 I§r：后续箭矢伤害减少 §c50%§r\n" +
+				"   - §b等级 II§r：后续箭矢伤害减少 §c40%§r\n" +
+				"   - §b等级 III§r：后续箭矢伤害减少 §c30%§r\n" +
+				"   - §b等级 IV§r：后续箭矢伤害减少 §c20%§r\n" +
+				"   （副发弹药由弹仓机制备齐且不可拾取回收，伤害衰减均接入 DamageCalculator 统一结算）\n" +
+				"3. §b拉弦时间延长§r：装填弹仓需要更细致的整备动作，拉弦时间额外延长 §e(1 + 0.25 × 等级) 秒§r（I级+1.25秒，IV级+2.00秒）。\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description", reservedChamberJeiDesc);
+
 			// 幽匿裂片（Scully Shard）与 共振脉冲（Resonance Pulse）翻译
 			translationBuilder.add(ModItems.SCULLY_SHARD, "幽匿裂片");
 			translationBuilder.add(ModStatusEffects.RESONANCE.value(), "共鸣");
@@ -742,14 +951,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), "彩色楼梯");
 			translationBuilder.add(me.tuanzi.init.ModItems.PAINT_BUCKET, "油漆桶");
 
-			// GUI 界面翻译
+			// GUI 界面与操作提示翻译
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.title", "油漆桶调色盘");
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.confirm", "确认");
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.cancel", "取消");
+			translationBuilder.add("message.tuanzis_mod.paint_bucket.color_picked", "§a油漆桶已吸取颜色: §e%s");
 
 			// JEI 信息页说明中文
 			translationBuilder.add("jei.tuanzis_mod.color_block.description", "【彩色方块/半砖/楼梯】\n一类可由油漆桶染成各种自定义颜色的装饰性建材，表面纯净无任何边框杂质。\n\n§e核心机制：\n1. §b方块染色：把需要染色的彩色方块、半砖或楼梯与装有颜料的油漆桶一起放入合成栏即可完成染色。每染一个消耗 1 点油漆桶耐久。\n2. §b半砖叠加：允许将不同颜色的彩色半砖叠加放置为双半砖。其上下两个半砖将各自保留并独立渲染其原本染上的颜色，挖掘时亦会自动拆分掉落原本各自颜色的半砖物品。\n3. §b地图显示：彩色方块、楼梯和单半砖会在地图上直接显示其对应染色颜色。在叠加双半砖状态下，地图上会智能呈现§6顶部半砖§r的颜色。\n4. §b合成继承：使用带颜色的彩色方块来合成彩色楼梯（产出4个）或彩色半砖（产出6个）时，合成出来的楼梯或半砖将自动继承并融合（计算平均色）所有输入原料的颜色。");
-			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "【油漆桶】\n用于为彩色方块进行染色的实用工具。最大耐久度为 256 次。\n\n§e功能操作：\n1. §b打开调色盘：右键使用油漆桶，可打开客户端独占 of RGB 调色盘界面。拖动三个红/绿/蓝滑块可精确调节（0-255）颜料颜色，并有大方块实时预览。\n2. §b原版预设：提供 16 种原版染料色彩的快捷预设按钮，点击可一键快速换色。\n3. §b确认与取消：点击“取消”或按 ESC 关闭可回退到打开界面前的初始颜色；点击“确认”将保存当前设置并播放染色音效。\n4. §b染色消耗：在合成栏内为彩色方块进行染色时，每次合成扣减 1 点油漆桶耐久并将其留在格内，当耐久降至 0 时会销毁消失。");
+			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "【油漆桶】\n用于为彩色方块进行染色的实用工具。最大耐久度为 256 次。\n\n§e功能操作：\n1. §b打开调色盘：右键使用油漆桶，可打开客户端独占 of RGB 调色盘界面。拖动三个红/绿/蓝滑块可精确调节（0-255）颜料颜色，并有大方块实时预览。\n2. §b原版预设：提供 16 种原版染料色彩的快捷预设按钮，点击可一键快速换色。\n3. §b快速吸色：按住 Shift + 右键点击任意彩色方块（彩色方块、彩色半砖、彩色楼梯），可直接快速吸取该方块的当前颜色，并在操作栏实时显示色彩代码。\n4. §b确认与取消：点击“取消”或按 ESC 关闭可回退到打开界面前的初始颜色；点击“确认”将保存当前设置并播放染色音效。\n5. §b染色消耗：在合成栏内为彩色方块进行染色时，每次合成扣减 1 点油漆桶耐久并将其留在格内，当耐久降至 0 时会销毁消失。");
 
 			// 彩色变化头颅中文翻译
 			translationBuilder.add(ModItems.CHROMATIC_SKULL, "彩色变化头颅");
@@ -767,11 +977,43 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.CODEX_OF_ENCHANTING, "智慧法典");
 			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line1", "放在副手使用");
 			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line2", "打开附魔台时，新增刷新附魔按钮。");
-			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "点击后消耗 1 级经验即可重置附魔选项。");
-			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "刷新附魔（消耗 1 级经验）");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "点击后消耗 1 级经验与 1 个青金石即可重置附魔选项。");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "刷新附魔（消耗 1 级经验与 1 个青金石）");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready_creative", "刷新附魔（创造模式免消耗）");
 			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_item", "请先放入可附魔的物品");
 			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_exp", "经验不足（需要 1 级经验）");
-			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "【智慧法典】\n一本蕴含古老奥术符文与附魔权柄的深蓝魔法典籍，由下界之星、龙息与青金石精炼铸成。\n\n§e核心功能：\n1. §b副手生效：将智慧法典放置在副手栏时，打开附魔台界面将在青金石槽正下方额外显示一个“刷新附魔”按钮（绿金循环箭头图标）。\n2. §b经验刷新：在附魔台中放入待附魔物品后，点击刷新按钮仅需消耗 §a1 级经验值§r（创造模式免消耗，且不消耗青金石），即可随机生成全新的玩家附魔种子并当场刷新三个附魔选项与提示。\n3. §b状态校验：若槽位内无物品、物品不可附魔或经验不足 1 级时，按钮将自动处于禁用保护状态并提供对应悬浮提示，防止误触浪费经验。");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_lapis", "缺少青金石（青金石槽需要 1 个青金石）");
+			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "【智慧法典】\n一本蕴含古老奥术符文与附魔权柄的深蓝魔法典籍，由下界之星、龙息与青金石精炼铸成。\n\n§e核心功能：\n1. §b副手生效：将智慧法典放置在副手栏时，打开附魔台界面将在青金石槽正下方额外显示一个“刷新附魔”按钮（绿金循环箭头图标）。\n2. §b附魔刷新：在附魔台中放入待附魔物品后，点击刷新按钮在生存模式下消耗 §a1 级经验值§r 与 §91 个青金石§r（创造模式免消耗），即可随机生成全新的玩家附魔种子并当场刷新三个附魔选项与提示。\n3. §b状态校验：若槽位内无物品、物品不可附魔、经验不足 1 级或青金石槽无青金石时，按钮将自动处于禁用保护状态并提供对应悬浮提示，防止误触或消耗失败。");
+
+			// 玻璃展示框中文翻译
+			translationBuilder.add(ModItems.GLASS_ITEM_FRAME, "玻璃展示框");
+			translationBuilder.add("entity.tuanzis_mod.glass_item_frame", "玻璃展示框");
+			translationBuilder.add("jei.tuanzis_mod.glass_item_frame.description", "【玻璃展示框】\n融合了纯净透明玻璃特性的特殊物品展示框。\n\n§e核心特性：\n1. §b隐形展示：当展示框内放置有物品时，展示框边框自动变为完全透明并隐形，仅展示内部物品，呈现悬浮展示效果。\n2. §b空置显形：当展示框内未放置任何物品时，展示框恢复可见状态，便于玩家定位与放置物品。\n3. §b原版一致：具备原版物品展示框的所有特性，包括物品旋转、红石比较器信号输出、多向附着（墙面、地面、天花板）等。\n4. §b合成配方：4个物品展示框 + 1个玻璃 无序合成 4个玻璃展示框。");
+
+			// 弩支持力量附魔 JEI 介绍
+			translationBuilder.add("jei.tuanzis_mod.power_crossbow.description", "【弩 - 力量附魔机制】\n本模组扩展了原版附魔机制，使得弩现在也可以在生存模式下附魔【力量】（Power）附魔！\n\n§e核心机制：\n1. §b附魔方式：弩可以在附魔台中刷出力量 I~V 附魔，亦可在铁砧中使用力量附魔书进行附魔与合并。\n2. §b伤害结算：弩射出箭矢命中实体时，力量附魔的增伤效果为原版弓上力量附魔的一半。\n   - §7原版弓力量增伤公式：0.5 + 0.5 * 等级 点基础箭矢伤害（力量 I: +1.0，力量 V: +3.0）\n   - §6弩力量减半增伤公式：0.25 + 0.25 * 等级 点基础箭矢伤害\n   - 力量 I: +0.5 基础伤害\n   - 力量 II: +0.75 基础伤害\n   - 力量 III: +1.0 基础伤害\n   - 力量 IV: +1.25 基础伤害\n   - 力量 V: +1.5 基础伤害\n3. §b近战限制：力量附魔的增伤效果仅在发射箭矢命中时生效，直接手持弩进行近战攻击不会触发加成。");
+
+			// 野太刀与缠皮长握柄中文翻译
+			translationBuilder.add(ModItems.REINFORCED_LONG_HILT, "缠皮长握柄");
+			translationBuilder.add(ModItems.WOODEN_NODACHI, "木野太刀");
+			translationBuilder.add(ModItems.STONE_NODACHI, "石野太刀");
+			translationBuilder.add(ModItems.IRON_NODACHI, "铁野太刀");
+			translationBuilder.add(ModItems.GOLDEN_NODACHI, "金野太刀");
+			translationBuilder.add(ModItems.DIAMOND_NODACHI, "钻石野太刀");
+			translationBuilder.add(ModItems.NETHERITE_NODACHI, "下界合金野太刀");
+			translationBuilder.add("entity.tuanzis_mod.crescent_aura", "顺劈气刃");
+
+			// 野太刀悬浮提示 (Tooltip)
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.title", "【势·节奏连击】");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.rhythm_window", "✦ 节奏窗口：冷却满后指针扫入高亮区出刀累积势（攻速/伤害递增，满势斩出顺劈气刃）");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.sweet_spot", "✦ 刃尖甜点(>=2.2格)：造成 1.15 倍伤害并累积势（中段1.5~2.2格造成100%伤害）");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.root_penalty", "✦ 刀根贴脸(0~1.5格)：造成 85% 伤害(衰减15%)，无法累积势且击退大幅降低");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.sweep_evolution", "✦ 横扫形态：0~1层仅击退，2层150°顺劈伤害，3层顺劈气刃");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.penalty_info", "✦ 惩罚机制：挥空/超时(5s)立即清零全部势并陷入 0.5s 攻击脱力");
+
+			// 野太刀与配件 JEI 说明
+			translationBuilder.add("jei.tuanzis_mod.reinforced_long_hilt.description", "【缠皮长握柄】\n普通的木棍无法承受挥砍重长刀身产生的扭矩，必须合成专用握柄。\n\n§e合成配方：\n工作台中列式摆放：\n顶部：铁粒\n中部：烈焰棒\n底部：皮革");
+			translationBuilder.add("jei.tuanzis_mod.nodachi.description", "【野太刀】\n超长攻击距离的大型双手武器，具备独特的“势·节奏连击”与“刀锋甜点区”机制。\n\n§e基础属性：\n- 基础攻击距离：3.6 格（相比常规武器 +0.6 格）。\n- 基础攻击速度：1.3。\n\n§e核心机制（势·节奏连击）：\n1. §b弧形节拍器与 QTE 节奏窗口§r：手持野太刀时准星下方显示左右匀速摆动的弧形节拍指针。指针摆动速度恒定（扫过高亮区不会加速），每摆动一圈速度会随机微调变更，且高亮节奏窗口随机占比总轨道的 20%~30%。当武器攻击冷却达到 100% 后指针扫过随机出现的高亮窗口时出刀，即可无缝衔接下一层：\n   - §a连击 1 层§r：攻速提升至 1.5，伤害 +1\n   - §e连击 2 层§r：攻速提升至 1.7，伤害 +2\n   - §6满层 (3层)§r：攻速提升至 1.9，挥出向正前方推进的【顺劈气刃】（内置 5 秒独立冷却，斩出时不脱力）。\n2. §b惩罚机制§r：挥空或超过 5 秒未造成伤害时，触发持续 0.5 秒的脱力软僵直（无法攻击），且“势”立即全部移除归零。\n\n§e刀锋甜点区 (Sweet Spot)：\n1. §a刃尖命中 (>= 2.2 格)§r：造成 1.15 倍伤害，成功累积“势”层数。\n2. §e中段命中 (1.5 ~ 2.2 格)§r：造成 100% 完整伤害，保持“势”层数。\n3. §c刀根贴脸 (0 ~ 1.5 格)§r：造成 85% 伤害（衰减 15%），无法积累“势”，且攻击击退大幅降低。\n\n§e横扫判定与形态变化：\n1. §70 ~ 1 层“势”§r：横扫范围为前方 120° 扇形、半径 2.8 格，仅击退杂兵，无横扫伤害。\n2. §e2 层“势”§r：横扫范围扩大至 150° 扇形、半径 3.4 格，对扇区内所有副目标造成 1 点顺劈伤害与击退。\n3. §63 层满势（顺劈气刃）§r：内置 5 秒冷却。普通挥砍斩出向正前方推进的气刃（速度 20 格/秒，贯穿 4 格，宽 2.5 格），造成武器 20% 纯物理伤害，并斩断沿途的蜘蛛网、竹子与草叶。\n\n§e合成与升级：\n1. 工作台 3x3 矩阵对角线贯穿合成基础 5 阶（左下为缠皮长握柄，中斜线及右上为对应矿物材料）。\n2. 下界合金版本使用锻造台将钻石野太刀升级。");
 		}
 	}
 
@@ -806,6 +1048,25 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.STAR_TRAVEL_CARD_CHEST, "Star Travel Card Chest");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_PACK, "Sakura Festival Card Pack");
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
+			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_PACK, "National Day Card Pack");
+			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_CHEST, "National Day Card Chest");
+			translationBuilder.add("jei.tuanzis_mod.national_day_card_pack.description",
+				"【National Day Card Pack】\n" +
+				"Gacha voucher used for single rolls in the National Day Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §bSingle Roll§r: Right-click to consume 1 card pack and launch a firework rocket to roll 1 prize from the National Day limited pool.\n" +
+				"2. §bPool Preview§r: Sneak (Shift) + Right-click to open pool item preview and fate anchor configuration.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.national_day_card_chest.description",
+				"【National Day Card Chest】\n" +
+				"Gacha chest used for 10-fold rolls in the National Day Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §b10-Fold Rolls§r: Right-click to consume 1 chest, launching 10 firework rockets in a circle to roll 10 prizes consecutively!\n" +
+				"2. §b10-Fold Guarantee§r: Guaranteed at least 1 Rare or higher prize per 10-fold roll.\n" +
+				"3. §bPool Preview§r: Sneak (Shift) + Right-click to open pool details and fate anchor interface.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
 
 			// Blueprint system English translations
 			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "Compressed Build Slurry");
@@ -1125,6 +1386,195 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"3. §bInitial Level Cap§r: Only §eLevel I§r can ever be rolled directly from the Enchanting Table.\n" +
 				"4. §bAnvil Upgrades§r: Higher tiers (up to Level IV) must be combined and upgraded using an Anvil.";
 			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_blood_leech.description", bloodLeechJeiDescEn);
+
+			// Ancient Scroll - Metal Cleaver English translations
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_metal_cutter", "Ancient Scroll - Metal Cleaver");
+			String metalCutterJeiDescEn = "[Ancient Scroll - Metal Cleaver]\n" +
+				"An ancient martial art etched in forgotten tomes that cleaves through solid plate. Max Level IV. Applicable to: Swords, Axes.\n\n" +
+				"§eCore Effect:§r\n" +
+				"Melee damage ignores §c(10 + 5 × Level)%§r of target's armor value:\n" +
+				"- §bLevel I§r: Ignores §c15%§r of armor value\n" +
+				"- §bLevel II§r: Ignores §c20%§r of armor value\n" +
+				"- §bLevel III§r: Ignores §c25%§r of armor value\n" +
+				"- §bLevel IV§r: Ignores §c30%§r of armor value\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient Scroll enchantments can only appear in the Enchanting Table. Cannot be obtained via villager trades, loot chests, or mob spawns.\n" +
+				"2. §bLevel 30 Requirement§r: Strictly requires an enchanting table level of §630 or higher§r (Slot 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel I§r can ever be rolled directly from the Enchanting Table.\n" +
+				"4. §bAnvil Upgrades§r: Higher tiers (up to Level IV) must be combined and upgraded using an Anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_metal_cutter.description", metalCutterJeiDescEn);
+
+			// Ancient Scroll - Hide Piercer English translations
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_leather_piercer", "Ancient Scroll - Hide Piercer");
+			String leatherPiercerJeiDescEn = "[Ancient Scroll - Hide Piercer]\n" +
+				"An ancient marksmanship doctrine recorded in archaic scrolls that pierces heavy armor. Max Level IV. Applicable to: Bows, Crossbows.\n\n" +
+				"§eCore Effect:§r\n" +
+				"Ranged projectile damage ignores §c(10 + 5 × Level)%§r of target's armor value:\n" +
+				"- §bLevel I§r: Ignores §c15%§r of armor value\n" +
+				"- §bLevel II§r: Ignores §c20%§r of armor value\n" +
+				"- §bLevel III§r: Ignores §c25%§r of armor value\n" +
+				"- §bLevel IV§r: Ignores §c30%§r of armor value\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient Scroll enchantments can only appear in the Enchanting Table. Cannot be obtained via villager trades, loot chests, or mob spawns.\n" +
+				"2. §bLevel 30 Requirement§r: Strictly requires an enchanting table level of §630 or higher§r (Slot 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel I§r can ever be rolled directly from the Enchanting Table.\n" +
+				"4. §bAnvil Upgrades§r: Higher tiers (up to Level IV) must be combined and upgraded using an Anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_leather_piercer.description", leatherPiercerJeiDescEn);
+
+			// Weather Enchantments: Rain Blade
+			translationBuilder.add("enchantment.tuanzis_mod.rain_blade", "Rain Blade");
+			String rainBladeJeiDescEn = "[Rain Blade]\n" +
+				"A blade enchantment that channels the deep torrential power of Xuanming. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Frost Blade, Thunder Blade, and Sun Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bRain Empowerment§r: When present in rainy weather, increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
+				"2. §cDry Penalty§r: When not in rainy weather, decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"§eAcquisition:§r\n" +
+				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.rain_blade.description", rainBladeJeiDescEn);
+
+			// Weather Enchantments: Frost Blade
+			translationBuilder.add("enchantment.tuanzis_mod.frost_blade", "Frost Blade");
+			String frostBladeJeiDescEn = "[Frost Blade]\n" +
+				"A blade enchantment that channels the bitter chill of Qingnu. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Rain Blade, Thunder Blade, and Sun Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSnow Empowerment§r: When present in snowy weather, increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
+				"2. §cThaw Penalty§r: When not in snowy weather, decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"§eAcquisition:§r\n" +
+				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.frost_blade.description", frostBladeJeiDescEn);
+
+			// Weather Enchantments: Thunder Blade
+			translationBuilder.add("enchantment.tuanzis_mod.thunder_blade", "Thunder Blade");
+			String thunderBladeJeiDescEn = "[Thunder Blade]\n" +
+				"A blade enchantment that channels the roaring wrath of Thunder God. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Rain Blade, Frost Blade, and Sun Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bThunder Empowerment§r: When present in thunderstorm or thundersnow weather, increases base weapon damage by §a(Level × 1.45 + 1)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a2.45§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a3.90§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a5.35§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a6.80§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a8.25§r bonus damage\n" +
+				"2. §cCalm Penalty§r: When not in thunderstorm/thundersnow weather, decreases base weapon damage by §c(0.1825 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §c91.25%§r reduction\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §c73.00%§r reduction\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §c54.75%§r reduction\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §c36.50%§r reduction\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §c18.25%§r reduction\n\n" +
+				"§eAcquisition:§r\n" +
+				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.thunder_blade.description", thunderBladeJeiDescEn);
+
+			// Weather Enchantments: Sun Blade
+			translationBuilder.add("enchantment.tuanzis_mod.sun_blade", "Sun Blade");
+			String sunBladeJeiDescEn = "[Sun Blade]\n" +
+				"A blade enchantment that channels the blazing radiance of the Golden Crow Sun. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Rain Blade, Frost Blade, and Thunder Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSun Empowerment§r: When present in clear weather (including dry biomes, the Nether, and the End), increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
+				"2. §cStorm Penalty§r: When not in clear weather (in rain or snow), decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"§eAcquisition:§r\n" +
+				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.sun_blade.description", sunBladeJeiDescEn);
+
+			// Day Blade & Night Blade English translations
+			translationBuilder.add("enchantment.tuanzis_mod.day_blade", "Day Blade");
+			String dayBladeJeiDescEn = "[Day Blade]\n" +
+				"A blade enchantment that channels the radiant solar power of Xihe. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Night Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSolar Empowerment§r: When present in daytime (0 - 12000 ticks in dimensions with day-night cycle), increases base weapon damage by §a(Level × 0.675 + 0.2)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a0.875§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a1.550§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a2.225§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a2.900§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a3.575§r bonus damage\n" +
+				"2. §7Non-Daytime State§r: When not in daytime (night or dimensions without day-night cycle), weapons deal normal damage without bonus.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Rare enchantment, obtainable from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.day_blade.description", dayBladeJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.night_blade", "Night Blade");
+			String nightBladeJeiDescEn = "[Night Blade]\n" +
+				"A blade enchantment that channels the mysterious lunar grace of Wangshu. Max Level V. Applicable to: Swords, Axes.\n" +
+				"Mutually exclusive with Day Blade.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bLunar Empowerment§r: When present in nighttime (12000 - 24000 ticks in dimensions with day-night cycle), increases base weapon damage by §a(Level × 0.675 + 0.2)§r as bonus base damage:\n" +
+				"   - §bLevel I§r: Base Weapon Damage × §a0.875§r bonus damage\n" +
+				"   - §bLevel II§r: Base Weapon Damage × §a1.550§r bonus damage\n" +
+				"   - §bLevel III§r: Base Weapon Damage × §a2.225§r bonus damage\n" +
+				"   - §bLevel IV§r: Base Weapon Damage × §a2.900§r bonus damage\n" +
+				"   - §bLevel V§r: Base Weapon Damage × §a3.575§r bonus damage\n" +
+				"2. §7Non-Nighttime State§r: When not in nighttime (day or dimensions without day-night cycle), weapons deal normal damage without bonus.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Rare enchantment, obtainable from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.night_blade.description", nightBladeJeiDescEn);
+
+			// Ranger Reload
+			translationBuilder.add("enchantment.tuanzis_mod.ranger_reload", "Ranger's Quick Reload");
+			String rangerReloadJeiDescEn = "[Ranger's Quick Reload]\n" +
+				"A specialized marksman enchantment for crossbows that grants fluid agility and swift maneuvers. Max Level I. Applicable to: Crossbows.\n" +
+				"Fully compatible and coexistent with all crossbow enchantments (including Quick Charge, Multishot, Piercing, etc.).\n\n" +
+				"§eCore Mechanics:§r\n" +
+				"1. §bPenalty Removed§r: Completely eliminates the movement slowdown penalty while loading the crossbow (restoring full 100% movement speed). Players can move and sprint freely while loading.\n" +
+				"2. §bSprint Speed Boost Window§r: For §a2.5 seconds§r after loading completes, the player gains an explosive §eSpeed II§r sprint boost (+40% movement speed) and dynamically activates sprint.\n" +
+				"3. §bContinuous Sprinting§r: Firing the crossbow within this 2.5s window will §anever interrupt sprinting state§r, empowering seamless hit-and-run mobile archery tactics.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Rare enchantment, obtainable from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.ranger_reload.description", rangerReloadJeiDescEn);
+
+			// Ancient Scroll - Reserved Chamber
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_reserved_chamber", "Ancient Scroll - Reserved Chamber");
+			String reservedChamberJeiDescEn = "[Ancient Scroll - Reserved Chamber]\n" +
+				"A forgotten crossbow chamber technique recorded in the ancient scrolls. Max Level IV. Applicable to: Crossbows.\n" +
+				"Mutually exclusive with Quick Charge, Multishot, and Ranger's Quick Reload.\n\n" +
+				"§eCore Mechanics:§r\n" +
+				"1. §bBurst Continuous Fire§r: Load once to fire continuously §a(Level + 1) times§r (2 shots at Lv.I, 3 at Lv.II, 4 at Lv.III, 5 at Lv.IV) without reloading between shots.\n" +
+				"2. §bSubsequent Shot Falloff§r: The first arrow deals full (100%) damage. Every subsequent arrow deals reduced damage by §c(60 - 10 × Level)%§r:\n" +
+				"   - §bLevel I§r: Subsequent damage reduced by §c50%§r\n" +
+				"   - §bLevel II§r: Subsequent damage reduced by §c40%§r\n" +
+				"   - §bLevel III§r: Subsequent damage reduced by §c30%§r\n" +
+				"   - §bLevel IV§r: Subsequent damage reduced by §c20%§r\n" +
+				"   (Subsequent ammo is intangible, and damage falloff is unified through DamageCalculator)\n" +
+				"3. §bExtended Charge Time§r: Loading requires additional chamber preparation, increasing pull time by §e(1 + 0.25 × Level) seconds§r (+1.25s at Lv.I, +2.00s at Lv.IV).\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient scrolls can only naturally generate in Enchanting Tables, not from villager trades or loot chests.\n" +
+				"2. §bLevel Requirement§r: Requires Enchanting Table Level §630 or above§r (Tier 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel 1§r can be obtained directly from Enchanting Tables.\n" +
+				"4. §bAnvil Upgrades§r: Must be upgraded up to Level IV by combining items or books on an anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description", reservedChamberJeiDescEn);
 
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
@@ -1492,14 +1942,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), "Color Stairs");
 			translationBuilder.add(me.tuanzi.init.ModItems.PAINT_BUCKET, "Paint Bucket");
 
-			// GUI Translations
+			// GUI Translations & Action Messages
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.title", "Paint Bucket Palette");
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.confirm", "Confirm");
 			translationBuilder.add("gui.tuanzis_mod.paint_bucket.cancel", "Cancel");
+			translationBuilder.add("message.tuanzis_mod.paint_bucket.color_picked", "§aPaint Bucket color picked: §e%s");
 
 			// JEI Description English
 			translationBuilder.add("jei.tuanzis_mod.color_block.description", "[Color Block/Slab/Stairs]\nDecorative blocks that can be dyed into custom colors using a Paint Bucket. The surface is pure with no borders or impurities.\n\n§eMechanics:\n1. §bBlock Dyeing: Place a Color Block, Slab, or Stairs in the crafting grid together with a Paint Bucket containing pigment to dye it. Each dyeing action consumes 1 durability from the Paint Bucket.\n2. §bSlab Stacking: Allows stacking Color Slabs of different colors into a double slab. Each half preserves and renders its own color. Mining them splits them back into their respective colored items.\n3. §bMap Display: Colored blocks, stairs, and single slabs render their actual color on maps. Double slabs intelligently display the color of the §6top slab§r on the map.\n4. §bCrafting Inheritance: Crafting Color Stairs (yields 4) or Color Slabs (yields 6) using colored blocks will automatically inherit and blend (average color) the colors of all inputs.");
-			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "[Paint Bucket]\nA utility tool used for dyeing Color Blocks. Has a maximum durability of 256 uses.\n\n§eUsage:\n1. §bOpen Palette: Right-click the Paint Bucket to open the client-side RGB palette GUI. Drag Red/Green/Blue sliders to adjust color (0-255) with real-time preview.\n2. §bVanilla Presets: Offers 16 quick preset buttons matching vanilla dyes.\n3. §bConfirm & Cancel: Click Cancel or press ESC to roll back to the previous color. Click Confirm to save changes and play a dyeing sound.\n4. §bCrafting Consumption: Remains in the crafting grid and loses 1 durability per block dyed. Destroyed when durability drops to 0.");
+			translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "[Paint Bucket]\nA utility tool used for dyeing Color Blocks. Has a maximum durability of 256 uses.\n\n§eUsage:\n1. §bOpen Palette: Right-click the Paint Bucket to open the client-side RGB palette GUI. Drag Red/Green/Blue sliders to adjust color (0-255) with real-time preview.\n2. §bVanilla Presets: Offers 16 quick preset buttons matching vanilla dyes.\n3. §bQuick Color Picking: Hold Shift and right-click any Color Block series (Color Block, Color Slab, Color Stairs) to immediately pick its current color with actionbar notification.\n4. §bConfirm & Cancel: Click Cancel or press ESC to roll back to the previous color. Click Confirm to save changes and play a dyeing sound.\n5. §bCrafting Consumption: Remains in the crafting grid and loses 1 durability per block dyed. Destroyed when durability drops to 0.");
 
 			// Chromatic Skull translations
 			translationBuilder.add(ModItems.CHROMATIC_SKULL, "Chromatic Skull");
@@ -1517,11 +1968,43 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.CODEX_OF_ENCHANTING, "Codex of Enchanting");
 			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line1", "Hold in offhand to use");
 			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line2", "Adds a refresh button when opening enchanting table.");
-			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "Click to reroll enchanting options for 1 exp level.");
-			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "Reroll Enchantments (Cost: 1 Level)");
+			translationBuilder.add("item.tuanzis_mod.codex_of_enchanting.tooltip.line3", "Click to reroll enchanting options for 1 exp level & 1 lapis lazuli.");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready", "Reroll Enchantments (Cost: 1 Level & 1 Lapis Lazuli)");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.ready_creative", "Reroll Enchantments (Free in Creative)");
 			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_item", "Place an enchantable item first");
 			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_exp", "Not enough experience (Requires Level 1)");
-			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "[Codex of Enchanting]\nA deep blue magical tome inscribed with ancient arcane runes, forged from a Nether Star, Dragon's Breath, and Lapis Lazuli.\n\n§eCore Mechanics:\n1. §bOffhand Activation: Place the Codex in your offhand. When opening an Enchanting Table, an additional 'Reroll Enchantments' button (with a green-gold circular arrow icon) appears directly beneath the lapis lazuli slot.\n2. §bExperience Reroll: With an enchantable item placed in the table, clicking the button consumes §a1 experience level§r (free in Creative mode, no lapis lazuli required) to generate a new player enchantment seed and immediately refresh all three enchantment options.\n3. §bSafety Checks: If the slot has no enchantable item or the player lacks the required experience level, the button is automatically disabled with an informative tooltip to prevent accidental waste of experience.");
+			translationBuilder.add("gui.tuanzis_mod.enchantment.refresh.no_lapis", "Not enough lapis lazuli (Requires 1 Lapis in slot)");
+			translationBuilder.add("jei.tuanzis_mod.codex_of_enchanting.description", "[Codex of Enchanting]\nA deep blue magical tome inscribed with ancient arcane runes, forged from a Nether Star, Dragon's Breath, and Lapis Lazuli.\n\n§eCore Mechanics:\n1. §bOffhand Activation: Place the Codex in your offhand. When opening an Enchanting Table, an additional 'Reroll Enchantments' button (with a green-gold circular arrow icon) appears directly beneath the lapis lazuli slot.\n2. §bEnchantment Reroll: With an enchantable item placed in the table, clicking the button in Survival mode consumes §a1 experience level§r and §91 Lapis Lazuli§r from the lapis slot (free in Creative mode) to generate a new player enchantment seed and immediately refresh all three enchantment options.\n3. §bSafety Checks: If the slot has no enchantable item, lacks the required experience level, or lacks lapis lazuli in the slot, the button is automatically disabled with an informative tooltip to prevent accidental waste.");
+
+			// Glass Item Frame English translations
+			translationBuilder.add(ModItems.GLASS_ITEM_FRAME, "Glass Item Frame");
+			translationBuilder.add("entity.tuanzis_mod.glass_item_frame", "Glass Item Frame");
+			translationBuilder.add("jei.tuanzis_mod.glass_item_frame.description", "[Glass Item Frame]\nA special item frame imbued with the clarity and transparency of pure glass.\n\n§eCore Features:\n1. §bInvisible Display: When an item is placed inside the frame, the frame border automatically becomes completely transparent and invisible, leaving only the item floating cleanly.\n2. §bEmpty Visibility: When the frame is empty, it remains visible so players can easily locate and interact with it.\n3. §bVanilla Parity: Behaves identically to vanilla item frames in all other aspects, including 8-direction item rotation, redstone comparator output, and placement on walls, floors, or ceilings.\n4. §bCrafting: 4 Item Frames + 1 Glass (Shapeless) = 4 Glass Item Frames.");
+
+			// Crossbow Power Enchantment JEI Description
+			translationBuilder.add("jei.tuanzis_mod.power_crossbow.description", "[Crossbow - Power Enchantment]\nThis mod extends vanilla enchanting mechanics, allowing Crossbows to receive the Power enchantment in Survival mode!\n\n§eCore Mechanics:\n1. §bEnchanting: Crossbows can roll Power I~V directly from the Enchanting Table, or be enchanted via Anvil using Power Enchanted Books.\n2. §bDamage Scaling: When firing arrows that hit an entity, the Power bonus is halved compared to a regular Bow.\n   - §7Vanilla Bow Power bonus: 0.5 + 0.5 * level base arrow damage (Power I: +1.0, Power V: +3.0)\n   - §6Crossbow Power bonus: 0.25 + 0.25 * level base arrow damage\n   - Power I: +0.5 base damage\n   - Power II: +0.75 base damage\n   - Power III: +1.0 base damage\n   - Power IV: +1.25 base damage\n   - Power V: +1.5 base damage\n3. §bRanged Only: The bonus applies strictly to projectile arrow hits, and will not trigger when performing melee hits with a crossbow.");
+
+			// Nodachi & Reinforced Long Hilt English translations
+			translationBuilder.add(ModItems.REINFORCED_LONG_HILT, "Reinforced Long Hilt");
+			translationBuilder.add(ModItems.WOODEN_NODACHI, "Wooden Nodachi");
+			translationBuilder.add(ModItems.STONE_NODACHI, "Stone Nodachi");
+			translationBuilder.add(ModItems.IRON_NODACHI, "Iron Nodachi");
+			translationBuilder.add(ModItems.GOLDEN_NODACHI, "Golden Nodachi");
+			translationBuilder.add(ModItems.DIAMOND_NODACHI, "Diamond Nodachi");
+			translationBuilder.add(ModItems.NETHERITE_NODACHI, "Netherite Nodachi");
+			translationBuilder.add("entity.tuanzis_mod.crescent_aura", "Crescent Aura");
+
+			// Nodachi Tooltips
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.title", "[Momentum Rhythm Combo]");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.rhythm_window", "✦ Rhythm Window: Strike as needle sweeps highlighted zone at full cooldown to build momentum (speeds up, boosts damage, unleashes Cleave Aura at max)");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.sweet_spot", "✦ Sweet Spot (>=2.2 blocks): Deals 1.15x damage and builds momentum (1.5~2.2 blocks deals 100% damage)");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.root_penalty", "✦ Close Hilt (0~1.5 blocks): Deals 85% damage (15% penalty), cannot build momentum & reduced knockback");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.sweep_evolution", "✦ Sweep Evolution: 0~1 tier knockback, 2 tiers 150° cleave damage, 3 tiers Cleave Aura");
+			translationBuilder.add("tooltip.tuanzis_mod.nodachi.penalty_info", "✦ Penalty: Miss or timeout (5s) resets all momentum and causes 0.5s exhaustion weakness");
+
+			// Nodachi & Hilt JEI Descriptions
+			translationBuilder.add("jei.tuanzis_mod.reinforced_long_hilt.description", "[Reinforced Long Hilt]\nOrdinary sticks cannot withstand the torque generated by swinging a massive heavy blade. A specialized reinforced hilt is required.\n\n§eRecipe:\nCrafted vertically in a crafting table:\nTop: Iron Nugget\nMiddle: Blaze Rod\nBottom: Leather");
+			translationBuilder.add("jei.tuanzis_mod.nodachi.description", "[Nodachi]\nA long-reach two-handed weapon featuring unique Momentum Rhythm Combo and Sweet Spot mechanics.\n\n§eBase Stats:\n- Attack Reach: 3.6 blocks (+0.6 blocks over standard weapons).\n- Attack Speed: Base 1.3.\n\n§eCore Mechanics (Momentum Combo):\n1. §bArc Metronome & QTE Rhythm Window§r: An arc metronome HUD is displayed below the crosshair, swinging at a constant speed that shifts each full cycle. The highlighted rhythm window covers a randomized 20%~30% of the track. Once attack cooldown reaches 100%, striking as the needle sweeps through the highlight chains into the next tier seamlessly:\n   - §aCombo Tier 1§r: Attack speed increases to 1.5, Damage +1\n   - §eCombo Tier 2§r: Attack speed increases to 1.7, Damage +2\n   - §6Max Tier (Tier 3)§r: Attack speed reaches 1.9, regular swings unleash a piercing Cleave Aura (has 5s internal cooldown, does not cause exhaustion).\n2. §bPenalty§r: Missing an attack or failing to land a hit within 5 seconds resets all Momentum to 0 and inflicts 0.5s of exhaustion weakness (cannot attack).\n\n§eSweet Spot Mechanics:\n1. §aBlade Tip (>= 2.2 blocks)§r: Deals 1.15x damage and accumulates Momentum.\n2. §eMiddle Blade (1.5 ~ 2.2 blocks)§r: Deals 100% damage and maintains Momentum.\n3. §cClose Hilt (0 ~ 1.5 blocks)§r: Deals 85% damage (15% penalty), cannot build Momentum, and knockback drastically reduced.\n\n§eSweeping Attack Variations:\n1. §70 ~ 1 Momentum§r: Sweeps in a 120° cone with 2.8-block radius, knocking back mobs without sweep damage.\n2. §e2 Momentum§r: Expands to 150° cone with 3.4-block radius, dealing 1 cleave damage to secondary targets.\n3. §63 Momentum (Cleave Aura)§r: Unleashes forward-flying aura (20 blocks/s, 4 blocks pierce, 2.5 blocks wide) with 5s internal cooldown, dealing 20% weapon damage and cleaving cobwebs, bamboo, and foliage.\n\n§eCrafting & Upgrade:\n1. Craft basic 5 tiers diagonally across a 3x3 crafting grid (Reinforced Long Hilt at bottom-left, mineral materials across the diagonal and top-right).\n2. Upgrade Diamond Nodachi to Netherite Nodachi at a Smithing Table.");
 		}
 	}
 }

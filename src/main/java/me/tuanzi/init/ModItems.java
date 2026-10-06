@@ -17,6 +17,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 
 import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.ToolMaterial;
 
 import java.util.function.Function;
 
@@ -141,6 +142,8 @@ public class ModItems {
     public static final Item STAR_TRAVEL_CARD_CHEST = register("star_travel_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.RARE), "normal", true));
     public static final Item SAKURA_FESTIVAL_CARD_PACK = register("sakura_festival_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", false));
     public static final Item SAKURA_FESTIVAL_CARD_CHEST = register("sakura_festival_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", true));
+    public static final Item NATIONAL_DAY_CARD_PACK = register("national_day_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "national_day", false));
+    public static final Item NATIONAL_DAY_CARD_CHEST = register("national_day_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "national_day", true));
     public static final Item TIDAL_WEAVE_BOOTS = register("tidal_weave_boots", (properties) -> new Item(properties
         .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
         .rarity(Rarity.EPIC)
@@ -170,6 +173,15 @@ public class ModItems {
     public static final Item PAINT_BUCKET = register("paint_bucket", (properties) -> new me.tuanzi.item.PaintBucketItem(properties.stacksTo(1).durability(256)));
     public static final Item CHROMATIC_SKULL = register("chromatic_skull", (properties) -> new ChromaticSkullItem(properties.stacksTo(16).rarity(Rarity.RARE)));
     public static final Item CODEX_OF_ENCHANTING = register("codex_of_enchanting", CodexOfEnchantingItem::new);
+    public static final Item GLASS_ITEM_FRAME = register("glass_item_frame", GlassItemFrameItem::new);
+
+    public static final Item REINFORCED_LONG_HILT = register("reinforced_long_hilt", Item::new);
+    public static final Item WOODEN_NODACHI = register("wooden_nodachi", properties -> new NodachiItem(properties, ToolMaterial.WOOD, 3.0F));
+    public static final Item STONE_NODACHI = register("stone_nodachi", properties -> new NodachiItem(properties, ToolMaterial.STONE, 4.0F));
+    public static final Item IRON_NODACHI = register("iron_nodachi", properties -> new NodachiItem(properties, ToolMaterial.IRON, 5.0F));
+    public static final Item GOLDEN_NODACHI = register("golden_nodachi", properties -> new NodachiItem(properties, ToolMaterial.GOLD, 3.0F));
+    public static final Item DIAMOND_NODACHI = register("diamond_nodachi", properties -> new NodachiItem(properties, ToolMaterial.DIAMOND, 6.0F));
+    public static final Item NETHERITE_NODACHI = register("netherite_nodachi", properties -> new NodachiItem(properties.fireResistant(), ToolMaterial.NETHERITE, 7.0F));
 
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {

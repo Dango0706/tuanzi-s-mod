@@ -392,6 +392,8 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.STAR_TRAVEL_CARD_CHEST, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.SAKURA_FESTIVAL_CARD_PACK, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.SAKURA_FESTIVAL_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.NATIONAL_DAY_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.NATIONAL_DAY_CARD_CHEST, ModelTemplates.FLAT_ITEM);
 
         // 潮汐织靴物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.TIDAL_WEAVE_BOOTS, ModelTemplates.FLAT_ITEM);
@@ -408,6 +410,16 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.STRUCTURE_BLUEPRINT, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.CHROMATIC_SKULL, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.CODEX_OF_ENCHANTING, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.GLASS_ITEM_FRAME, ModelTemplates.FLAT_ITEM);
+
+        // 缠皮长握柄与连击斩马刀系列模型生成
+        itemModelGenerator.generateFlatItem(ModItems.REINFORCED_LONG_HILT, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.WOODEN_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.STONE_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.IRON_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.GOLDEN_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.DIAMOND_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.NETHERITE_NODACHI, ModelTemplates.FLAT_HANDHELD_ITEM);
 
         // 注册油漆桶带有双层 tints (常色+染色) 的物品配置
         itemModelGenerator.itemModelOutput.accept(

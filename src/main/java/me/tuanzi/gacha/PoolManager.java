@@ -70,6 +70,13 @@ public class PoolManager {
                     jsonFiles = stream.filter(p -> p.getFileName().toString().endsWith(".json"))
                             .collect(Collectors.toList());
                 }
+            } else if (!Files.exists(POOL_DIR.resolve("national_day.json"))) {
+                // 若已存在其它卡池但未生成国庆卡池，自动增量生成国庆祭模板
+                generateNationalDayTemplate(registries);
+                try (var stream = Files.list(POOL_DIR)) {
+                    jsonFiles = stream.filter(p -> p.getFileName().toString().endsWith(".json"))
+                            .collect(Collectors.toList());
+                }
             }
 
             pools.clear();
@@ -215,7 +222,7 @@ public class PoolManager {
         normalPool.getCommon().add(new GachaPoolItem("oak_planks", 50, new ArrayList<>(), new ItemStack(Items.OAK_PLANKS)));
         savePoolSafe(normalPool, registries);
 
-        // 2. 限定池模板
+        // 2. 限定池模板 (樱花祭)
         GachaPool sakuraPool = new GachaPool("sakura_moon", "樱花祭限定卡池");
         sakuraPool.getLegendary().add(new GachaPoolItem("elytra", 10, 
                 List.of("say 恭喜玩家 %player% 抽中了限定传说鞘翅！"), new ItemStack(Items.ELYTRA)));
@@ -224,6 +231,20 @@ public class PoolManager {
         sakuraPool.getUncommon().add(new GachaPoolItem("lapis_lazuli", 23, new ArrayList<>(), new ItemStack(Items.LAPIS_LAZULI)));
         sakuraPool.getCommon().add(new GachaPoolItem("cobblestone", 50, new ArrayList<>(), new ItemStack(Items.COBBLESTONE)));
         savePoolSafe(sakuraPool, registries);
+
+        // 3. 国庆祭限定池模板
+        generateNationalDayTemplate(registries);
+    }
+
+    private static void generateNationalDayTemplate(HolderLookup.Provider registries) {
+        GachaPool nationalDayPool = new GachaPool("national_day", "国庆祭限定卡池");
+        nationalDayPool.getLegendary().add(new GachaPoolItem("mace", 10, 
+                List.of("say 恭喜玩家 %player% 抽中了国庆限定传说重锤！"), new ItemStack(Items.MACE)));
+        nationalDayPool.getEpic().add(new GachaPoolItem("totem_of_undying", 10, new ArrayList<>(), new ItemStack(Items.TOTEM_OF_UNDYING)));
+        nationalDayPool.getRare().add(new GachaPoolItem("golden_apple", 15, new ArrayList<>(), new ItemStack(Items.GOLDEN_APPLE)));
+        nationalDayPool.getUncommon().add(new GachaPoolItem("firework_rocket", 23, new ArrayList<>(), new ItemStack(Items.FIREWORK_ROCKET, 16)));
+        nationalDayPool.getCommon().add(new GachaPoolItem("redstone", 50, new ArrayList<>(), new ItemStack(Items.REDSTONE, 8)));
+        savePoolSafe(nationalDayPool, registries);
     }
 
     public static void shutdown(HolderLookup.Provider registries) {

@@ -29,18 +29,12 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerSimulatorBlock extends BaseEntityBlock {
-    public static final com.mojang.serialization.MapCodec<PlayerSimulatorBlock> CODEC = simpleCodec(PlayerSimulatorBlock::new);
     public static final EnumProperty<Direction> FACING = DirectionalBlock.FACING;
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
     public PlayerSimulatorBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(TRIGGERED, false));
-    }
-
-    @Override
-    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Nullable

@@ -93,5 +93,32 @@ public abstract class GuiMixin {
                 }
             }
         }
+
+        // 3. 野太刀专属准星弧形节拍器 UI 渲染
+        if (player != null && !player.isSpectator()) {
+            ItemStack mainHand = player.getMainHandItem();
+            if (mainHand.getItem() instanceof me.tuanzi.item.NodachiItem) {
+                me.tuanzi.client.NodachiMetronome.render(graphics, deltaTracker, player, this.minecraft.font);
+            }
+        }
+    }
+
+    /**
+     * 当手持野太刀时，隐藏原版准星下方的剑形攻击指示器
+     */
+    @org.spongepowered.asm.mixin.injection.Redirect(
+        method = "extractCrosshair",
+        at = @org.spongepowered.asm.mixin.injection.At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"
+        )
+    )
+    private Object tuanzis_mod$hideVanillaAttackIndicatorForNodachi(net.minecraft.client.OptionInstance<?> instance) {
+        if (instance == this.minecraft.options.attackIndicator()) {
+            if (this.minecraft.player != null && this.minecraft.player.getMainHandItem().getItem() instanceof me.tuanzi.item.NodachiItem) {
+                return net.minecraft.client.AttackIndicatorStatus.OFF;
+            }
+        }
+        return instance.get();
     }
 }

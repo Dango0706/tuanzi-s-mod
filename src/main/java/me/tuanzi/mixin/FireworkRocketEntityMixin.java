@@ -52,7 +52,7 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
 
             // 2. 赋予开卡人专属拾取限制 + 绝对防火免伤 + 1秒拾取延迟
             itemEntity.setTarget(this.tuanziGachaTarget);
-            itemEntity.setInvulnerable(true);
+            itemEntity.setPermanentlyInvulnerable(true);
             itemEntity.setPickUpDelay(20);
 
             // 3. 计算背离玩家中心的方向，让掉落物朝外侧优雅散射抛出

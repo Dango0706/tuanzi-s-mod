@@ -3,15 +3,14 @@ package me.tuanzi.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 
 @Environment(EnvType.CLIENT)
 public class ClientTooltipHelper {
     public static boolean isShiftDown() {
         try {
-            long handle = Minecraft.getInstance().getWindow().handle();
-            return GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS 
-                || GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
+            return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) 
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
         } catch (Exception e) {
             return false;
         }

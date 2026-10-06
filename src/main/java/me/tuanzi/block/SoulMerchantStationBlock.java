@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -38,8 +39,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import java.util.List;
 
 public class SoulMerchantStationBlock extends BaseEntityBlock {
-    public static final com.mojang.serialization.MapCodec<SoulMerchantStationBlock> CODEC = simpleCodec(SoulMerchantStationBlock::new);
-
     private static final VoxelShape SHAPE = Shapes.or(
         Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),      // 阶梯大底座
         Block.box(1.0, 2.0, 1.0, 15.0, 3.0, 15.0),      // 阶梯小底座
@@ -56,18 +55,13 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
         Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0)      // 中央悬浮能量核（已移回地面，与贴图一致）
     );
 
-    @Override
-    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
+    public SoulMerchantStationBlock(BlockBehaviour.Properties properties) {
+        super(properties);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE;
-    }
-
-    public SoulMerchantStationBlock(BlockBehaviour.Properties properties) {
-        super(properties);
     }
 
     @Override
@@ -213,7 +207,7 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
                         }
 
                         if (!player.getInventory().add(filledCage)) {
-                            player.drop(filledCage, false);
+                            player.drop(filledCage, false, Prediction.SERVER_ONLY);
                         }
 
                         player.sendSystemMessage(Component.translatable("message.tuanzis_mod.soul_merchant_station.extracted"));

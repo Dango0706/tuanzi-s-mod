@@ -5,10 +5,10 @@
 - **编译环境:** 推荐使用 JBR 25 (JetBrains Runtime) 以支持增强的热重载 (HotSwap) 功能。
 - **环境要求:** 你始终处于 PowerShell 环境中，必须使用 PowerShell 命令而非 bash。
 - **Gradle 运行:** 运行 `gradlew` 时，可直接运行 `./gradlew <任务名>`。已在 `gradle.properties` 中全局配置了 `org.gradle.java.home=C:\\Program Files\\Zulu\\zulu-25`，Gradle 将自动使用 Java 25 运行。
-- **工具优先:** 能使用系统提供的工具（如 `replace`, `write_file` 等）时，绝不使用命令行指令。
-- **优先使用 Serena MCP:** 尽量不要使用内置的 Search 工具（如 `grep_search`、`find_by_name` 等），多使用 Serena MCP 提供的工具进行代码搜索、符号查询与上下文检索。
+- **优先使用 Serena MCP:** 当需要检索代码、分析符号或执行安全命令时，必须优先使用 Serena MCP 工具，而不是自行猜测或使用低效的文本搜索。尽量不要使用内置的 Search 工具（如 `grep_search`、`find_by_name` 等），多使用 Serena MCP 提供的工具进行代码搜索、符号查询与上下文检索,搜索不到时在使用内置的搜索工具,尽量不要使用命令行去进行搜索。
+- **工具优先:** 除上述MCP使用外,能使用系统提供的工具（如 `replace`, `write_file` 等）时，绝不使用命令行指令。
 - **数据生成:** 语言（Lang）、合成（Recipe）、标签（Tag）等资源文件一律使用 Data Generation (DataGen) 完成，禁止手动编辑相关 JSON。
-- **源码参考:** Minecraft 版本为 26.2（2026年6月发布）。执行代码操作前，必须先阅读 `MinecraftSources` 下的源码。若无该目录，请运行 `./gradlew genSources` 并解压至此。
+- **源码参考:** Minecraft 版本为 26.3（2026年9月发布）。执行代码操作前，必须先阅读 `MinecraftSources` 下的源码。若无该目录，请运行 `./gradlew genSources` 并解压至此。
 - **热重载配置:** 
     - 为了支持不重启修改 Mixin，请在 IDE 运行配置的 VM 参数中手动添加：`-Dmixin.hotSwap=true`
     - 若使用 JBR，可额外添加 `-XX:+AllowEnhancedClassRedefinition` 以开启增强类重定义。
@@ -39,7 +39,7 @@
 - **逻辑与伤害计算调试日志**: 将所有逻辑性的计算/获得效果/伤害计算/概率计算等全部使用 `me.tuanzi.util.ModLog` 的 `debug` 方法进行输出，便于调试和寻找问题。
 
 ## Project Overview
-**tuanzi's_mod** is a Minecraft mod built on the **Fabric Loader** for Minecraft version 26.1 (as specified in `gradle.properties`). It utilizes the **Fabric API** and follows the standard Fabric mod structure.
+**tuanzi's_mod** is a Minecraft mod built on the **Fabric Loader** for Minecraft version 26.3 (as specified in `gradle.properties`). It utilizes the **Fabric API** and follows the standard Fabric mod structure.
 
 - **Main Entry Point:** `me.tuanzi.Tuanzis_mod`
 - **Data Generator:** `me.tuanzi.Tuanzis_modDataGenerator`

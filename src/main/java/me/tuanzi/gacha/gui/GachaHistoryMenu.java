@@ -33,12 +33,14 @@ public class GachaHistoryMenu extends ChestMenu {
         this.player = (ServerPlayer) playerInventory.player;
         this.state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
         
-        // 判定手持物品以确定展示常驻池还是限定池的历史记录
-        String detectedPoolId = "sakura_moon"; // 默认限定池
+        // 判定手持物品以确定展示对应卡池的历史记录
+        String detectedPoolId = "national_day"; // 默认展示最新国庆限定池
         net.minecraft.world.item.ItemStack mainHand = player.getMainHandItem();
         net.minecraft.world.item.ItemStack offHand = player.getOffhandItem();
-        if (isNormalGachaItem(mainHand) || isNormalGachaItem(offHand)) {
-            detectedPoolId = "normal";
+        String handPool = getGachaPoolId(mainHand);
+        if (handPool == null) handPool = getGachaPoolId(offHand);
+        if (handPool != null) {
+            detectedPoolId = handPool;
         }
         this.targetPoolId = detectedPoolId;
         
@@ -54,13 +56,17 @@ public class GachaHistoryMenu extends ChestMenu {
         refreshSlots();
     }
 
-    private boolean isNormalGachaItem(net.minecraft.world.item.ItemStack stack) {
+    private String getGachaPoolId(net.minecraft.world.item.ItemStack stack) {
         if (stack != null && !stack.isEmpty()) {
             if (stack.getItem() instanceof me.tuanzi.item.GachaItem gachaItem) {
-                return "normal".equals(gachaItem.getPoolId());
+                return gachaItem.getPoolId();
             }
         }
-        return false;
+        return null;
+    }
+
+    private boolean isNormalGachaItem(net.minecraft.world.item.ItemStack stack) {
+        return "normal".equals(getGachaPoolId(stack));
     }
 
     private List<GachaHistoryEntry> getFilteredHistory() {
@@ -78,6 +84,10 @@ public class GachaHistoryMenu extends ChestMenu {
                 // 找不到卡池定义时的模糊匹配兜底
                 if ("normal".equals(targetPoolId)) {
                     if (entry.getPoolName().contains("常驻") || entry.getPoolName().contains("星旅") || entry.getPoolName().contains("Star")) {
+                        filtered.add(entry);
+                    }
+                } else if ("national_day".equals(targetPoolId)) {
+                    if (entry.getPoolName().contains("国庆") || entry.getPoolName().contains("National")) {
                         filtered.add(entry);
                     }
                 } else {

@@ -51,7 +51,7 @@ public class GhostRenderRegistry {
             // 实体、盔甲或道具
             if (name.contains("entity") || name.contains("armor") || name.contains("item") || path.contains("entity/")) {
                 if (name.contains("armor")) {
-                    return net.minecraft.client.renderer.rendertype.RenderTypes.armorTranslucent(texture);
+                    return net.minecraft.client.renderer.rendertype.RenderTypes.entityTranslucent(texture);
                 } else if (name.contains("item")) {
                     return net.minecraft.client.renderer.rendertype.RenderTypes.itemTranslucent(texture);
                 } else {

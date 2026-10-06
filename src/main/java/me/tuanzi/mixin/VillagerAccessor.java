@@ -9,18 +9,6 @@ import net.minecraft.world.entity.player.Player;
 
 @Mixin(Villager.class)
 public interface VillagerAccessor {
-    @Accessor("updateMerchantTimer")
-    int getUpdateMerchantTimer();
-
-    @Accessor("updateMerchantTimer")
-    void setUpdateMerchantTimer(int timer);
-
-    @Accessor("increaseProfessionLevelOnUpdate")
-    boolean getIncreaseProfessionLevelOnUpdate();
-
-    @Accessor("increaseProfessionLevelOnUpdate")
-    void setIncreaseProfessionLevelOnUpdate(boolean increase);
-
     @Accessor("lastTradedPlayer")
     Player getLastTradedPlayer();
 

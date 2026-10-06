@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.Identifier;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
@@ -68,67 +68,67 @@ public class TuanzisModClient implements ClientModInitializer {
 
         chainMiningKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.chain_mining",
-            GLFW.GLFW_KEY_GRAVE_ACCENT,
+            InputConstants.KEY_GRAVE,
             tuanzisModCategory
         ));
 
         toggleGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_toggle_ghost",
-            GLFW.GLFW_KEY_V,
+            InputConstants.KEY_V,
             tuanzisModCategory
         ));
 
         openControllerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_open_controller",
-            GLFW.GLFW_KEY_G,
+            InputConstants.KEY_G,
             tuanzisModCategory
         ));
 
         rotateGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_rotate",
-            GLFW.GLFW_KEY_R,
+            InputConstants.KEY_R,
             tuanzisModCategory
         ));
 
         mirrorGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_mirror",
-            GLFW.GLFW_KEY_F,
+            InputConstants.KEY_F,
             tuanzisModCategory
         ));
 
         moveNorthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_north",
-            GLFW.GLFW_KEY_UP,
+            InputConstants.KEY_UP,
             tuanzisModCategory
         ));
 
         moveSouthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_south",
-            GLFW.GLFW_KEY_DOWN,
+            InputConstants.KEY_DOWN,
             tuanzisModCategory
         ));
 
         moveWestKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_west",
-            GLFW.GLFW_KEY_LEFT,
+            InputConstants.KEY_LEFT,
             tuanzisModCategory
         ));
 
         moveEastKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_east",
-            GLFW.GLFW_KEY_RIGHT,
+            InputConstants.KEY_RIGHT,
             tuanzisModCategory
         ));
 
         moveUpKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_up",
-            GLFW.GLFW_KEY_PAGE_UP,
+            InputConstants.KEY_PAGEUP,
             tuanzisModCategory
         ));
 
         moveDownKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
             "key.tuanzis_mod.blueprint_move_down",
-            GLFW.GLFW_KEY_PAGE_DOWN,
+            InputConstants.KEY_PAGEDOWN,
             tuanzisModCategory
         ));
 
@@ -151,6 +151,14 @@ public class TuanzisModClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
             me.tuanzi.init.ModEntities.SHURIKEN,
             context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context)
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.GLASS_ITEM_FRAME,
+            net.minecraft.client.renderer.entity.ItemFrameRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CRESCENT_AURA,
+            net.minecraft.client.renderer.entity.NoopRenderer::new
         );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
@@ -281,6 +289,17 @@ public class TuanzisModClient implements ClientModInitializer {
             });
         });
 
+        // 注册野太刀势槽同步包接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.NodachiSyncPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                if (context.client().player instanceof me.tuanzi.util.NodachiPlayerTracker tracker) {
+                    tracker.tuanzis_mod$setNodachiMomentum(payload.momentum());
+                    tracker.tuanzis_mod$setNodachiExhaustionTicks(payload.exhaustionTicks());
+                    tracker.tuanzis_mod$setNodachiInactiveTicks(0);
+                }
+            });
+        });
+
         // 重写客户端的 DecoyEntity 构造器，实例化 ClientDecoyEntity
         me.tuanzi.entity.DecoyEntity.constructor = (type, level) -> 
             new me.tuanzi.client.entity.ClientDecoyEntity(level, me.tuanzi.client.renderer.DecoyRenderer.skinRenderCache);
@@ -399,9 +418,8 @@ public class TuanzisModClient implements ClientModInitializer {
                 boolean rightPressed = moveEastKey.isDown();
                 boolean pgUpPressed = moveUpKey.isDown();
                 boolean pgDnPressed = moveDownKey.isDown();
-                long window = client.getWindow().handle();
-                boolean ctrlPressed = org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS ||
-                                      org.lwjgl.glfw.GLFW.glfwGetKey(window, org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_CONTROL) == org.lwjgl.glfw.GLFW.GLFW_PRESS;
+                boolean ctrlPressed = InputConstants.isKeyDown(InputConstants.KEY_LCONTROL) ||
+                                      InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
 
                 if (!targetStack.isEmpty()) {
                     net.minecraft.world.item.component.CustomData customData = targetStack.get(DataComponents.CUSTOM_DATA);

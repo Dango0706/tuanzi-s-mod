@@ -114,9 +114,9 @@ public class TrialDummyRenderer extends LivingEntityRenderer<TrialDummyEntity, T
 
     @Override
     protected void setupRotations(final TrialDummyRenderState state, final PoseStack poseStack, final float bodyRot, final float entityScale) {
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyRot));
+        poseStack.rotate(Axis.YP.rotationDegrees(180.0F - bodyRot));
         if (state.wiggle > 0.0F) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(Mth.sin(state.wiggle / 1.5F * (float) Math.PI) * 4.0F));
+            poseStack.rotate(Axis.YP.rotationDegrees(Mth.sin(state.wiggle / 1.5F * (float) Math.PI) * 4.0F));
         }
     }
 }

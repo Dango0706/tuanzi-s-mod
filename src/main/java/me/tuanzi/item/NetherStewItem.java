@@ -1,6 +1,7 @@
 package me.tuanzi.item;
 
 import me.tuanzi.init.ModStatusEffects;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,7 +33,7 @@ public class NetherStewItem extends Item {
                 return bowl;
             }
             if (!player.getInventory().add(bowl)) {
-                player.drop(bowl, false);
+                player.drop(bowl, false, Prediction.SERVER_ONLY);
             }
         }
         return result;

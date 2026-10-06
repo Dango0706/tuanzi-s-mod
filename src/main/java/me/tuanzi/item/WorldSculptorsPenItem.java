@@ -13,6 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.Clearable;
 import net.minecraft.world.InteractionHand;
@@ -776,7 +777,7 @@ public class WorldSculptorsPenItem extends Item {
         // 2. 将最终还有剩余的方块直接放入玩家普通背包，装不下则自动在脚下丢出
         if (remaining > 0) {
             ItemStack extraStack = createItemWithColor(targetItem, selectedColor, remaining);
-            player.getInventory().placeItemBackInInventory(extraStack);
+            player.getInventory().placeItemBackInInventory(extraStack, Prediction.SERVER_ONLY);
         }
     }
 

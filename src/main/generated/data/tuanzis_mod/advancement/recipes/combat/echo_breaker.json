@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "tuanzis_mod:echo_breaker"
+        "recipes": "tuanzis_mod:echo_breaker"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

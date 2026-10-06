@@ -10,7 +10,8 @@
 		"WorldSculptorsPenRendererMixin",
 		"MinecraftMixin",
 		"AnvilScreenMixin",
-		"EnchantmentScreenMixin"
+		"EnchantmentScreenMixin",
+		"LocalPlayerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

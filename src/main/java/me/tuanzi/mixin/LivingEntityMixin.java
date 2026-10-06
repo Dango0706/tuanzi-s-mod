@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker {
+public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker, me.tuanzi.util.RangerReloadTracker {
 
     @Shadow
     protected abstract void onEffectsRemoved(Collection<MobEffectInstance> effects);
@@ -36,6 +36,31 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker 
     @Override
     public void tuanzis_mod$setLastRhythmTarget(java.util.UUID uuid) {
         this.tuanzis_mod$lastRhythmTargetUuid = uuid;
+    }
+
+    @org.spongepowered.asm.mixin.Unique
+    private int tuanzis_mod$rangerReloadWindowTicks = 0;
+
+    @Override
+    public int tuanzis_mod$getRangerReloadWindowTicks() {
+        return this.tuanzis_mod$rangerReloadWindowTicks;
+    }
+
+    @Override
+    public void tuanzis_mod$setRangerReloadWindowTicks(int ticks) {
+        this.tuanzis_mod$rangerReloadWindowTicks = ticks;
+    }
+
+    @Override
+    public boolean tuanzis_mod$hasRangerReloadWindow() {
+        return this.tuanzis_mod$rangerReloadWindowTicks > 0;
+    }
+
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void tuanzis_mod$tickRangerReloadWindow(CallbackInfo ci) {
+        if (this.tuanzis_mod$rangerReloadWindowTicks > 0) {
+            this.tuanzis_mod$rangerReloadWindowTicks--;
+        }
     }
 
     @org.spongepowered.asm.mixin.Unique
@@ -236,17 +261,18 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker 
     )
     private void tuanzis_mod$onHurtServer(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity instanceof net.minecraft.world.entity.player.Player && !entity.level().isClientSide()) {
+        if (entity instanceof net.minecraft.world.entity.player.Player player && !entity.level().isClientSide()) {
             if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {
                 if (entity.getRandom().nextFloat() < 0.15f) {
                     tuanzis_mod$shakeOffShuriken();
                 }
             }
+
         }
     }
 
-    @org.spongepowered.asm.mixin.injection.Inject(method = "swing(Lnet/minecraft/world/InteractionHand;Z)V", at = @org.spongepowered.asm.mixin.injection.At("HEAD"))
-    private void tuanzis_mod$onSwing(net.minecraft.world.InteractionHand hand, boolean updateAnim, org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+    @org.spongepowered.asm.mixin.injection.Inject(method = "swing", at = @org.spongepowered.asm.mixin.injection.At("HEAD"))
+    private void tuanzis_mod$onSwing(net.minecraft.world.InteractionHand hand, net.minecraft.world.item.component.SwingAnimation animation, boolean sendToSwingingEntity, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof net.minecraft.world.entity.player.Player && !entity.level().isClientSide()) {
             if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {

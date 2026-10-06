@@ -105,6 +105,59 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(bloodLeechBook4, mutable -> mutable.set(bloodLeech, 4));
                 entries.accept(bloodLeechBook4);
 
+                var metalCutter = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER);
+                ItemStack metalCutterBook4 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(metalCutterBook4, mutable -> mutable.set(metalCutter, 4));
+                entries.accept(metalCutterBook4);
+
+                var leatherPiercer = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER);
+                ItemStack leatherPiercerBook4 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(leatherPiercerBook4, mutable -> mutable.set(leatherPiercer, 4));
+                entries.accept(leatherPiercerBook4);
+
+                var reservedChamber = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER);
+                ItemStack reservedChamberBook4 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(reservedChamberBook4, mutable -> mutable.set(reservedChamber, 4));
+                entries.accept(reservedChamberBook4);
+
+                // 天气附魔：玄冥雨刃、青女霜刃、雷公霆刃、金乌炽刃 (满级5级)
+                var rainBlade = enchantmentRegistry.getOrThrow(ModEnchantments.RAIN_BLADE);
+                ItemStack rainBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(rainBladeBook5, mutable -> mutable.set(rainBlade, 5));
+                entries.accept(rainBladeBook5);
+
+                var frostBlade = enchantmentRegistry.getOrThrow(ModEnchantments.FROST_BLADE);
+                ItemStack frostBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(frostBladeBook5, mutable -> mutable.set(frostBlade, 5));
+                entries.accept(frostBladeBook5);
+
+                var thunderBlade = enchantmentRegistry.getOrThrow(ModEnchantments.THUNDER_BLADE);
+                ItemStack thunderBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(thunderBladeBook5, mutable -> mutable.set(thunderBlade, 5));
+                entries.accept(thunderBladeBook5);
+
+                var sunBlade = enchantmentRegistry.getOrThrow(ModEnchantments.SUN_BLADE);
+                ItemStack sunBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(sunBladeBook5, mutable -> mutable.set(sunBlade, 5));
+                entries.accept(sunBladeBook5);
+
+                // 昼夜附魔：羲和昼刃、望舒夜刃 (满级5级)
+                var dayBlade = enchantmentRegistry.getOrThrow(ModEnchantments.DAY_BLADE);
+                ItemStack dayBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(dayBladeBook5, mutable -> mutable.set(dayBlade, 5));
+                entries.accept(dayBladeBook5);
+
+                var nightBlade = enchantmentRegistry.getOrThrow(ModEnchantments.NIGHT_BLADE);
+                ItemStack nightBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(nightBladeBook5, mutable -> mutable.set(nightBlade, 5));
+                entries.accept(nightBladeBook5);
+
+                // 游侠速装 (最高I级)
+                var rangerReload = enchantmentRegistry.getOrThrow(ModEnchantments.RANGER_RELOAD);
+                ItemStack rangerReloadBook = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(rangerReloadBook, mutable -> mutable.set(rangerReload, 1));
+                entries.accept(rangerReloadBook);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇
@@ -131,6 +184,14 @@ public class ModItemGroups {
                 entries.accept(ModItems.TIDE_CLEAVER);
                 // 加入脉冲谐振剑
                 entries.accept(ModItems.PULSE_RESONANCE_SWORD);
+                // 加入缠皮长握柄与连击斩马刀系列
+                entries.accept(ModItems.REINFORCED_LONG_HILT);
+                entries.accept(ModItems.WOODEN_NODACHI);
+                entries.accept(ModItems.STONE_NODACHI);
+                entries.accept(ModItems.IRON_NODACHI);
+                entries.accept(ModItems.GOLDEN_NODACHI);
+                entries.accept(ModItems.DIAMOND_NODACHI);
+                entries.accept(ModItems.NETHERITE_NODACHI);
                 // 加入潮汐织靴
                 entries.accept(ModItems.TIDAL_WEAVE_BOOTS);
                 // 加入稻草人与假目标
@@ -167,12 +228,15 @@ public class ModItemGroups {
                 entries.accept(ModItems.PAINT_BUCKET);
                 entries.accept(ModItems.CHROMATIC_SKULL);
                 entries.accept(ModItems.CODEX_OF_ENCHANTING);
+                entries.accept(ModItems.GLASS_ITEM_FRAME);
 
                 // 加入抽卡道具
                 entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);
                 entries.accept(ModItems.STAR_TRAVEL_CARD_CHEST);
                 entries.accept(ModItems.SAKURA_FESTIVAL_CARD_PACK);
                 entries.accept(ModItems.SAKURA_FESTIVAL_CARD_CHEST);
+                entries.accept(ModItems.NATIONAL_DAY_CARD_PACK);
+                entries.accept(ModItems.NATIONAL_DAY_CARD_CHEST);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);

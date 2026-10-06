@@ -17,7 +17,8 @@ public class PlayerSweepMixin {
     )
     private void tuanzis_mod$disableBeeStingEchoSweep(boolean fullStrengthAttack, boolean criticalAttack, boolean knockbackAttack, CallbackInfoReturnable<Boolean> cir) {
         Player player = (Player) (Object) this;
-        if (player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof BeeStingEchoItem) {
+        var item = player.getItemInHand(InteractionHand.MAIN_HAND).getItem();
+        if (item instanceof BeeStingEchoItem || item instanceof me.tuanzi.item.NodachiItem) {
             cir.setReturnValue(false);
         }
     }

@@ -15,6 +15,34 @@
     {
       "id": "tuanzis_mod:execute",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:rain_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:frost_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:thunder_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:sun_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:day_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:night_blade",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:ranger_reload",
+      "required": false
     }
   ]
 }

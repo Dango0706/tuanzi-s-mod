@@ -25,7 +25,13 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
             .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
             .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
             .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key())
-            .add(ModItems.PULSE_RESONANCE_SWORD.builtInRegistryHolder().key());
+            .add(ModItems.PULSE_RESONANCE_SWORD.builtInRegistryHolder().key())
+            .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
 
         // 将潮汐织靴加入原版 boots 标签
         builder(ItemTags.FOOT_ARMOR)
@@ -35,5 +41,12 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
         builder(me.tuanzi.init.ModArmorMaterials.REPAIRS_TIDAL_WEAVE_BOOTS)
             .add(net.minecraft.world.item.Items.PHANTOM_MEMBRANE.builtInRegistryHolder().key())
             .add(net.minecraft.world.item.Items.PRISMARINE_CRYSTALS.builtInRegistryHolder().key());
+
+        // 注册贯革适用的弓与弩标签
+        builder(me.tuanzi.init.ModItemTags.BOW_AND_CROSSBOW_ENCHANTABLE)
+            .add(net.minecraft.world.item.Items.BOW.builtInRegistryHolder().key())
+            .add(net.minecraft.world.item.Items.CROSSBOW.builtInRegistryHolder().key())
+            .addOptionalTag(ItemTags.BOW_ENCHANTABLE)
+            .addOptionalTag(ItemTags.CROSSBOW_ENCHANTABLE);
     }
 }

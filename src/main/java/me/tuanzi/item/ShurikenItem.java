@@ -6,6 +6,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -60,7 +61,7 @@ public class ShurikenItem extends Item {
             player.awardStat(Stats.ITEM_USED.get(this));
         }
 
-        player.swing(hand);
+        player.swing(hand, SwingAnimation.DEFAULT, true);
         return InteractionResult.SUCCESS.heldItemTransformedTo(itemStack);
     }
 

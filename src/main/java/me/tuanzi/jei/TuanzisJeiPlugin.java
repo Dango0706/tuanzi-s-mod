@@ -71,7 +71,7 @@ public class TuanzisJeiPlugin implements IModPlugin {
         Style redStyle = Style.EMPTY.withColor(0xFF5555);
         ItemStack hexSponge = rawSponge.copy();
         hexSponge.set(DataComponents.CUSTOM_NAME, Component.literal("#FF5555").withStyle(redStyle));
-        recipes.add(factory.createAnvilRecipe(List.of(rawSponge), List.of(ItemStack.EMPTY), List.of(hexSponge), 
+        recipes.add(factory.createAnvilRecipe(List.of(rawSponge), List.of(), List.of(hexSponge), 
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "anvil/naming_demo")));
 
         // --- 2. 各类应用效果展示 ---
@@ -506,6 +506,22 @@ public class TuanzisJeiPlugin implements IModPlugin {
         registration.addIngredientInfo(new ItemStack(ModItems.PULSE_RESONANCE_SWORD), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.pulse_resonance_sword.description"));
 
+        // 注册缠皮长握柄介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.REINFORCED_LONG_HILT), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.reinforced_long_hilt.description"));
+
+        // 注册连击斩马刀系列介绍页
+        List<ItemStack> nodachis = List.of(
+            new ItemStack(ModItems.WOODEN_NODACHI),
+            new ItemStack(ModItems.STONE_NODACHI),
+            new ItemStack(ModItems.IRON_NODACHI),
+            new ItemStack(ModItems.GOLDEN_NODACHI),
+            new ItemStack(ModItems.DIAMOND_NODACHI),
+            new ItemStack(ModItems.NETHERITE_NODACHI)
+        );
+        registration.addIngredientInfo(nodachis, VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.nodachi.description"));
+
         // 获取所有附有“共振脉冲”附魔的附魔书并注册介绍页 (Resonance Pulse I-III)
         List<ItemStack> resonancePulseBooks = registration.getIngredientManager()
             .getAllIngredients(VanillaTypes.ITEM_STACK)
@@ -652,12 +668,274 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.ancient_scroll_blood_leech.description"));
         }
 
+        // 获取所有附有“古卷附魔-切金断玉”附魔的附魔书并注册介绍页 (Ancient Scroll - Metal Cleaver I-IV)
+        List<ItemStack> metalCutterBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!metalCutterBooks.isEmpty()) {
+            registration.addIngredientInfo(metalCutterBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.ancient_scroll_metal_cutter.description"));
+        }
+
+        // 获取所有附有“古卷附魔-贯革”附魔的附魔书并注册介绍页 (Ancient Scroll - Hide Piercer I-IV)
+        List<ItemStack> leatherPiercerBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!leatherPiercerBooks.isEmpty()) {
+            registration.addIngredientInfo(leatherPiercerBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.ancient_scroll_leather_piercer.description"));
+        }
+
+        // 获取所有附有“玄冥雨刃”附魔的附魔书并注册介绍页 (Rain Blade I-V)
+        List<ItemStack> rainBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.RAIN_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!rainBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(rainBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.rain_blade.description"));
+        }
+
+        // 获取所有附有“青女霜刃”附魔的附魔书并注册介绍页 (Frost Blade I-V)
+        List<ItemStack> frostBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.FROST_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!frostBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(frostBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.frost_blade.description"));
+        }
+
+        // 获取所有附有“雷公霆刃”附魔的附魔书并注册介绍页 (Thunder Blade I-V)
+        List<ItemStack> thunderBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.THUNDER_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!thunderBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(thunderBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.thunder_blade.description"));
+        }
+
+        // 获取所有附有“金乌炽刃”附魔的附魔书并注册介绍页 (Sun Blade I-V)
+        List<ItemStack> sunBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.SUN_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!sunBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(sunBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.sun_blade.description"));
+        }
+
+        // 获取所有附有“羲和昼刃”附魔的附魔书并注册介绍页 (Day Blade I-V)
+        List<ItemStack> dayBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.DAY_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!dayBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(dayBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.day_blade.description"));
+        }
+
+        // 获取所有附有“望舒夜刃”附魔的附魔书并注册介绍页 (Night Blade I-V)
+        List<ItemStack> nightBladeBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.NIGHT_BLADE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!nightBladeBooks.isEmpty()) {
+            registration.addIngredientInfo(nightBladeBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.night_blade.description"));
+        }
+
+        // 获取所有附有“游侠速装”附魔的附魔书并注册介绍页 (Ranger Reload I)
+        List<ItemStack> rangerReloadBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.RANGER_RELOAD)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!rangerReloadBooks.isEmpty()) {
+            registration.addIngredientInfo(rangerReloadBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.ranger_reload.description"));
+        }
+
+        // 获取所有附有“预备弹仓”附魔的附魔书并注册介绍页 (Reserved Chamber I-IV)
+        List<ItemStack> reservedChamberBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.RESERVED_CHAMBER)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!reservedChamberBooks.isEmpty()) {
+            registration.addIngredientInfo(reservedChamberBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description"));
+        }
+
         registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.player_simulator.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.LOGIC_CORE), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.logic_core.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.PLAYER_CONTROL_CORE), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.player_control_core.description"));
+
+        // 国庆祭抽卡道具介绍页
+        registration.addIngredientInfo(new ItemStack(ModItems.NATIONAL_DAY_CARD_PACK), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.national_day_card_pack.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.NATIONAL_DAY_CARD_CHEST), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.national_day_card_chest.description"));
+
+        registration.addIngredientInfo(new ItemStack(ModItems.GLASS_ITEM_FRAME), VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.glass_item_frame.description"));
+
+        // 弩力量附魔信息介绍页（为弩与力量附魔书添加）
+        List<ItemStack> powerCrossbowTargets = new ArrayList<>();
+        powerCrossbowTargets.add(new ItemStack(Items.CROSSBOW));
+        registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(Enchantments.POWER)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .forEach(powerCrossbowTargets::add);
+
+        registration.addIngredientInfo(powerCrossbowTargets, VanillaTypes.ITEM_STACK,
+            Component.translatable("jei.tuanzis_mod.power_crossbow.description"));
     }
 
     @Override

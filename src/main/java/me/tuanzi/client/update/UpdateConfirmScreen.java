@@ -1,20 +1,25 @@
 package me.tuanzi.client.update;
 
+import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class UpdateConfirmScreen extends Screen {
+    private static final URI DETAILED_CHANGELOG_URI = URI.create("https://docs.qq.com/aio/DUXVEVnRUWmVDck5u");
+
     private final Screen parent;
     private List<FormattedCharSequence> changelogLines = new ArrayList<>();
     private double scrollAmount = 0.0;
@@ -35,7 +40,7 @@ public class UpdateConfirmScreen extends Screen {
         this.clearWidgets();
 
         int panelWidth = 320;
-        int panelHeight = 220;
+        int panelHeight = 245;
         int panelX = (this.width - panelWidth) / 2;
         int panelY = (this.height - panelHeight) / 2;
 
@@ -60,8 +65,22 @@ public class UpdateConfirmScreen extends Screen {
         }
 
         // 常规状态下的升级面板按钮
+        // 1. 查看详细更新日志 (紧跟在日志滚动区域下方居中展示)
+        int changelogBtnWidth = 140;
+        int changelogBtnX = panelX + (panelWidth - changelogBtnWidth) / 2;
+        int changelogBtnY = panelY + 182;
+        this.addRenderableWidget(
+            Button.builder(Component.literal("查看详细更新日志"), button -> {
+                ModLog.debug("[更新提示] 用户点击查看详细更新日志，正在跳转链接: " + DETAILED_CHANGELOG_URI);
+                Blaze3D.openUri(DETAILED_CHANGELOG_URI);
+            })
+            .bounds(changelogBtnX, changelogBtnY, changelogBtnWidth, 20)
+            .build()
+        );
+
+        // 2. 底部操作按钮行
         int btnWidth = 80;
-        int btnY = panelY + panelHeight - 35;
+        int btnY = panelY + 212;
         
         // 自动更新
         this.addRenderableWidget(
@@ -110,6 +129,18 @@ public class UpdateConfirmScreen extends Screen {
 
         // 预先使用自定义 Markdown 解析并切分折行，缓存至内存中，避免 extractRenderState 产生高频 GC
         String rawChangelog = UpdateChecker.getChangelog();
+        if (rawChangelog != null && rawChangelog.length() > 1000) {
+            ModLog.debug("[更新日志] 日志长度超过 1000 字符 (" + rawChangelog.length() + ")，已截断并追加引导提示");
+            int cutIndex = 1000;
+            if (Character.isHighSurrogate(rawChangelog.charAt(cutIndex - 1))) {
+                cutIndex--;
+            }
+            String truncated = rawChangelog.substring(0, cutIndex);
+            if (truncated.endsWith("\r")) {
+                truncated = truncated.substring(0, truncated.length() - 1);
+            }
+            rawChangelog = truncated + (truncated.endsWith("\n") ? "" : "\n") + "...更多内容请查看modrinth/腾讯文档";
+        }
         Component parsedChangelog = SimpleMarkdownParser.parse(rawChangelog);
         this.changelogLines = this.font.split(parsedChangelog, panelWidth - 40);
 
@@ -140,7 +171,7 @@ public class UpdateConfirmScreen extends Screen {
         graphics.fill(0, 0, this.width, this.height, ARGB.color(180, 10, 10, 15));
 
         int panelWidth = 320;
-        int panelHeight = 220;
+        int panelHeight = 245;
         int panelX = (this.width - panelWidth) / 2;
         int panelY = (this.height - panelHeight) / 2;
 
@@ -164,7 +195,7 @@ public class UpdateConfirmScreen extends Screen {
 
         if (this.isDownloading || this.isDownloaded || this.downloadFailed) {
             // 下载/成功/失败状态绘制提示文字
-            graphics.centeredText(this.font, this.statusText, this.width / 2, panelY + 100, ARGB.color(255, 255, 255, 255));
+            graphics.centeredText(this.font, this.statusText, this.width / 2, panelY + 115, ARGB.color(255, 255, 255, 255));
         } else {
             // 1. 裁剪区域限制绘制：仅渲染可视纵轴 55px 至 175px 之间的文字段落
             graphics.enableScissor(panelX + 15, scrollAreaY0, panelX + panelWidth - 15, scrollAreaY1);

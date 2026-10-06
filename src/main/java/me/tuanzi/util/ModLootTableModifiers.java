@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
-import net.minecraft.world.level.storage.loot.providers.number.BinomialDistributionGenerator;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 import java.util.Set;
 
@@ -40,7 +40,7 @@ public class ModLootTableModifiers {
                 // 添加一个新的 LootPool，有一定概率掉落熔炼附魔书
                 LootPool.Builder poolBuilder = LootPool.lootPool()
                     // 15% 概率掉落 (1次尝试，0.15 成功率)
-                    .setRolls(BinomialDistributionGenerator.binomial(1, 0.15f))
+                    .setRolls(ContextIntProviders.binomial(1, 0.15f))
                     .add(LootItem.lootTableItem(Items.ENCHANTED_BOOK)
                         .apply(SetComponentsFunction.setComponent(DataComponents.STORED_ENCHANTMENTS, smeltingEnchantmentInstance))
                     );
@@ -51,7 +51,7 @@ public class ModLootTableModifiers {
             if (DUMMY_CHESTS.contains(key)) {
                 // 20% 的极大概率在战利品箱中掉落试炼假人物品
                 LootPool.Builder poolBuilder = LootPool.lootPool()
-                    .setRolls(BinomialDistributionGenerator.binomial(1, 0.20f))
+                    .setRolls(ContextIntProviders.binomial(1, 0.20f))
                     .add(LootItem.lootTableItem(me.tuanzi.init.ModItems.TRIAL_DUMMY));
                 tableBuilder.pool(poolBuilder.build());
             }

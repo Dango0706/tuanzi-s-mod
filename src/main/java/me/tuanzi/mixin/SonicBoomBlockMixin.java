@@ -59,7 +59,7 @@ public abstract class SonicBoomBlockMixin {
                     if (pushVector.lengthSqr() > 1e-4) {
                         pushVector = pushVector.normalize().scale(1.2);
                         warden.push(pushVector.x, 0.4, pushVector.z);
-                        warden.hurtMarked = true; // Mark as hurt to sync movement to clients
+                        warden.syncVelocity = true; // Mark as hurt to sync movement to clients
                     }
                 }
 

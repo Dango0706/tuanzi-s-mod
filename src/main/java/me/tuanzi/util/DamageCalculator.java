@@ -1,5 +1,6 @@
 package me.tuanzi.util;
 
+import me.tuanzi.entity.TrialDummyEntity;
 import me.tuanzi.init.ModStatusEffects;
 import me.tuanzi.init.ModEnchantments;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +18,19 @@ import net.minecraft.nbt.CompoundTag;
  * 支持多重伤害修改效果的加法累加（Additive）计算。
  */
 public class DamageCalculator {
+
+    /**
+     * 计算弩附魔力量时的箭矢基础伤害加成。
+     * 原版弓力量增伤公式：0.5 + 0.5 * level（等价于 1.0 + 0.5 * (level - 1)）。
+     * 附魔在弩上的增加伤害效果为弓上的一半：0.25 + 0.25 * level。
+     *
+     * @param level 附魔等级
+     * @return 增加的箭矢基础伤害
+     */
+    public static float getCrossbowPowerBonus(int level) {
+        if (level <= 0) return 0.0f;
+        return 0.25f + 0.25f * level;
+    }
 
     /**
      * 计算并调整最终伤害。
@@ -45,6 +59,16 @@ public class DamageCalculator {
         float attackerMultiplier = 1.0f;
         float victimMultiplier = 1.0f;
 
+        // 预备弹仓副箭伤害衰减：第一箭之后的每一箭伤害同第一箭减少 (60 - 10 * level)%
+        if (source.getDirectEntity() instanceof ReservedChamberProjectileAccessor accessor) {
+            float penalty = accessor.tuanzis_mod$getReservedChamberDamagePenalty();
+            if (penalty > 0.0f) {
+                attackerMultiplier -= penalty;
+                attackerMultiplier = Math.max(0.0f, attackerMultiplier);
+                me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【预备弹仓】副箭伤害衰减 " + String.format("%.0f%%", penalty * 100) + " (附魔等级: " + accessor.tuanzis_mod$getReservedChamberLevel() + "，当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+            }
+        }
+
         // 1. 攻击者输出伤害乘数计算（加法累加模型）
         if (source.getEntity() instanceof LivingEntity attacker) {
             // 攻击者拥有“血怒”状态效果，攻击伤害乘算提升 40% (累加值 +0.4f)
@@ -58,6 +82,125 @@ public class DamageCalculator {
                     || source.is(DamageTypes.MOB_ATTACK)
                     || source.is(DamageTypes.MACE_SMASH);
             if (isMelee) {
+                // 天气附魔逻辑：玄冥雨刃 (Rain Blade)、青女霜刃 (Frost Blade)、雷公霆刃 (Thunder Blade)、金乌炽刃 (Sun Blade)
+                ItemStack mainHandWeapon = attacker.getMainHandItem();
+                if (!mainHandWeapon.isEmpty()) {
+                    var enchRegistry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var rainBladeEnch = enchRegistry.getOrThrow(ModEnchantments.RAIN_BLADE);
+                    var frostBladeEnch = enchRegistry.getOrThrow(ModEnchantments.FROST_BLADE);
+                    var thunderBladeEnch = enchRegistry.getOrThrow(ModEnchantments.THUNDER_BLADE);
+                    var sunBladeEnch = enchRegistry.getOrThrow(ModEnchantments.SUN_BLADE);
+
+                    int rainLevel = EnchantmentHelper.getItemEnchantmentLevel(rainBladeEnch, mainHandWeapon);
+                    int frostLevel = EnchantmentHelper.getItemEnchantmentLevel(frostBladeEnch, mainHandWeapon);
+                    int thunderLevel = EnchantmentHelper.getItemEnchantmentLevel(thunderBladeEnch, mainHandWeapon);
+                    int sunLevel = EnchantmentHelper.getItemEnchantmentLevel(sunBladeEnch, mainHandWeapon);
+
+                    if (rainLevel > 0 || frostLevel > 0 || thunderLevel > 0 || sunLevel > 0) {
+                        float baseWeaponDmg = getBaseWeaponDamage(mainHandWeapon);
+                        var level = attacker.level();
+                        var pos = attacker.blockPosition();
+
+                        net.minecraft.world.level.biome.Biome.Precipitation precipitation = net.minecraft.world.level.biome.Biome.Precipitation.NONE;
+                        if (level.canHaveWeather()) {
+                            precipitation = level.getBiome(pos).value().getPrecipitationAt(pos, level.getSeaLevel());
+                        }
+                        boolean isRaining = level.isRaining();
+                        boolean isThundering = level.isThundering();
+
+                        boolean hasRain = isRaining && precipitation == net.minecraft.world.level.biome.Biome.Precipitation.RAIN;
+                        boolean hasSnow = isRaining && precipitation == net.minecraft.world.level.biome.Biome.Precipitation.SNOW;
+                        boolean hasThunder = isThundering && (precipitation == net.minecraft.world.level.biome.Biome.Precipitation.RAIN || precipitation == net.minecraft.world.level.biome.Biome.Precipitation.SNOW);
+                        boolean isClear = !isRaining || precipitation == net.minecraft.world.level.biome.Biome.Precipitation.NONE;
+
+                        if (rainLevel > 0) {
+                            if (hasRain) {
+                                float bonus = baseWeaponDmg * (rainLevel * 1.15f + 1.0f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【玄冥雨刃】生效！等级: " + rainLevel + "，处于下雨天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                float penalty = baseWeaponDmg * (0.1625f * (6 - rainLevel));
+                                amount = Math.max(1.0f, amount - penalty);
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【玄冥雨刃】生效！等级: " + rainLevel + "，非下雨天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            }
+                        }
+
+                        if (frostLevel > 0) {
+                            if (hasSnow) {
+                                float bonus = baseWeaponDmg * (frostLevel * 1.15f + 1.0f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【青女霜刃】生效！等级: " + frostLevel + "，处于下雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                float penalty = baseWeaponDmg * (0.1625f * (6 - frostLevel));
+                                amount = Math.max(1.0f, amount - penalty);
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【青女霜刃】生效！等级: " + frostLevel + "，非下雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            }
+                        }
+
+                        if (thunderLevel > 0) {
+                            if (hasThunder) {
+                                float bonus = baseWeaponDmg * (thunderLevel * 1.45f + 1.0f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【雷公霆刃】生效！等级: " + thunderLevel + "，处于雷雨/雷雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                float penalty = baseWeaponDmg * (0.1825f * (6 - thunderLevel));
+                                amount = Math.max(1.0f, amount - penalty);
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【雷公霆刃】生效！等级: " + thunderLevel + "，非雷雨/雷雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            }
+                        }
+
+                        if (sunLevel > 0) {
+                            if (isClear) {
+                                float bonus = baseWeaponDmg * (sunLevel * 1.15f + 1.0f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【金乌炽刃】生效！等级: " + sunLevel + "，处于晴天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                float penalty = baseWeaponDmg * (0.1625f * (6 - sunLevel));
+                                amount = Math.max(1.0f, amount - penalty);
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【金乌炽刃】生效！等级: " + sunLevel + "，非晴天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            }
+                        }
+                    }
+
+                    // 昼夜附魔逻辑：羲和昼刃 (Day Blade)、望舒夜刃 (Night Blade)
+                    var dayBladeEnch = enchRegistry.getOrThrow(ModEnchantments.DAY_BLADE);
+                    var nightBladeEnch = enchRegistry.getOrThrow(ModEnchantments.NIGHT_BLADE);
+
+                    int dayLevel = EnchantmentHelper.getItemEnchantmentLevel(dayBladeEnch, mainHandWeapon);
+                    int nightLevel = EnchantmentHelper.getItemEnchantmentLevel(nightBladeEnch, mainHandWeapon);
+
+                    if (dayLevel > 0 || nightLevel > 0) {
+                        var level = attacker.level();
+                        boolean hasDayNightCycle = !level.dimensionType().hasFixedTime();
+                        long dayTime = level.getDefaultClockTime() % 24000L;
+                        if (dayTime < 0) dayTime += 24000L;
+                        boolean isDay = hasDayNightCycle && (dayTime < 12000L);
+                        boolean isNight = hasDayNightCycle && (dayTime >= 12000L);
+
+                        float baseWeaponDmg = getBaseWeaponDamage(mainHandWeapon);
+
+                        if (dayLevel > 0) {
+                            if (isDay) {
+                                float bonus = baseWeaponDmg * (dayLevel * 0.675f + 0.2f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【羲和昼刃】生效！等级: " + dayLevel + "，处于白天 (时间刻: " + dayTime + ")，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【羲和昼刃】未触发！等级: " + dayLevel + "，非白天 (时间刻: " + dayTime + ")，不产生基础伤害增幅。");
+                            }
+                        }
+
+                        if (nightLevel > 0) {
+                            if (isNight) {
+                                float bonus = baseWeaponDmg * (nightLevel * 0.675f + 0.2f);
+                                amount += bonus;
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【望舒夜刃】生效！等级: " + nightLevel + "，处于黑夜 (时间刻: " + dayTime + ")，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
+                            } else {
+                                me.tuanzi.util.ModLog.debug(attacker, target, "【望舒夜刃】未触发！等级: " + nightLevel + "，非黑夜 (时间刻: " + dayTime + ")，不产生基础伤害增幅。");
+                            }
+                        }
+                    }
+                }
+
                 // 坚盾之赐 (Steel Shield Gift) 附魔逻辑
                 ItemStack steelShieldGiftStack = attacker.getMainHandItem();
                 if (!steelShieldGiftStack.isEmpty()) {
@@ -265,10 +408,10 @@ public class DamageCalculator {
                                         .getOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
                                 net.minecraft.world.damagesource.DamageSource burstSrc = new net.minecraft.world.damagesource.DamageSource(magicType, attacker);
 
-                                int invTime = target.invulnerableTime;
-                                target.invulnerableTime = 0;
+                                int invTime = target.getInvulnerableTime();
+                                target.setInvulnerableTime(0);
                                 target.hurtServer(serverLevel, burstSrc, 3.0f);
-                                target.invulnerableTime = invTime;
+                                target.setInvulnerableTime(invTime);
 
                                 tag.putLong("BurstCooldownEnd", gameTime + 140);
                                 if (attacker instanceof net.minecraft.world.entity.player.Player player) {
@@ -326,6 +469,38 @@ public class DamageCalculator {
                     if (target.getArmorValue() == 0) {
                         attackerMultiplier += 0.75f;
                         me.tuanzi.util.ModLog.debug(attacker, target, "【裂虚之痕】触发虚无切割！目标护甲为 0，造成的伤害提升 75% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+                    }
+                }
+
+                // 野太刀 (Nodachi) 刀锋甜点区与势连击伤害加成
+                if (attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.NodachiItem) {
+                    if (attacker instanceof me.tuanzi.util.NodachiPlayerTracker tracker) {
+                        int momentum = tracker.tuanzis_mod$getNodachiMomentum();
+                        double dist = attacker.distanceTo(target);
+
+                        // 刀根贴脸（0 ~ 1.5 格）：造成 85% 伤害 (乘数 -0.15f)
+                        if (dist <= 1.5) {
+                            attackerMultiplier -= 0.15f;
+                            attackerMultiplier = Math.max(0.0f, attackerMultiplier);
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【野太刀·刀根贴脸】目标距离 " + String.format("%.2f", dist) + " 格 (<= 1.5格)，造成 85% 伤害 (衰减 15%，当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+                        } else if (dist < 2.2) {
+                            // 中段击中（1.5 ~ 2.2 格）：造成 100% 完整伤害 (基准不增不减)
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【野太刀·刀身中段】目标距离 " + String.format("%.2f", dist) + " 格 (1.5 ~ 2.2格)，造成 100% 完整伤害 (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+                        } else {
+                            // 刃尖击中（>= 2.2 格）：造成 1.15 倍伤害 (乘数 +0.15f)
+                            attackerMultiplier += 0.15f;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【野太刀·刃尖甜点】目标距离 " + String.format("%.2f", dist) + " 格 (>= 2.2格)，造成 1.15 倍伤害 (提升 15%，当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+                        }
+
+                        // 连击 1 层：伤害 +1
+                        // 连击 2 层 / 满层（3 层）：伤害 +2
+                        if (momentum == 1) {
+                            amount += 1.0f;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【野太刀·势】连击 1 层生效，伤害 +1 点 (当前伤害: " + String.format("%.2f", amount) + ")。");
+                        } else if (momentum >= 2) {
+                            amount += 2.0f;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【野太刀·势】连击 " + momentum + " 层生效，伤害 +2 点 (当前伤害: " + String.format("%.2f", amount) + ")。");
+                        }
                     }
                 }
 
@@ -491,8 +666,8 @@ public class DamageCalculator {
                             me.tuanzi.util.ModLog.debug(attacker, target, "【共鸣消耗】目标已带共鸣，移除其共鸣效果！");
 
                             // 重置无敌时间，确保音波魔法伤害不被免疫
-                            int originalInvulnerableTime = target.invulnerableTime;
-                            target.invulnerableTime = 0;
+                            int originalInvulnerableTime = target.getInvulnerableTime();
+                            target.setInvulnerableTime(0);
 
                             var magicType = attacker.registryAccess()
                                     .lookupOrThrow(Registries.DAMAGE_TYPE)
@@ -519,7 +694,7 @@ public class DamageCalculator {
 
                                 for (LivingEntity nearby : nearbyEntities) {
                                     // 同样重置周围敌人的受伤冷却，以防被吞
-                                    nearby.invulnerableTime = 0;
+                                    nearby.setInvulnerableTime(0);
                                     nearby.hurtServer(serverLevel, sonicSrc, pulseDamage);
 
                                     // 产生声波爆轰粒子效果
@@ -534,7 +709,7 @@ public class DamageCalculator {
                             }
 
                             // 恢复原本的无敌时间
-                            target.invulnerableTime = originalInvulnerableTime;
+                            target.setInvulnerableTime(originalInvulnerableTime);
 
                         } else {
                             // 没有共鸣，施加共鸣
@@ -584,8 +759,8 @@ public class DamageCalculator {
                         float bonusDmg = charge > 0 ? (0.05f * abyssalLevel) * charge : 0.0f;
                         float totalExtraDmg = baseDmg + bonusDmg;
 
-                        int originalInvulnerableTime = target.invulnerableTime;
-                        target.invulnerableTime = 0;
+                        int originalInvulnerableTime = target.getInvulnerableTime();
+                        target.setInvulnerableTime(0);
 
                         var magicType = attacker.registryAccess()
                                 .lookupOrThrow(Registries.DAMAGE_TYPE)
@@ -594,7 +769,7 @@ public class DamageCalculator {
 
                         target.hurtServer(serverLevel, magicSrc, totalExtraDmg);
 
-                        target.invulnerableTime = originalInvulnerableTime;
+                        target.setInvulnerableTime(originalInvulnerableTime);
 
                         me.tuanzi.util.ModLog.debug(attacker, target, "【深渊律动】附魔触发！等级: " + abyssalLevel + "，当前潮汐共鸣层数: " + charge + "，造成额外魔法伤害: " + String.format("%.2f", totalExtraDmg) + " 点。");
                     }
@@ -665,22 +840,26 @@ public class DamageCalculator {
 
         // 古卷附魔-汲血 (Ancient Scroll - Blood Leech) 逻辑
         if (source.getEntity() instanceof LivingEntity attacker && finalDamage > 0.0f) {
-            ItemStack bloodLeechWeapon = attacker.getMainHandItem();
-            if (!bloodLeechWeapon.isEmpty()) {
-                var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                var bloodLeechEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH);
-                int bloodLeechLevel = EnchantmentHelper.getItemEnchantmentLevel(bloodLeechEnch, bloodLeechWeapon);
-                if (bloodLeechLevel > 0) {
-                    float healPercent = 0.05f + 0.05f * bloodLeechLevel;
-                    float healAmount = finalDamage * healPercent;
-                    if (healAmount > 0.0f) {
-                        attacker.heal(healAmount);
-                        if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART,
-                                    attacker.getX(), attacker.getY() + 1.0, attacker.getZ(),
-                                    Math.max(1, (int) (healAmount / 2.0f)), 0.3, 0.3, 0.3, 0.1);
+            if (target instanceof TrialDummyEntity) {
+                me.tuanzi.util.ModLog.debug(attacker, target, "【古卷附魔-汲血】目标为试炼人偶，无法吸取生命值。");
+            } else {
+                ItemStack bloodLeechWeapon = attacker.getMainHandItem();
+                if (!bloodLeechWeapon.isEmpty()) {
+                    var registry = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var bloodLeechEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH);
+                    int bloodLeechLevel = EnchantmentHelper.getItemEnchantmentLevel(bloodLeechEnch, bloodLeechWeapon);
+                    if (bloodLeechLevel > 0) {
+                        float healPercent = 0.05f + 0.05f * bloodLeechLevel;
+                        float healAmount = finalDamage * healPercent;
+                        if (healAmount > 0.0f) {
+                            attacker.heal(healAmount);
+                            if (!attacker.level().isClientSide() && attacker.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                                serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.HEART,
+                                        attacker.getX(), attacker.getY() + 1.0, attacker.getZ(),
+                                        Math.max(1, (int) (healAmount / 2.0f)), 0.3, 0.3, 0.3, 0.1);
+                            }
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【古卷附魔-汲血】附魔触发！等级: " + bloodLeechLevel + "，造成伤害: " + String.format("%.2f", finalDamage) + "，吸血比例: " + String.format("%.1f", healPercent * 100) + "%，回复生命值: " + String.format("%.2f", healAmount) + " 点。");
                         }
-                        me.tuanzi.util.ModLog.debug(attacker, target, "【古卷附魔-汲血】附魔触发！等级: " + bloodLeechLevel + "，造成伤害: " + String.format("%.2f", finalDamage) + "，吸血比例: " + String.format("%.1f", healPercent * 100) + "%，回复生命值: " + String.format("%.2f", healAmount) + " 点。");
                     }
                 }
             }
@@ -689,5 +868,77 @@ public class DamageCalculator {
         me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: " + String.format("%.2f", finalDamage));
 
         return finalDamage;
+    }
+
+    /**
+     * 计算受击者被古卷附魔（切金断玉、贯革）无视后的有效护甲值。
+     *
+     * @param totalArmor 受击者受击前的原始护甲值
+     * @param source 伤害来源
+     * @param victim 受击者
+     * @return 削减后的实际有效护甲值
+     */
+    public static float calculateArmorIgnored(float totalArmor, DamageSource source, LivingEntity victim) {
+        if (totalArmor <= 0.0f) {
+            return totalArmor;
+        }
+
+        ItemStack weapon = source.getWeaponItem();
+        if ((weapon == null || weapon.isEmpty()) && source.getEntity() instanceof LivingEntity attacker) {
+            weapon = attacker.getMainHandItem();
+        }
+
+        if (weapon == null || weapon.isEmpty()) {
+            return totalArmor;
+        }
+
+        var registry = victim.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+
+        float ignorePercent = 0.0f;
+
+        // 1. 古卷附魔-切金断玉 (适用于剑、斧)：无视对方 (10 + 5 * level)% 的护甲值
+        var metalCutterEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER);
+        int metalCutterLevel = EnchantmentHelper.getItemEnchantmentLevel(metalCutterEnch, weapon);
+        if (metalCutterLevel > 0) {
+            float p = 0.10f + 0.05f * metalCutterLevel;
+            ignorePercent += p;
+            me.tuanzi.util.ModLog.debug(source.getEntity(), victim, "【古卷附魔-切金断玉】生效！等级: " + metalCutterLevel + "，无视护甲累加: " + String.format("%.1f", p * 100) + "%");
+        }
+
+        // 2. 古卷附魔-贯革 (适用于弓、弩)：无视对方 (10 + 5 * level)% 的护甲值
+        var leatherPiercerEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER);
+        int leatherPiercerLevel = EnchantmentHelper.getItemEnchantmentLevel(leatherPiercerEnch, weapon);
+        if (leatherPiercerLevel > 0) {
+            float p = 0.10f + 0.05f * leatherPiercerLevel;
+            ignorePercent += p;
+            me.tuanzi.util.ModLog.debug(source.getEntity(), victim, "【古卷附魔-贯革】生效！等级: " + leatherPiercerLevel + "，无视护甲累加: " + String.format("%.1f", p * 100) + "%");
+        }
+
+        if (ignorePercent > 0.0f) {
+            ignorePercent = Math.min(1.0f, ignorePercent);
+            float newArmor = Math.max(0.0f, totalArmor * (1.0f - ignorePercent));
+            me.tuanzi.util.ModLog.debug(source.getEntity(), victim, "古卷破甲结算：总无视比例: " + String.format("%.1f", ignorePercent * 100) + "%，目标护甲值: " + String.format("%.2f", totalArmor) + " -> 削减后有效护甲: " + String.format("%.2f", newArmor));
+            return newArmor;
+        }
+
+        return totalArmor;
+    }
+
+    /**
+     * 获取主手武器的基础物理攻击力面板加成值 (包含主手基础 1.0f 加上属性修饰符)
+     */
+    public static float getBaseWeaponDamage(ItemStack weapon) {
+        if (weapon == null || weapon.isEmpty()) {
+            return 1.0f;
+        }
+        final float[] dmgBox = {1.0f};
+        weapon.forEachModifier(EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+            if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) {
+                if (modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                    dmgBox[0] += (float) modifier.amount();
+                }
+            }
+        });
+        return Math.max(1.0f, dmgBox[0]);
     }
 }

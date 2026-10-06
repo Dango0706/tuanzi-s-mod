@@ -14,13 +14,13 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.texture.UvMapping;
+import net.minecraft.client.resources.model.geometry.ItemQuads;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.Nullable;
 
@@ -56,6 +56,11 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
+    public void submitTextBackground(PoseStack poseStack, float x0, float y0, float x1, float y1, int color, Font.DisplayMode displayMode, int lightCoords) {
+        this.parent.submitTextBackground(poseStack, x0, y0, x1, y1, color, displayMode, lightCoords);
+    }
+
+    @Override
     public void submitFlame(PoseStack poseStack, EntityRenderState renderState, Quaternionf rotation) {
         this.parent.submitFlame(poseStack, renderState, rotation);
     }
@@ -66,10 +71,16 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public <S> void submitModel(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, @Nullable TextureAtlasSprite sprite, int outlineColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
+    public <S> void submitModel(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, @Nullable UvMapping uvMapping, int outlineColor) {
         RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);
         me.tuanzi.util.ModLog.debug("GhostSubmitNodeCollector: submitModel called! model=" + model.getClass().getName() + ", renderType=" + renderType + ", ghostType=" + ghostType);
-        this.parent.submitModel(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, sprite, outlineColor, crumblingOverlay);
+        this.parent.submitModel(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, uvMapping, outlineColor);
+    }
+
+    @Override
+    public <S> void submitCrumblingOverlay(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+        RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);
+        this.parent.submitCrumblingOverlay(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, crumblingOverlay);
     }
 
     @Override
@@ -85,8 +96,8 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitBreakingBlockModel(PoseStack poseStack, List<BlockStateModelPart> parts, int progress) {
-        this.parent.submitBreakingBlockModel(poseStack, parts, progress);
+    public void submitBreakingBlockModel(PoseStack poseStack, List<BlockStateModelPart> parts, int progress, boolean isBlockTranslucent) {
+        this.parent.submitBreakingBlockModel(poseStack, parts, progress, isBlockTranslucent);
     }
 
     @Override
@@ -95,7 +106,7 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
     }
 
     @Override
-    public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int lightCoords, int overlayCoords, int outlineColor, int[] tintLayers, List<BakedQuad> quads, ItemStackRenderState.FoilType foilType) {
+    public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int lightCoords, int overlayCoords, int outlineColor, int[] tintLayers, ItemQuads quads, ItemStackRenderState.FoilType foilType) {
         this.parent.submitItem(poseStack, displayContext, lightCoords, overlayCoords, outlineColor, tintLayers, quads, foilType);
     }
 
@@ -141,6 +152,11 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
         }
 
         @Override
+        public void submitTextBackground(PoseStack poseStack, float x0, float y0, float x1, float y1, int color, Font.DisplayMode displayMode, int lightCoords) {
+            this.delegate.submitTextBackground(poseStack, x0, y0, x1, y1, color, displayMode, lightCoords);
+        }
+
+        @Override
         public void submitFlame(PoseStack poseStack, EntityRenderState renderState, Quaternionf rotation) {
             this.delegate.submitFlame(poseStack, renderState, rotation);
         }
@@ -151,10 +167,16 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
         }
 
         @Override
-        public <S> void submitModel(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, @Nullable TextureAtlasSprite sprite, int outlineColor, ModelFeatureRenderer.@Nullable CrumblingOverlay crumblingOverlay) {
+        public <S> void submitModel(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, @Nullable UvMapping uvMapping, int outlineColor) {
             RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);
             me.tuanzi.util.ModLog.debug("GhostOrderedSubmitNodeCollector: submitModel called! model=" + model.getClass().getName() + ", renderType=" + renderType + ", ghostType=" + ghostType);
-            this.delegate.submitModel(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, sprite, outlineColor, crumblingOverlay);
+            this.delegate.submitModel(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, uvMapping, outlineColor);
+        }
+
+        @Override
+        public <S> void submitCrumblingOverlay(Model<? super S> model, S state, PoseStack poseStack, RenderType renderType, int lightCoords, int overlayCoords, int tintedColor, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
+            RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);
+            this.delegate.submitCrumblingOverlay(model, state, poseStack, ghostType, lightCoords, overlayCoords, tintedColor, crumblingOverlay);
         }
 
         @Override
@@ -170,8 +192,8 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
         }
 
         @Override
-        public void submitBreakingBlockModel(PoseStack poseStack, List<BlockStateModelPart> parts, int progress) {
-            this.delegate.submitBreakingBlockModel(poseStack, parts, progress);
+        public void submitBreakingBlockModel(PoseStack poseStack, List<BlockStateModelPart> parts, int progress, boolean isBlockTranslucent) {
+            this.delegate.submitBreakingBlockModel(poseStack, parts, progress, isBlockTranslucent);
         }
 
         @Override
@@ -180,7 +202,7 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
         }
 
         @Override
-        public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int lightCoords, int overlayCoords, int outlineColor, int[] tintLayers, List<BakedQuad> quads, ItemStackRenderState.FoilType foilType) {
+        public void submitItem(PoseStack poseStack, ItemDisplayContext displayContext, int lightCoords, int overlayCoords, int outlineColor, int[] tintLayers, ItemQuads quads, ItemStackRenderState.FoilType foilType) {
             this.delegate.submitItem(poseStack, displayContext, lightCoords, overlayCoords, outlineColor, tintLayers, quads, foilType);
         }
 

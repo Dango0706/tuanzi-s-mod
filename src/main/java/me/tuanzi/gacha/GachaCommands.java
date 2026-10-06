@@ -49,20 +49,26 @@ public class GachaCommands {
                     .executes(context -> {
                         ServerPlayer player = context.getSource().getPlayerOrException();
                         
-                        // 判定手持物品以确定展示常驻池还是限定池的历史记录标题
-                        String poolTitle = "§d限定卡池抽卡历史记录"; // 默认限定池
+                        // 判定手持物品以确定展示对应卡池的历史记录标题
+                        String poolTitle = "§c国庆祭限定卡池抽卡历史记录"; // 默认国庆祭限定池
                         net.minecraft.world.item.ItemStack mainHand = player.getMainHandItem();
                         net.minecraft.world.item.ItemStack offHand = player.getOffhandItem();
                         
-                        boolean holdsNormal = false;
-                        if (mainHand != null && !mainHand.isEmpty() && mainHand.getItem() instanceof me.tuanzi.item.GachaItem g1 && "normal".equals(g1.getPoolId())) {
-                            holdsNormal = true;
-                        } else if (offHand != null && !offHand.isEmpty() && offHand.getItem() instanceof me.tuanzi.item.GachaItem g2 && "normal".equals(g2.getPoolId())) {
-                            holdsNormal = true;
+                        me.tuanzi.item.GachaItem heldItem = null;
+                        if (mainHand != null && !mainHand.isEmpty() && mainHand.getItem() instanceof me.tuanzi.item.GachaItem g1) {
+                            heldItem = g1;
+                        } else if (offHand != null && !offHand.isEmpty() && offHand.getItem() instanceof me.tuanzi.item.GachaItem g2) {
+                            heldItem = g2;
                         }
                         
-                        if (holdsNormal) {
-                            poolTitle = "§6常驻卡池抽卡历史记录";
+                        if (heldItem != null) {
+                            if ("normal".equals(heldItem.getPoolId())) {
+                                poolTitle = "§6常驻卡池抽卡历史记录";
+                            } else if ("sakura_moon".equals(heldItem.getPoolId())) {
+                                poolTitle = "§d樱花祭限定卡池抽卡历史记录";
+                            } else if ("national_day".equals(heldItem.getPoolId())) {
+                                poolTitle = "§c国庆祭限定卡池抽卡历史记录";
+                            }
                         }
 
                         player.openMenu(new net.minecraft.world.SimpleMenuProvider(
@@ -323,7 +329,7 @@ public class GachaCommands {
         if (sakuraL >= 70) sakuraP = 0.02 + 0.05 * (sakuraL + 1 - 70);
 
         player.sendSystemMessage(Component.literal(String.format("§e常驻卡池: §f已累积 §a%d§f 抽 (保底上限 80 抽) | 当前传说概率: §a%.1f%%§f | 史诗未出: §d%d§f 抽", normalL, normalP * 100.0, state.getNormalEpicCounter())));
-        player.sendSystemMessage(Component.literal(String.format("§e限定卡池: §f已累积 §a%d§f 抽 (保底上限 90 抽) | 当前传说概率: §a%.1f%%§f | 史诗未出: §d%d§f 抽", sakuraL, sakuraP * 100.0, state.getSakuraEpicCounter())));
+        player.sendSystemMessage(Component.literal(String.format("§e限定卡池 (樱花祭/国庆祭共享): §f已累积 §a%d§f 抽 (保底上限 90 抽) | 当前传说概率: §a%.1f%%§f | 史诗未出: §d%d§f 抽", sakuraL, sakuraP * 100.0, state.getSakuraEpicCounter())));
     }
 
     private static void showHistory(ServerPlayer player, int page) {
@@ -369,7 +375,7 @@ public class GachaCommands {
                 state.setNormalLegendaryCounter(0);
                 state.setNormalEpicCounter(0);
             }
-            if (poolId.equalsIgnoreCase("sakura_moon") || poolId.equalsIgnoreCase("all")) {
+            if (poolId.equalsIgnoreCase("sakura_moon") || poolId.equalsIgnoreCase("national_day") || poolId.equalsIgnoreCase("limited") || poolId.equalsIgnoreCase("all")) {
                 state.setSakuraLegendaryCounter(0);
                 state.setSakuraEpicCounter(0);
             }
@@ -379,11 +385,11 @@ public class GachaCommands {
 
     private static void setCounter(ServerPlayer op, ServerPlayer target, String poolId, String counterType, int value) {
         PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(target.getUUID());
-        boolean isSakura = poolId.equalsIgnoreCase("sakura_moon");
+        boolean isLimited = poolId.equalsIgnoreCase("sakura_moon") || poolId.equalsIgnoreCase("national_day") || poolId.equalsIgnoreCase("limited");
         boolean isLegendary = counterType.equalsIgnoreCase("legendary");
 
         synchronized (state) {
-            if (isSakura) {
+            if (isLimited) {
                 if (isLegendary) state.setSakuraLegendaryCounter(value);
                 else state.setSakuraEpicCounter(value);
             } else {
@@ -415,15 +421,15 @@ public class GachaCommands {
         int maxEpicGap = 0;
         int currentEpicGap = 0;
 
-        boolean isSakura = poolId.equalsIgnoreCase("sakura_moon");
+        boolean isLimited = GachaLogic.isLimitedPool(poolId);
 
         for (int i = 0; i < times; i++) {
-            int legCounter = isSakura ? tempState.getSakuraLegendaryCounter() : tempState.getNormalLegendaryCounter();
-            int epCounter = isSakura ? tempState.getSakuraEpicCounter() : tempState.getNormalEpicCounter();
+            int legCounter = isLimited ? tempState.getSakuraLegendaryCounter() : tempState.getNormalLegendaryCounter();
+            int epCounter = isLimited ? tempState.getSakuraEpicCounter() : tempState.getNormalEpicCounter();
 
             double pLegendary = 0.02;
-            int hardLegendaryLimit = isSakura ? 90 : 80;
-            int softLegendaryStart = isSakura ? 70 : 60;
+            int hardLegendaryLimit = isLimited ? 90 : 80;
+            int softLegendaryStart = isLimited ? 70 : 60;
 
             if (legCounter >= softLegendaryStart) {
                 pLegendary = 0.02 + 0.05 * (legCounter + 1 - softLegendaryStart);

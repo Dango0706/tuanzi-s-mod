@@ -52,6 +52,12 @@ public class TranslucentVertexConsumer implements VertexConsumer {
     }
 
     @Override
+    public VertexConsumer setUv3(float u, float v) {
+        this.parent.setUv3(u, v);
+        return this;
+    }
+
+    @Override
     public VertexConsumer setNormal(float x, float y, float z) {
         this.parent.setNormal(x, y, z);
         return this;

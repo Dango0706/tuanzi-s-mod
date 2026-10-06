@@ -24,6 +24,12 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.data.recipes.BrewingRecipeBuilder;
+import net.minecraft.world.item.alchemy.Potions;
+import me.tuanzi.init.ModPotions;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class ModRecipeProvider extends FabricRecipeProvider {
@@ -32,10 +38,11 @@ public class ModRecipeProvider extends FabricRecipeProvider {
     }
 
     @Override
-    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, RecipeOutput exporter) {
-        return new RecipeProvider(registryLookup, exporter) {
+    protected RecipeProvider createRecipeProvider(HolderLookup.Provider registryLookup, BootstrapContext<Recipe<?>> recipes, BootstrapContext<Advancement> advancements) {
+        return new RecipeProvider(recipes, advancements) {
             @Override
             public void buildRecipes() {
+                RecipeOutput exporter = this.output;
                 shaped(RecipeCategory.COMBAT, ModItems.ECHO_BREAKER)
                     .pattern("EEE")
                     .pattern(" H ")
@@ -283,8 +290,88 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     .define('B', Items.DRAGON_BREATH)
                     .unlockedBy("has_lapis_block", has(Items.LAPIS_BLOCK))
                     .unlockedBy("has_nether_star", has(Items.NETHER_STAR))
-                    .unlockedBy("has_book", has(Items.BOOK))
                     .save(exporter);
+
+                // 玻璃展示框无序合成配方：4个展示框 + 1个玻璃 -> 4个玻璃展示框
+                shapeless(RecipeCategory.DECORATIONS, ModItems.GLASS_ITEM_FRAME, 4)
+                    .requires(Items.ITEM_FRAME, 4)
+                    .requires(Items.GLASS)
+                    .unlockedBy("has_item_frame", has(Items.ITEM_FRAME))
+                    .unlockedBy("has_glass", has(Items.GLASS))
+                    .save(exporter);
+
+                // 缠皮长握柄：铁粒(顶) + 烈焰棒(中) + 皮革(底)
+                shaped(RecipeCategory.MISC, ModItems.REINFORCED_LONG_HILT)
+                    .pattern("N")
+                    .pattern("B")
+                    .pattern("L")
+                    .define('N', Items.IRON_NUGGET)
+                    .define('B', Items.BLAZE_ROD)
+                    .define('L', Items.LEATHER)
+                    .unlockedBy("has_blaze_rod", has(Items.BLAZE_ROD))
+                    .save(exporter);
+
+                // 木质连击斩马刀
+                shaped(RecipeCategory.COMBAT, ModItems.WOODEN_NODACHI)
+                    .pattern(" MM")
+                    .pattern(" M ")
+                    .pattern("H  ")
+                    .define('M', ItemTags.PLANKS)
+                    .define('H', ModItems.REINFORCED_LONG_HILT)
+                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                    .save(exporter);
+
+                // 石质连击斩马刀
+                shaped(RecipeCategory.COMBAT, ModItems.STONE_NODACHI)
+                    .pattern(" MM")
+                    .pattern(" M ")
+                    .pattern("H  ")
+                    .define('M', ItemTags.STONE_TOOL_MATERIALS)
+                    .define('H', ModItems.REINFORCED_LONG_HILT)
+                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                    .save(exporter);
+
+                // 铁质连击斩马刀
+                shaped(RecipeCategory.COMBAT, ModItems.IRON_NODACHI)
+                    .pattern(" MM")
+                    .pattern(" M ")
+                    .pattern("H  ")
+                    .define('M', Items.IRON_INGOT)
+                    .define('H', ModItems.REINFORCED_LONG_HILT)
+                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                    .save(exporter);
+
+                // 金质连击斩马刀
+                shaped(RecipeCategory.COMBAT, ModItems.GOLDEN_NODACHI)
+                    .pattern(" MM")
+                    .pattern(" M ")
+                    .pattern("H  ")
+                    .define('M', Items.GOLD_INGOT)
+                    .define('H', ModItems.REINFORCED_LONG_HILT)
+                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                    .save(exporter);
+
+                // 钻石连击斩马刀
+                shaped(RecipeCategory.COMBAT, ModItems.DIAMOND_NODACHI)
+                    .pattern(" MM")
+                    .pattern(" M ")
+                    .pattern("H  ")
+                    .define('M', Items.DIAMOND)
+                    .define('H', ModItems.REINFORCED_LONG_HILT)
+                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                    .save(exporter);
+
+                // 下界合金连击斩马刀（锻造台升级）
+                this.netheriteSmithing(ModItems.DIAMOND_NODACHI, RecipeCategory.COMBAT, ModItems.NETHERITE_NODACHI);
+
+                // 酿造配方 (原为 BrewingRecipeMixin)
+                for (net.minecraft.world.item.Item container : List.of(Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION)) {
+                    BrewingRecipeBuilder.brewingMix(container, Potions.MUNDANE, Items.TOTEM_OF_UNDYING, ModPotions.UNDYING_POTION).save(exporter);
+                    BrewingRecipeBuilder.brewingMix(container, ModPotions.UNDYING_POTION, Items.REDSTONE, ModPotions.LONG_UNDYING_POTION).save(exporter);
+                    BrewingRecipeBuilder.brewingMix(container, Potions.WEAKNESS, Items.GOLDEN_CARROT, ModPotions.ADRENALINE_POTION).save(exporter);
+                    BrewingRecipeBuilder.brewingMix(container, ModPotions.ADRENALINE_POTION, Items.GLOWSTONE_DUST, ModPotions.ADRENALINE_POTION_II).save(exporter);
+                    BrewingRecipeBuilder.brewingMix(container, ModPotions.ADRENALINE_POTION, Items.REDSTONE, ModPotions.LONG_ADRENALINE_POTION).save(exporter);
+                }
             }
         };
     }

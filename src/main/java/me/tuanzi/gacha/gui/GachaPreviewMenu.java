@@ -214,14 +214,14 @@ public class GachaPreviewMenu extends ChestMenu {
     }
 
     private List<String> getPlayerStatsLore() {
-        boolean isSakura = pool.getPoolId().equalsIgnoreCase("sakura_moon");
+        boolean isLimited = GachaLogic.isLimitedPool(pool.getPoolId());
         
-        int legendaryCounter = isSakura ? state.getSakuraLegendaryCounter() : state.getNormalLegendaryCounter();
-        int epicCounter = isSakura ? state.getSakuraEpicCounter() : state.getNormalEpicCounter();
+        int legendaryCounter = isLimited ? state.getSakuraLegendaryCounter() : state.getNormalLegendaryCounter();
+        int epicCounter = isLimited ? state.getSakuraEpicCounter() : state.getNormalEpicCounter();
         
         double pLegendary = 0.02;
-        int hardLegendaryLimit = isSakura ? 90 : 80;
-        int softLegendaryStart = isSakura ? 70 : 60;
+        int hardLegendaryLimit = isLimited ? 90 : 80;
+        int softLegendaryStart = isLimited ? 70 : 60;
 
         if (legendaryCounter >= softLegendaryStart) {
             pLegendary = 0.02 + 0.05 * (legendaryCounter + 1 - softLegendaryStart);
@@ -243,7 +243,7 @@ public class GachaPreviewMenu extends ChestMenu {
         lore.add(String.format("§7▶ 下一抽传说级(金)概率: §6%.1f%%", pLegendary * 100.0));
         lore.add(String.format("§7▶ 下一抽史诗级(假饰)概率: §d%.1f%%", pEpic * 100.0));
         
-        if (isSakura) {
+        if (isLimited) {
             lore.add("§8* 限定池若中金，直接 100% 获得当期限定传说大奖！");
         }
 

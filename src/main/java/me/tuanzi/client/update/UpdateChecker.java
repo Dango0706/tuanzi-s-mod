@@ -241,7 +241,7 @@ public class UpdateChecker {
                     continue;
                 }
 
-                // 校验 game_version 是否包含 26.1
+                // 校验 game_version 是否包含当前版本
                 boolean supportsMC = false;
                 if (ver.has("game_versions")) {
                     for (JsonElement gv : ver.getAsJsonArray("game_versions")) {
@@ -264,7 +264,7 @@ public class UpdateChecker {
 
             // 如果在开发环境下没找到完全匹配 26.1/fabric 的版本，我们尝试取列表里的第一个作为真实数据的兜底
             if (targetVersion == null) {
-                if (FabricLoader.getInstance().isDevelopmentEnvironment() && versions.size() > 0) {
+                if (FabricLoader.getInstance().isDevelopmentEnvironment() && !versions.isEmpty()) {
                     targetVersion = versions.get(0).getAsJsonObject();
                     ModLog.info("[自动更新检测][开发环境沙箱] 虽未找到完全匹配 " + GAME_VERSION + "/fabric 的版本，但使用列表第一项作为真实数据兜底。");
                 } else {

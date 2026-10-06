@@ -21,8 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
 public class BlueprintTableBlock extends BaseEntityBlock {
-    public static final com.mojang.serialization.MapCodec<BlueprintTableBlock> CODEC = simpleCodec(BlueprintTableBlock::new);
-
     private static final VoxelShape SHAPE = Shapes.or(
         box(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),   // 桌身与抽屉柜
         box(1.0, 12.0, 1.0, 15.0, 14.0, 15.0),  // 桌面板底座
@@ -31,11 +29,6 @@ public class BlueprintTableBlock extends BaseEntityBlock {
 
     public BlueprintTableBlock(BlockBehaviour.Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected com.mojang.serialization.MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

@@ -91,17 +91,22 @@ public abstract class EnchantmentScreenMixin extends AbstractContainerScreen<Enc
         }
 
         ItemStack item = this.menu.getSlot(0).getItem();
+        ItemStack lapis = this.menu.getSlot(1).getItem();
         boolean canEnchant = !item.isEmpty() && item.isEnchantable();
-        boolean hasExp = this.minecraft.player.experienceLevel >= 1 || this.minecraft.player.hasInfiniteMaterials();
+        boolean isCreative = this.minecraft.player.hasInfiniteMaterials();
+        boolean hasExp = this.minecraft.player.experienceLevel >= 1 || isCreative;
+        boolean hasLapis = isCreative || (!lapis.isEmpty() && lapis.is(net.minecraft.world.item.Items.LAPIS_LAZULI) && lapis.getCount() >= 1);
 
-        this.tuanzis_mod$refreshButton.active = canEnchant && hasExp;
+        this.tuanzis_mod$refreshButton.active = canEnchant && hasExp && hasLapis;
 
         if (!canEnchant) {
             this.tuanzis_mod$refreshButton.setTooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.enchantment.refresh.no_item")));
         } else if (!hasExp) {
             this.tuanzis_mod$refreshButton.setTooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.enchantment.refresh.no_exp")));
+        } else if (!hasLapis) {
+            this.tuanzis_mod$refreshButton.setTooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.enchantment.refresh.no_lapis")));
         } else {
-            this.tuanzis_mod$refreshButton.setTooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.enchantment.refresh.ready")));
+            this.tuanzis_mod$refreshButton.setTooltip(Tooltip.create(Component.translatable(isCreative ? "gui.tuanzis_mod.enchantment.refresh.ready_creative" : "gui.tuanzis_mod.enchantment.refresh.ready")));
         }
     }
 }
