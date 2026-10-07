@@ -34,6 +34,8 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> RANGER_RELOAD = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ranger_reload"));
     public static final ResourceKey<Enchantment> ANCIENT_SCROLL_RESERVED_CHAMBER = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ancient_scroll_reserved_chamber"));
     public static final ResourceKey<Enchantment> RESERVED_CHAMBER = ANCIENT_SCROLL_RESERVED_CHAMBER;
+    public static final ResourceKey<Enchantment> FLOW_STATE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "flow_state"));
+    public static final ResourceKey<Enchantment> FINALITY = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "finality"));
 
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_WEATHER_BLADES = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_weather_blades"));

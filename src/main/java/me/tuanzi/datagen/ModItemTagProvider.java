@@ -48,5 +48,14 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
             .add(net.minecraft.world.item.Items.CROSSBOW.builtInRegistryHolder().key())
             .addOptionalTag(ItemTags.BOW_ENCHANTABLE)
             .addOptionalTag(ItemTags.CROSSBOW_ENCHANTABLE);
+
+        // 注册野太刀附魔适用的武器标签
+        builder(me.tuanzi.init.ModItemTags.NODACHI_ENCHANTABLE)
+            .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
+            .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
     }
 }

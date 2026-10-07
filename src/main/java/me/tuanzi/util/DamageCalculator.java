@@ -115,11 +115,11 @@ public class DamageCalculator {
 
                         if (rainLevel > 0) {
                             if (hasRain) {
-                                float bonus = baseWeaponDmg * (rainLevel * 1.15f + 1.0f);
+                                float bonus = rainLevel * 1.15f + 1.0f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【玄冥雨刃】生效！等级: " + rainLevel + "，处于下雨天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {
-                                float penalty = baseWeaponDmg * (0.1625f * (6 - rainLevel));
+                                float penalty = 0.1625f * (6 - rainLevel);
                                 amount = Math.max(1.0f, amount - penalty);
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【玄冥雨刃】生效！等级: " + rainLevel + "，非下雨天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
                             }
@@ -127,11 +127,11 @@ public class DamageCalculator {
 
                         if (frostLevel > 0) {
                             if (hasSnow) {
-                                float bonus = baseWeaponDmg * (frostLevel * 1.15f + 1.0f);
+                                float bonus = frostLevel * 1.15f + 1.0f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【青女霜刃】生效！等级: " + frostLevel + "，处于下雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {
-                                float penalty = baseWeaponDmg * (0.1625f * (6 - frostLevel));
+                                float penalty = 0.1625f * (6 - frostLevel);
                                 amount = Math.max(1.0f, amount - penalty);
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【青女霜刃】生效！等级: " + frostLevel + "，非下雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
                             }
@@ -139,11 +139,11 @@ public class DamageCalculator {
 
                         if (thunderLevel > 0) {
                             if (hasThunder) {
-                                float bonus = baseWeaponDmg * (thunderLevel * 1.45f + 1.0f);
+                                float bonus = thunderLevel * 1.45f + 1.0f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【雷公霆刃】生效！等级: " + thunderLevel + "，处于雷雨/雷雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {
-                                float penalty = baseWeaponDmg * (0.1825f * (6 - thunderLevel));
+                                float penalty = 0.1825f * (6 - thunderLevel);
                                 amount = Math.max(1.0f, amount - penalty);
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【雷公霆刃】生效！等级: " + thunderLevel + "，非雷雨/雷雪天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
                             }
@@ -151,11 +151,11 @@ public class DamageCalculator {
 
                         if (sunLevel > 0) {
                             if (isClear) {
-                                float bonus = baseWeaponDmg * (sunLevel * 1.15f + 1.0f);
+                                float bonus = sunLevel * 1.15f + 1.0f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【金乌炽刃】生效！等级: " + sunLevel + "，处于晴天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {
-                                float penalty = baseWeaponDmg * (0.1625f * (6 - sunLevel));
+                                float penalty = 0.1625f * (6 - sunLevel);
                                 amount = Math.max(1.0f, amount - penalty);
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【金乌炽刃】生效！等级: " + sunLevel + "，非晴天，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，降低伤害: " + String.format("%.2f", penalty) + " 点，当前伤害: " + String.format("%.2f", amount));
                             }
@@ -181,7 +181,7 @@ public class DamageCalculator {
 
                         if (dayLevel > 0) {
                             if (isDay) {
-                                float bonus = baseWeaponDmg * (dayLevel * 0.675f + 0.2f);
+                                float bonus = dayLevel * 0.675f + 0.2f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【羲和昼刃】生效！等级: " + dayLevel + "，处于白天 (时间刻: " + dayTime + ")，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {
@@ -191,7 +191,7 @@ public class DamageCalculator {
 
                         if (nightLevel > 0) {
                             if (isNight) {
-                                float bonus = baseWeaponDmg * (nightLevel * 0.675f + 0.2f);
+                                float bonus = nightLevel * 0.675f + 0.2f;
                                 amount += bonus;
                                 me.tuanzi.util.ModLog.debug(attacker, target, "【望舒夜刃】生效！等级: " + nightLevel + "，处于黑夜 (时间刻: " + dayTime + ")，武器基础攻击力: " + String.format("%.2f", baseWeaponDmg) + "，增加基础伤害: " + String.format("%.2f", bonus) + " 点，当前伤害: " + String.format("%.2f", amount));
                             } else {

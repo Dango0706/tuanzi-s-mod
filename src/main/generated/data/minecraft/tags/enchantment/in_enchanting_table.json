@@ -59,6 +59,10 @@
     {
       "id": "tuanzis_mod:ancient_scroll_reserved_chamber",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:flow_state",
+      "required": false
     }
   ]
 }

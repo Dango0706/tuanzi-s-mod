@@ -15,6 +15,10 @@
     {
       "id": "tuanzis_mod:seeking_arrow",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:finality",
+      "required": false
     }
   ]
 }

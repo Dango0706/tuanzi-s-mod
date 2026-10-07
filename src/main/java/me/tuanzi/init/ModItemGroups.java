@@ -158,6 +158,21 @@ public class ModItemGroups {
                 EnchantmentHelper.updateEnchantments(rangerReloadBook, mutable -> mutable.set(rangerReload, 1));
                 entries.accept(rangerReloadBook);
 
+                // 回流 (最高IV级)
+                var flowState = enchantmentRegistry.getOrThrow(ModEnchantments.FLOW_STATE);
+                ItemStack flowStateBook1 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(flowStateBook1, mutable -> mutable.set(flowState, 1));
+                entries.accept(flowStateBook1);
+                ItemStack flowStateBook4 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(flowStateBook4, mutable -> mutable.set(flowState, 4));
+                entries.accept(flowStateBook4);
+
+                // 绝式 (最高I级，宝藏附魔)
+                var finality = enchantmentRegistry.getOrThrow(ModEnchantments.FINALITY);
+                ItemStack finalityBook1 = new ItemStack(Items.ENCHANTED_BOOK);
+                EnchantmentHelper.updateEnchantments(finalityBook1, mutable -> mutable.set(finality, 1));
+                entries.accept(finalityBook1);
+
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
                 // 加入尤里的复仇

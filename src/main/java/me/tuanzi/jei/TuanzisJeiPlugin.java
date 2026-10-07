@@ -898,6 +898,52 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description"));
         }
 
+        // 获取所有附有“回流”附魔的附魔书并注册介绍页 (Flow State I-IV)
+        List<ItemStack> flowStateBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.FLOW_STATE)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!flowStateBooks.isEmpty()) {
+            registration.addIngredientInfo(flowStateBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.flow_state.description"));
+        }
+
+        // 获取所有附有“绝式”附魔的附魔书并注册介绍页 (Finality I)
+        List<ItemStack> finalityBooks = registration.getIngredientManager()
+            .getAllIngredients(VanillaTypes.ITEM_STACK)
+            .stream()
+            .filter(stack -> stack.is(Items.ENCHANTED_BOOK))
+            .filter(stack -> {
+                ItemEnchantments enchantments = stack.get(DataComponents.STORED_ENCHANTMENTS);
+                if (enchantments != null) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(ModEnchantments.FINALITY)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            })
+            .toList();
+
+        if (!finalityBooks.isEmpty()) {
+            registration.addIngredientInfo(finalityBooks, VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.finality.description"));
+        }
+
         registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.player_simulator.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.LOGIC_CORE), VanillaTypes.ITEM_STACK,

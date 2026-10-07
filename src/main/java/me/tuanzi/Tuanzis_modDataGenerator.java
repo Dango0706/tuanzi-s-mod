@@ -692,18 +692,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引玄冥水泽之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与青女霜刃、雷公霆刃、金乌炽刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b雨意增幅§r：当使用者所在位置处于§9下雨天§r时，增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
-				"2. §c非雨衰减§r：若所在位置§c非下雨天§r，则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
-				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
-				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
-				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
-				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
-				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"1. §b雨意增幅§r：当使用者所在位置处于§9下雨天§r时，增加 §a(等级 × 1.15 + 1)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+2.15§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+3.30§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+4.45§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+5.60§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+6.75§r 点基础伤害\n" +
+				"2. §c非雨衰减§r：若所在位置§c非下雨天§r，则降低 §c(0.1625 × (6 - 等级))§r 点基础伤害：\n" +
+				"   - §b等级 I§r：降低 §c-0.8125§r 点基础伤害\n" +
+				"   - §b等级 II§r：降低 §c-0.6500§r 点基础伤害\n" +
+				"   - §b等级 III§r：降低 §c-0.4875§r 点基础伤害\n" +
+				"   - §b等级 IV§r：降低 §c-0.3250§r 点基础伤害\n" +
+				"   - §b等级 V§r：降低 §c-0.1625§r 点基础伤害\n\n" +
 				"§e获取途径：§r\n" +
 				"可在附魔台、战利品宝箱及村民交易中获得。";
 			translationBuilder.add("jei.tuanzis_mod.rain_blade.description", rainBladeJeiDesc);
@@ -714,18 +714,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引青女素霜之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与玄冥雨刃、雷公霆刃、金乌炽刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b霜雪增幅§r：当使用者所在位置处于§b下雪天§r时，增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
-				"2. §c非雪衰减§r：若所在位置§c非下雪天§r，则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
-				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
-				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
-				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
-				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
-				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"1. §b霜雪增幅§r：当使用者所在位置处于§b下雪天§r时，增加 §a(等级 × 1.15 + 1)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+2.15§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+3.30§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+4.45§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+5.60§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+6.75§r 点基础伤害\n" +
+				"2. §c非雪衰减§r：若所在位置§c非下雪天§r，则降低 §c(0.1625 × (6 - 等级))§r 点基础伤害：\n" +
+				"   - §b等级 I§r：降低 §c-0.8125§r 点基础伤害\n" +
+				"   - §b等级 II§r：降低 §c-0.6500§r 点基础伤害\n" +
+				"   - §b等级 III§r：降低 §c-0.4875§r 点基础伤害\n" +
+				"   - §b等级 IV§r：降低 §c-0.3250§r 点基础伤害\n" +
+				"   - §b等级 V§r：降低 §c-0.1625§r 点基础伤害\n\n" +
 				"§e获取途径：§r\n" +
 				"可在附魔台、战利品宝箱及村民交易中获得。";
 			translationBuilder.add("jei.tuanzis_mod.frost_blade.description", frostBladeJeiDesc);
@@ -736,18 +736,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引雷公神霆之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与玄冥雨刃、青女霜刃、金乌炽刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b雷霆增幅§r：当使用者所在位置处于§e雷雨/雷雪天§r时，增加武器基础攻击力 §a(等级 × 1.45 + 1)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a2.45§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a3.90§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a5.35§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a6.80§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a8.25§r 的基础伤害\n" +
-				"2. §c非雷暴衰减§r：若所在位置§c非雷雨/雷雪天§r，则降低武器基础攻击力 §c(0.1825 × (6 - 等级))§r：\n" +
-				"   - §b等级 I§r：降低武器基础攻击力 × §c91.25%§r\n" +
-				"   - §b等级 II§r：降低武器基础攻击力 × §c73.00%§r\n" +
-				"   - §b等级 III§r：降低武器基础攻击力 × §c54.75%§r\n" +
-				"   - §b等级 IV§r：降低武器基础攻击力 × §c36.50%§r\n" +
-				"   - §b等级 V§r：降低武器基础攻击力 × §c18.25%§r\n\n" +
+				"1. §b雷霆增幅§r：当使用者所在位置处于§e雷雨/雷雪天§r时，增加 §a(等级 × 1.45 + 1)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+2.45§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+3.90§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+5.35§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+6.80§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+8.25§r 点基础伤害\n" +
+				"2. §c非雷暴衰减§r：若所在位置§c非雷雨/雷雪天§r，则降低 §c(0.1825 × (6 - 等级))§r 点基础伤害：\n" +
+				"   - §b等级 I§r：降低 §c-0.9125§r 点基础伤害\n" +
+				"   - §b等级 II§r：降低 §c-0.7300§r 点基础伤害\n" +
+				"   - §b等级 III§r：降低 §c-0.5475§r 点基础伤害\n" +
+				"   - §b等级 IV§r：降低 §c-0.3650§r 点基础伤害\n" +
+				"   - §b等级 V§r：降低 §c-0.1825§r 点基础伤害\n\n" +
 				"§e获取途径：§r\n" +
 				"可在附魔台、战利品宝箱及村民交易中获得。";
 			translationBuilder.add("jei.tuanzis_mod.thunder_blade.description", thunderBladeJeiDesc);
@@ -758,18 +758,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引金乌烈阳之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与玄冥雨刃、青女霜刃、雷公霆刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b晴阳增幅§r：当使用者所在位置处于§6晴天§r时（包含沙漠等无降水群系及下界、末地），增加武器基础攻击力 §a(等级 × 1.15 + 1)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a2.15§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a3.30§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a4.45§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a5.60§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a6.75§r 的基础伤害\n" +
-				"2. §c非晴衰减§r：若所在位置§c非晴天§r（处于雨雪中），则降低武器基础攻击力 §c(0.1625 × (6 - 等级))§r：\n" +
-				"   - §b等级 I§r：降低武器基础攻击力 × §c81.25%§r\n" +
-				"   - §b等级 II§r：降低武器基础攻击力 × §c65.00%§r\n" +
-				"   - §b等级 III§r：降低武器基础攻击力 × §c48.75%§r\n" +
-				"   - §b等级 IV§r：降低武器基础攻击力 × §c32.50%§r\n" +
-				"   - §b等级 V§r：降低武器基础攻击力 × §c16.25%§r\n\n" +
+				"1. §b晴阳增幅§r：当使用者所在位置处于§6晴天§r时（包含沙漠等无降水群系及下界、末地），增加 §a(等级 × 1.15 + 1)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+2.15§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+3.30§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+4.45§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+5.60§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+6.75§r 点基础伤害\n" +
+				"2. §c非晴衰减§r：若所在位置§c非晴天§r（处于雨雪中），则降低 §c(0.1625 × (6 - 等级))§r 点基础伤害：\n" +
+				"   - §b等级 I§r：降低 §c-0.8125§r 点基础伤害\n" +
+				"   - §b等级 II§r：降低 §c-0.6500§r 点基础伤害\n" +
+				"   - §b等级 III§r：降低 §c-0.4875§r 点基础伤害\n" +
+				"   - §b等级 IV§r：降低 §c-0.3250§r 点基础伤害\n" +
+				"   - §b等级 V§r：降低 §c-0.1625§r 点基础伤害\n\n" +
 				"§e获取途径：§r\n" +
 				"可在附魔台、战利品宝箱及村民交易中获得。";
 			translationBuilder.add("jei.tuanzis_mod.sun_blade.description", sunBladeJeiDesc);
@@ -780,12 +780,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引羲和御日神威之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与望舒夜刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b日光增幅§r：当使用者所在位置处于§6白天§r时（0 ~ 12000 ticks，有昼夜循环维度），增加武器基础攻击力 §a(等级 × 0.675 + 0.2)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a0.875§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a1.550§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a2.225§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a2.900§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a3.575§r 的基础伤害\n" +
+				"1. §b日光增幅§r：当使用者所在位置处于§6白天§r时（0 ~ 12000 ticks，有昼夜循环维度），增加 §a(等级 × 0.675 + 0.2)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+0.875§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+1.550§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+2.225§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+2.900§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+3.575§r 点基础伤害\n" +
 				"2. §7非白天状态§r：若所在位置非白天（黑夜或无昼夜循环维度），则保持原武器面板，不获得增伤。\n\n" +
 				"§e获取途径：§r\n" +
 				"稀有度为稀有（Rare），可在附魔台、战利品宝箱及村民交易中获得。";
@@ -797,12 +797,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"引望舒驭月玄妙之力的锋刃附魔。最高等级 V 级。适用类型：剑、斧。\n" +
 				"与羲和昼刃互斥。\n\n" +
 				"§e核心效果：§r\n" +
-				"1. §b月影增幅§r：当使用者所在位置处于§9黑夜§r时（12000 ~ 24000 ticks，有昼夜循环维度），增加武器基础攻击力 §a(等级 × 0.675 + 0.2)§r 的基础伤害：\n" +
-				"   - §b等级 I§r：增加武器基础攻击力 × §a0.875§r 的基础伤害\n" +
-				"   - §b等级 II§r：增加武器基础攻击力 × §a1.550§r 的基础伤害\n" +
-				"   - §b等级 III§r：增加武器基础攻击力 × §a2.225§r 的基础伤害\n" +
-				"   - §b等级 IV§r：增加武器基础攻击力 × §a2.900§r 的基础伤害\n" +
-				"   - §b等级 V§r：增加武器基础攻击力 × §a3.575§r 的基础伤害\n" +
+				"1. §b月影增幅§r：当使用者所在位置处于§9黑夜§r时（12000 ~ 24000 ticks，有昼夜循环维度），增加 §a(等级 × 0.675 + 0.2)§r 点基础伤害：\n" +
+				"   - §b等级 I§r：增加 §a+0.875§r 点基础伤害\n" +
+				"   - §b等级 II§r：增加 §a+1.550§r 点基础伤害\n" +
+				"   - §b等级 III§r：增加 §a+2.225§r 点基础伤害\n" +
+				"   - §b等级 IV§r：增加 §a+2.900§r 点基础伤害\n" +
+				"   - §b等级 V§r：增加 §a+3.575§r 点基础伤害\n" +
 				"2. §7非黑夜状态§r：若所在位置非黑夜（白天或无昼夜循环维度），则保持原武器面板，不获得增伤。\n\n" +
 				"§e获取途径：§r\n" +
 				"稀有度为稀有（Rare），可在附魔台、战利品宝箱及村民交易中获得。";
@@ -1014,6 +1014,31 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// 野太刀与配件 JEI 说明
 			translationBuilder.add("jei.tuanzis_mod.reinforced_long_hilt.description", "【缠皮长握柄】\n普通的木棍无法承受挥砍重长刀身产生的扭矩，必须合成专用握柄。\n\n§e合成配方：\n工作台中列式摆放：\n顶部：铁粒\n中部：烈焰棒\n底部：皮革");
 			translationBuilder.add("jei.tuanzis_mod.nodachi.description", "【野太刀】\n超长攻击距离的大型双手武器，具备独特的“势·节奏连击”与“刀锋甜点区”机制。\n\n§e基础属性：\n- 基础攻击距离：3.6 格（相比常规武器 +0.6 格）。\n- 基础攻击速度：1.3。\n\n§e核心机制（势·节奏连击）：\n1. §b弧形节拍器与 QTE 节奏窗口§r：手持野太刀时准星下方显示左右匀速摆动的弧形节拍指针。指针摆动速度恒定（扫过高亮区不会加速），每摆动一圈速度会随机微调变更，且高亮节奏窗口随机占比总轨道的 20%~30%。当武器攻击冷却达到 100% 后指针扫过随机出现的高亮窗口时出刀，即可无缝衔接下一层：\n   - §a连击 1 层§r：攻速提升至 1.5，伤害 +1\n   - §e连击 2 层§r：攻速提升至 1.7，伤害 +2\n   - §6满层 (3层)§r：攻速提升至 1.9，挥出向正前方推进的【顺劈气刃】（内置 5 秒独立冷却，斩出时不脱力）。\n2. §b惩罚机制§r：挥空或超过 5 秒未造成伤害时，触发持续 0.5 秒的脱力软僵直（无法攻击），且“势”立即全部移除归零。\n\n§e刀锋甜点区 (Sweet Spot)：\n1. §a刃尖命中 (>= 2.2 格)§r：造成 1.15 倍伤害，成功累积“势”层数。\n2. §e中段命中 (1.5 ~ 2.2 格)§r：造成 100% 完整伤害，保持“势”层数。\n3. §c刀根贴脸 (0 ~ 1.5 格)§r：造成 85% 伤害（衰减 15%），无法积累“势”，且攻击击退大幅降低。\n\n§e横扫判定与形态变化：\n1. §70 ~ 1 层“势”§r：横扫范围为前方 120° 扇形、半径 2.8 格，仅击退杂兵，无横扫伤害。\n2. §e2 层“势”§r：横扫范围扩大至 150° 扇形、半径 3.4 格，对扇区内所有副目标造成 1 点顺劈伤害与击退。\n3. §63 层满势（顺劈气刃）§r：内置 5 秒冷却。普通挥砍斩出向正前方推进的气刃（速度 20 格/秒，贯穿 4 格，宽 2.5 格），造成武器 20% 纯物理伤害，并斩断沿途的蜘蛛网、竹子与草叶。\n\n§e合成与升级：\n1. 工作台 3x3 矩阵对角线贯穿合成基础 5 阶（左下为缠皮长握柄，中斜线及右上为对应矿物材料）。\n2. 下界合金版本使用锻造台将钻石野太刀升级。");
+
+			// 野太刀专属附魔：回流 (Flow State) 与 绝式 (Finality)
+			translationBuilder.add("enchantment.tuanzis_mod.flow_state", "回流");
+			String flowStateJeiDesc = "【回流】\n" +
+				"野太刀专属附魔。最高等级 IV 级。稀有度：稀有 (Rare)。\n" +
+				"适用类型：野太刀。\n\n" +
+				"§e附魔效果：§r\n" +
+				"1. §b扩大完美节奏判定窗口§r：将准星弧形节拍器的完美节奏 QTE 窗口判定范围扩大 §a5% × 等级§r（I级 +5%，IV级 +20%）。\n" +
+				"2. §b延长攻击间隔时长§r：额外延长“势”判定超时的攻击间隔时长 §a0.5秒 × 等级§r（I级 +0.5秒，IV级 +2.0秒，总超时时间由 5.0秒 提升至 7.0秒）。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.flow_state.description", flowStateJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.finality", "绝式");
+			String finalityJeiDesc = "【绝式】\n" +
+				"野太刀专属宝藏型附魔。最高等级 I 级。稀有度：极度稀有 (Very Rare)。\n" +
+				"适用类型：野太刀。为宝藏型附魔（无法在附魔台中直接附出）。\n\n" +
+				"§e核心机制：§r\n" +
+				"1. §b蓄力释放 360° 全方位大回旋斩§r：当“势”达到满层（3 层）时，长按右键蓄力 §a0.8 秒§r 后松开，消耗全部“势”释放 360° 全方位大回旋斩。\n" +
+				"2. §b毁灭打击§r：对周围 §e4 格§r 内所有敌对目标造成等同于武器基础攻击力 §c180%§r 的毁灭打击（严格通过 DamageCalculator 计算）。\n" +
+				"3. §b强行击退§r：将周围 4 格内所有命中的敌对目标强行击退 §63 格§r 距离。\n" +
+				"4. §b脱力软僵直§r：释放大回旋斩后自身陷入持续 §c1.0 秒§r 的脱力软僵直状态（无法攻击）。\n\n" +
+				"§e获取途径：§r\n" +
+				"宝藏型附魔，仅可通过各类遗迹与地牢战利品宝箱、钓鱼或特定村民交易等途径获取附魔书。";
+			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDesc);
 		}
 	}
 
@@ -1427,18 +1452,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the deep torrential power of Xuanming. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Frost Blade, Thunder Blade, and Sun Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bRain Empowerment§r: When present in rainy weather, increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
-				"2. §cDry Penalty§r: When not in rainy weather, decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"1. §bRain Empowerment§r: When present in rainy weather, increases attacks by §a+(Level × 1.15 + 1)§r bonus base damage:\n" +
+				"   - §bLevel I§r: §a+2.15§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+3.30§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+4.45§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+5.60§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+6.75§r bonus base damage\n" +
+				"2. §cDry Penalty§r: When not in rainy weather, decreases base damage by §c-(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: §c-0.8125§r base damage reduction\n" +
+				"   - §bLevel II§r: §c-0.6500§r base damage reduction\n" +
+				"   - §bLevel III§r: §c-0.4875§r base damage reduction\n" +
+				"   - §bLevel IV§r: §c-0.3250§r base damage reduction\n" +
+				"   - §bLevel V§r: §c-0.1625§r base damage reduction\n\n" +
 				"§eAcquisition:§r\n" +
 				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
 			translationBuilder.add("jei.tuanzis_mod.rain_blade.description", rainBladeJeiDescEn);
@@ -1449,18 +1474,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the bitter chill of Qingnu. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Rain Blade, Thunder Blade, and Sun Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bSnow Empowerment§r: When present in snowy weather, increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
-				"2. §cThaw Penalty§r: When not in snowy weather, decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"1. §bSnow Empowerment§r: When present in snowy weather, increases attacks by §a+(Level × 1.15 + 1)§r bonus base damage:\n" +
+				"   - §bLevel I§r: §a+2.15§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+3.30§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+4.45§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+5.60§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+6.75§r bonus base damage\n" +
+				"2. §cThaw Penalty§r: When not in snowy weather, decreases base damage by §c-(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: §c-0.8125§r base damage reduction\n" +
+				"   - §bLevel II§r: §c-0.6500§r base damage reduction\n" +
+				"   - §bLevel III§r: §c-0.4875§r base damage reduction\n" +
+				"   - §bLevel IV§r: §c-0.3250§r base damage reduction\n" +
+				"   - §bLevel V§r: §c-0.1625§r base damage reduction\n\n" +
 				"§eAcquisition:§r\n" +
 				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
 			translationBuilder.add("jei.tuanzis_mod.frost_blade.description", frostBladeJeiDescEn);
@@ -1471,18 +1496,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the roaring wrath of Thunder God. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Rain Blade, Frost Blade, and Sun Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bThunder Empowerment§r: When present in thunderstorm or thundersnow weather, increases base weapon damage by §a(Level × 1.45 + 1)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a2.45§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a3.90§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a5.35§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a6.80§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a8.25§r bonus damage\n" +
-				"2. §cCalm Penalty§r: When not in thunderstorm/thundersnow weather, decreases base weapon damage by §c(0.1825 × (6 - Level))§r:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §c91.25%§r reduction\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §c73.00%§r reduction\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §c54.75%§r reduction\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §c36.50%§r reduction\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §c18.25%§r reduction\n\n" +
+				"1. §bThunder Empowerment§r: When present in thunderstorm or thundersnow weather, increases attacks by §a+(Level × 1.45 + 1)§r bonus base damage:\n" +
+				"   - §bLevel I§r: §a+2.45§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+3.90§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+5.35§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+6.80§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+8.25§r bonus base damage\n" +
+				"2. §cCalm Penalty§r: When not in thunderstorm/thundersnow weather, decreases base damage by §c-(0.1825 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: §c-0.9125§r base damage reduction\n" +
+				"   - §bLevel II§r: §c-0.7300§r base damage reduction\n" +
+				"   - §bLevel III§r: §c-0.5475§r base damage reduction\n" +
+				"   - §bLevel IV§r: §c-0.3650§r base damage reduction\n" +
+				"   - §bLevel V§r: §c-0.1825§r base damage reduction\n\n" +
 				"§eAcquisition:§r\n" +
 				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
 			translationBuilder.add("jei.tuanzis_mod.thunder_blade.description", thunderBladeJeiDescEn);
@@ -1493,18 +1518,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the blazing radiance of the Golden Crow Sun. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Rain Blade, Frost Blade, and Thunder Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bSun Empowerment§r: When present in clear weather (including dry biomes, the Nether, and the End), increases base weapon damage by §a(Level × 1.15 + 1)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a2.15§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a3.30§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a4.45§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a5.60§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a6.75§r bonus damage\n" +
-				"2. §cStorm Penalty§r: When not in clear weather (in rain or snow), decreases base weapon damage by §c(0.1625 × (6 - Level))§r:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §c81.25%§r reduction\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §c65.00%§r reduction\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §c48.75%§r reduction\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §c32.50%§r reduction\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §c16.25%§r reduction\n\n" +
+				"1. §bSun Empowerment§r: When present in clear weather (including dry biomes, the Nether, and the End), increases attacks by §a+(Level × 1.15 + 1)§r bonus base damage:\n" +
+				"   - §bLevel I§r: §a+2.15§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+3.30§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+4.45§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+5.60§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+6.75§r bonus base damage\n" +
+				"2. §cStorm Penalty§r: When not in clear weather (in rain or snow), decreases base damage by §c-(0.1625 × (6 - Level))§r:\n" +
+				"   - §bLevel I§r: §c-0.8125§r base damage reduction\n" +
+				"   - §bLevel II§r: §c-0.6500§r base damage reduction\n" +
+				"   - §bLevel III§r: §c-0.4875§r base damage reduction\n" +
+				"   - §bLevel IV§r: §c-0.3250§r base damage reduction\n" +
+				"   - §bLevel V§r: §c-0.1625§r base damage reduction\n\n" +
 				"§eAcquisition:§r\n" +
 				"Can be obtained from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
 			translationBuilder.add("jei.tuanzis_mod.sun_blade.description", sunBladeJeiDescEn);
@@ -1515,12 +1540,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the radiant solar power of Xihe. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Night Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bSolar Empowerment§r: When present in daytime (0 - 12000 ticks in dimensions with day-night cycle), increases base weapon damage by §a(Level × 0.675 + 0.2)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a0.875§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a1.550§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a2.225§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a2.900§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a3.575§r bonus damage\n" +
+				"1. §bSolar Empowerment§r: When present in daytime (0 - 12000 ticks in dimensions with day-night cycle), increases base damage by §a+(Level × 0.675 + 0.2)§r:\n" +
+				"   - §bLevel I§r: §a+0.875§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+1.550§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+2.225§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+2.900§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+3.575§r bonus base damage\n" +
 				"2. §7Non-Daytime State§r: When not in daytime (night or dimensions without day-night cycle), weapons deal normal damage without bonus.\n\n" +
 				"§eAcquisition:§r\n" +
 				"Rare enchantment, obtainable from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
@@ -1531,12 +1556,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"A blade enchantment that channels the mysterious lunar grace of Wangshu. Max Level V. Applicable to: Swords, Axes.\n" +
 				"Mutually exclusive with Day Blade.\n\n" +
 				"§eCore Effects:§r\n" +
-				"1. §bLunar Empowerment§r: When present in nighttime (12000 - 24000 ticks in dimensions with day-night cycle), increases base weapon damage by §a(Level × 0.675 + 0.2)§r as bonus base damage:\n" +
-				"   - §bLevel I§r: Base Weapon Damage × §a0.875§r bonus damage\n" +
-				"   - §bLevel II§r: Base Weapon Damage × §a1.550§r bonus damage\n" +
-				"   - §bLevel III§r: Base Weapon Damage × §a2.225§r bonus damage\n" +
-				"   - §bLevel IV§r: Base Weapon Damage × §a2.900§r bonus damage\n" +
-				"   - §bLevel V§r: Base Weapon Damage × §a3.575§r bonus damage\n" +
+				"1. §bLunar Empowerment§r: When present in nighttime (12000 - 24000 ticks in dimensions with day-night cycle), increases base damage by §a+(Level × 0.675 + 0.2)§r:\n" +
+				"   - §bLevel I§r: §a+0.875§r bonus base damage\n" +
+				"   - §bLevel II§r: §a+1.550§r bonus base damage\n" +
+				"   - §bLevel III§r: §a+2.225§r bonus base damage\n" +
+				"   - §bLevel IV§r: §a+2.900§r bonus base damage\n" +
+				"   - §bLevel V§r: §a+3.575§r bonus base damage\n" +
 				"2. §7Non-Nighttime State§r: When not in nighttime (day or dimensions without day-night cycle), weapons deal normal damage without bonus.\n\n" +
 				"§eAcquisition:§r\n" +
 				"Rare enchantment, obtainable from Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
@@ -2005,6 +2030,31 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			// Nodachi & Hilt JEI Descriptions
 			translationBuilder.add("jei.tuanzis_mod.reinforced_long_hilt.description", "[Reinforced Long Hilt]\nOrdinary sticks cannot withstand the torque generated by swinging a massive heavy blade. A specialized reinforced hilt is required.\n\n§eRecipe:\nCrafted vertically in a crafting table:\nTop: Iron Nugget\nMiddle: Blaze Rod\nBottom: Leather");
 			translationBuilder.add("jei.tuanzis_mod.nodachi.description", "[Nodachi]\nA long-reach two-handed weapon featuring unique Momentum Rhythm Combo and Sweet Spot mechanics.\n\n§eBase Stats:\n- Attack Reach: 3.6 blocks (+0.6 blocks over standard weapons).\n- Attack Speed: Base 1.3.\n\n§eCore Mechanics (Momentum Combo):\n1. §bArc Metronome & QTE Rhythm Window§r: An arc metronome HUD is displayed below the crosshair, swinging at a constant speed that shifts each full cycle. The highlighted rhythm window covers a randomized 20%~30% of the track. Once attack cooldown reaches 100%, striking as the needle sweeps through the highlight chains into the next tier seamlessly:\n   - §aCombo Tier 1§r: Attack speed increases to 1.5, Damage +1\n   - §eCombo Tier 2§r: Attack speed increases to 1.7, Damage +2\n   - §6Max Tier (Tier 3)§r: Attack speed reaches 1.9, regular swings unleash a piercing Cleave Aura (has 5s internal cooldown, does not cause exhaustion).\n2. §bPenalty§r: Missing an attack or failing to land a hit within 5 seconds resets all Momentum to 0 and inflicts 0.5s of exhaustion weakness (cannot attack).\n\n§eSweet Spot Mechanics:\n1. §aBlade Tip (>= 2.2 blocks)§r: Deals 1.15x damage and accumulates Momentum.\n2. §eMiddle Blade (1.5 ~ 2.2 blocks)§r: Deals 100% damage and maintains Momentum.\n3. §cClose Hilt (0 ~ 1.5 blocks)§r: Deals 85% damage (15% penalty), cannot build Momentum, and knockback drastically reduced.\n\n§eSweeping Attack Variations:\n1. §70 ~ 1 Momentum§r: Sweeps in a 120° cone with 2.8-block radius, knocking back mobs without sweep damage.\n2. §e2 Momentum§r: Expands to 150° cone with 3.4-block radius, dealing 1 cleave damage to secondary targets.\n3. §63 Momentum (Cleave Aura)§r: Unleashes forward-flying aura (20 blocks/s, 4 blocks pierce, 2.5 blocks wide) with 5s internal cooldown, dealing 20% weapon damage and cleaving cobwebs, bamboo, and foliage.\n\n§eCrafting & Upgrade:\n1. Craft basic 5 tiers diagonally across a 3x3 crafting grid (Reinforced Long Hilt at bottom-left, mineral materials across the diagonal and top-right).\n2. Upgrade Diamond Nodachi to Netherite Nodachi at a Smithing Table.");
+
+			// Nodachi Enchantments: Flow State & Finality
+			translationBuilder.add("enchantment.tuanzis_mod.flow_state", "Flow State");
+			String flowStateJeiDescEn = "[Flow State]\n" +
+				"Exclusive enchantment for Nodachi. Max Level: IV. Rarity: Rare.\n" +
+				"Applicable to: Nodachi.\n\n" +
+				"§eEffects:§r\n" +
+				"1. §bExpanded Rhythm Window§r: Expands the arc metronome QTE perfect rhythm window by §a5% × level§r (+5% at Lv.I, +20% at Lv.IV).\n" +
+				"2. §bExtended Attack Interval§r: Extends the allowed attack interval before Momentum resets by §a0.5s × level§r (+0.5s at Lv.I, +2.0s at Lv.IV, increasing timeout from 5.0s up to 7.0s).\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, Dungeon/Loot Chests, and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.flow_state.description", flowStateJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.finality", "Finality");
+			String finalityJeiDescEn = "[Finality]\n" +
+				"Exclusive treasure enchantment for Nodachi. Max Level: I. Rarity: Very Rare.\n" +
+				"Applicable to: Nodachi. Treasure enchantment (cannot be obtained directly from Enchanting Tables).\n\n" +
+				"§eCore Mechanics:§r\n" +
+				"1. §b360° Full Spin Slash§r: When at max tier of Momentum (Tier 3), hold Right-Click to charge for §a0.8 seconds§r and release to consume all Momentum and unleash a 360° full spin slash.\n" +
+				"2. §bDevastating Strike§r: Deals §c180%§r of weapon base attack damage as physical damage to all hostile targets within §e4 blocks§r (calculated strictly via DamageCalculator).\n" +
+				"3. §bForceful Knockback§r: Forcefully knocks back hit hostile targets by §63 blocks§r.\n" +
+				"4. §bExhaustion Weakness§r: Enters §c1.0 second§r of exhaustion weakness after release (cannot attack).\n\n" +
+				"§eAcquisition:§r\n" +
+				"Treasure enchantment, obtainable exclusively from structure/dungeon loot chests, fishing, or villager trading.";
+			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDescEn);
 		}
 	}
 }

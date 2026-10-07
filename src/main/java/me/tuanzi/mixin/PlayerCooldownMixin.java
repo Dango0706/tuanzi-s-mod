@@ -1,12 +1,14 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.item.NodachiItem;
 import me.tuanzi.network.NodachiSyncPacket;
 import me.tuanzi.util.ModLog;
 import me.tuanzi.util.NodachiPlayerTracker;
 import me.tuanzi.util.TideCleaverPlayerTracker;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -120,17 +123,17 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
     }
 
     @Override
-    public void tuanzis_mod$triggerNodachiExhaustion(String reason) {
+    public void tuanzis_mod$triggerNodachiExhaustion(String reason, int ticks) {
         Player player = (Player) (Object) this;
         int prevMomentum = this.tuanzis_mod$nodachiMomentum;
         this.tuanzis_mod$nodachiMomentum = 0;
-        this.tuanzis_mod$nodachiExhaustionTicks = 10; // 0.5s = 10 ticks
+        this.tuanzis_mod$nodachiExhaustionTicks = ticks;
         this.tuanzis_mod$nodachiInactiveTicks = 0;
         this.tuanzis_mod$updateNodachiSpeedModifier();
 
         String side = player.level().isClientSide() ? "客户端" : "服务端";
-        String logMessage = String.format("【野太刀·脱力】[%s] 玩家 %s 触发脱力！脱力原因: %s (原有势层数: %d，势槽已归零，陷入 0.5 秒脱力软僵直无法攻击)",
-                side, player.getName().getString(), reason, prevMomentum);
+        String logMessage = String.format("【野太刀·脱力】[%s] 玩家 %s 触发脱力！脱力原因: %s (原有势层数: %d，势槽已归零，陷入 %.1f 秒脱力软僵直无法攻击)",
+                side, player.getName().getString(), reason, prevMomentum, ticks / 20.0f);
 
         // 控制台明确输出
         ModLog.info(logMessage);
@@ -141,14 +144,19 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.SHIELD_BREAK.value(), SoundSource.PLAYERS, 0.7f, 0.6f);
             if (player instanceof ServerPlayer serverPlayer) {
-                ServerPlayNetworking.send(serverPlayer, new NodachiSyncPacket(0, 10));
+                ServerPlayNetworking.send(serverPlayer, new NodachiSyncPacket(0, ticks));
             }
         }
     }
 
     @Override
+    public void tuanzis_mod$triggerNodachiExhaustion(String reason) {
+        this.tuanzis_mod$triggerNodachiExhaustion(reason, 10);
+    }
+
+    @Override
     public void tuanzis_mod$triggerNodachiExhaustion() {
-        this.tuanzis_mod$triggerNodachiExhaustion("未指定原因");
+        this.tuanzis_mod$triggerNodachiExhaustion("未指定原因", 10);
     }
 
     @Unique
@@ -204,9 +212,23 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
             if (!player.level().isClientSide()) {
                 if (this.tuanzis_mod$nodachiMomentum > 0) {
                     this.tuanzis_mod$nodachiInactiveTicks++;
-                    // 惩罚机制：超过 5 秒 (100 ticks) 未造成伤害，“势”立即归零，并触发 0.5 秒脱力软僵直
-                    if (this.tuanzis_mod$nodachiInactiveTicks > 100) {
-                        this.tuanzis_mod$triggerNodachiExhaustion("攻击间隔超时 (超过 5 秒 / 100刻 未造成伤害)");
+                    // 基础惩罚机制：超过 5 秒 (100 ticks) 未造成伤害，“势”立即归零，并触发 0.5 秒脱力软僵直
+                    // 回流附魔 (Flow State)：额外延长攻击间隔时长 0.5s * level (10 ticks * level)
+                    int maxInactiveTicks = 100;
+                    int flowStateLevel = 0;
+                    var enchRegistry = player.level().registryAccess().lookup(Registries.ENCHANTMENT);
+                    if (enchRegistry.isPresent()) {
+                        var flowStateEnch = enchRegistry.get().get(ModEnchantments.FLOW_STATE);
+                        if (flowStateEnch.isPresent()) {
+                            flowStateLevel = EnchantmentHelper.getItemEnchantmentLevel(flowStateEnch.get(), player.getMainHandItem());
+                        }
+                    }
+                    if (flowStateLevel > 0) {
+                        maxInactiveTicks += flowStateLevel * 10;
+                    }
+
+                    if (this.tuanzis_mod$nodachiInactiveTicks > maxInactiveTicks) {
+                        this.tuanzis_mod$triggerNodachiExhaustion(String.format("攻击间隔超时 (超过 %.1f 秒 / %d刻 未造成伤害)", maxInactiveTicks / 20.0f, maxInactiveTicks));
                     }
                 }
             }

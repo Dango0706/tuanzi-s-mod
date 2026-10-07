@@ -22,7 +22,8 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.SOULBOUND)
             .addOptional(ModEnchantments.SMELTING)
             .addOptional(ModEnchantments.CHAIN_PAIN)
-            .addOptional(ModEnchantments.SEEKING_ARROW);
+            .addOptional(ModEnchantments.SEEKING_ARROW)
+            .addOptional(ModEnchantments.FINALITY);
 
         builder(EnchantmentTags.IN_ENCHANTING_TABLE)
             .addOptional(ModEnchantments.EXPERIENCE)
@@ -39,7 +40,8 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.DAY_BLADE)
             .addOptional(ModEnchantments.NIGHT_BLADE)
             .addOptional(ModEnchantments.RANGER_RELOAD)
-            .addOptional(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER);
+            .addOptional(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER)
+            .addOptional(ModEnchantments.FLOW_STATE);
 
         builder(ModEnchantments.ANCIENT_SCROLL)
             .addOptional(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH)
@@ -60,7 +62,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.SUN_BLADE)
             .addOptional(ModEnchantments.DAY_BLADE)
             .addOptional(ModEnchantments.NIGHT_BLADE)
-            .addOptional(ModEnchantments.RANGER_RELOAD);
+            .addOptional(ModEnchantments.RANGER_RELOAD)
+            .addOptional(ModEnchantments.FLOW_STATE)
+            .addOptional(ModEnchantments.FINALITY);
 
         builder(EnchantmentTags.TRADEABLE)
             .addOptional(ModEnchantments.EXPERIENCE)
@@ -73,7 +77,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
             .addOptional(ModEnchantments.SUN_BLADE)
             .addOptional(ModEnchantments.DAY_BLADE)
             .addOptional(ModEnchantments.NIGHT_BLADE)
-            .addOptional(ModEnchantments.RANGER_RELOAD);
+            .addOptional(ModEnchantments.RANGER_RELOAD)
+            .addOptional(ModEnchantments.FLOW_STATE)
+            .addOptional(ModEnchantments.FINALITY);
             
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入

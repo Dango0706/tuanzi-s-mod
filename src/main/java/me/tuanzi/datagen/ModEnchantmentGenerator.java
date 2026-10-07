@@ -438,6 +438,32 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
         )
         .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_RESERVED_CHAMBER))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_reserved_chamber")));
+
+        // 回流 (Flow State)
+        entries.add(ModEnchantments.FLOW_STATE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(me.tuanzi.init.ModItemTags.NODACHI_ENCHANTABLE),
+                2,    // weight (rare)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "flow_state")));
+
+        // 绝式 (Finality) - 宝藏型附魔
+        entries.add(ModEnchantments.FINALITY, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(me.tuanzi.init.ModItemTags.NODACHI_ENCHANTABLE),
+                1,    // weight (very rare)
+                1,    // max level (I)
+                Enchantment.constantCost(30),
+                Enchantment.constantCost(70),
+                8,    // anvil cost
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "finality")));
     }
 
     @Override
