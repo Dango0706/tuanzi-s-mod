@@ -43,6 +43,8 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.NodachiSyncPacket.TYPE, me.tuanzi.network.NodachiSyncPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiMissPacket.TYPE, me.tuanzi.network.NodachiMissPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiBeatPacket.TYPE, me.tuanzi.network.NodachiBeatPacket.CODEC);
+		// 注册日冕过热状态同步网络包
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.CinderHeatSyncPacket.TYPE, me.tuanzi.network.CinderHeatSyncPacket.CODEC);
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.NodachiBeatPacket.TYPE, (payload, context) -> {
@@ -242,6 +244,8 @@ public class Tuanzis_mod implements ModInitializer {
 		me.tuanzi.init.ModTrades.initialize();
 		me.tuanzi.util.ModLootTableModifiers.initialize();
 		me.tuanzi.util.ModSeating.initialize();
+		me.tuanzi.util.TempBlockManager.initialize();
+		me.tuanzi.init.ModSounds.initialize();
 
 		// 初始化抽卡保底与卡池系统生命周期事件
 		me.tuanzi.gacha.PlayerGachaManager.initialize();

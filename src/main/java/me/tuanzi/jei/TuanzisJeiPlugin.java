@@ -160,6 +160,8 @@ public class TuanzisJeiPlugin implements IModPlugin {
             Component.translatable("jei.tuanzis_mod.wolf_command.description"));
         registration.addIngredientInfo(new ItemStack(Items.WARDEN_SPAWN_EGG), VanillaTypes.ITEM_STACK, 
             Component.translatable("item.minecraft.warden_spawn_egg.jei.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.CINDER_SOVEREIGN_SPAWN_EGG), VanillaTypes.ITEM_STACK,
+            Component.translatable("item.tuanzis_mod.cinder_sovereign_spawn_egg.jei.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.WARDEN_HEART), VanillaTypes.ITEM_STACK,
             Component.translatable("jei.tuanzis_mod.warden_heart.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.ECHO_BREAKER), VanillaTypes.ITEM_STACK,

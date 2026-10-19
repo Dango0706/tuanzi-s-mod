@@ -1039,6 +1039,25 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"§e获取途径：§r\n" +
 				"宝藏型附魔，仅可通过各类遗迹与地牢战利品宝箱、钓鱼或特定村民交易等途径获取附魔书。";
 			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDesc);
+
+			translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "日冕核心 · 烈焰统领");
+			translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "日冕黑石重盾");
+			translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "日冕烈焰棒");
+			translationBuilder.add("entity.tuanzis_mod.cinder_fireball", "微型日冕火球");
+			translationBuilder.add("entity.tuanzis_mod.cinder_meteor", "地狱熔岩陨石");
+			translationBuilder.add(ModItems.CINDER_SOVEREIGN_SPAWN_EGG, "日冕核心 · 烈焰统领刷怪蛋");
+			translationBuilder.add("item.tuanzis_mod.cinder_sovereign_spawn_egg.jei.description", "【日冕核心 · 烈焰统领】\\n诞生于下界极端日冕聚变反应中的恒星级烈焰构装领主。\\n\\n§e生物属性：§r\\n- 生命值：§c400§r | 护甲：§b12§r | 韧性：§b8§r\\n- 复合防护：环绕 §64 面悬浮黑石重盾§r 与 §e12 根日冕烈焰棒§r，提供高额减伤与弹道偏折（§a穿透附魔箭矢可无视盾牌减伤§r）。\\n- 自愈机制：常态每秒恢复 1 点生命值；脱战状态（索敌范围 64 格内无玩家且连续 10 秒未受损）激活§a疾速自愈§r，每秒恢复大幅跃升至 5 点（§c一旦有玩家进入索敌范围或受到攻击立即中断§r）。\\n- 技能节奏：每个技能结束后具有 §a2.0 秒公共冷却间隔§r，需等待 2 秒巡航后才可释放下一个技能，严禁无缝连招。\\n- 领域机制：在 48 格范围内产生§6日冕过热§r热浪，持续升温将导致脱水自燃。\\n\\n§6近战技能 · 炽核坠碾：§r贴脸连续 1.2 秒或处于正下方盲区时触发。前摇 1.6 秒预警收缩光圈，随后以 2.8 格/tick 超重力砸地造成 24 点贯穿伤害并强行碎盾瘫痪 6 秒；砸地后本体卡地僵直 3.0 秒，防御剥夺且受近战攻击必定暴击并享受 +30% 弱点增伤（若用重锤 Mace 高处下落重击砸中暴露核心，可直接打断硬直，额外扣除 35 点韧性并强制延长眩晕 1.5 秒）。\\n\\n§c二阶段暴怒：§r生命值低于 40% 时恢复完全的四面盾牌并化为高速切割利刃（二阶段盾牌不再提供免伤与护甲加成），并释放大范围贴地烈焰波。\\n\\n§7提示：使用右键可在空地或刷怪笼中召唤日冕核心 · 烈焰统领。§r");
+			translationBuilder.add("subtitles.tuanzis_mod.music.cinder_sovereign_theme", "日冕核心 · 烈焰统领 战斗音乐");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.spawn", "日冕核心 · 烈焰统领 降临唤醒");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.pulse", "日冕核心 脉动");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.spot_target", "日冕核心 锁定目标");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_shield", "黑石重盾 抵挡伤害");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_core", "日冕核心 受创嘶鸣");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.deflect", "日冕烈焰棒 偏折投射物");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.dash", "日冕核心 推进机动");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.altitude_change", "日冕核心 垂直冲刺");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.phase2_overload", "日冕核心 二阶段超载");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.death", "日冕核心 湮灭解体");
 		}
 	}
 
@@ -2055,6 +2074,26 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"§eAcquisition:§r\n" +
 				"Treasure enchantment, obtainable exclusively from structure/dungeon loot chests, fishing, or villager trading.";
 			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDescEn);
+
+			translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "The Cinder Sovereign");
+			translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "Corona Blackstone Shield");
+			translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "Corona Blaze Rod");
+			translationBuilder.add("entity.tuanzis_mod.cinder_fireball", "Micro Corona Fireball");
+			translationBuilder.add("entity.tuanzis_mod.cinder_meteor", "Cataclysmic Lava Meteor");
+			translationBuilder.add(ModItems.CINDER_SOVEREIGN_SPAWN_EGG, "The Cinder Sovereign Spawn Egg");
+			translationBuilder.add("item.tuanzis_mod.cinder_sovereign_spawn_egg.jei.description", "[The Cinder Sovereign]\\nA stellar blaze construct lord born from extreme coronal fusion reactions within the Nether.\\n\\n§eBoss Attributes:§r\\n- Health: §c400§r | Armor: §b12§r | Toughness: §b8§r\\n- Composite Defenses: Shielded by §64 Floating Blackstone Shields§r and §e12 Coronal Blaze Rods§r offering immense damage reduction and projectile deflection (§aPiercing arrows bypass shield damage reduction§r).\\n- Regeneration: Passively recovers 1 HP/s; surges to §a5 HP/s§r out of combat (no players within 64-block follow range and unattacked for 10s; §cinterrupted immediately if any player enters follow range or damage is taken§r).\\n- Combat Pacing: Enforces a strict §a2.0s global skill interval§r upon completing each skill, ensuring tactical cruise kiting and preventing back-to-back skill chaining.\\n- Arena Mechanic: Generates a 48-block §6Corona Overheat§r field, causing dehydration and spontaneous combustion at max heat.\\n\\n§6Melee Skill - Crucible Piledriver:§r Triggers when a player hugs horizontally (<4.0 blocks) for 1.2s or stays underneath (<2.0 horizontal, <4.5 vertical). After 1.6s telegraph with shrinking ground ring, slams down at 2.8 blocks/tick dealing 24 direct damage and disabling shields for 6.0s. Followed by a 3.0s ground recovery window where defenses are stripped and all melee hits guarantee critical strikes with +30% vulnerability (Mace smash from high fall interrupts recovery, strips 35 toughness, and extends stun by 1.5s).\\n\\n§cPhase 2 Enrage:§r Under 40% HP, restores all 4 shields and transforms them into high-speed spinning cutting blades (Phase 2 shields no longer grant damage mitigation or armor bonus) with ground flame wave sweeps.\\n\\n§7Tip: Right-click to spawn The Cinder Sovereign on ground or set into a spawner.§r");
+			translationBuilder.add("subtitles.tuanzis_mod.music.cinder_sovereign_theme", "The Cinder Sovereign Battle Theme");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.spawn", "The Cinder Sovereign awakens");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.pulse", "The Cinder Sovereign pulses");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.spot_target", "The Cinder Sovereign targets player");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_shield", "Blackstone Shield absorbs hit");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_core", "The Cinder Sovereign core hisses");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.deflect", "Corona Blaze Rod deflects projectile");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.dash", "The Cinder Sovereign dashes");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.altitude_change", "The Cinder Sovereign dives");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.phase2_overload", "The Cinder Sovereign overloads");
+			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.death", "The Cinder Sovereign dissipates");
 		}
 	}
 }
+

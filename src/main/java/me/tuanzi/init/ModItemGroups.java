@@ -244,6 +244,7 @@ public class ModItemGroups {
                 entries.accept(ModItems.CHROMATIC_SKULL);
                 entries.accept(ModItems.CODEX_OF_ENCHANTING);
                 entries.accept(ModItems.GLASS_ITEM_FRAME);
+                entries.accept(ModItems.CINDER_SOVEREIGN_SPAWN_EGG);
 
                 // 加入抽卡道具
                 entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);

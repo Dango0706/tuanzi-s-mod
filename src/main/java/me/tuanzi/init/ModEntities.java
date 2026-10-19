@@ -124,9 +124,95 @@ public class ModEntities {
                     .build(CRESCENT_AURA_KEY)
     );
 
+    public static final ResourceKey<EntityType<?>> CINDER_SHIELD_PART_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cinder_shield_part")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CinderShieldPartEntity> CINDER_SHIELD_PART = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CINDER_SHIELD_PART_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CinderShieldPartEntity>of(me.tuanzi.entity.CinderShieldPartEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.6F)
+                    .fireImmune()
+                    .noLootTable()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(CINDER_SHIELD_PART_KEY)
+    );
+
+    public static final ResourceKey<EntityType<?>> CINDER_BLAZE_ROD_PART_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cinder_blaze_rod_part")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CinderBlazeRodPartEntity> CINDER_BLAZE_ROD_PART = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CINDER_BLAZE_ROD_PART_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CinderBlazeRodPartEntity>of(me.tuanzi.entity.CinderBlazeRodPartEntity::new, MobCategory.MISC)
+                    .sized(0.35F, 1.2F)
+                    .fireImmune()
+                    .noLootTable()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(CINDER_BLAZE_ROD_PART_KEY)
+    );
+
+    public static final ResourceKey<EntityType<?>> CINDER_FIREBALL_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cinder_fireball")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CinderFireballEntity> CINDER_FIREBALL = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CINDER_FIREBALL_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CinderFireballEntity>of(me.tuanzi.entity.CinderFireballEntity::new, MobCategory.MISC)
+                    .sized(0.8F, 0.8F)
+                    .fireImmune()
+                    .noLootTable()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(CINDER_FIREBALL_KEY)
+    );
+
+    public static final ResourceKey<EntityType<?>> CINDER_METEOR_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cinder_meteor")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CinderMeteorEntity> CINDER_METEOR = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CINDER_METEOR_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CinderMeteorEntity>of(me.tuanzi.entity.CinderMeteorEntity::new, MobCategory.MISC)
+                    .sized(2.0F, 2.0F)
+                    .fireImmune()
+                    .noLootTable()
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .build(CINDER_METEOR_KEY)
+    );
+
+    public static final ResourceKey<EntityType<?>> CINDER_SOVEREIGN_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cinder_sovereign")
+    );
+
+    public static final EntityType<me.tuanzi.entity.CinderSovereignEntity> CINDER_SOVEREIGN = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            CINDER_SOVEREIGN_KEY,
+            EntityType.Builder.<me.tuanzi.entity.CinderSovereignEntity>of(me.tuanzi.entity.CinderSovereignEntity::new, MobCategory.MONSTER)
+                    .sized(1.6F, 2.0F)
+                    .eyeHeight(1.0F)
+                    .fireImmune()
+                    .clientTrackingRange(16)
+                    .build(CINDER_SOVEREIGN_KEY)
+    );
+
     public static void initialize() {
         FabricDefaultAttributeRegistry.register(DECOY, DecoyEntity.createAttributes());
         FabricDefaultAttributeRegistry.register(SCARECROW, LivingEntity.createLivingAttributes());
         FabricDefaultAttributeRegistry.register(TRIAL_DUMMY, me.tuanzi.entity.TrialDummyEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(CINDER_SOVEREIGN, me.tuanzi.entity.CinderSovereignEntity.createAttributes());
     }
 }
+

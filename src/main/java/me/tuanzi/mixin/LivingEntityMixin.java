@@ -348,4 +348,27 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
             }
         }
     }
+
+    @org.spongepowered.asm.mixin.injection.Inject(
+        method = "completeUsingItem",
+        at = @org.spongepowered.asm.mixin.injection.At("HEAD")
+    )
+    private void tuanzis_mod$onCompleteUsingItem(org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity instanceof net.minecraft.server.level.ServerPlayer player && player.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            net.minecraft.world.item.ItemStack stack = entity.getUseItem();
+            if (stack.is(net.minecraft.world.item.Items.POTION)
+                    || stack.has(net.minecraft.core.component.DataComponents.POTION_CONTENTS)
+                    || stack.getItem() instanceof net.minecraft.world.item.PotionItem
+                    || stack.is(net.minecraft.world.item.Items.MILK_BUCKET)
+                    || stack.is(net.minecraft.world.item.Items.HONEY_BOTTLE)) {
+                me.tuanzi.entity.CinderSovereignEntity.reducePlayerHeat(player, 30);
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        net.minecraft.sounds.SoundEvents.GENERIC_EXTINGUISH_FIRE, net.minecraft.sounds.SoundSource.PLAYERS, 0.9F, 1.4F);
+                serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                        player.getX(), player.getY() + 1.0, player.getZ(), 8, 0.2, 0.3, 0.2, 0.05);
+                me.tuanzi.util.ModLog.debug(null, player, "【日冕过热缓解】玩家饮用药水/水瓶！降低 30 点过热值！");
+            }
+        }
+    }
 }

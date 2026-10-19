@@ -50,7 +50,8 @@
 		"EnchantmentMenuMixin",
 		"EnchantmentMixin",
 		"CombatRulesMixin",
-		"ProjectileMixin"
+		"ProjectileMixin",
+		"PlayerCriticalAttackMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

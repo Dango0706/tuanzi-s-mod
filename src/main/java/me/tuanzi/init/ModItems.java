@@ -182,6 +182,7 @@ public class ModItems {
     public static final Item GOLDEN_NODACHI = register("golden_nodachi", properties -> new NodachiItem(properties, ToolMaterial.GOLD, 3.0F));
     public static final Item DIAMOND_NODACHI = register("diamond_nodachi", properties -> new NodachiItem(properties, ToolMaterial.DIAMOND, 6.0F));
     public static final Item NETHERITE_NODACHI = register("netherite_nodachi", properties -> new NodachiItem(properties.fireResistant(), ToolMaterial.NETHERITE, 7.0F));
+    public static final Item CINDER_SOVEREIGN_SPAWN_EGG = register("cinder_sovereign_spawn_egg", properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.CINDER_SOVEREIGN).rarity(Rarity.EPIC)));
 
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {

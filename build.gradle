@@ -24,6 +24,10 @@ repositories {
 		name = "TerraformersMC"
 		url = "https://maven.terraformersmc.com/releases/"
 	}
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
 }
 
 dependencies {
@@ -41,6 +45,9 @@ dependencies {
 
 	// ModMenu
 	implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+	// GeckoLib
+	implementation "maven.modrinth:geckolib:${project.geckolib_version}"
 }
 
 loom {

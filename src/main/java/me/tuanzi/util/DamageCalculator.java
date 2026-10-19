@@ -793,6 +793,50 @@ public class DamageCalculator {
             me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：受击者拥有蜂毒效果（层数: " + layers + "），受到的伤害增加 " + String.format("%.1f", poisonMultiplier * 100) + "% (当前受伤乘数累加值: " + String.format("%.2f", victimMultiplier) + ")。");
         }
 
+        // 日冕核心 · 烈焰统领 黑石重盾防御联动减伤 (一阶段每存活 1 面盾提供 8.75% 伤害减免，4 面满额 35%；二阶段盾牌转化为切削利刃不再具有免伤)
+        if (target instanceof me.tuanzi.entity.CinderSovereignEntity boss) {
+            if (boss.isCrucibleVulnerable()) {
+                // 阶段三：卡地卡死虚弱窗口，防御剥夺，全额弹道偏折与减伤被动失效，且玩家近战攻击享受 +30% 额外弱点增伤！
+                if (source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+                    victimMultiplier += 0.3f;
+                    me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【日冕核心·烈焰统领】处于卡地暴露虚弱窗口，玩家近战攻击享受 +30% 额外弱点增伤！(当前受伤乘数累加值: "
+                            + String.format("%.2f", victimMultiplier) + ")");
+                }
+                me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【日冕核心·烈焰统领】处于卡地受限状态，黑石重盾防御减免被动完全失效！");
+            } else if (boss.isPhase2()) {
+                me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【日冕核心·烈焰统领】处于第二阶段·日冕暴怒，黑石盾牌已转化为切削利刃，不再提供免伤与护甲加成！");
+            } else {
+                int aliveShields = boss.getAliveShieldCount();
+                if (aliveShields > 0) {
+                    // 检查是否为携带“穿透”附魔的箭矢伤害：穿透箭矢贯穿黑石重盾，无视重盾免伤
+                    boolean isPiercingArrow = false;
+                    int pierceLevel = 0;
+                    if (source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.arrow.AbstractArrow arrow) {
+                        pierceLevel = arrow.getPierceLevel();
+                        if (pierceLevel <= 0 && arrow.getWeaponItem() != null && target.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+                            pierceLevel = net.minecraft.world.item.enchantment.EnchantmentHelper.getPiercingCount(
+                                    serverLevel, arrow.getWeaponItem(), arrow.getPickupItemStackOrigin());
+                        }
+                        if (pierceLevel > 0) {
+                            isPiercingArrow = true;
+                        }
+                    }
+
+                    if (isPiercingArrow) {
+                        me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【日冕核心·烈焰统领】遭受携带“穿透”附魔的箭矢攻击 (穿透等级: "
+                                + pierceLevel + ")！穿透弹道无视全部 " + aliveShields + " 面悬浮黑石重盾免伤效果！");
+                    } else {
+                        float shieldReduction = aliveShields * 0.0875f;
+                        victimMultiplier -= shieldReduction;
+                        victimMultiplier = Math.max(0.0f, victimMultiplier);
+                        me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：【日冕核心·烈焰统领】悬浮黑石重盾防御联动生效！存活重盾: "
+                                + aliveShields + "/4，减免伤害 " + String.format("%.2f%%", shieldReduction * 100)
+                                + " (当前受伤乘数累加值: " + String.format("%.2f", victimMultiplier) + ")。");
+                    }
+                }
+            }
+        }
+
         float finalDamage = amount * attackerMultiplier * victimMultiplier;
 
 

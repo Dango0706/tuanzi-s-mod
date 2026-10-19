@@ -101,6 +101,11 @@ public abstract class GuiMixin {
                 me.tuanzi.client.NodachiMetronome.render(graphics, deltaTracker, player, this.minecraft.font);
             }
         }
+
+        // 4. 日冕核心 · 烈焰统领 日冕过热 (Heat Gauge) 与屏幕热浪晕影渲染
+        if (player != null && !player.isSpectator()) {
+            me.tuanzi.client.gui.CinderHeatHud.render(graphics, deltaTracker, player, this.minecraft.font);
+        }
     }
 
     /**

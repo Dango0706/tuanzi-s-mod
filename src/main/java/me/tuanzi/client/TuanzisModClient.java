@@ -160,6 +160,26 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.init.ModEntities.CRESCENT_AURA,
             net.minecraft.client.renderer.entity.NoopRenderer::new
         );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CINDER_SHIELD_PART,
+            me.tuanzi.client.renderer.CinderShieldRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CINDER_BLAZE_ROD_PART,
+            me.tuanzi.client.renderer.CinderBlazeRodRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CINDER_FIREBALL,
+            me.tuanzi.client.renderer.CinderFireballRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CINDER_METEOR,
+            me.tuanzi.client.renderer.CinderMeteorRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+            me.tuanzi.init.ModEntities.CINDER_SOVEREIGN,
+            me.tuanzi.client.renderer.CinderSovereignRenderer::new
+        );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
             me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION_BLOCK_ENTITY,
@@ -297,6 +317,13 @@ public class TuanzisModClient implements ClientModInitializer {
                     tracker.tuanzis_mod$setNodachiExhaustionTicks(payload.exhaustionTicks());
                     tracker.tuanzis_mod$setNodachiInactiveTicks(0);
                 }
+            });
+        });
+
+        // 注册日冕过热状态同步接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.CinderHeatSyncPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.client.gui.CinderHeatHud.update(payload.heat(), payload.inArena());
             });
         });
 
