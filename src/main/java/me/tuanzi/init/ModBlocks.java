@@ -40,6 +40,15 @@ public class ModBlocks {
     public static final Block COLOR_STAIRS = registerBlock("color_stairs",
         properties -> new me.tuanzi.block.ColorStairs(COLOR_BLOCK.defaultBlockState(), properties.strength(0.5f, 3.0f)));
 
+    public static final Block BLACKBOX_CORE_CASE = registerBlock("blackbox_core_case",
+        properties -> new me.tuanzi.block.BlackboxCoreCaseBlock(properties.strength(3.5f, 600.0f).noOcclusion()));
+
+    public static final Block BASE_STASH_CABINET = registerBlock("base_stash_cabinet",
+        properties -> new me.tuanzi.block.BaseStashCabinetBlock(properties.strength(3.5f, 600.0f).noOcclusion()));
+
+    public static final Block BASE_UPGRADE_STATION = registerBlock("base_upgrade_station",
+        properties -> new me.tuanzi.block.BaseUpgradeStationBlock(properties.strength(3.5f, 600.0f).noOcclusion()));
+
     public static final BlockEntityType<SoulMerchantStationBlockEntity> SOUL_MERCHANT_STATION_BLOCK_ENTITY = 
         Registry.register(
             BuiltInRegistries.BLOCK_ENTITY_TYPE,
@@ -91,6 +100,33 @@ public class ModBlocks {
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_slab_be"),
             net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
                 me.tuanzi.block.entity.ColorSlabBlockEntity::new, COLOR_SLAB
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.BlackboxCoreCaseBlockEntity> BLACKBOX_CORE_CASE_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blackbox_core_case_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.BlackboxCoreCaseBlockEntity::new, BLACKBOX_CORE_CASE
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.BaseStashCabinetBlockEntity> BASE_STASH_CABINET_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_stash_cabinet_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.BaseStashCabinetBlockEntity::new, BASE_STASH_CABINET
+            ).build()
+        );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.BaseUpgradeStationBlockEntity> BASE_UPGRADE_STATION_BLOCK_ENTITY = 
+        Registry.register(
+            BuiltInRegistries.BLOCK_ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_upgrade_station_be"),
+            net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                me.tuanzi.block.entity.BaseUpgradeStationBlockEntity::new, BASE_UPGRADE_STATION
             ).build()
         );
 

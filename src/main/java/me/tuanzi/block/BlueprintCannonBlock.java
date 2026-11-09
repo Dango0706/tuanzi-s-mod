@@ -38,7 +38,7 @@ public class BlueprintCannonBlock extends BaseEntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState state) {
-        return RenderShape.MODEL;
+        return RenderShape.INVISIBLE;
     }
 
     @Nullable
@@ -50,7 +50,7 @@ public class BlueprintCannonBlock extends BaseEntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY, BlueprintCannonBlockEntity::serverTick);
+        return createTickerHelper(type, ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY, level.isClientSide() ? BlueprintCannonBlockEntity::clientTick : BlueprintCannonBlockEntity::serverTick);
     }
 
     @Override

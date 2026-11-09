@@ -1,6 +1,13 @@
 package me.tuanzi.mixin;
 
+import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.init.ModItems;
+import me.tuanzi.util.ModLog;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
+import org.spongepowered.asm.mixin.Unique;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -39,6 +46,20 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
     private String itemName;
     @Shadow
     private int repairItemCountCost;
+    @Unique
+    private ItemStack tuanzis_mod$leftRemainder = ItemStack.EMPTY;
+
+    @Unique
+    private static boolean tuanzis_mod$hasTonghuiEnchantment(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(stack);
+        for (Holder<Enchantment> holder : enchantments.keySet()) {
+            if (holder.is(ModEnchantments.TONGHUI)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public AnvilMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
         super(type, syncId, playerInventory, access, slotDefinition);
     }
@@ -72,6 +93,26 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         }
         if (!player.getAbilities().instabuild) {
             cir.setReturnValue(player.experienceLevel >= this.cost.get());
+        }
+    }
+
+    @Inject(method = "onTake", at = @At("HEAD"))
+    private void tuanzis_mod$captureLeftInputBeforeTake(Player player, ItemStack result, CallbackInfo ci) {
+        ItemStack left = this.inputSlots.getItem(0);
+        if (left.getCount() > 1) {
+            ItemStack remainder = left.copy();
+            remainder.shrink(1);
+            this.tuanzis_mod$leftRemainder = remainder;
+        } else {
+            this.tuanzis_mod$leftRemainder = ItemStack.EMPTY;
+        }
+    }
+
+    @Inject(method = "onTake", at = @At("TAIL"))
+    private void tuanzis_mod$restoreLeftRemainderAfterTake(Player player, ItemStack result, CallbackInfo ci) {
+        if (!this.tuanzis_mod$leftRemainder.isEmpty()) {
+            this.inputSlots.setItem(0, this.tuanzis_mod$leftRemainder);
+            this.tuanzis_mod$leftRemainder = ItemStack.EMPTY;
         }
     }
 
@@ -148,6 +189,72 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 ci.cancel();
                 return;
             }
+        }
+
+        // 通惠附魔处理逻辑
+        boolean leftHasTonghui = tuanzis_mod$hasTonghuiEnchantment(left);
+        boolean rightHasTonghui = tuanzis_mod$hasTonghuiEnchantment(right);
+
+        // 1. 当物品已拥有通惠附魔，再次附魔通惠则无法取消累计惩罚，铁砧不输出
+        if (leftHasTonghui && rightHasTonghui) {
+            ModLog.debug("AnvilMenu", "createResult", "检测到物品已拥有【通惠】附魔，禁止再次附魔通惠，铁砧强制清空输出。");
+            this.resultSlots.setItem(0, ItemStack.EMPTY);
+            this.cost.set(0);
+            this.repairItemCountCost = 0;
+            menu.broadcastChanges();
+            ci.cancel();
+            return;
+        }
+
+        // 2. 首次附魔通惠：重置目前此物品积累的“累积惩罚”为0，附魔时需要20级经验等级，可附魔在任何物品上
+        if (!left.isEmpty() && !leftHasTonghui && rightHasTonghui) {
+            ItemStack result = left.copyWithCount(1);
+            DataComponentType<ItemEnchantments> componentType = EnchantmentHelper.getComponentType(result);
+            ItemEnchantments currentEnchants = result.getOrDefault(componentType, ItemEnchantments.EMPTY);
+            ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(currentEnchants);
+
+            ItemEnchantments rightEnchants = EnchantmentHelper.getEnchantmentsForCrafting(right);
+            for (var entry : rightEnchants.entrySet()) {
+                Holder<Enchantment> enchHolder = entry.getKey();
+                int level = entry.getIntValue();
+                if (enchHolder.is(ModEnchantments.TONGHUI)) {
+                    mutable.set(enchHolder, 1);
+                } else {
+                    boolean compatible = true;
+                    for (Holder<Enchantment> other : mutable.keySet()) {
+                        if (!other.equals(enchHolder) && !Enchantment.areCompatible(enchHolder, other)) {
+                            compatible = false;
+                            break;
+                        }
+                    }
+                    if (compatible) {
+                        int curLevel = mutable.getLevel(enchHolder);
+                        int newLevel = curLevel == level ? level + 1 : Math.max(level, curLevel);
+                        if (newLevel > enchHolder.value().getMaxLevel()) {
+                            newLevel = enchHolder.value().getMaxLevel();
+                        }
+                        mutable.set(enchHolder, newLevel);
+                    }
+                }
+            }
+
+            result.set(componentType, mutable.toImmutable());
+            int oldRepairCost = left.getOrDefault(DataComponents.REPAIR_COST, 0);
+            result.set(DataComponents.REPAIR_COST, 0);
+
+            if (this.itemName != null && !net.minecraft.util.StringUtil.isBlank(this.itemName)) {
+                if (!this.itemName.equals(left.getHoverName().getString())) {
+                    result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
+                }
+            }
+
+            this.cost.set(20);
+            this.repairItemCountCost = 0;
+            this.resultSlots.setItem(0, result);
+            ModLog.debug("AnvilMenu", "createResult", "成功应用【通惠】附魔！物品: " + left.getHoverName().getString() + "，原累积惩罚: " + oldRepairCost + "，重置后惩罚: 0，消耗等级: 20");
+            menu.broadcastChanges();
+            ci.cancel();
+            return;
         }
 
         // 场景1：仅重命名彩虹海绵

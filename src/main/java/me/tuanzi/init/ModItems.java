@@ -144,6 +144,14 @@ public class ModItems {
     public static final Item SAKURA_FESTIVAL_CARD_CHEST = register("sakura_festival_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "sakura_moon", true));
     public static final Item NATIONAL_DAY_CARD_PACK = register("national_day_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "national_day", false));
     public static final Item NATIONAL_DAY_CARD_CHEST = register("national_day_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "national_day", true));
+    public static final Item HALLOWEEN_CARD_PACK = register("halloween_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "halloween", false));
+    public static final Item HALLOWEEN_CARD_CHEST = register("halloween_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "halloween", true));
+    public static final Item CHRISTMAS_CARD_PACK = register("christmas_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "christmas", false));
+    public static final Item CHRISTMAS_CARD_CHEST = register("christmas_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "christmas", true));
+    public static final Item NEW_YEAR_CARD_PACK = register("new_year_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "new_year", false));
+    public static final Item NEW_YEAR_CARD_CHEST = register("new_year_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "new_year", true));
+    public static final Item PRIME_MINISTER_CARD_PACK = register("prime_minister_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "prime_minister_new_year", false));
+    public static final Item PRIME_MINISTER_CARD_CHEST = register("prime_minister_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "prime_minister_new_year", true));
     public static final Item TIDAL_WEAVE_BOOTS = register("tidal_weave_boots", (properties) -> new Item(properties
         .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
         .rarity(Rarity.EPIC)
@@ -170,6 +178,7 @@ public class ModItems {
     public static final Item STRUCTURE_BLUEPRINT = register("structure_blueprint", StructureBlueprintItem::new);
     public static final Item LOGIC_CORE = register("logic_core", (properties) -> new Item(properties.rarity(Rarity.COMMON)));
     public static final Item PLAYER_CONTROL_CORE = register("player_control_core", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
+    public static final Item CREATIVE_CORE = register("creative_core", (properties) -> new CreativeCoreItem(properties.rarity(Rarity.EPIC)));
     public static final Item PAINT_BUCKET = register("paint_bucket", (properties) -> new me.tuanzi.item.PaintBucketItem(properties.stacksTo(1).durability(256)));
     public static final Item CHROMATIC_SKULL = register("chromatic_skull", (properties) -> new ChromaticSkullItem(properties.stacksTo(16).rarity(Rarity.RARE)));
     public static final Item CODEX_OF_ENCHANTING = register("codex_of_enchanting", CodexOfEnchantingItem::new);
@@ -183,6 +192,35 @@ public class ModItems {
     public static final Item DIAMOND_NODACHI = register("diamond_nodachi", properties -> new NodachiItem(properties, ToolMaterial.DIAMOND, 6.0F));
     public static final Item NETHERITE_NODACHI = register("netherite_nodachi", properties -> new NodachiItem(properties.fireResistant(), ToolMaterial.NETHERITE, 7.0F));
     public static final Item CINDER_SOVEREIGN_SPAWN_EGG = register("cinder_sovereign_spawn_egg", properties -> new net.minecraft.world.item.SpawnEggItem(properties.spawnEgg(ModEntities.CINDER_SOVEREIGN).rarity(Rarity.EPIC)));
+
+    public static final Item HALL_RETURN_BEACON = register("hall_return_beacon", properties -> new me.tuanzi.item.scavenger.HallReturnBeaconItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()));
+    public static final Item ROOM_RETURN_BEACON = register("room_return_beacon", properties -> new me.tuanzi.item.scavenger.RoomReturnBeaconItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()));
+    public static final Item MARKET_RETURN_BEACON = register("market_return_beacon", properties -> new me.tuanzi.item.scavenger.MarketReturnBeaconItem(properties.stacksTo(1).rarity(Rarity.RARE).fireResistant()));
+
+    // 拾荒回廊 6 阶示范搜刮物
+    public static final Item SCAVENGER_BANDAGE_ROLL = register("scavenger_bandage_roll", p -> new Item(p.stacksTo(1)));
+    public static final Item STASIS_GEL_INJECTOR = register("stasis_gel_injector", p -> new Item(p.stacksTo(1)));
+    public static final Item PHASE_RELAY_CHIP = register("phase_relay_chip", p -> new Item(p.stacksTo(1)));
+    public static final Item HYDRAULIC_SERVO_ARM = register("hydraulic_servo_arm", p -> new Item(p.stacksTo(1)));
+    public static final Item SECTOR_07_CIPHER_CARD = register("sector_07_cipher_card", p -> new Item(p.stacksTo(1)));
+    public static final Item ABYSSAL_PRISM_CORE = register("abyssal_prism_core", p -> new Item(p.stacksTo(1)));
+
+    // 拾荒回廊 4 阶战术背囊
+    public static final Item FIELD_SLING_PACK = register("field_sling_pack", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item SCOUT_TACTICAL_PACK = register("scout_tactical_pack", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item TACTICAL_ASSAULT_PACK = register("tactical_assault_pack", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item EXPEDITION_HEAVY_RIG = register("expedition_heavy_rig", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+
+    // 拾荒回廊 4 阶黑匣安全箱
+    public static final Item PROTO_LOCKBOX_1X2 = register("proto_lockbox_1x2", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item REINFORCED_SAFEBOX_2X2 = register("reinforced_safebox_2x2", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item CIPHER_SAFEBOX_2X3 = register("cipher_safebox_2x3", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item AEGIS_CORE_VAULT_3X3 = register("aegis_core_vault_3x3", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
+    public static final Item GOLDEN_POCKET = register("golden_pocket", properties -> new me.tuanzi.item.GoldenPocketItem(properties
+        .stacksTo(1)
+        .rarity(Rarity.UNCOMMON)
+        .component(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.EMPTY)
+    ));
 
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {

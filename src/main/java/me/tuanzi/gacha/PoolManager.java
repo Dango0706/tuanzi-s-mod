@@ -70,12 +70,33 @@ public class PoolManager {
                     jsonFiles = stream.filter(p -> p.getFileName().toString().endsWith(".json"))
                             .collect(Collectors.toList());
                 }
-            } else if (!Files.exists(POOL_DIR.resolve("national_day.json"))) {
-                // 若已存在其它卡池但未生成国庆卡池，自动增量生成国庆祭模板
-                generateNationalDayTemplate(registries);
-                try (var stream = Files.list(POOL_DIR)) {
-                    jsonFiles = stream.filter(p -> p.getFileName().toString().endsWith(".json"))
-                            .collect(Collectors.toList());
+            } else {
+                boolean needRescan = false;
+                if (!Files.exists(POOL_DIR.resolve("national_day.json"))) {
+                    generateNationalDayTemplate(registries);
+                    needRescan = true;
+                }
+                if (!Files.exists(POOL_DIR.resolve("halloween.json"))) {
+                    generateHalloweenTemplate(registries);
+                    needRescan = true;
+                }
+                if (!Files.exists(POOL_DIR.resolve("christmas.json"))) {
+                    generateChristmasTemplate(registries);
+                    needRescan = true;
+                }
+                if (!Files.exists(POOL_DIR.resolve("new_year.json"))) {
+                    generateNewYearTemplate(registries);
+                    needRescan = true;
+                }
+                if (!Files.exists(POOL_DIR.resolve("prime_minister_new_year.json"))) {
+                    generatePrimeMinisterNewYearTemplate(registries);
+                    needRescan = true;
+                }
+                if (needRescan) {
+                    try (var stream = Files.list(POOL_DIR)) {
+                        jsonFiles = stream.filter(p -> p.getFileName().toString().endsWith(".json"))
+                                .collect(Collectors.toList());
+                    }
                 }
             }
 
@@ -234,6 +255,39 @@ public class PoolManager {
 
         // 3. 国庆祭限定池模板
         generateNationalDayTemplate(registries);
+
+        // 4. 万圣祭限定池模板 (全留空模板)
+        generateHalloweenTemplate(registries);
+
+        // 5. 圣诞祭限定池模板 (全留空模板)
+        generateChristmasTemplate(registries);
+
+        // 6. 元旦祭限定池模板 (全留空模板)
+        generateNewYearTemplate(registries);
+
+        // 7. 新年祭限定池模板 (全留空模板)
+        generatePrimeMinisterNewYearTemplate(registries);
+    }
+
+    private static void generateHalloweenTemplate(HolderLookup.Provider registries) {
+        GachaPool halloweenPool = new GachaPool("halloween", "万圣祭限定卡池");
+        // 留空模板，由服主在游戏内自由配置
+        savePoolSafe(halloweenPool, registries);
+    }
+
+    private static void generateChristmasTemplate(HolderLookup.Provider registries) {
+        GachaPool pool = new GachaPool("christmas", "圣诞祭限定卡池");
+        savePoolSafe(pool, registries);
+    }
+
+    private static void generateNewYearTemplate(HolderLookup.Provider registries) {
+        GachaPool pool = new GachaPool("new_year", "元旦祭限定卡池");
+        savePoolSafe(pool, registries);
+    }
+
+    private static void generatePrimeMinisterNewYearTemplate(HolderLookup.Provider registries) {
+        GachaPool pool = new GachaPool("prime_minister_new_year", "新年祭限定卡池");
+        savePoolSafe(pool, registries);
     }
 
     private static void generateNationalDayTemplate(HolderLookup.Provider registries) {

@@ -439,6 +439,32 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
         .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_RESERVED_CHAMBER))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_reserved_chamber")));
 
+        // 古卷附魔-屹立不倒 (Ancient Scroll - Standing Firm)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_STANDING_FIRM, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                1,    // weight (最高稀有度/古卷附魔)
+                5,    // max level (V)
+                Enchantment.dynamicCost(30, 100),
+                Enchantment.dynamicCost(80, 100),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_standing_firm")));
+
+        // 古卷附魔-经验老辣 (Ancient Scroll - Seasoned)
+        entries.add(ModEnchantments.ANCIENT_SCROLL_SEASONED, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                1,    // weight (最高稀有度/古卷附魔)
+                4,    // max level (IV)
+                Enchantment.dynamicCost(30, 100),
+                Enchantment.dynamicCost(80, 100),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ancient_scroll_seasoned")));
+
         // 回流 (Flow State)
         entries.add(ModEnchantments.FLOW_STATE, Enchantment.enchantment(
             Enchantment.definition(
@@ -464,6 +490,385 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 EquipmentSlotGroup.MAINHAND
             )
         ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "finality")));
+
+        // 二段跳 (Double Jump)
+        entries.add(ModEnchantments.DOUBLE_JUMP, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                1,    // weight (very rare)
+                1,    // max level (I)
+                Enchantment.constantCost(20),
+                Enchantment.constantCost(50),
+                8,    // anvil cost
+                EquipmentSlotGroup.FEET
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "double_jump")));
+
+        // 延展 (Extension)
+        entries.add(ModEnchantments.EXTENSION, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                5,    // max level (V)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        )
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+            new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.extension.block_reach"),
+                net.minecraft.world.entity.ai.attributes.Attributes.BLOCK_INTERACTION_RANGE,
+                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(1.05F, 0.3F),
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+            )
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "extension")));
+
+        // 遥击 (Ranged Strike)
+        entries.add(ModEnchantments.RANGED_STRIKE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                5,    // max level (V)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        )
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+            new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.ranged_strike.entity_reach"),
+                net.minecraft.world.entity.ai.attributes.Attributes.ENTITY_INTERACTION_RANGE,
+                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.75F, 0.25F),
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+            )
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ranged_strike")));
+
+        // 旅者 (Wayfarer)
+        entries.add(ModEnchantments.WAYFARER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.LEG_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                3,    // max level (III)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.LEGS
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "wayfarer")));
+
+        // 登阶 (Step Up)
+        entries.add(ModEnchantments.STEP_UP, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                2,    // max level (II)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.FEET
+            )
+        )
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+            new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.step_up"),
+                net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT,
+                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.4F, 0.5F),
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+            )
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "step_up")));
+
+        // 饱腹 (Satiation) - 宝藏附魔
+        entries.add(ModEnchantments.SATIATION, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "satiation")));
+
+        // 丰获 (Bountiful Harvest)
+        entries.add(ModEnchantments.BOUNTIFUL_HARVEST, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HOES),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "bountiful_harvest")));
+
+        // 经验亲和 (Experience Affinity)
+        entries.add(ModEnchantments.EXPERIENCE_AFFINITY, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(me.tuanzi.init.ModItemTags.AXE_PICKAXE_HOE_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "experience_affinity")));
+
+        // 海之馈赠 (Bounty of the Sea)
+        entries.add(ModEnchantments.BOUNTY_OF_THE_SEA, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.FISHING_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "bounty_of_the_sea")));
+
+        // 踏雪 (Snow Strider)
+        var blocks = registries.lookupOrThrow(Registries.BLOCK);
+        entries.add(ModEnchantments.SNOW_STRIDER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                3,    // max level (III)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.FEET
+            )
+        )
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.LOCATION_CHANGED,
+            new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.snow_strider"),
+                net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
+                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.08F, 0.08F),
+                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+            ),
+            net.minecraft.world.level.storage.loot.predicates.LootItemEntityPropertyCondition.hasProperties(
+                net.minecraft.world.level.storage.loot.LootContext.EntityTarget.THIS,
+                net.minecraft.advancements.predicates.entity.EntityPredicate.Builder.entity()
+                    .movementAffectedBy(
+                        net.minecraft.advancements.predicates.LocationPredicate.Builder.location()
+                            .setBlock(net.minecraft.advancements.predicates.BlockPredicate.Builder.block().of(blocks, me.tuanzi.init.ModBlockTags.SNOW_STRIDER_BLOCKS))
+                    )
+            )
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "snow_strider")));
+
+        // 虚空锚 (Void Anchor) - 宝藏附魔
+        entries.add(ModEnchantments.VOID_ANCHOR, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
+                1,    // weight (very rare)
+                1,    // max level (I)
+                Enchantment.constantCost(25),
+                Enchantment.constantCost(75),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.FEET
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "void_anchor")));
+
+        // 交易大师 (Trading Master) - 宝藏附魔
+        entries.add(ModEnchantments.TRADING_MASTER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "trading_master")));
+
+        // 增效 (Boost) - 非宝藏附魔
+        entries.add(ModEnchantments.BOOST, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(me.tuanzi.init.ModItemTags.ELYTRA_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        )
+        .withEffect(
+            net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ITEM_DAMAGE,
+            new net.minecraft.world.item.enchantment.effects.RemoveBinomial(net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.10F))
+        )
+        .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "boost")));
+
+        // 回声定位 (Echolocation) - 宝藏附魔
+        entries.add(ModEnchantments.ECHOLOCATION, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                1,    // weight (very rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(20, 10),
+                Enchantment.dynamicCost(70, 10),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "echolocation")));
+
+        // 抱朴 (Purity) - 非宝藏附魔
+        entries.add(ModEnchantments.PURITY, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                3,    // max level (III)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                2,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "purity")));
+
+        // 衔月 (Moon Embrace) - 宝藏附魔
+        entries.add(ModEnchantments.MOON_EMBRACE, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "moon_embrace")));
+
+        // 听涛 (Wave Listener) - 非宝藏附魔
+        entries.add(ModEnchantments.WAVE_LISTENER, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.TRIDENT_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "wave_listener")));
+
+        // 归鸿 (Returning Swan) - 非宝藏附魔
+        entries.add(ModEnchantments.RETURNING_SWAN, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CROSSBOW_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "returning_swan")));
+
+        // 花间 (Among Flowers) - 非宝藏附魔
+        entries.add(ModEnchantments.AMONG_FLOWERS, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.LEG_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                3,    // max level (III)
+                Enchantment.dynamicCost(10, 8),
+                Enchantment.dynamicCost(60, 8),
+                2,    // anvil cost per level
+                EquipmentSlotGroup.LEGS
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "among_flowers")));
+
+        // 石心 (Stone Heart) - 非宝藏附魔
+        entries.add(ModEnchantments.STONE_HEART, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.PICKAXES),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 9),
+                Enchantment.dynamicCost(65, 9),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.MAINHAND
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "stone_heart")));
+
+        // 通惠 (Tonghui) - 无生存获取方式，附魔需要 20 级等级，重置物品累积惩罚为 0
+        entries.add(ModEnchantments.TONGHUI, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.VANISHING_ENCHANTABLE),
+                1,    // weight
+                1,    // max level
+                Enchantment.constantCost(20),
+                Enchantment.constantCost(50),
+                20,   // anvil cost
+                EquipmentSlotGroup.ANY
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "tonghui")));
+
+        // 药理 (Pharmacology) - 非宝藏附魔，附魔台 25~30 级
+        entries.add(ModEnchantments.PHARMACOLOGY, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                2,    // weight (rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(25, 2),
+                Enchantment.dynamicCost(50, 2),
+                4,    // anvil cost per level
+                EquipmentSlotGroup.HEAD
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "pharmacology")));
+
+        // 休眠修复 (Dormant Repair) - 宝藏附魔，任意耐久物品
+        entries.add(ModEnchantments.DORMANT_REPAIR, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.DURABILITY_ENCHANTABLE),
+                1,    // weight (very rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(20, 10),
+                Enchantment.dynamicCost(50, 10),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.ANY
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "dormant_repair")));
+
+        // 牧养 (Husbandry) - 非宝藏附魔，附魔台 15~25 级
+        entries.add(ModEnchantments.HUSBANDRY, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.LEG_ARMOR_ENCHANTABLE),
+                5,    // weight (uncommon)
+                3,    // max level (III)
+                Enchantment.dynamicCost(15, 4),
+                Enchantment.dynamicCost(45, 4),
+                2,    // anvil cost per level
+                EquipmentSlotGroup.LEGS
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "husbandry")));
+
+        // 代谢 (Metabolism) - 宝藏附魔，胸甲
+        entries.add(ModEnchantments.METABOLISM, Enchantment.enchantment(
+            Enchantment.definition(
+                items.getOrThrow(ItemTags.CHEST_ARMOR_ENCHANTABLE),
+                1,    // weight (very rare)
+                3,    // max level (III)
+                Enchantment.dynamicCost(20, 10),
+                Enchantment.dynamicCost(50, 10),
+                8,    // anvil cost per level
+                EquipmentSlotGroup.CHEST
+            )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "metabolism")));
     }
 
     @Override

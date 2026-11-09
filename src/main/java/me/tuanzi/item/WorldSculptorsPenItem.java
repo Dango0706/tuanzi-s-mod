@@ -3,7 +3,9 @@ package me.tuanzi.item;
 import me.tuanzi.block.entity.ColorBlockBlockEntity;
 import me.tuanzi.block.entity.ColorSlabBlockEntity;
 import me.tuanzi.init.ModBlocks;
+import me.tuanzi.init.ModItems;
 import me.tuanzi.util.WorldSculptorsPenManager;
+import me.tuanzi.world.inventory.GoldenPocketMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -133,6 +135,63 @@ public class WorldSculptorsPenItem extends Item {
         }
     }
 
+    public static final java.util.Set<String> TRACKED_PROPERTIES = java.util.Set.of("face", "facing", "type", "half", "shape");
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Comparable<T>> String getPropertyValueString(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> prop) {
+        return prop.getName(state.getValue(prop));
+    }
+
+    public static BlockState getTargetBlockState(Block block, CompoundTag tag) {
+        BlockState state = block.defaultBlockState();
+        if (tag != null && tag.getCompound("SelectedProperties").isPresent()) {
+            CompoundTag propsTag = tag.getCompoundOrEmpty("SelectedProperties");
+            for (String key : propsTag.keySet()) {
+                net.minecraft.world.level.block.state.properties.Property<?> prop = block.getStateDefinition().getProperty(key);
+                if (prop != null) {
+                    String valStr = propsTag.getStringOr(key, "");
+                    state = applyProperty(state, prop, valStr);
+                }
+            }
+        }
+        return state;
+    }
+
+    private static <T extends Comparable<T>> BlockState applyProperty(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> prop, String valStr) {
+        return prop.getValue(valStr).map(val -> state.setValue(prop, val)).orElse(state);
+    }
+
+    public static int getItemsPerBlock(Block block, CompoundTag tag) {
+        if (tag != null && tag.getCompound("SelectedProperties").isPresent()) {
+            CompoundTag propsTag = tag.getCompoundOrEmpty("SelectedProperties");
+            if ("double".equalsIgnoreCase(propsTag.getStringOr("type", ""))) {
+                return 2;
+            }
+        }
+        return 1;
+    }
+
+    public static boolean isSameBlockStateAndColor(Level level, BlockPos pos, BlockState currentState, BlockState targetState, Integer selectedColor) {
+        if (!currentState.is(targetState.getBlock())) {
+            return false;
+        }
+        for (net.minecraft.world.level.block.state.properties.Property<?> prop : targetState.getProperties()) {
+            String name = prop.getName();
+            if (TRACKED_PROPERTIES.contains(name)) {
+                if (currentState.hasProperty(prop)) {
+                    if (!currentState.getValue(prop).equals(targetState.getValue(prop))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        if (selectedColor != null && isColorBlockSeries(targetState.getBlock())) {
+            int currentColor = getBlockColor(level, pos, currentState, null);
+            return currentColor == selectedColor;
+        }
+        return true;
+    }
+
     public static boolean isSameBlockAndColor(Level level, BlockPos pos, BlockState state, Block targetBlock, Integer selectedColor) {
         if (!state.is(targetBlock)) {
             return false;
@@ -175,20 +234,47 @@ public class WorldSculptorsPenItem extends Item {
                     tag.remove("pos1_z");
                     tag.remove("pos1_dim");
 
+                    // 记录方块状态属性 (face, facing, type, half, shape)
+                    CompoundTag propsTag = new CompoundTag();
+                    for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
+                        String propName = prop.getName();
+                        if (TRACKED_PROPERTIES.contains(propName)) {
+                            propsTag.putString(propName, getPropertyValueString(state, prop));
+                        }
+                    }
+                    if (!propsTag.isEmpty()) {
+                        tag.put("SelectedProperties", propsTag);
+                    } else {
+                        tag.remove("SelectedProperties");
+                    }
+
+                    StringBuilder stateDesc = new StringBuilder();
+                    if (!propsTag.isEmpty()) {
+                        stateDesc.append(" §e[");
+                        List<String> entries = new ArrayList<>();
+                        for (String key : propsTag.keySet()) {
+                            entries.add(key + "=" + propsTag.getStringOr(key, ""));
+                        }
+                        stateDesc.append(String.join(", ", entries)).append("]§r");
+                    }
+
                     if (isColorBlockSeries(state.getBlock())) {
                         int color = getBlockColor(level, pos, state, context.getClickLocation());
                         tag.putInt("SelectedColor", color);
                         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
                         String colorHex = String.format("#%06X", color);
-                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString() + " (色彩: " + colorHex + ")"));
-                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + ", 颜色: " + colorHex);
+                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
+                            .append(Component.literal(stateDesc.toString()))
+                            .append(Component.literal(" (色彩: " + colorHex + ")")));
+                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc + ", 颜色: " + colorHex);
                     } else {
                         tag.remove("SelectedColor");
                         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
-                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString()));
-                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId);
+                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
+                            .append(Component.literal(stateDesc.toString())));
+                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc);
                     }
                 } else {
                     player.sendSystemMessage(Component.literal("§c此方块无法被选定为填充方块！"));
@@ -311,6 +397,10 @@ public class WorldSculptorsPenItem extends Item {
                 // 扫描长方体区域，统计真正需要更改的格子并记录原状态
                 List<WorldSculptorsPenManager.BlockStateRecord> records = new ArrayList<>();
                 Item targetItem = (targetBlock != null) ? targetBlock.asItem() : net.minecraft.world.item.Items.AIR;
+                BlockState targetState = (targetBlock != null && targetBlock != Blocks.AIR)
+                    ? getTargetBlockState(targetBlock, tag)
+                    : Blocks.AIR.defaultBlockState();
+                int itemsPerBlock = (mode != FillMode.AIR_ONLY) ? getItemsPerBlock(targetBlock, tag) : 1;
 
                 for (int x = minX; x <= maxX; x++) {
                     for (int y = minY; y <= maxY; y++) {
@@ -330,11 +420,11 @@ public class WorldSculptorsPenItem extends Item {
                                 matches = state.isAir();
                             } else if (mode == FillMode.SEMI_REPLACE) {
                                 if ((state.isAir() || state.getCollisionShape(level, targetPos).isEmpty())
-                                    && !isSameBlockAndColor(level, targetPos, state, targetBlock, selectedColor)) {
+                                    && !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor)) {
                                     matches = true;
                                 }
                             } else {
-                                matches = !isSameBlockAndColor(level, targetPos, state, targetBlock, selectedColor);
+                                matches = !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor);
                             }
 
                             if (matches) {
@@ -360,11 +450,13 @@ public class WorldSculptorsPenItem extends Item {
                     return InteractionResult.SUCCESS;
                 }
 
+                int totalItemsNeeded = N * itemsPerBlock;
+
                 // 校验玩家背包及潜影盒内选中方块的存量是否足够 (填充空气模式不消耗背包物品)
                 if (mode != FillMode.AIR_ONLY) {
                     int available = getTargetItemCount(player, targetItem, selectedColor);
-                    if (available < N) {
-                        player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + N + " 个，缺少 " + (N - available) + " 个。"));
+                    if (available < totalItemsNeeded) {
+                        player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + totalItemsNeeded + " 个，缺少 " + (totalItemsNeeded - available) + " 个。"));
                         return InteractionResult.SUCCESS;
                     }
                 }
@@ -379,7 +471,7 @@ public class WorldSculptorsPenItem extends Item {
 
                 // 执行扣除 (填充空气模式不扣除背包物品)
                 if (mode != FillMode.AIR_ONLY) {
-                    deductTargetItems(player, targetItem, selectedColor, N);
+                    deductTargetItems(player, targetItem, selectedColor, totalItemsNeeded);
                 }
                 stack.setDamageValue(stack.getDamageValue() + durabilityCost);
 
@@ -389,7 +481,7 @@ public class WorldSculptorsPenItem extends Item {
                     if (existingBe instanceof Clearable clearable) {
                         clearable.clearContent();
                     }
-                    level.setBlock(r.pos, targetBlock.defaultBlockState(), Block.UPDATE_ALL);
+                    level.setBlock(r.pos, targetState, Block.UPDATE_ALL);
                     applyBlockColor(level, r.pos, targetBlock, selectedColor);
                     if (level instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ParticleTypes.GLOW, 
@@ -399,7 +491,7 @@ public class WorldSculptorsPenItem extends Item {
 
                 // 注册撤销记录
                 UUID recordId = UUID.randomUUID();
-                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor);
+                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor, itemsPerBlock);
 
                 // 保存最后填充 ID
                 tag.putString("LastFillId", recordId.toString());
@@ -417,8 +509,11 @@ public class WorldSculptorsPenItem extends Item {
                 level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(), 
                     net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
 
-                player.sendSystemMessage(Component.literal("§a填充成功！填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。"));
-                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N);
+                String countInfo = (itemsPerBlock > 1)
+                    ? "填充了 " + N + " 个方块（消耗物品 " + totalItemsNeeded + " 个），消耗耐久 " + durabilityCost + " 点。"
+                    : "填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。";
+                player.sendSystemMessage(Component.literal("§a填充成功！" + countInfo));
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N + "，单格消耗 " + itemsPerBlock + "，总物品消耗 " + totalItemsNeeded);
             }
             return InteractionResult.SUCCESS;
         }
@@ -484,6 +579,16 @@ public class WorldSculptorsPenItem extends Item {
                     if (tag.getInt("SelectedColor").isPresent()) {
                         int col = tag.getIntOr("SelectedColor", 0xFFFFFF);
                         nameComp.append(Component.literal(String.format(" §7(#%06X)", col)));
+                    }
+                    if (tag.getCompound("SelectedProperties").isPresent()) {
+                        CompoundTag propsTag = tag.getCompoundOrEmpty("SelectedProperties");
+                        if (!propsTag.isEmpty()) {
+                            List<String> list = new ArrayList<>();
+                            for (String k : propsTag.keySet()) {
+                                list.add(k + "=" + propsTag.getStringOr(k, ""));
+                            }
+                            nameComp.append(Component.literal(" §e[" + String.join(", ", list) + "]"));
+                        }
                     }
                 }
                 tooltipComponents.accept(Component.literal("§a选定填充方块: ").append(nameComp));
@@ -575,6 +680,12 @@ public class WorldSculptorsPenItem extends Item {
                             continue;
                         }
                     }
+                    if (record.itemsPerBlock == 2 && currentState.hasProperty(SlabBlock.TYPE)) {
+                        if (currentState.getValue(SlabBlock.TYPE) != SlabType.DOUBLE) {
+                            me.tuanzi.util.ModLog.debug(player, null, "塑世之笔撤销校验: 位置 " + bRecord.pos + " 半砖状态已被改动(非double)，跳过恢复");
+                            continue;
+                        }
+                    }
                     level.setBlock(bRecord.pos, bRecord.oldState, Block.UPDATE_ALL);
                     if (bRecord.oldNbt != null) {
                         BlockEntity restoredBe = level.getBlockEntity(bRecord.pos);
@@ -597,14 +708,15 @@ public class WorldSculptorsPenItem extends Item {
 
         // 仅在实际还原了方块的情况下，退回扣除的方块与耐久
         if (restoredCount > 0) {
-            giveTargetItems(player, targetItem, record.color, restoredCount);
+            int totalReturnItems = restoredCount * record.itemsPerBlock;
+            giveTargetItems(player, targetItem, record.color, totalReturnItems);
 
             // 返还笔 of 耐久
             int currentDamage = stack.getDamageValue();
             stack.setDamageValue(Math.max(0, currentDamage - restoredCount));
 
             player.sendSystemMessage(Component.literal("§a已成功撤销填充！恢复了 " + restoredCount + " 个方块，物品及耐久度已返还。"));
-            me.tuanzi.util.ModLog.debug(player, null, "塑世之笔成功撤销: 还原了 " + restoredCount + " 个方块");
+            me.tuanzi.util.ModLog.debug(player, null, "塑世之笔成功撤销: 还原了 " + restoredCount + " 个方块，返还物品数: " + totalReturnItems);
         } else {
             player.sendSystemMessage(Component.literal("§e填充的方块已全部被修改或挖掉，无可退回内容！"));
         }
@@ -622,11 +734,15 @@ public class WorldSculptorsPenItem extends Item {
     }
 
     // ──────────────────────────────────────────────
-    // 容器组件 (潜影盒) 及背包智能存取逻辑
+    // 容器组件 (潜影盒及黄金口袋) 及背包智能存取逻辑
     // ──────────────────────────────────────────────
     private static boolean isShulkerBox(ItemStack stack) {
         return stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem 
             && blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock;
+    }
+
+    private static boolean isGoldenPocket(ItemStack stack) {
+        return stack.is(ModItems.GOLDEN_POCKET);
     }
 
     public static boolean matchesTargetItem(ItemStack stack, Item targetItem, Integer selectedColor) {
@@ -665,6 +781,17 @@ public class WorldSculptorsPenItem extends Item {
                     net.minecraft.core.NonNullList<ItemStack> shulkerInv = net.minecraft.core.NonNullList.withSize(27, ItemStack.EMPTY);
                     contents.copyInto(shulkerInv);
                     for (ItemStack innerStack : shulkerInv) {
+                        if (matchesTargetItem(innerStack, targetItem, selectedColor)) {
+                            total += innerStack.getCount();
+                        }
+                    }
+                }
+            } else if (isGoldenPocket(stack)) {
+                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+                if (contents != null) {
+                    net.minecraft.core.NonNullList<ItemStack> pocketInv = net.minecraft.core.NonNullList.withSize(GoldenPocketMenu.CONTAINER_SIZE, ItemStack.EMPTY);
+                    contents.copyInto(pocketInv);
+                    for (ItemStack innerStack : pocketInv) {
                         if (matchesTargetItem(innerStack, targetItem, selectedColor)) {
                             total += innerStack.getCount();
                         }
@@ -712,6 +839,27 @@ public class WorldSculptorsPenItem extends Item {
                         stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(shulkerInv));
                     }
                 }
+            } else if (isGoldenPocket(stack)) {
+                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+                if (contents != null) {
+                    net.minecraft.core.NonNullList<ItemStack> pocketInv = net.minecraft.core.NonNullList.withSize(GoldenPocketMenu.CONTAINER_SIZE, ItemStack.EMPTY);
+                    contents.copyInto(pocketInv);
+                    boolean changed = false;
+                    for (int j = 0; j < pocketInv.size(); j++) {
+                        ItemStack innerStack = pocketInv.get(j);
+                        if (matchesTargetItem(innerStack, targetItem, selectedColor)) {
+                            int take = Math.min(innerStack.getCount(), remaining);
+                            innerStack.shrink(take);
+                            remaining -= take;
+                            changed = true;
+                            me.tuanzi.util.ModLog.debug(player, null, "塑世之笔从黄金手袋槽位 " + j + " 扣除方块: " + take + " 个，剩余需扣除: " + remaining);
+                            if (remaining <= 0) break;
+                        }
+                    }
+                    if (changed) {
+                        stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(pocketInv));
+                    }
+                }
             }
             if (remaining <= 0) break;
         }
@@ -726,7 +874,7 @@ public class WorldSculptorsPenItem extends Item {
         int remaining = amount;
         ItemStack sampleStack = createItemWithColor(targetItem, selectedColor, 1);
 
-        // 1. 尝试先返还到背包里已有且未满的潜影盒中
+        // 1. 尝试先返还到背包里已有且未满的潜影盒或黄金口袋中
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if (stack.isEmpty()) continue;
@@ -769,6 +917,47 @@ public class WorldSculptorsPenItem extends Item {
 
                 if (changed) {
                     stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(shulkerInv));
+                }
+                if (remaining <= 0) break;
+            } else if (isGoldenPocket(stack) && !GoldenPocketItem.isForbiddenInPocket(sampleStack)) {
+                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+                net.minecraft.core.NonNullList<ItemStack> pocketInv = net.minecraft.core.NonNullList.withSize(GoldenPocketMenu.CONTAINER_SIZE, ItemStack.EMPTY);
+                if (contents != null) {
+                    contents.copyInto(pocketInv);
+                }
+
+                boolean changed = false;
+                // A. 堆叠在已有槽位（必须组件完全一致，包括色彩）
+                for (int j = 0; j < pocketInv.size(); j++) {
+                    ItemStack innerStack = pocketInv.get(j);
+                    if (!innerStack.isEmpty() && ItemStack.isSameItemSameComponents(innerStack, sampleStack)) {
+                        int space = innerStack.getMaxStackSize() - innerStack.getCount();
+                        if (space > 0) {
+                            int add = Math.min(space, remaining);
+                            innerStack.grow(add);
+                            remaining -= add;
+                            changed = true;
+                            if (remaining <= 0) break;
+                        }
+                    }
+                }
+
+                // B. 放入空槽位
+                if (remaining > 0) {
+                    for (int j = 0; j < pocketInv.size(); j++) {
+                        ItemStack innerStack = pocketInv.get(j);
+                        if (innerStack.isEmpty()) {
+                            int add = Math.min(targetItem.getDefaultMaxStackSize(), remaining);
+                            pocketInv.set(j, createItemWithColor(targetItem, selectedColor, add));
+                            remaining -= add;
+                            changed = true;
+                            if (remaining <= 0) break;
+                        }
+                    }
+                }
+
+                if (changed) {
+                    stack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(pocketInv));
                 }
                 if (remaining <= 0) break;
             }

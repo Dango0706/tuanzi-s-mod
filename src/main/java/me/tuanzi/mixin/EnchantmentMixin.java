@@ -47,6 +47,14 @@ public abstract class EnchantmentMixin {
     }
 
     @Unique
+    private boolean tuanzis_mod$isTonghuiEnchantment() {
+        if (this.description().getContents() instanceof TranslatableContents tc) {
+            return "enchantment.tuanzis_mod.tonghui".equals(tc.getKey());
+        }
+        return this.description().getString().contains("enchantment.tuanzis_mod.tonghui");
+    }
+
+    @Unique
     private static boolean tuanzis_mod$isCrossbow(ItemStack stack) {
         return stack.is(Items.CROSSBOW) || stack.getItem() instanceof CrossbowItem || stack.is(ItemTags.CROSSBOW_ENCHANTABLE);
     }
@@ -66,30 +74,42 @@ public abstract class EnchantmentMixin {
     }
 
     /**
-     * 铁砧与指令兼容：允许弩附魔力量
+     * 铁砧与指令兼容：允许弩附魔力量，允许通惠附魔在任何物品上
      */
     @Inject(method = "canEnchant", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$allowCrossbowPowerCanEnchant(ItemStack itemStack, CallbackInfoReturnable<Boolean> cir) {
+        if (tuanzis_mod$isTonghuiEnchantment()) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (tuanzis_mod$isPowerEnchantment() && tuanzis_mod$isCrossbow(itemStack)) {
             cir.setReturnValue(true);
         }
     }
 
     /**
-     * 物品支持检测兼容：允许弩附魔力量
+     * 物品支持检测兼容：允许弩附魔力量，允许通惠支持任何物品
      */
     @Inject(method = "isSupportedItem", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$allowCrossbowPowerIsSupported(ItemStack item, CallbackInfoReturnable<Boolean> cir) {
+        if (tuanzis_mod$isTonghuiEnchantment()) {
+            cir.setReturnValue(true);
+            return;
+        }
         if (tuanzis_mod$isPowerEnchantment() && tuanzis_mod$isCrossbow(item)) {
             cir.setReturnValue(true);
         }
     }
 
     /**
-     * 附魔台候选池兼容：允许弩在附魔台刷出力量
+     * 附魔台候选池兼容：允许弩在附魔台刷出力量，禁止通惠在附魔台刷出
      */
     @Inject(method = "isPrimaryItem", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$allowCrossbowPowerIsPrimary(ItemStack item, CallbackInfoReturnable<Boolean> cir) {
+        if (tuanzis_mod$isTonghuiEnchantment()) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (tuanzis_mod$isPowerEnchantment() && tuanzis_mod$isCrossbow(item)) {
             cir.setReturnValue(true);
         }

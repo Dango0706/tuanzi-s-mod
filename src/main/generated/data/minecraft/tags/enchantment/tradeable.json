@@ -51,6 +51,70 @@
     {
       "id": "tuanzis_mod:finality",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:extension",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:wayfarer",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:step_up",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:satiation",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:bountiful_harvest",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:experience_affinity",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:bounty_of_the_sea",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:snow_strider",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:boost",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:purity",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:wave_listener",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:returning_swan",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:among_flowers",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:stone_heart",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:pharmacology",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:husbandry",
+      "required": false
     }
   ]
 }

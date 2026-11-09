@@ -1,15 +1,103 @@
 package me.tuanzi.util;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.Property;
 
-import java.io.InputStream;
 import java.util.*;
 
 public class LitematicaParser {
+
+    /**
+     * 兼容解析任意 NBT Tag 形式的方块状态：
+     * 1) MC 26.3 BlockState.CODEC 默认状态 StringTag ("minecraft:stone_bricks")
+     * 2) MC 26.3 BlockState.CODEC 带属性 CompoundTag ({id, properties})
+     * 3) 传统 Litematica CompoundTag ({Name, Properties})
+     */
+    public static BlockState parseBlockStateFromTag(Tag rawTag) {
+        if (rawTag == null) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        if (rawTag instanceof StringTag strTag) {
+            String stateStr = strTag.asString().orElse("");
+            if (stateStr.isEmpty()) {
+                return Blocks.AIR.defaultBlockState();
+            }
+            if (stateStr.indexOf('[') >= 0) {
+                return parseBlockStateFromNbt(convertStringToBlockStateNbt(stateStr));
+            }
+            Identifier identifier = Identifier.tryParse(stateStr);
+            if (identifier == null) {
+                return Blocks.AIR.defaultBlockState();
+            }
+            return BuiltInRegistries.BLOCK.getOptional(identifier)
+                    .map(Block::defaultBlockState)
+                    .orElse(Blocks.AIR.defaultBlockState());
+        }
+        if (rawTag instanceof CompoundTag compoundTag) {
+            return parseBlockStateFromNbt(compoundTag);
+        }
+        return BlockState.CODEC.parse(NbtOps.INSTANCE, rawTag)
+                .result()
+                .orElse(Blocks.AIR.defaultBlockState());
+    }
+
+    /**
+     * 兼容解析 MC 26.3 原生 BlockState.CODEC ({id, properties}) 与传统 Litematica ({Name, Properties}) 格式。
+     */
+    public static BlockState parseBlockStateFromNbt(CompoundTag tag) {
+        if (tag == null || tag.isEmpty()) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        String name = tag.getStringOr("id", "");
+        if (name.isEmpty()) {
+            name = tag.getStringOr("Name", "");
+        }
+        if (name.isEmpty()) {
+            return Blocks.AIR.defaultBlockState();
+        }
+
+        Identifier identifier = Identifier.tryParse(name);
+        if (identifier == null) {
+            return Blocks.AIR.defaultBlockState();
+        }
+
+        Optional<Block> optBlock = BuiltInRegistries.BLOCK.getOptional(identifier);
+        if (optBlock.isEmpty()) {
+            return Blocks.AIR.defaultBlockState();
+        }
+
+        Block block = optBlock.get();
+        BlockState state = block.defaultBlockState();
+
+        CompoundTag propertiesTag = null;
+        if (tag.contains("properties")) {
+            propertiesTag = tag.getCompoundOrEmpty("properties");
+        } else if (tag.contains("Properties")) {
+            propertiesTag = tag.getCompoundOrEmpty("Properties");
+        }
+
+        if (propertiesTag != null && !propertiesTag.isEmpty()) {
+            StateDefinition<Block, BlockState> definition = block.getStateDefinition();
+            for (String key : propertiesTag.keySet()) {
+                Property<?> prop = definition.getProperty(key);
+                if (prop != null) {
+                    state = setPropertyValue(state, prop, propertiesTag.getStringOr(key, ""));
+                }
+            }
+        }
+        return state;
+    }
+
+    private static <T extends Comparable<T>> BlockState setPropertyValue(BlockState state, Property<T> prop, String valStr) {
+        Optional<T> val = prop.getValue(valStr);
+        return val.map(t -> state.setValue(prop, t)).orElse(state);
+    }
 
     /**
      * 将 Litematica / Schematic NBT 格式统一解析为模组自定义的结构蓝图 NBT 格式。
@@ -50,16 +138,20 @@ public class LitematicaParser {
         ListTag blockStatePalette = region.getListOrEmpty("BlockStatePalette");
         int paletteSize = blockStatePalette.size();
 
-        // 转换 Palette
+        // 转换 Palette（统一输出为 MC 26.3 BlockState.CODEC 兼容的 id + properties 格式，同时兼容输入 Name/id）
         ListTag resultPalette = new ListTag();
         for (int i = 0; i < paletteSize; i++) {
-            // 直接将 Litematica 的 BlockStatePalette 中的 CompoundTag 转换为原生 BlockState 并重新写出
             CompoundTag litematicaState = blockStatePalette.getCompoundOrEmpty(i);
-            // 复制为一个规范 of BlockState NBT（Litematica 的结构通常是 Name + Properties，正好与原版 Codec 匹配）
             CompoundTag blockStateNbt = new CompoundTag();
-            blockStateNbt.putString("Name", litematicaState.getStringOr("Name", "minecraft:air"));
+            String stateName = litematicaState.getStringOr("Name", "");
+            if (stateName.isEmpty()) {
+                stateName = litematicaState.getStringOr("id", "minecraft:air");
+            }
+            blockStateNbt.putString("id", stateName);
             if (litematicaState.contains("Properties")) {
-                blockStateNbt.put("Properties", litematicaState.getCompoundOrEmpty("Properties"));
+                blockStateNbt.put("properties", litematicaState.getCompoundOrEmpty("Properties").copy());
+            } else if (litematicaState.contains("properties")) {
+                blockStateNbt.put("properties", litematicaState.getCompoundOrEmpty("properties").copy());
             }
             resultPalette.add(blockStateNbt);
         }
@@ -131,39 +223,65 @@ public class LitematicaParser {
         if (region.contains("Entities")) {
             ListTag entities = region.getListOrEmpty("Entities");
             ListTag resultEntitiesList = new ListTag();
+            CompoundTag regionPos = region.getCompoundOrEmpty("Position");
+            int regionX = regionPos.getIntOr("x", 0);
+            int regionY = regionPos.getIntOr("y", 0);
+            int regionZ = regionPos.getIntOr("z", 0);
+            CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
+
             for (int i = 0; i < entities.size(); i++) {
                 CompoundTag entity = entities.getCompoundOrEmpty(i);
+                String id = entity.getStringOr("id", "");
+                if (me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(id)) {
+                    continue;
+                }
+
                 CompoundTag entityNbt = entity.copy();
-                
+
                 // 获取实体的世界绝对坐标 Pos
                 ListTag posList = entity.getListOrEmpty("Pos");
                 if (posList.size() >= 3) {
                     double ex = posList.getDoubleOr(0, 0.0);
                     double ey = posList.getDoubleOr(1, 0.0);
                     double ez = posList.getDoubleOr(2, 0.0);
-                    
-                    // 转换局部坐标
-                    CompoundTag regionPos = region.getCompoundOrEmpty("Position");
-                    int regionX = regionPos.getIntOr("x", 0);
-                    int regionY = regionPos.getIntOr("y", 0);
-                    int regionZ = regionPos.getIntOr("z", 0);
-                    
+
                     double rx = ex - regionX;
                     double ry = ey - regionY;
                     double rz = ez - regionZ;
-                    
-                    CompoundTag sizeTag = region.getCompoundOrEmpty("Size");
+
                     if (sizeTag.getIntOr("x", 0) < 0) rx = -rx;
                     if (sizeTag.getIntOr("y", 0) < 0) ry = -ry;
                     if (sizeTag.getIntOr("z", 0) < 0) rz = -rz;
-                    
+
                     ListTag relativePos = new ListTag();
                     relativePos.add(DoubleTag.valueOf(rx));
                     relativePos.add(DoubleTag.valueOf(ry));
                     relativePos.add(DoubleTag.valueOf(rz));
                     entityNbt.put("Pos", relativePos);
                 }
-                
+
+                // 转换附着类实体的 block_pos
+                if (entity.contains("block_pos")) {
+                    int[] bp = entity.getIntArray("block_pos").orElse(new int[0]);
+                    if (bp.length == 3) {
+                        int bpx = bp[0] - regionX;
+                        int bpy = bp[1] - regionY;
+                        int bpz = bp[2] - regionZ;
+                        if (sizeTag.getIntOr("x", 0) < 0) bpx = -bpx - 1;
+                        if (sizeTag.getIntOr("y", 0) < 0) bpy = -bpy - 1;
+                        if (sizeTag.getIntOr("z", 0) < 0) bpz = -bpz - 1;
+                        entityNbt.putIntArray("block_pos", new int[]{bpx, bpy, bpz});
+                    }
+                } else if (entity.contains("TileX") && entity.contains("TileY") && entity.contains("TileZ")) {
+                    int tx = entity.getIntOr("TileX", 0) - regionX;
+                    int ty = entity.getIntOr("TileY", 0) - regionY;
+                    int tz = entity.getIntOr("TileZ", 0) - regionZ;
+                    if (sizeTag.getIntOr("x", 0) < 0) tx = -tx - 1;
+                    if (sizeTag.getIntOr("y", 0) < 0) ty = -ty - 1;
+                    if (sizeTag.getIntOr("z", 0) < 0) tz = -tz - 1;
+                    entityNbt.putIntArray("block_pos", new int[]{tx, ty, tz});
+                }
+
                 // 剔除 UUID，避免放置冲突
                 entityNbt.remove("UUID");
                 resultEntitiesList.add(entityNbt);
@@ -171,6 +289,7 @@ public class LitematicaParser {
             result.put("Entities", resultEntitiesList);
         }
 
+        ModLog.debug("[LitematicaParser] parseLitematic 完成: 尺寸=" + width + "x" + height + "x" + length + ", 调色板=" + paletteSize + ", 总格数=" + totalBlocks);
         return result;
     }
 
@@ -246,6 +365,7 @@ public class LitematicaParser {
         }
         result.put("BlockEntities", resultEntities);
 
+        ModLog.debug("[LitematicaParser] parseSchematic 完成: 尺寸=" + width + "x" + height + "x" + length + ", 调色板=" + resultPalette.size());
         return result;
     }
 
@@ -280,11 +400,33 @@ public class LitematicaParser {
         ListTag palette = blueprintTag.getListOrEmpty("Palette");
         ListTag blockStatePalette = new ListTag();
         for (int i = 0; i < palette.size(); i++) {
-            CompoundTag state = palette.getCompoundOrEmpty(i);
+            Tag rawState = palette.get(i);
             CompoundTag litematicaState = new CompoundTag();
-            litematicaState.putString("Name", state.getStringOr("Name", "minecraft:air"));
-            if (state.contains("Properties")) {
-                litematicaState.put("Properties", state.getCompoundOrEmpty("Properties").copy());
+            if (rawState instanceof StringTag strTag) {
+                String rawStr = strTag.asString().orElse("minecraft:air");
+                int bracketIdx = rawStr.indexOf('[');
+                if (bracketIdx == -1) {
+                    litematicaState.putString("Name", rawStr.isEmpty() ? "minecraft:air" : rawStr);
+                } else {
+                    CompoundTag converted = convertStringToBlockStateNbt(rawStr);
+                    litematicaState.putString("Name", converted.getStringOr("id", "minecraft:air"));
+                    if (converted.contains("properties")) {
+                        litematicaState.put("Properties", converted.getCompoundOrEmpty("properties"));
+                    }
+                }
+            } else if (rawState instanceof CompoundTag state) {
+                String stateName = state.getStringOr("id", "");
+                if (stateName.isEmpty()) {
+                    stateName = state.getStringOr("Name", "minecraft:air");
+                }
+                litematicaState.putString("Name", stateName);
+                if (state.contains("properties")) {
+                    litematicaState.put("Properties", state.getCompoundOrEmpty("properties").copy());
+                } else if (state.contains("Properties")) {
+                    litematicaState.put("Properties", state.getCompoundOrEmpty("Properties").copy());
+                }
+            } else {
+                litematicaState.putString("Name", "minecraft:air");
             }
             blockStatePalette.add(litematicaState);
         }
@@ -345,6 +487,7 @@ public class LitematicaParser {
 
         regions.put("Region", region);
         root.put("Regions", regions);
+        ModLog.debug("[LitematicaParser] packLitematic 完成: 名称=" + name + ", 尺寸=" + width + "x" + height + "x" + length + ", 调色板=" + paletteSize);
         return root;
     }
 
@@ -352,10 +495,10 @@ public class LitematicaParser {
         CompoundTag nbt = new CompoundTag();
         int bracketIndex = stateStr.indexOf('[');
         if (bracketIndex == -1) {
-            nbt.putString("Name", stateStr);
+            nbt.putString("id", stateStr);
         } else {
             String name = stateStr.substring(0, bracketIndex);
-            nbt.putString("Name", name);
+            nbt.putString("id", name);
             CompoundTag properties = new CompoundTag();
             String propStr = stateStr.substring(bracketIndex + 1, stateStr.length() - 1);
             String[] parts = propStr.split(",");
@@ -365,7 +508,7 @@ public class LitematicaParser {
                     properties.putString(kv[0], kv[1]);
                 }
             }
-            nbt.put("Properties", properties);
+            nbt.put("properties", properties);
         }
         return nbt;
     }

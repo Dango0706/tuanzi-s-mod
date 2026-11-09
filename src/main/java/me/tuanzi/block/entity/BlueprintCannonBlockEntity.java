@@ -1,9 +1,11 @@
 package me.tuanzi.block.entity;
 
+import java.util.*;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.item.StructureBlueprintItem;
 import me.tuanzi.world.inventory.BlueprintCannonMenu;
+import me.tuanzi.world.inventory.GoldenPocketMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
@@ -39,9 +41,25 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import me.tuanzi.block.cannon.LaunchedItem;
+import me.tuanzi.network.BlueprintCannonShootS2CPacket;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.core.HolderLookup;
 
 public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvider, Container {
+
+    // 机械动力风格飞行方块列表（LaunchedItem 队列与瞄准状态）
+    public final List<LaunchedItem> flyingBlocks = new LinkedList<>();
+    public BlockPos currentTarget = null;
+    public BlockPos previousTarget = null;
+    public float defaultYaw = 0.0f;
+    public boolean firstRenderTick = true;
 
     // 3 个物品槽：Slot 0 为蓝图，Slot 1 为压缩浆料燃料，Slot 2 为书与笔（材料清单输出）
     private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
@@ -197,57 +215,8 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         this.setChanged();
     }
     public static Item getRequiredItemForEntity(String entityId, CompoundTag nbt) {
-        if (entityId == null) return Items.AIR;
-        switch (entityId) {
-            case "minecraft:armor_stand": return Items.ARMOR_STAND;
-            case "minecraft:item_frame": return Items.ITEM_FRAME;
-            case "minecraft:glow_item_frame": return Items.GLOW_ITEM_FRAME;
-            case "minecraft:painting": return Items.PAINTING;
-            case "minecraft:boat": {
-                String type = nbt.getStringOr("Type", "");
-                if ("spruce".equals(type)) return Items.SPRUCE_BOAT;
-                if ("birch".equals(type)) return Items.BIRCH_BOAT;
-                if ("jungle".equals(type)) return Items.JUNGLE_BOAT;
-                if ("acacia".equals(type)) return Items.ACACIA_BOAT;
-                if ("dark_oak".equals(type)) return Items.DARK_OAK_BOAT;
-                if ("mangrove".equals(type)) return Items.MANGROVE_BOAT;
-                if ("cherry".equals(type)) return Items.CHERRY_BOAT;
-                if ("pale_oak".equals(type)) return Items.PALE_OAK_BOAT;
-                if ("bamboo".equals(type)) return Items.BAMBOO_RAFT;
-                return Items.OAK_BOAT;
-            }
-            case "minecraft:chest_boat": {
-                String type = nbt.getStringOr("Type", "");
-                if ("spruce".equals(type)) return Items.SPRUCE_CHEST_BOAT;
-                if ("birch".equals(type)) return Items.BIRCH_CHEST_BOAT;
-                if ("jungle".equals(type)) return Items.JUNGLE_CHEST_BOAT;
-                if ("acacia".equals(type)) return Items.ACACIA_CHEST_BOAT;
-                if ("dark_oak".equals(type)) return Items.DARK_OAK_CHEST_BOAT;
-                if ("mangrove".equals(type)) return Items.MANGROVE_CHEST_BOAT;
-                if ("cherry".equals(type)) return Items.CHERRY_CHEST_BOAT;
-                if ("pale_oak".equals(type)) return Items.PALE_OAK_CHEST_BOAT;
-                if ("bamboo".equals(type)) return Items.BAMBOO_CHEST_RAFT;
-                return Items.OAK_CHEST_BOAT;
-            }
-            case "minecraft:minecart": return Items.MINECART;
-            case "minecraft:chest_minecart": return Items.CHEST_MINECART;
-            case "minecraft:furnace_minecart": return Items.FURNACE_MINECART;
-            case "minecraft:tnt_minecart": return Items.TNT_MINECART;
-            case "minecraft:hopper_minecart": return Items.HOPPER_MINECART;
-            case "minecraft:end_crystal": return Items.END_CRYSTAL;
-            
-            // 常见生物的 Spawn Egg
-            case "minecraft:cow": return Items.COW_SPAWN_EGG;
-            case "minecraft:sheep": return Items.SHEEP_SPAWN_EGG;
-            case "minecraft:pig": return Items.PIG_SPAWN_EGG;
-            case "minecraft:chicken": return Items.CHICKEN_SPAWN_EGG;
-            case "minecraft:villager": return Items.VILLAGER_SPAWN_EGG;
-            case "minecraft:zombie": return Items.ZOMBIE_SPAWN_EGG;
-            case "minecraft:skeleton": return Items.SKELETON_SPAWN_EGG;
-            case "minecraft:creeper": return Items.CREEPER_SPAWN_EGG;
-            case "minecraft:spider": return Items.SPIDER_SPAWN_EGG;
-        }
-        return Items.AIR;
+        ItemStack base = me.tuanzi.block.cannon.BlueprintEntityHelper.getBaseItemStack(entityId, nbt, null);
+        return base.getItem();
     }
 
     /**
@@ -282,9 +251,9 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
         BlockState[] blockStates = new BlockState[paletteNbt.size()];
         for (int i = 0; i < paletteNbt.size(); i++) {
-            CompoundTag stateTag = paletteNbt.getCompoundOrEmpty(i);
+            net.minecraft.nbt.Tag stateTag = paletteNbt.get(i);
             blockStates[i] = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag)
-                .result().orElse(Blocks.AIR.defaultBlockState());
+                .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
         }
 
         // 统计蓝图总需量
@@ -299,15 +268,21 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             totalNeeded.merge(item, 1, Integer::sum);
         }
 
-        // 统计实体所需物料
+        // 统计非活体建筑实体与挂载物所需物料
         if (blueprintTag.contains("Entities")) {
             ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
             for (int i = 0; i < entitiesTag.size(); i++) {
                 CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
                 String id = entityNbt.getStringOr("id", "");
-                Item item = getRequiredItemForEntity(id, entityNbt);
-                if (item != Items.AIR) {
-                    totalNeeded.merge(item, 1, Integer::sum);
+                if (me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(id)) continue;
+                if (!me.tuanzi.block.cannon.BlueprintEntityHelper.isBuildableNonLivingEntity(id)) continue;
+
+                List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
+                    me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, entityNbt, level.registryAccess());
+                for (me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement req : reqs) {
+                    if (!req.template().isEmpty()) {
+                        totalNeeded.merge(req.template().getItem(), 1, Integer::sum);
+                    }
                 }
             }
         }
@@ -404,10 +379,11 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) continue;
-            if (isShulkerBox(stack)) {
+            if (isNestedContainerItem(stack)) {
                 ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
                 if (contents != null) {
-                    NonNullList<ItemStack> inner = NonNullList.withSize(27, ItemStack.EMPTY);
+                    int containerSize = getNestedContainerSize(stack);
+                    NonNullList<ItemStack> inner = NonNullList.withSize(containerSize, ItemStack.EMPTY);
                     contents.copyInto(inner);
                     SimpleContainer virtual = new SimpleContainer(inner.toArray(new ItemStack[0]));
                     countContainerItems(virtual, countMap, depth + 1);
@@ -418,7 +394,78 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
+    public void tickFlyingBlocks(Level level) {
+        if (this.flyingBlocks.isEmpty()) return;
+        List<LaunchedItem> toRemove = new LinkedList<>();
+        for (LaunchedItem item : this.flyingBlocks) {
+            if (item.update(level)) {
+                toRemove.add(item);
+            }
+        }
+        if (!toRemove.isEmpty()) {
+            this.flyingBlocks.removeAll(toRemove);
+            this.setChanged();
+        }
+    }
+
+    public void launchBlock(Level level, BlockPos target, ItemStack stack, BlockState state, @Nullable CompoundTag data, boolean isDestroy) {
+        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
+            this.previousTarget = this.currentTarget;
+        }
+        this.currentTarget = target;
+        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
+        this.flyingBlocks.add(new LaunchedItem.ForBlockState(this.worldPosition, target, stack, state, data, isDestroy));
+
+        // 播放大炮轰击发射音效
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
+
+        if (level instanceof ServerLevel serverLevel) {
+            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
+                this.worldPosition, target, net.minecraft.world.level.block.Block.getId(state), totalTicks, isDestroy
+            );
+            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
+                ServerPlayNetworking.send(player, packet);
+            }
+        }
+        this.setChanged();
+    }
+
+    public void launchEntity(Level level, BlockPos target, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
+        launchEntity(level, net.minecraft.world.phys.Vec3.atBottomCenterOf(target), stack, entityId, entityNbt);
+    }
+
+    public void launchEntity(Level level, net.minecraft.world.phys.Vec3 exactTarget, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
+        BlockPos target = BlockPos.containing(exactTarget);
+        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
+            this.previousTarget = this.currentTarget;
+        }
+        this.currentTarget = target;
+        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
+        this.flyingBlocks.add(new LaunchedItem.ForEntity(this.worldPosition, target, exactTarget, stack, entityId, entityNbt));
+
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
+
+        if (level instanceof ServerLevel serverLevel) {
+            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
+                this.worldPosition, target, 0, totalTicks, false
+            );
+            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
+                ServerPlayNetworking.send(player, packet);
+            }
+        }
+        this.setChanged();
+    }
+
+    public static void clientTick(Level level, BlockPos pos, BlockState state, BlueprintCannonBlockEntity be) {
+        be.tickFlyingBlocks(level);
+    }
+
     public static void serverTick(Level level, BlockPos pos, BlockState state, BlueprintCannonBlockEntity be) {
+        // 每 tick 推动空中所有已发射的方块向目标飞行并在到达时落地筑造/破坏
+        be.tickFlyingBlocks(level);
+
         if (be.buildState != 1) return; // 只在 RUNNING 时工作
 
         ItemStack blueprint = be.items.get(0);
@@ -477,20 +524,26 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
         be.ticksToNextPlace--;
         if (be.ticksToNextPlace <= 0) {
-            be.ticksToNextPlace = 5;
+            be.ticksToNextPlace = 0;
 
             // 惰性扫描容器物料池
             if (be.cachedSources == null) {
                 be.scanNearbyContainers(level, pos);
             }
 
-            // 在一个 tick 内最多跳过 32 个空气或已建好的方块，防卡顿
+            // 在一个 tick 内最多跳过 512 个空气或已建好的方块，防卡顿与挂起
             int checksThisTick = 0;
-            while (checksThisTick < 32 && be.currentIndex < expectedTotal) {
+            while (checksThisTick < 512 && be.currentIndex < expectedTotal) {
                 checksThisTick++;
 
                 // 实体放置分支
                 if (be.currentIndex >= blocks.length) {
+                    // 1. 等待所有空中飞行方块全部落地，确保墙面、地板与铁轨支撑到位
+                    boolean hasFlyingBlocks = be.flyingBlocks.stream().anyMatch(item -> item instanceof LaunchedItem.ForBlockState);
+                    if (hasFlyingBlocks) {
+                        return;
+                    }
+
                     int entityIdx = be.currentIndex - blocks.length;
                     if (entityIdx < 0 || entityIdx >= entitiesTag.size()) {
                         be.currentIndex++;
@@ -500,108 +553,146 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(entityIdx);
                     String id = entityNbt.getStringOr("id", "");
 
-                    // 1. 获取实体在蓝图中的相对坐标
-                    ListTag posList = entityNbt.getListOrEmpty("Pos");
-                    if (posList.size() < 3) {
+                    // 2. 忽略环境与临时实体
+                    if (me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(id)) {
                         be.currentIndex++;
                         continue;
                     }
-                    double ex = posList.getDoubleOr(0, 0.0);
-                    double ey = posList.getDoubleOr(1, 0.0);
-                    double ez = posList.getDoubleOr(2, 0.0);
 
-                    // 2. 虚影放置信息
+                    boolean hasCreativeCore = be.hasCreativeCoreInSources();
+                    boolean isBuildableNonLiving = me.tuanzi.block.cannon.BlueprintEntityHelper.isBuildableNonLivingEntity(id);
+
+                    // 生存模式下非建筑装饰实体（如活体生物：村民、牛羊、怪物）直接跳过，仅在有创造核心时打印
+                    if (!isBuildableNonLiving && !hasCreativeCore) {
+                        be.currentIndex++;
+                        continue;
+                    }
+
+                    // 3. 虚影放置信息与亚像素几何变换
                     BlockPos basePos = new BlockPos(blueprintTag.getIntOr("GhostX", 0), blueprintTag.getIntOr("GhostY", 0), blueprintTag.getIntOr("GhostZ", 0));
                     BlockPos offset = new BlockPos(blueprintTag.getIntOr("OffsetX", 0), blueprintTag.getIntOr("OffsetY", 0), blueprintTag.getIntOr("OffsetZ", 0));
                     int rotationIdx = blueprintTag.getIntOr("Rotation", 0);
                     boolean mirrored = blueprintTag.getBooleanOr("Mirrored", false);
 
-                    Rotation rot = Rotation.values()[rotationIdx % 4];
-                    Mirror mir = mirrored ? Mirror.LEFT_RIGHT : Mirror.NONE;
+                    me.tuanzi.block.cannon.BlueprintEntityHelper.TransformedEntity transformed =
+                        me.tuanzi.block.cannon.BlueprintEntityHelper.transformEntity(
+                            entityNbt, width, height, length, basePos, offset, rotationIdx, mirrored, level.registryAccess()
+                        );
+                    net.minecraft.world.phys.Vec3 exactPos = transformed.exactPos();
+                    BlockPos targetBlockPos = transformed.targetBlockPos();
+                    net.minecraft.core.Direction facing = transformed.facing();
+                    CompoundTag transformedNbt = transformed.transformedNbt();
 
-                    // 3. 计算旋转/镜像后的相对坐标
-                    double rx = ex;
-                    double rz = ez;
-                    double wRot = width;
-                    if (rot == Rotation.CLOCKWISE_90) {
-                        rx = length - ez;
-                        rz = ex;
-                        wRot = length;
-                    } else if (rot == Rotation.CLOCKWISE_180) {
-                        rx = width - ex;
-                        rz = length - ez;
-                        wRot = width;
-                    } else if (rot == Rotation.COUNTERCLOCKWISE_90) {
-                        rx = ez;
-                        rz = width - ex;
-                        wRot = length;
-                    }
-
-                    if (mirrored) {
-                        rx = wRot - rx;
-                    }
-
-                    double finalX = basePos.getX() + offset.getX() + rx;
-                    double finalY = basePos.getY() + offset.getY() + ey;
-                    double finalZ = basePos.getZ() + offset.getZ() + rz;
-
-                    // 4. 检查是否已经在目标位置有同种实体
-                    net.minecraft.world.phys.AABB checkBox = new net.minecraft.world.phys.AABB(finalX - 0.5, finalY - 0.5, finalZ - 0.5, finalX + 0.5, finalY + 0.5, finalZ + 0.5);
-                    net.minecraft.world.entity.EntityType<?> entityType = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id)).orElse(null);
-                    if (entityType != null) {
-                        List<? extends net.minecraft.world.entity.Entity> existing = level.getEntities(entityType, checkBox, e -> true);
-                        if (!existing.isEmpty()) {
-                            // 已经有这个实体了，直接跳过
-                            be.currentIndex++;
-                            continue;
-                        }
-                    } else {
+                    // 4. 空中飞行队列查重
+                    boolean alreadyFlying = be.flyingBlocks.stream().anyMatch(item ->
+                        item instanceof LaunchedItem.ForEntity forEntity &&
+                        forEntity.exactTarget != null &&
+                        forEntity.exactTarget.distanceToSqr(exactPos) < 0.05 &&
+                        forEntity.entityId.equals(id)
+                    );
+                    if (alreadyFlying) {
                         be.currentIndex++;
                         continue;
                     }
 
-                    // 5. 计算消耗的材料
-                    Item requiredItem = getRequiredItemForEntity(id, entityNbt);
-                    boolean needsItem = requiredItem != Items.AIR;
-                    ContainerSource itemSource = null;
-                    if (needsItem) {
-                        itemSource = be.findItemInSources(requiredItem);
-                        if (itemSource == null) {
-                            // 缺少材料：自动暂停
+                    // 5. 世界目标位置实体检测与拆除模式联动
+                    net.minecraft.world.entity.EntityType<?> entityType =
+                        net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id)).orElse(null);
+                    if (entityType == null) {
+                        be.currentIndex++;
+                        continue;
+                    }
+
+                    net.minecraft.world.phys.AABB checkBox = new net.minecraft.world.phys.AABB(
+                        exactPos.x - 0.5, exactPos.y - 0.5, exactPos.z - 0.5,
+                        exactPos.x + 0.5, exactPos.y + 0.5, exactPos.z + 0.5
+                    );
+
+                    boolean shouldSkip = false;
+                    boolean needDestroyConflict = false;
+                    net.minecraft.world.entity.Entity conflictTarget = null;
+
+                    if (id.contains("item_frame") || id.equals("minecraft:painting")) {
+                        // 挂饰类：精准匹配所在锚点方块与朝向
+                        List<net.minecraft.world.entity.decoration.HangingEntity> hangings =
+                            level.getEntitiesOfClass(net.minecraft.world.entity.decoration.HangingEntity.class, new net.minecraft.world.phys.AABB(targetBlockPos).inflate(0.5));
+                        for (net.minecraft.world.entity.decoration.HangingEntity hanging : hangings) {
+                            if (hanging.getDirection() == facing) {
+                                if (hanging.getType() == entityType) {
+                                    shouldSkip = true;
+                                    break;
+                                } else if (be.destroyMode && !shouldSkip) {
+                                    needDestroyConflict = true;
+                                    conflictTarget = hanging;
+                                }
+                            }
+                        }
+                    } else {
+                        // 常规非活体实体（盔甲架、坐垫、车船等）
+                        List<? extends net.minecraft.world.entity.Entity> existing = level.getEntities(entityType, checkBox, e -> true);
+                        if (!existing.isEmpty()) {
+                            shouldSkip = true;
+                        } else if (be.destroyMode) {
+                            // 检查是否有其他冲突的非活体建筑实体
+                            List<net.minecraft.world.entity.Entity> conflicts = level.getEntities((net.minecraft.world.entity.Entity) null, checkBox,
+                                e -> !(e instanceof net.minecraft.world.entity.player.Player) && !(e instanceof net.minecraft.world.entity.LivingEntity living && !(living instanceof net.minecraft.world.entity.decoration.ArmorStand)));
+                            if (!conflicts.isEmpty()) {
+                                needDestroyConflict = true;
+                                conflictTarget = conflicts.getFirst();
+                            }
+                        }
+                    }
+
+                    if (shouldSkip) {
+                        be.currentIndex++;
+                        continue;
+                    }
+
+                    if (needDestroyConflict && conflictTarget != null) {
+                        if (be.consumeFuel(level, pos)) {
+                            if (level instanceof ServerLevel serverLevel) {
+                                conflictTarget.kill(serverLevel);
+                            } else {
+                                conflictTarget.discard();
+                            }
+                            be.ticksToNextPlace = 5;
+                            be.setChanged();
+                            return;
+                        }
+                        return;
+                    }
+
+                    // 6. 材料需求检查与原子化扣料
+                    Map<String, ItemStack> consumedItems = new LinkedHashMap<>();
+                    if (!hasCreativeCore) {
+                        List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
+                            me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, transformedNbt, level.registryAccess());
+                        boolean canConsume = me.tuanzi.block.cannon.BlueprintEntityHelper.tryReserveAndConsume(
+                            be.cachedSources, reqs, be.exactMatch, consumedItems
+                        );
+                        if (!canConsume) {
+                            // 材料不足，自动暂停
                             be.buildState = 2;
                             be.pauseReason = 2;
+                            be.ticksToNextPlace = 0;
                             level.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 1.0f, 0.8f);
                             be.setChanged();
                             return;
                         }
                     }
 
-                    // 6. 消耗燃料并生成
+                    // 7. 消耗燃料并精准发射实体
                     if (be.consumeFuel(level, pos)) {
-                        if (needsItem && itemSource != null) {
-                            ItemStack srcStack = itemSource.container.getItem(itemSource.slot);
-                            srcStack.shrink(1);
-                            itemSource.markChanged();
-                        }
-
-                        net.minecraft.world.entity.Entity entity = entityType.create(level, net.minecraft.world.entity.EntitySpawnReason.STRUCTURE);
-                        if (entity != null) {
-                            CompoundTag loadNbt = entityNbt.copy();
-                            loadNbt.remove("UUID");
-                            loadNbt.remove("Pos");
-                            loadNbt.remove("Motion");
-                            entity.load(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), loadNbt));
-
-                            entity.setPos(finalX, finalY, finalZ);
-                            entity.rotate(rot);
-                            entity.mirror(mir);
-
-                            level.addFreshEntity(entity);
-                            level.playSound(null, new BlockPos((int)finalX, (int)finalY, (int)finalZ), SoundEvents.ITEM_FRAME_PLACE, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        }
+                        CompoundTag sanitizedNbt = me.tuanzi.block.cannon.BlueprintEntityHelper.buildSanitizedEntityNbt(
+                            transformedNbt, id, consumedItems, hasCreativeCore, level.registryAccess()
+                        );
+                        ItemStack baseStack = consumedItems.getOrDefault("BASE", ItemStack.EMPTY);
+                        be.launchEntity(level, exactPos, baseStack, id, sanitizedNbt);
+                        be.ticksToNextPlace = 5;
 
                         be.currentIndex++;
                         be.setChanged();
+                        return;
                     }
                     return;
                 }
@@ -632,6 +723,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 } else if (rot == Rotation.CLOCKWISE_180) {
                     rx = width - 1 - x;
                     rz = length - 1 - z;
+                    wRot = width;
                 } else if (rot == Rotation.COUNTERCLOCKWISE_90) {
                     rx = z;
                     rz = width - 1 - x;
@@ -653,14 +745,37 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     continue;
                 }
 
-                CompoundTag stateTag = paletteNbt.getCompoundOrEmpty(paletteIdx);
-                BlockState blueprintState = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag).result().orElse(Blocks.AIR.defaultBlockState());
+                net.minecraft.nbt.Tag stateTag = paletteNbt.get(paletteIdx);
+                BlockState blueprintState = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag)
+                    .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
                 // 应用旋转和镜像转换
                 BlockState transformedState = blueprintState.rotate(rot).mirror(mir);
 
+                // 核心：无视蓝图中的空气方块与占位/结构空位/屏障方块，不打印日志，不发射空气飞弹
+                boolean isBlueprintAir = transformedState.isAir() || transformedState.is(Blocks.STRUCTURE_VOID) || transformedState.is(Blocks.BARRIER);
+                if (isBlueprintAir) {
+                    // 仅当开启拆除模式且世界上存在需要清空的实体方块时，才发射破坏飞弹
+                    if (be.destroyMode) {
+                        BlockState currentWorldState = level.getBlockState(targetPos);
+                        if (!currentWorldState.isAir() && currentWorldState.getFluidState().isEmpty() && currentWorldState.getDestroySpeed(level, targetPos) >= 0) {
+                            if (be.consumeFuel(level, pos)) {
+                                be.launchBlock(level, targetPos, ItemStack.EMPTY, Blocks.AIR.defaultBlockState(), null, true);
+                                be.ticksToNextPlace = 5;
+                                be.currentIndex++;
+                                be.setChanged();
+                                return;
+                            }
+                        }
+                    }
+                    // 正常建造模式或世界已经是空气：彻底无视并跳过
+                    be.currentIndex++;
+                    continue;
+                }
+
+                // 蓝图为实体方块，获取世界当前方块状态
                 BlockState currentWorldState = level.getBlockState(targetPos);
 
-                // 检查是否完全一致
+                // 检查是否已经匹配
                 boolean isMatch = false;
                 if (be.exactMatch) {
                     isMatch = currentWorldState == transformedState;
@@ -674,102 +789,72 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     continue;
                 }
 
-                // 如果不一致
-                if (transformedState.isAir() || transformedState.is(Blocks.BARRIER)) {
-                    // 蓝图里是空气/屏障，世界上不是：执行移除
-                    if (!currentWorldState.isAir() && currentWorldState.getFluidState().isEmpty() && currentWorldState.getDestroySpeed(level, targetPos) >= 0) {
+                // 世界目标位置有方块且不匹配
+                if (!currentWorldState.isAir()) {
+                    if (be.destroyMode && currentWorldState.getFluidState().isEmpty() && currentWorldState.getDestroySpeed(level, targetPos) >= 0) {
+                        // 开启拆除模式：发射破坏飞弹清空障碍，等待清空后下一次放置实体方块
                         if (be.consumeFuel(level, pos)) {
-                            if (be.destroyMode) {
-                                level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), 3);
-                            } else {
-                                level.destroyBlock(targetPos, true);
-                            }
-                            level.playSound(null, pos, SoundEvents.COPPER_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
+                            be.launchBlock(level, targetPos, ItemStack.EMPTY, Blocks.AIR.defaultBlockState(), null, true);
+                            be.ticksToNextPlace = 5;
                             be.setChanged();
+                            return;
                         }
-                        return; // 本次 5 ticks 完成移除，等待下次放置
                     } else {
+                        // 未开启拆除模式：禁止破坏世界原有方块，直接跳过该位置
                         be.currentIndex++;
                         continue;
                     }
                 }
 
-                // 蓝图里是非空气，世界上不符：
-                // 如果世界上不是空气，先移除它
-                if (!currentWorldState.isAir() && currentWorldState.getFluidState().isEmpty() && currentWorldState.getDestroySpeed(level, targetPos) >= 0) {
-                    if (be.consumeFuel(level, pos)) {
-                        if (be.destroyMode) {
-                            level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), 3);
-                        } else {
-                            level.destroyBlock(targetPos, true);
-                        }
-                        level.playSound(null, pos, SoundEvents.COPPER_BREAK, SoundSource.BLOCKS, 1.0f, 1.0f);
-                        be.setChanged();
-                    }
-                    return; // 等待下次放置
-                }
-
-                // 世界上是空气（或已清理），开始扣料放置
-                // 检查并扣除物品
+                // 目标位置已为空气，准备扣料放置真实方块
                 Item requiredItem = transformedState.getBlock().asItem();
-                me.tuanzi.util.ModLog.debug("准备放置: " + transformedState + " -> requiredItem: " + requiredItem + " at " + targetPos);
-
-                // 防御性屏障检查：屏障方块无论何种情况都视为空气跳过，不要求材料
-                if (transformedState.is(Blocks.BARRIER)) {
-                    me.tuanzi.util.ModLog.debug("防御性屏障跳过: 蓝图位置为屏障，直接推进 index");
+                if (requiredItem == Items.AIR) {
+                    // 特殊无物品形态方块（如某些技术方块），直接跳过
                     be.currentIndex++;
                     continue;
                 }
 
-                if (requiredItem == Blocks.AIR.asItem()) {
-                    // 如果该方块没有对应物品，直接放置
-                    level.setBlock(targetPos, transformedState, 3);
-                    be.currentIndex++;
-                    be.setChanged();
-                    return;
-                }
+                me.tuanzi.util.ModLog.debug("准备放置: " + transformedState + " -> requiredItem: " + requiredItem + " at " + targetPos);
 
+                boolean hasCreativeCore = be.hasCreativeCoreInSources();
                 ContainerSource source = be.findItemInSources(requiredItem);
-                if (source != null) {
+                if (source != null || hasCreativeCore) {
                     // 扣除燃料
                     if (be.consumeFuel(level, pos)) {
-                        // 扣除物品
-                        ItemStack srcStack = source.container.getItem(source.slot);
-                        srcStack.shrink(1);
-                        source.markChanged();
+                        if (source != null && !hasCreativeCore) {
+                            // 扣除物品
+                            ItemStack srcStack = source.container.getItem(source.slot);
+                            srcStack.shrink(1);
+                            source.markChanged();
+                        } else if (hasCreativeCore) {
+                            me.tuanzi.util.ModLog.debug("检测到创造核心: 无视材料缺失或不消耗材料直接放置方块: " + transformedState + " at " + targetPos);
+                        }
 
-                        // 放置方块
-                        level.setBlock(targetPos, transformedState, 3);
-
-                        // 恢复方块实体 NBT
+                        // 提取方块实体 NBT
+                        CompoundTag teData = null;
                         ListTag tileEntities = blueprintTag.getListOrEmpty("BlockEntities");
                         for (int i = 0; i < tileEntities.size(); i++) {
                             CompoundTag te = tileEntities.getCompoundOrEmpty(i);
                             int[] tpos = te.getIntArray("pos").orElse(new int[0]);
                             if (tpos.length == 3 && tpos[0] == x && tpos[1] == y && tpos[2] == z) {
-                                BlockEntity newBe = level.getBlockEntity(targetPos);
-                                if (newBe != null) {
-                                    CompoundTag nbt = te.getCompoundOrEmpty("nbt").copy();
-                                    nbt.putInt("x", targetPos.getX());
-                                    nbt.putInt("y", targetPos.getY());
-                                    nbt.putInt("z", targetPos.getZ());
-                                    newBe.loadWithComponents(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess(), nbt));
-                                    newBe.setChanged();
-                                    level.sendBlockUpdated(targetPos, transformedState, transformedState, 3);
-                                }
+                                teData = te.getCompoundOrEmpty("nbt").copy();
                                 break;
                             }
                         }
 
-                        level.playSound(null, targetPos, transformedState.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
+                        ItemStack placedStack = (source != null && !hasCreativeCore) ? source.container.getItem(source.slot).copyWithCount(1) : new ItemStack(transformedState.getBlock());
+                        be.launchBlock(level, targetPos, placedStack, transformedState, teData, false);
+                        be.ticksToNextPlace = 5;
+
                         be.currentIndex++;
                         be.setChanged();
+                        return;
                     }
-                    return;
                 } else {
                     // 缺料，自动暂停
                     be.buildState = 2;
                     be.pauseReason = 2;
+                    be.ticksToNextPlace = 0;
                     level.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 1.0f, 0.8f);
                     be.setChanged();
                     return;
@@ -780,6 +865,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             if (be.currentIndex >= expectedTotal) {
                 be.totalBlocks = expectedTotal;
                 be.buildState = 0;
+                be.ticksToNextPlace = 0;
                 me.tuanzi.util.ModLog.debug("蓝图建造完成，currentIndex=" + be.currentIndex + " totalBlocks=" + be.totalBlocks);
                 level.playSound(null, pos, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 1.0f, 1.2f);
                 be.setChanged();
@@ -813,6 +899,17 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         this.pauseReason = 1;
         level.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 1.0f, 0.8f);
         this.setChanged();
+        return false;
+    }
+
+    public boolean hasCreativeCoreInSources() {
+        if (this.cachedSources == null) return false;
+        for (ContainerSource src : this.cachedSources) {
+            ItemStack stack = src.container.getItem(src.slot);
+            if (!stack.isEmpty() && stack.is(ModItems.CREATIVE_CORE)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -850,10 +947,11 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             ItemStack stack = container.getItem(i);
             if (stack.isEmpty()) continue;
 
-            if (isShulkerBox(stack)) {
+            if (isNestedContainerItem(stack)) {
                 ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
                 if (contents != null) {
-                    NonNullList<ItemStack> list = NonNullList.withSize(27, ItemStack.EMPTY);
+                    int containerSize = getNestedContainerSize(stack);
+                    NonNullList<ItemStack> list = NonNullList.withSize(containerSize, ItemStack.EMPTY);
                     contents.copyInto(list);
                     SimpleContainer virtualContainer = new SimpleContainer(list.toArray(new ItemStack[0]));
                     ContainerSource parentSource = new ContainerSource(container, i, stack, parent);
@@ -865,6 +963,17 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
+    private boolean isNestedContainerItem(ItemStack stack) {
+        return isShulkerBox(stack) || stack.is(ModItems.GOLDEN_POCKET);
+    }
+
+    private int getNestedContainerSize(ItemStack stack) {
+        if (stack.is(ModItems.GOLDEN_POCKET)) {
+            return GoldenPocketMenu.CONTAINER_SIZE;
+        }
+        return 27;
+    }
+
     private boolean isShulkerBox(ItemStack stack) {
         return stack.is(net.minecraft.tags.ItemTags.SHULKER_BOXES);
     }
@@ -874,14 +983,21 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, this.items);
         this.buildState = input.getIntOr("BuildState", 0);
-        // 注：旧存档的 PlacedBlocks 已废弃，运行时由 totalBlocks 和 currentIndex 计算进度
         this.currentIndex = input.getIntOr("CurrentIndex", 0);
         this.destroyMode = input.getBooleanOr("DestroyMode", false);
         this.exactMatch = input.getBooleanOr("ExactMatch", false);
         this.ticksToNextPlace = input.getIntOr("TicksToNext", 5);
         this.fuel = input.getIntOr("Fuel", 0);
         this.pauseReason = input.getIntOr("PauseReason", 0);
-        // totalBlocks 不持久化，每次运行时由 serverTick 从蓝图重新读取
+
+        this.flyingBlocks.clear();
+        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.fromRegistryOfRegistries(net.minecraft.core.registries.BuiltInRegistries.REGISTRY);
+        for (CompoundTag c : input.listOrEmpty("FlyingBlocks", CompoundTag.CODEC)) {
+            this.flyingBlocks.add(LaunchedItem.fromNBT(c, registries, net.minecraft.core.registries.BuiltInRegistries.BLOCK));
+        }
+        if (input.contains("TargetX")) {
+            this.currentTarget = new BlockPos(input.getIntOr("TargetX", 0), input.getIntOr("TargetY", 0), input.getIntOr("TargetZ", 0));
+        }
     }
 
     @Override
@@ -895,6 +1011,38 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         output.putInt("TicksToNext", this.ticksToNextPlace);
         output.putInt("Fuel", this.fuel);
         output.putInt("PauseReason", this.pauseReason);
+
+        ValueOutput.TypedOutputList<CompoundTag> listOutput = output.list("FlyingBlocks", CompoundTag.CODEC);
+        HolderLookup.Provider registries = this.level != null ? this.level.registryAccess() : net.minecraft.core.RegistryAccess.fromRegistryOfRegistries(net.minecraft.core.registries.BuiltInRegistries.REGISTRY);
+        for (LaunchedItem b : this.flyingBlocks) {
+            listOutput.add(b.serializeNBT(registries));
+        }
+        if (this.currentTarget != null) {
+            output.putInt("TargetX", this.currentTarget.getX());
+            output.putInt("TargetY", this.currentTarget.getY());
+            output.putInt("TargetZ", this.currentTarget.getZ());
+        }
+    }
+
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag tag = super.getUpdateTag(registries);
+        ListTag tagFlyingBlocks = new ListTag();
+        for (LaunchedItem b : this.flyingBlocks) {
+            tagFlyingBlocks.add(b.serializeNBT(registries));
+        }
+        tag.put("FlyingBlocks", tagFlyingBlocks);
+        if (this.currentTarget != null) {
+            tag.putInt("TargetX", this.currentTarget.getX());
+            tag.putInt("TargetY", this.currentTarget.getY());
+            tag.putInt("TargetZ", this.currentTarget.getZ());
+        }
+        return tag;
     }
 
     // 内部类，记录物料池中的源信息

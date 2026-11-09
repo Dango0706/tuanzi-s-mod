@@ -37,6 +37,9 @@ public class TuanzisModClient implements ClientModInitializer {
     private static KeyMapping moveEastKey;
     private static KeyMapping moveUpKey;
     private static KeyMapping moveDownKey;
+    private static KeyMapping useHallBeaconKey;
+    private static KeyMapping useRoomBeaconKey;
+    private static KeyMapping useMarketBeaconKey;
 
     private static boolean lastVState = false;
     private static boolean lastGState = false;
@@ -62,6 +65,11 @@ public class TuanzisModClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
             me.tuanzi.client.renderer.TrialDummyModel.TRIAL_DUMMY_LAYER,
             me.tuanzi.client.renderer.TrialDummyModel::createBodyLayer
+        );
+
+        net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
+            me.tuanzi.client.renderer.model.BlueprintCannonModel.LAYER_LOCATION,
+            me.tuanzi.client.renderer.model.BlueprintCannonModel::createBodyLayer
         );
 
         tuanzisModCategory = KeyMapping.Category.register(Identifier.withDefaultNamespace("tuanzis_mod"));
@@ -132,6 +140,24 @@ public class TuanzisModClient implements ClientModInitializer {
             tuanzisModCategory
         ));
 
+        useHallBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.use_hall_beacon",
+            InputConstants.KEY_H,
+            tuanzisModCategory
+        ));
+
+        useRoomBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.use_room_beacon",
+            InputConstants.KEY_R,
+            tuanzisModCategory
+        ));
+
+        useMarketBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+            "key.tuanzis_mod.use_market_beacon",
+            InputConstants.KEY_M,
+            tuanzisModCategory
+        ));
+
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
             me.tuanzi.init.ModEntities.DECOY,
             context -> (net.minecraft.client.renderer.entity.EntityRenderer) new me.tuanzi.client.renderer.DecoyRenderer(context)
@@ -186,6 +212,16 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.client.renderer.SoulMerchantStationBlockEntityRenderer::new
         );
 
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+            me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE_BLOCK_ENTITY,
+            me.tuanzi.client.renderer.BlackboxCoreCaseRenderer::new
+        );
+
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+            me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY,
+            me.tuanzi.client.renderer.BlueprintCannonRenderer::new
+        );
+
         // 注册旅者手札存储界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
             me.tuanzi.init.ModMenuTypes.TRAVELERS_NOTEBOOK,
@@ -214,6 +250,30 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.gui.screens.MenuScreens.register(
             me.tuanzi.init.ModMenuTypes.PLAYER_SIMULATOR,
             me.tuanzi.client.gui.screens.inventory.PlayerSimulatorScreen::new
+        );
+
+        // 注册黄金口袋界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.GOLDEN_POCKET,
+            me.tuanzi.client.gui.screens.inventory.GoldenPocketScreen::new
+        );
+
+        // 注册拾荒回廊战术界面 Screens
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.CORRIDOR_TACTICAL_LOADOUT,
+            me.tuanzi.client.gui.screens.scavenger.CorridorTacticalLoadoutScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.SCAVENGER_TACTICAL,
+            me.tuanzi.client.gui.screens.scavenger.ScavengerTacticalScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.BASE_STASH,
+            me.tuanzi.client.gui.screens.scavenger.BaseStashScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+            me.tuanzi.init.ModMenuTypes.BASE_UPGRADE_STATION,
+            me.tuanzi.client.gui.screens.scavenger.BaseUpgradeStationScreen::new
         );
 
         // 注册蜂刺余响自定义 TintSource
@@ -283,6 +343,75 @@ public class TuanzisModClient implements ClientModInitializer {
             }
         });
 
+        // 为附魔了“古卷附魔-屹立不倒”的装备添加高级提示框 (F3+H) 动态 Lore 显示
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+            if (tooltipType.isAdvanced()) {
+                int standingFirmLevel = 0;
+                var enchantments = stack.getEnchantments();
+                if (enchantments != null && !enchantments.isEmpty()) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(me.tuanzi.init.ModEnchantments.ANCIENT_SCROLL_STANDING_FIRM)) {
+                            standingFirmLevel = entry.getIntValue();
+                            break;
+                        }
+                    }
+                }
+                if (standingFirmLevel <= 0) {
+                    net.minecraft.world.item.enchantment.ItemEnchantments stored = stack.get(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS);
+                    if (stored != null && !stored.isEmpty()) {
+                        for (var entry : stored.entrySet()) {
+                            if (entry.getKey().is(me.tuanzi.init.ModEnchantments.ANCIENT_SCROLL_STANDING_FIRM)) {
+                                standingFirmLevel = entry.getIntValue();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (standingFirmLevel > 0) {
+                    float chance = Math.min(100.0f, standingFirmLevel * 20.0f);
+                    lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_standing_firm.advanced_header"));
+                    lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_chance", String.format("%.1f", chance)));
+
+                    var clientPlayer = net.minecraft.client.Minecraft.getInstance().player;
+                    int totalExp = clientPlayer != null ? me.tuanzi.util.DamageCalculator.getTotalExperiencePoints(clientPlayer) : 0;
+                    float maxBlock = me.tuanzi.util.DamageCalculator.calcMaxBlockableDamage(totalExp, standingFirmLevel);
+                    if (maxBlock > 0.0f) {
+                        lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_damage", String.format("%.2f", maxBlock)));
+                    } else {
+                        lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_standing_firm.insufficient_xp"));
+                    }
+                }
+
+                int seasonedLevel = 0;
+                if (enchantments != null && !enchantments.isEmpty()) {
+                    for (var entry : enchantments.entrySet()) {
+                        if (entry.getKey().is(me.tuanzi.init.ModEnchantments.ANCIENT_SCROLL_SEASONED)) {
+                            seasonedLevel = entry.getIntValue();
+                            break;
+                        }
+                    }
+                }
+                if (seasonedLevel <= 0) {
+                    net.minecraft.world.item.enchantment.ItemEnchantments stored = stack.get(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS);
+                    if (stored != null && !stored.isEmpty()) {
+                        for (var entry : stored.entrySet()) {
+                            if (entry.getKey().is(me.tuanzi.init.ModEnchantments.ANCIENT_SCROLL_SEASONED)) {
+                                seasonedLevel = entry.getIntValue();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (seasonedLevel > 0) {
+                    float bonusPercent = me.tuanzi.util.ExperiencedEnchantmentHelper.getBonusRate(seasonedLevel) * 100.0f;
+                    lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_seasoned.advanced_header"));
+                    lines.add(net.minecraft.network.chat.Component.translatable("tooltip.tuanzis_mod.ancient_scroll_seasoned.boost", String.format("%.1f", bonusPercent)));
+                }
+            }
+        });
+
         // 注册 S2C 打开手札书本界面接收器
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.OpenBookScreenS2CPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {
@@ -324,6 +453,93 @@ public class TuanzisModClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.CinderHeatSyncPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {
                 me.tuanzi.client.gui.CinderHeatHud.update(payload.heat(), payload.inArena());
+            });
+        });
+
+        // 注册拾荒回廊队伍状态同步接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.ScavengerTeamSyncPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.client.ScavengerTeamClient.updateTeam(payload.inTeam(), payload.colorRgb(), payload.memberUuids());
+            });
+        });
+
+        // 注册拾荒回廊专属饰品槽同步接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.CorridorAccessorySyncPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.client.CorridorAccessoryClientState.setHallStack(payload.hallStack());
+                me.tuanzi.client.CorridorAccessoryClientState.setRoomStack(payload.roomStack());
+                me.tuanzi.client.CorridorAccessoryClientState.setMarketStack(payload.marketStack());
+            });
+        });
+
+        // 注册拾荒回廊搜刮元数据热重载 S2C 接收器与断线清理、Tooltip 注入
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerDataSyncS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.applyClientSync(payload);
+            });
+        });
+
+        // 注册拾荒回廊装备档案、容器快照、搜索进度与条目揭示 S2C 接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerProfileSyncS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateProfile(payload));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerContainerSyncS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateContainer(payload));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerSearchProgressS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateSearchProgress(payload));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerItemRevealedS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateItemRevealed(payload));
+        });
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.clearClientSync();
+            me.tuanzi.client.scavenger.ScavengerClientState.clearContainer();
+        });
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
+            var clientPlayer = Minecraft.getInstance().player;
+            boolean inCorridor = clientPlayer != null
+                    && clientPlayer.level().dimension().equals(me.tuanzi.init.ModDimensions.SCAVENGER_CORRIDOR_LEVEL);
+            me.tuanzi.world.scavenger.loot.data.ScavengerTooltipHelper.appendTooltipLines(stack, inCorridor, lines);
+        });
+
+        // 注册蓝图大炮开火发射 S2C 接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintCannonShootS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                if (context.client().level == null) return;
+                net.minecraft.world.level.block.entity.BlockEntity be = context.client().level.getBlockEntity(payload.cannonPos());
+                if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe) {
+                    cannonBe.previousTarget = cannonBe.currentTarget;
+                    cannonBe.currentTarget = payload.targetPos();
+                    net.minecraft.world.level.block.state.BlockState state = net.minecraft.world.level.block.Block.stateById(payload.blockStateId());
+                    cannonBe.flyingBlocks.add(new me.tuanzi.block.cannon.LaunchedItem.ForBlockState(
+                        payload.cannonPos(), payload.targetPos(), net.minecraft.world.item.ItemStack.EMPTY, state, null, payload.isDestroy()
+                    ));
+
+                    // 精准从模型炮口出膛截面喷涌推进浓烟与火花粒子
+                    double[] angles = me.tuanzi.client.renderer.BlueprintCannonRenderer.getCannonAngles(cannonBe, payload.cannonPos(), 0.0f);
+                    double yaw = angles[0];
+                    double pitch = angles[1];
+                    net.minecraft.world.phys.Vec3 muzzle = me.tuanzi.client.renderer.BlueprintCannonRenderer.getMuzzlePosition(payload.cannonPos(), yaw, pitch, 6.0);
+                    net.minecraft.world.phys.Vec3 dir = me.tuanzi.client.renderer.BlueprintCannonRenderer.getMuzzleDirection(yaw, pitch);
+
+                    net.minecraft.util.RandomSource random = context.client().level.getRandom();
+                    for (int i = 0; i < 16; i++) {
+                        double speed = 0.15 + random.nextDouble() * 0.12;
+                        double vx = dir.x * speed + (random.nextDouble() - 0.5) * 0.06;
+                        double vy = dir.y * speed + (random.nextDouble() - 0.5) * 0.06;
+                        double vz = dir.z * speed + (random.nextDouble() - 0.5) * 0.06;
+
+                        // 浓厚推进白云烟雾
+                        context.client().level.addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD, muzzle.x, muzzle.y, muzzle.z, vx, vy, vz);
+                        // 膛口爆燃火花
+                        if (i < 5) {
+                            context.client().level.addParticle(net.minecraft.core.particles.ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, vx * 0.6, vy * 0.6, vz * 0.6);
+                        }
+                        // 扩散黑烟
+                        context.client().level.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, vx * 0.4, vy * 0.4, vz * 0.4);
+                    }
+                }
             });
         });
 
@@ -422,8 +638,22 @@ public class TuanzisModClient implements ClientModInitializer {
 
             // 执行虚影管理器 Tick
             ClientGhostManager.tick(client);
+            EcholocationClientTracker.tick(client);
 
-            // 手持结构蓝图且无界面时的快捷键控制
+            // 拾荒回廊专属信标快捷键
+            if (client.gui.screen() == null && client.player.level().dimension() == me.tuanzi.init.ModDimensions.SCAVENGER_CORRIDOR_LEVEL) {
+                while (useHallBeaconKey.consumeClick()) {
+                    ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_HALL));
+                }
+                while (useRoomBeaconKey.consumeClick()) {
+                    ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_ROOM));
+                }
+                while (useMarketBeaconKey.consumeClick()) {
+                    ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_MARKET));
+                }
+            }
+
+            // 手持结构蓝图或存在激活虚影且无界面时的快捷键控制
             if (client.gui.screen() == null) {
                 ItemStack mainHand = client.player.getMainHandItem();
                 ItemStack offHand = client.player.getOffhandItem();
@@ -435,24 +665,26 @@ public class TuanzisModClient implements ClientModInitializer {
                     targetStack = offHand;
                 }
 
-                boolean vPressed = toggleGhostKey.isDown();
-                boolean gPressed = openControllerKey.isDown();
-                boolean rPressed = rotateGhostKey.isDown();
-                boolean fPressed = mirrorGhostKey.isDown();
-                boolean upPressed = moveNorthKey.isDown();
-                boolean downPressed = moveSouthKey.isDown();
-                boolean leftPressed = moveWestKey.isDown();
-                boolean rightPressed = moveEastKey.isDown();
-                boolean pgUpPressed = moveUpKey.isDown();
-                boolean pgDnPressed = moveDownKey.isDown();
+                boolean vTriggered = consumeKeyTrigger(toggleGhostKey, lastVState);
+                boolean gTriggered = consumeKeyTrigger(openControllerKey, lastGState);
+                boolean rTriggered = consumeKeyTrigger(rotateGhostKey, lastRState);
+                boolean fTriggered = consumeKeyTrigger(mirrorGhostKey, lastFState);
+                boolean upTriggered = consumeKeyTrigger(moveNorthKey, lastUpState);
+                boolean downTriggered = consumeKeyTrigger(moveSouthKey, lastDownState);
+                boolean leftTriggered = consumeKeyTrigger(moveWestKey, lastLeftState);
+                boolean rightTriggered = consumeKeyTrigger(moveEastKey, lastRightState);
+                boolean pgUpTriggered = consumeKeyTrigger(moveUpKey, lastPgUpState);
+                boolean pgDnTriggered = consumeKeyTrigger(moveDownKey, lastPgDnState);
                 boolean ctrlPressed = InputConstants.isKeyDown(InputConstants.KEY_LCONTROL) ||
                                       InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
 
+                boolean handledByHeldBlueprint = false;
                 if (!targetStack.isEmpty()) {
                     net.minecraft.world.item.component.CustomData customData = targetStack.get(DataComponents.CUSTOM_DATA);
                     if (customData != null) {
                         CompoundTag tag = customData.copyTag();
                         if (tag.getBooleanOr("GhostPlaced", false)) {
+                            handledByHeldBlueprint = true;
                             int ox = tag.getIntOr("OffsetX", 0);
                             int oy = tag.getIntOr("OffsetY", 0);
                             int oz = tag.getIntOr("OffsetZ", 0);
@@ -461,66 +693,147 @@ public class TuanzisModClient implements ClientModInitializer {
 
                             boolean changed = false;
 
-                            if (vPressed && !lastVState) {
+                            if (vTriggered) {
                                 ClientGhostManager.toggleVisibility();
                             }
-                            if (gPressed && !lastGState) {
+                            if (gTriggered) {
                                 client.setScreenAndShow(new me.tuanzi.client.gui.screens.inventory.GhostControllerScreen());
                             }
-                            if (rPressed && !lastRState) {
+                            if (rTriggered) {
                                 rot = (rot + 1) % 4;
                                 changed = true;
                             }
-                            if (fPressed && !lastFState) {
+                            if (fTriggered) {
                                 mir = !mir;
                                 changed = true;
                             }
                             if (ctrlPressed) {
-                                if (upPressed && !lastUpState) {
+                                if (upTriggered) {
                                     oz -= 1;
                                     changed = true;
                                 }
-                                if (downPressed && !lastDownState) {
+                                if (downTriggered) {
                                     oz += 1;
                                     changed = true;
                                 }
-                                if (leftPressed && !lastLeftState) {
+                                if (leftTriggered) {
                                     ox -= 1;
                                     changed = true;
                                 }
-                                if (rightPressed && !lastRightState) {
+                                if (rightTriggered) {
                                     ox += 1;
                                     changed = true;
                                 }
-                                if (pgUpPressed && !lastPgUpState) {
+                                if (pgUpTriggered) {
                                     oy += 1;
                                     changed = true;
                                 }
-                                if (pgDnPressed && !lastPgDnState) {
+                                if (pgDnTriggered) {
                                     oy -= 1;
                                     changed = true;
                                 }
                             }
 
                             if (changed) {
-                                ClientPlayNetworking.send(new me.tuanzi.network.GhostTransformPacket(new BlockPos(ox, oy, oz), rot, mir));
+                                BlockPos updatedOffset = new BlockPos(ox, oy, oz);
+                                ClientGhostManager.updateTransform(updatedOffset, rot, mir);
+                                ClientPlayNetworking.send(new me.tuanzi.network.GhostTransformPacket(updatedOffset, rot, mir));
                             }
                         }
                     }
                 }
+                if (!handledByHeldBlueprint && ClientGhostManager.hasActiveGhost()) {
+                    // 未手持已放置蓝图但世界中常驻有激活的虚影投影时，支持全套快捷键开关、控制器呼出与姿态微调
+                    if (vTriggered) {
+                        ClientGhostManager.toggleVisibility();
+                    }
+                    if (gTriggered) {
+                        client.setScreenAndShow(new me.tuanzi.client.gui.screens.inventory.GhostControllerScreen());
+                    }
 
-                lastVState = vPressed;
-                lastGState = gPressed;
-                lastRState = rPressed;
-                lastFState = fPressed;
-                lastUpState = upPressed;
-                lastDownState = downPressed;
-                lastLeftState = leftPressed;
-                lastRightState = rightPressed;
-                lastPgUpState = pgUpPressed;
-                lastPgDnState = pgDnPressed;
+                    BlockPos curOff = ClientGhostManager.getOffset();
+                    int ox = curOff.getX();
+                    int oy = curOff.getY();
+                    int oz = curOff.getZ();
+                    int rot = ClientGhostManager.getRotationIdx();
+                    boolean mir = ClientGhostManager.isMirrored();
+                    boolean changed = false;
+
+                    if (rTriggered) {
+                        rot = (rot + 1) % 4;
+                        changed = true;
+                    }
+                    if (fTriggered) {
+                        mir = !mir;
+                        changed = true;
+                    }
+                    if (ctrlPressed) {
+                        if (upTriggered) {
+                            oz -= 1;
+                            changed = true;
+                        }
+                        if (downTriggered) {
+                            oz += 1;
+                            changed = true;
+                        }
+                        if (leftTriggered) {
+                            ox -= 1;
+                            changed = true;
+                        }
+                        if (rightTriggered) {
+                            ox += 1;
+                            changed = true;
+                        }
+                        if (pgUpTriggered) {
+                            oy += 1;
+                            changed = true;
+                        }
+                        if (pgDnTriggered) {
+                            oy -= 1;
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        ClientGhostManager.updateTransform(new BlockPos(ox, oy, oz), rot, mir);
+                    }
+                }
+
+                lastVState = toggleGhostKey.isDown();
+                lastGState = openControllerKey.isDown();
+                lastRState = rotateGhostKey.isDown();
+                lastFState = mirrorGhostKey.isDown();
+                lastUpState = moveNorthKey.isDown();
+                lastDownState = moveSouthKey.isDown();
+                lastLeftState = moveWestKey.isDown();
+                lastRightState = moveEastKey.isDown();
+                lastPgUpState = moveUpKey.isDown();
+                lastPgDnState = moveDownKey.isDown();
+            } else {
+                drainClicks(toggleGhostKey);
+                drainClicks(openControllerKey);
+                drainClicks(rotateGhostKey);
+                drainClicks(mirrorGhostKey);
+                drainClicks(moveNorthKey);
+                drainClicks(moveSouthKey);
+                drainClicks(moveWestKey);
+                drainClicks(moveEastKey);
+                drainClicks(moveUpKey);
+                drainClicks(moveDownKey);
+                lastVState = false;
+                lastGState = false;
+                lastRState = false;
+                lastFState = false;
+                lastUpState = false;
+                lastDownState = false;
+                lastLeftState = false;
+                lastRightState = false;
+                lastPgUpState = false;
+                lastPgDnState = false;
             }
         });
+
+        // 注册蓝图结构虚影半透明世界渲染
+        LevelRenderEvents.COLLECT_SUBMITS.register(me.tuanzi.client.ClientGhostManager::renderWorldGhosts);
 
         // 注册塑世之笔起点红色边缘高亮渲染
         LevelRenderEvents.BEFORE_GIZMOS.register((LevelRenderContext context) -> {
@@ -564,6 +877,46 @@ public class TuanzisModClient implements ClientModInitializer {
                 // 回退以防极端情况下没有 GizmoCollector
             }
         });
+
+        // 注册原生背包中回廊专属饰品槽位的鼠标点击事件
+        net.fabricmc.fabric.api.client.screen.v1.ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            if (screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen invScreen) {
+                net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents.allowMouseClick(invScreen).register((scr, event) -> {
+                    double mouseX = event.x();
+                    double mouseY = event.y();
+                    Minecraft mc = Minecraft.getInstance();
+                    if (mc.player == null || mc.player.level().dimension() != me.tuanzi.init.ModDimensions.SCAVENGER_CORRIDOR_LEVEL) {
+                        return true;
+                    }
+
+                    int leftPos = (invScreen.width - 176) / 2;
+                    int topPos = (invScreen.height - 166) / 2;
+                    int xo = leftPos - 26;
+                    int yo = topPos + 8;
+
+                    if (mouseX >= xo && mouseX < xo + 22 && mouseY >= yo && mouseY < yo + 22) {
+                        ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_HALL));
+                        mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        return false;
+                    }
+
+                    int yo1 = yo + 26;
+                    if (mouseX >= xo && mouseX < xo + 22 && mouseY >= yo1 && mouseY < yo1 + 22) {
+                        ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_ROOM));
+                        mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        return false;
+                    }
+
+                    int yo2 = yo + 52;
+                    if (mouseX >= xo && mouseX < xo + 22 && mouseY >= yo2 && mouseY < yo2 + 22) {
+                        ClientPlayNetworking.send(new me.tuanzi.network.CorridorBeaconUsePacket(me.tuanzi.world.scavenger.CorridorAccessoryContainer.SLOT_MARKET));
+                        mc.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                        return false;
+                    }
+                    return true;
+                });
+            }
+        });
     }
 
     /**
@@ -571,5 +924,25 @@ public class TuanzisModClient implements ClientModInitializer {
      */
     public static boolean isHoldingChainMiningKey() {
         return chainMiningKey != null && chainMiningKey.isDown();
+    }
+
+    public static boolean isOpenControllerKey(net.minecraft.client.input.KeyEvent event) {
+        return openControllerKey != null && openControllerKey.matches(event);
+    }
+
+    private static boolean consumeKeyTrigger(KeyMapping keyMapping, boolean prevDown) {
+        if (keyMapping == null) return false;
+        boolean clicked = false;
+        while (keyMapping.consumeClick()) {
+            clicked = true;
+        }
+        return clicked || (keyMapping.isDown() && !prevDown);
+    }
+
+    private static void drainClicks(KeyMapping keyMapping) {
+        if (keyMapping == null) return;
+        while (keyMapping.consumeClick()) {
+            // 清空屏幕开启期间残留的点击计数
+        }
     }
 }

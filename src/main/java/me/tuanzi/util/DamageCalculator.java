@@ -11,6 +11,8 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.server.level.ServerPlayer;
+import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
 import net.minecraft.nbt.CompoundTag;
 
 /**
@@ -43,6 +45,14 @@ public class DamageCalculator {
     public static float calculateDamage(float amount, DamageSource source, LivingEntity target) {
         float initialDamage = amount;
 
+        // 0.0 拾荒回廊队友全方位友伤免疫
+        if (target instanceof ServerPlayer targetPlayer && source.getEntity() instanceof ServerPlayer attackerPlayer) {
+            if (ScavengerTeamManager.areTeammates(attackerPlayer, targetPlayer)) {
+                me.tuanzi.util.ModLog.debug(attackerPlayer, targetPlayer, "【拾荒回廊】队伍友伤免疫：伤害来源与目标为同一队伍，伤害减免为 0.00。");
+                return 0.0f;
+            }
+        }
+
         // 0. 免疫火焰与岩浆伤害
         if (target.hasEffect(ModStatusEffects.HELL_FIRE) && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
             me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害计算完毕！触发地狱之火免疫，计算前伤害: " + String.format("%.2f", initialDamage) + "，计算后最终伤害: 0.00");
@@ -70,6 +80,25 @@ public class DamageCalculator {
         }
 
         // 1. 攻击者输出伤害乘数计算（加法累加模型）
+        // 听涛 (Wave Listener)：在水中或雨中投掷三叉戟，伤害每级提高10%/20%/30%；只增加投掷伤害，不增加近战伤害。
+        if (source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.arrow.ThrownTrident trident) {
+            ItemStack tridentWeapon = trident.getWeaponItem();
+            if (tridentWeapon != null && !tridentWeapon.isEmpty()) {
+                var enchRegistry = trident.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                var waveHolder = enchRegistry.getOrThrow(ModEnchantments.WAVE_LISTENER);
+                int waveLevel = EnchantmentHelper.getItemEnchantmentLevel(waveHolder, tridentWeapon);
+                if (waveLevel > 0) {
+                    boolean inWaterOrRain = trident.isInWaterOrRain()
+                        || (source.getEntity() != null && source.getEntity().isInWaterOrRain());
+                    if (inWaterOrRain) {
+                        float waveBonus = 0.10f * waveLevel; // 10%, 20%, 30%
+                        attackerMultiplier += waveBonus;
+                        me.tuanzi.util.ModLog.debug(source.getEntity(), target, "【听涛】水/雨中投掷三叉戟增伤生效（等级: " + waveLevel + "）！伤害提升 "
+                            + String.format(java.util.Locale.ROOT, "%.0f%%", waveBonus * 100.0f) + " (当前攻击乘数: " + String.format(java.util.Locale.ROOT, "%.2f", attackerMultiplier) + ")");
+                    }
+                }
+            }
+        }
         if (source.getEntity() instanceof LivingEntity attacker) {
             // 攻击者拥有“血怒”状态效果，攻击伤害乘算提升 40% (累加值 +0.4f)
             if (attacker.hasEffect(ModStatusEffects.BLOOD_RAGE)) {
@@ -790,7 +819,16 @@ public class DamageCalculator {
             int layers = amp + 1;
             float poisonMultiplier = layers * 0.03f;
             victimMultiplier += poisonMultiplier;
-            me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：受击者拥有蜂毒效果（层数: " + layers + "），受到的伤害增加 " + String.format("%.1f", poisonMultiplier * 100) + "% (当前受伤乘数累加值: " + String.format("%.2f", victimMultiplier) + ")。");
+        }
+
+        // 被攻击者拥有“鸿痕”标记，受到玩家造成的伤害每级提高 3%/6%/9%
+        if (target.hasEffect(ModStatusEffects.HONG_HEN) && source.getEntity() instanceof net.minecraft.world.entity.player.Player) {
+            var effect = target.getEffect(ModStatusEffects.HONG_HEN);
+            int markLevel = effect != null ? effect.getAmplifier() + 1 : 1;
+            float markBonus = 0.03f * markLevel; // 3%, 6%, 9%
+            victimMultiplier += markBonus;
+            me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：受击者拥有【鸿痕】标记（等级: " + markLevel + "），受到玩家伤害提升 "
+                + String.format(java.util.Locale.ROOT, "%.0f%%", markBonus * 100.0f) + " (当前受伤乘数累加值: " + String.format(java.util.Locale.ROOT, "%.2f", victimMultiplier) + ")。");
         }
 
         // 日冕核心 · 烈焰统领 黑石重盾防御联动减伤 (一阶段每存活 1 面盾提供 8.75% 伤害减免，4 面满额 35%；二阶段盾牌转化为切削利刃不再具有免伤)
@@ -839,6 +877,42 @@ public class DamageCalculator {
 
         float finalDamage = amount * attackerMultiplier * victimMultiplier;
 
+        // 【旅者】(Wayfarer) 附魔减免探险伤害逻辑 (鞘翅撞击 / 仙人掌 / 末影珍珠 / 蜜蜂攻击 / 摔落)
+        ItemStack legsStack = target.getItemBySlot(EquipmentSlot.LEGS);
+        if (!legsStack.isEmpty() && finalDamage > 0.0f) {
+            var enchRegistry = target.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            var wayfarerEnch = enchRegistry.getOrThrow(ModEnchantments.WAYFARER);
+            int wayfarerLevel = EnchantmentHelper.getItemEnchantmentLevel(wayfarerEnch, legsStack);
+            if (wayfarerLevel > 0) {
+                float flatReduction = 0.0f;
+                String damageName = "";
+                if (source.is(DamageTypes.FLY_INTO_WALL)) {
+                    flatReduction = getWayfarerFlyIntoWallReduction(wayfarerLevel);
+                    damageName = "鞘翅撞击伤害";
+                } else if (source.is(DamageTypes.CACTUS)) {
+                    flatReduction = getWayfarerCactusReduction(wayfarerLevel);
+                    damageName = "仙人掌伤害";
+                } else if (source.is(DamageTypes.ENDER_PEARL)) {
+                    flatReduction = getWayfarerEnderPearlReduction(wayfarerLevel);
+                    damageName = "末影珍珠传送伤害";
+                } else if (source.is(DamageTypes.STING) || source.getEntity() instanceof net.minecraft.world.entity.animal.bee.Bee) {
+                    flatReduction = getWayfarerBeeAttackReduction(wayfarerLevel);
+                    damageName = "蜜蜂攻击伤害";
+                } else if (source.is(net.minecraft.tags.DamageTypeTags.IS_FALL)) {
+                    flatReduction = getWayfarerFallReduction(wayfarerLevel);
+                    damageName = "摔落伤害";
+                }
+
+                if (flatReduction > 0.0f) {
+                    float beforeReduction = finalDamage;
+                    finalDamage = Math.max(0.0f, finalDamage - flatReduction);
+                    me.tuanzi.util.ModLog.debug(source.getEntity(), target, "【旅者】附魔生效（等级: " + wayfarerLevel + "）！减免" + damageName + " "
+                            + String.format(java.util.Locale.ROOT, "%.2f", flatReduction) + " 点，减免前伤害: "
+                            + String.format(java.util.Locale.ROOT, "%.2f", beforeReduction) + "，减免后最终伤害: "
+                            + String.format(java.util.Locale.ROOT, "%.2f", finalDamage));
+                }
+            }
+        }
 
         // 蜂毒引爆与消耗处理
         if (target.hasEffect(ModStatusEffects.BEE_POISON) && !(source instanceof me.tuanzi.util.BeeStingExplosionDamageSource)) {
@@ -984,5 +1058,244 @@ public class DamageCalculator {
             }
         });
         return Math.max(1.0f, dmgBox[0]);
+    }
+
+    /**
+     * 计算古卷附魔-屹立不倒所需的经验点数 E(x, y)
+     * E(x,y) = max(300 - 50 * y, floor( 1 + 30969 * [ min(t, t0)^q + (1 - t0^q) * max(0, (t - t0) / (1 - t0))^p ] ))
+     * 其中 t = x / (15y), t0 = 2 / 15, q = 2.0, p = 1.0
+     * 判定与消耗均具有保底最小值: 300 - 50 * level
+     *
+     * @param x 致死超出伤害值 (玩家承受伤害中超出 (health - 1) 的额外伤害部分)
+     * @param y 附魔等级 (1 - 5)
+     * @return 触发免死所需的经验点数 E
+     */
+    public static long calcStandingFirmExperience(float x, int y) {
+        if (y <= 0) {
+            return Long.MAX_VALUE;
+        }
+        double t = (double) Math.max(0.0f, x) / (15.0 * y);
+        double t0 = 2.0 / 15.0;
+        double t0Squared = t0 * t0;
+        double low = Math.pow(Math.min(t, t0), 2.0);
+        double high = Math.max(0.0, (t - t0) / (1.0 - t0));
+        double f = low + (1.0 - t0Squared) * high;
+        long rawExp = (long) Math.floor(1.0 + 30969.0 * f + 1e-10);
+        long minExp = Math.max(0L, 300L - 50L * y);
+        return Math.max(minExp, rawExp);
+    }
+
+    /**
+     * 根据玩家持有的总经验点数与附魔等级，反解当前经验最多可抵挡的致死超出伤害量 x
+     * (使得 E(x, y) < totalExp)
+     *
+     * @param totalExp 玩家当前总经验点数
+     * @param level 附魔等级 (1 - 5)
+     * @return 最多可抵挡的致死超出伤害量
+     */
+    public static float calcMaxBlockableDamage(int totalExp, int level) {
+        if (level <= 0) {
+            return 0.0f;
+        }
+        long minExp = Math.max(0L, 300L - 50L * level);
+        if (totalExp <= minExp) {
+            return 0.0f;
+        }
+        long eCap = totalExp - 1;
+        double t0 = 2.0 / 15.0;
+        double t0Squared = t0 * t0; // 4.0 / 225.0
+        // 临界 E 点数 (x = 2y 时) 为 551
+        if (eCap < 551) {
+            double f = (double) eCap / 30969.0;
+            double t = Math.sqrt(Math.min(f, t0Squared));
+            return (float) (t * 15.0 * level);
+        } else {
+            double f = (double) eCap / 30969.0;
+            double t = (15.0 * f + 2.0) / 17.0;
+            return (float) (t * 15.0 * level);
+        }
+    }
+
+    /**
+     * 获取玩家当前持有的全部经验点数（等级折算总点数 + 当前经验条进度点数）
+     */
+    public static int getTotalExperiencePoints(net.minecraft.world.entity.player.Player player) {
+        if (player == null) {
+            return 0;
+        }
+        int levelExp = getExperienceForLevel(player.experienceLevel);
+        int progressExp = Math.round(player.experienceProgress * player.getXpNeededForNextLevel());
+        return levelExp + progressExp;
+    }
+
+    /**
+     * 获取达到指定等级所需的累计经验总点数（原版公式）
+     */
+    public static int getExperienceForLevel(int level) {
+        if (level <= 0) {
+            return 0;
+        }
+        if (level <= 16) {
+            return level * level + 6 * level;
+        } else if (level <= 31) {
+            return (int) (2.5 * level * level - 40.5 * level + 360);
+        } else {
+            return (int) (4.5 * level * level - 162.5 * level + 2220);
+        }
+    }
+
+    /**
+     * 古卷附魔-屹立不倒 (Ancient Scroll - Standing Firm)
+     * 当玩家受到致死伤害时，有 等级 * 20% 概率进行判定。
+     * 若玩家当前持有的总经验点数 > E(x, y)，则消耗 E 点经验，免疫超额致死伤害，使玩家保留 1.0F 生命值。
+     * 判定早于不死药水/不死图腾。
+     *
+     * @param dmg 即将从生命值中扣除的伤害
+     * @param source 伤害来源
+     * @param player 受击玩家
+     * @return 调整后的伤害（若触发则返回 player.getHealth() - 1.0F）
+     */
+    public static float applyStandingFirmProtection(float dmg, DamageSource source, net.minecraft.world.entity.player.Player player) {
+        if (player == null || player.isDeadOrDying()) {
+            return dmg;
+        }
+
+        float currentHealth = player.getHealth();
+        // 如果伤害不足以致死，或者玩家生命值异常，直接返回
+        if (dmg < currentHealth || currentHealth <= 0.0f) {
+            return dmg;
+        }
+
+        // 排除绕过无敌与保护的特殊伤害（例如掉出世界/虚空伤害、/kill 等拥有 BYPASSES_INVULNERABILITY 标签）
+        if (source != null && source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】伤害来源绕过无敌保护 (BYPASSES_INVULNERABILITY)，无法触发免死。");
+            return dmg;
+        }
+
+        // 检查胸甲上的附魔等级
+        var registry = player.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        var standingFirmEnch = registry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_STANDING_FIRM);
+        ItemStack chestItem = player.getItemBySlot(EquipmentSlot.CHEST);
+        int level = EnchantmentHelper.getItemEnchantmentLevel(standingFirmEnch, chestItem);
+
+        if (level <= 0) {
+            return dmg;
+        }
+
+        // 1. 概率判定：等级 * 20%
+        float chance = Math.min(1.0f, level * 0.20f);
+        float roll = player.getRandom().nextFloat();
+        me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】检测到致死伤害！等级: " + level + "，触发概率: " + String.format("%.1f%%", chance * 100) + "，随机骰值: " + String.format("%.4f", roll));
+
+        if (roll >= chance) {
+            me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】概率判定未通过，免死保护未触发。");
+            return dmg;
+        }
+
+        // 2. 计算致死伤害值 x：使玩家保留 1 血，受到 health - 1 伤害，免疫额外伤害 x
+        float allowedDamage = Math.max(0.0f, currentHealth - 1.0f);
+        float x = dmg - allowedDamage;
+
+        // 3. 计算所需经验点数 E(x, y)
+        long requiredExp = calcStandingFirmExperience(x, level);
+
+        // 4. 计算玩家当前持有的总经验点数
+        int totalExp = getTotalExperiencePoints(player);
+        long minExp = Math.max(0L, 300L - 50L * level);
+        me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】致死超出伤害 x: " + String.format("%.2f", x) + "，所需经验 E: " + requiredExp + " (保底最小值: " + minExp + ")，玩家当前总经验点数: " + totalExp);
+
+        if (totalExp <= requiredExp) {
+            me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】总经验不足（需 > " + requiredExp + "，持有 " + totalExp + "），无法触发。");
+            return dmg;
+        }
+
+        // 5. 触发成功：扣除经验
+        player.giveExperiencePoints((int) -requiredExp);
+        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+            serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetExperiencePacket(
+                serverPlayer.experienceProgress,
+                serverPlayer.totalExperience,
+                serverPlayer.experienceLevel
+            ));
+        }
+
+        // 6. 赋予受击无敌帧与保护
+        player.damageCooldownTime = 20;
+
+        // 7. 视听反馈：专属音效与粒子
+        playStandingFirmEffects(player);
+
+        me.tuanzi.util.ModLog.debug(source.getEntity(), player, "【古卷附魔-屹立不倒】成功免死！已扣除 " + requiredExp + " 点经验，将伤害从 " + String.format("%.2f", dmg) + " 限制为 " + String.format("%.2f", allowedDamage) + "，保留生命值 1.0F。");
+
+        return allowedDamage;
+    }
+
+    private static void playStandingFirmEffects(net.minecraft.world.entity.player.Player player) {
+        var level = player.level();
+        // 播放专属音效（沉重格挡 + 魔法共鸣 + 铁砧落地音，绝不触发图腾特效）
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+            SoundEvents.SHIELD_BLOCK,
+            net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.8F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+            SoundEvents.ENCHANTMENT_TABLE_USE,
+            net.minecraft.sounds.SoundSource.PLAYERS, 1.2F, 1.0F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+            SoundEvents.ANVIL_LAND,
+            net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.6F);
+
+        // 服务端生成专属粒子（古卷附魔紫色/传送门符文与光辉）
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANT,
+                player.getX(), player.getY() + 1.0, player.getZ(), 45, 0.6, 0.8, 0.6, 0.5);
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                player.getX(), player.getY() + 1.0, player.getZ(), 35, 0.6, 0.8, 0.6, 0.2);
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.GLOW,
+                player.getX(), player.getY() + 1.0, player.getZ(), 25, 0.5, 0.6, 0.5, 0.1);
+        }
+    }
+
+    /**
+     * 计算【旅者】附魔针对鞘翅撞击伤害的减免数值。
+     * 公式: 2*level + 2*(level-1)
+     */
+    public static float getWayfarerFlyIntoWallReduction(int level) {
+        if (level <= 0) return 0.0f;
+        return 2.0f * level + 2.0f * (level - 1);
+    }
+
+    /**
+     * 计算【旅者】附魔针对仙人掌伤害的减免数值。
+     * 公式: 2*level
+     */
+    public static float getWayfarerCactusReduction(int level) {
+        if (level <= 0) return 0.0f;
+        return 2.0f * level;
+    }
+
+    /**
+     * 计算【旅者】附魔针对末影珍珠传送伤害的减免数值。
+     * 公式: 2*level
+     */
+    public static float getWayfarerEnderPearlReduction(int level) {
+        if (level <= 0) return 0.0f;
+        return 2.0f * level;
+    }
+
+    /**
+     * 计算【旅者】附魔针对蜜蜂攻击伤害的减免数值。
+     * 公式: 2*level
+     */
+    public static float getWayfarerBeeAttackReduction(int level) {
+        if (level <= 0) return 0.0f;
+        return 2.0f * level;
+    }
+
+    /**
+     * 计算【旅者】附魔针对摔落伤害的减免数值。
+     * 公式: 1.5*(level + 1)
+     */
+    public static float getWayfarerFallReduction(int level) {
+        if (level <= 0) return 0.0f;
+        return 1.5f * (level + 1);
     }
 }

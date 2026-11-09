@@ -133,9 +133,10 @@ public class BlueprintCommand {
             }
         }
 
-        // 捕获实体 (排除玩家)
+        // 捕获实体 (排除玩家与环境临时实体)
         net.minecraft.world.phys.AABB boundingBox = new net.minecraft.world.phys.AABB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
-        List<net.minecraft.world.entity.Entity> entities = level.getEntities((net.minecraft.world.entity.Entity)null, boundingBox, entity -> !(entity instanceof net.minecraft.world.entity.player.Player));
+        List<net.minecraft.world.entity.Entity> entities = level.getEntities((net.minecraft.world.entity.Entity)null, boundingBox,
+            entity -> !me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(entity));
         ListTag entitiesTag = new ListTag();
         for (net.minecraft.world.entity.Entity entity : entities) {
             net.minecraft.world.level.storage.TagValueOutput valueOutput = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess());
@@ -154,6 +155,18 @@ public class BlueprintCommand {
             relativePos.add(net.minecraft.nbt.DoubleTag.valueOf(relY));
             relativePos.add(net.minecraft.nbt.DoubleTag.valueOf(relZ));
             entityNbt.put("Pos", relativePos);
+
+            // 附着类实体转换为相对 block_pos
+            if (entity instanceof net.minecraft.world.entity.decoration.BlockAttachedEntity attached) {
+                BlockPos attachedPos = attached.getPos();
+                if (attachedPos != null) {
+                    entityNbt.putIntArray("block_pos", new int[]{
+                        attachedPos.getX() - minX,
+                        attachedPos.getY() - minY,
+                        attachedPos.getZ() - minZ
+                    });
+                }
+            }
 
             entitiesTag.add(entityNbt);
         }

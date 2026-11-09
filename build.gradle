@@ -28,6 +28,8 @@ repositories {
 		name = "Modrinth"
 		url = "https://api.modrinth.com/maven"
 	}
+	maven { url = 'https://maven.coolerpromc.com/releases/' }
+
 }
 
 dependencies {
@@ -48,12 +50,30 @@ dependencies {
 
 	// GeckoLib
 	implementation "maven.modrinth:geckolib:${project.geckolib_version}"
+
+	// Litematica & MaLiLib integration
+	compileOnly "maven.modrinth:malilib:${project.malilib_version}"
+	compileOnly "maven.modrinth:litematica:${project.litematica_version}"
+
+	// Testing
+	testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+	testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.2"
+	// MCP mctest
+	localRuntime("com.coolerpromc.mctest:mctest-fabric-26.3:26.3.0.3") { transitive = false }
+
 }
 
 loom {
-
-
-
+	runs {
+		gametest {
+			inherit server
+			name "Game Test"
+			vmArg "-Dfabric-api.gametest"
+			vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get().asFile}/junit.xml"
+			runDir "run/gametest"
+		}
+	}
 }
 
 fabricApi {
@@ -123,4 +143,8 @@ publishing {
 		// The repositories here will be used for publishing your artifact, not for
 		// retrieving dependencies.
 	}
+}
+
+test {
+	useJUnitPlatform()
 }

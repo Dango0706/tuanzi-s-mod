@@ -16,6 +16,18 @@ Use PowerShell syntax exclusively (`./gradlew ...`, not bash `./gradlew` or sh).
   ./gradlew clean
   ```
 
+## Testing & Verification
+- Run Tests (Fabric Loader JUnit):
+  ```powershell
+  ./gradlew test
+  ```
+- Run GameTests:
+  ```powershell
+  ./gradlew runGametest
+  ```
+- Run MCTest MCP:
+  Use MCTest MCP tools (`mc_launch`, `mc_wait_ready`, `mc_world_create`, `mc_screenshot`, `mc_close_all`, etc.) for in-game dynamic E2E testing.
+
 ## Running the Game
 - Launch Client:
   ```powershell

@@ -8,7 +8,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class ItemStackNbtHelper {
     public static ItemStack read(HolderLookup.Provider registries, CompoundTag tag) {
-        if (tag == null || tag.isEmpty()) {
+        if (registries == null || tag == null || tag.isEmpty()) {
             return ItemStack.EMPTY;
         }
         return ItemStack.OPTIONAL_CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, registries), tag)

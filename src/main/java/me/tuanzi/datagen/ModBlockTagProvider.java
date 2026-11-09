@@ -22,12 +22,22 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
             .add(ModBlocks.SOUL_MERCHANT_STATION.builtInRegistryHolder().key())
             .add(ModBlocks.BLUEPRINT_CANNON.builtInRegistryHolder().key())
             .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
-            .add(ModBlocks.PLAYER_SIMULATOR.builtInRegistryHolder().key());
+            .add(ModBlocks.PLAYER_SIMULATOR.builtInRegistryHolder().key())
+            .add(ModBlocks.BLACKBOX_CORE_CASE.builtInRegistryHolder().key())
+            .add(ModBlocks.BASE_STASH_CABINET.builtInRegistryHolder().key())
+            .add(ModBlocks.BASE_UPGRADE_STATION.builtInRegistryHolder().key());
 
         // 鉴于贸易站是高级黑科技设备且有防爆性能，设定其需要铁镐及以上工具挖掘
         builder(BlockTags.NEEDS_IRON_TOOL)
             .add(ModBlocks.SOUL_MERCHANT_STATION.builtInRegistryHolder().key())
             .add(ModBlocks.BLUEPRINT_CANNON.builtInRegistryHolder().key())
-            .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key());
+            .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
+            .add(ModBlocks.BLACKBOX_CORE_CASE.builtInRegistryHolder().key())
+            .add(ModBlocks.BASE_STASH_CABINET.builtInRegistryHolder().key())
+            .add(ModBlocks.BASE_UPGRADE_STATION.builtInRegistryHolder().key());
+
+        builder(me.tuanzi.init.ModBlockTags.SNOW_STRIDER_BLOCKS)
+            .addOptionalTag(BlockTags.SNOW)
+            .addOptionalTag(BlockTags.ICE);
     }
 }

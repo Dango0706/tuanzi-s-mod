@@ -12,7 +12,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.TraceableEntity;
+import net.minecraft.world.entity.projectile.Projectile;
+import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -368,6 +375,80 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                 serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE,
                         player.getX(), player.getY() + 1.0, player.getZ(), 8, 0.2, 0.3, 0.2, 0.05);
                 me.tuanzi.util.ModLog.debug(null, player, "【日冕过热缓解】玩家饮用药水/水瓶！降低 30 点过热值！");
+            }
+        }
+    }
+
+    @Inject(
+        method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z",
+        at = @At("HEAD"),
+        cancellable = true
+    )
+    private void tuanzis_mod$cancelTeamHarmfulEffect(
+        MobEffectInstance newEffect,
+        Entity source,
+        CallbackInfoReturnable<Boolean> cir
+    ) {
+        if ((Object) this instanceof ServerPlayer targetPlayer && source != null && newEffect != null) {
+            boolean isHarmful = newEffect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
+                    || newEffect.is(MobEffects.GLOWING);
+            if (isHarmful) {
+                ServerPlayer attackerPlayer = tuanzis_mod$resolveSourcePlayer(source);
+                if (attackerPlayer != null && (ScavengerTeamManager.areTeammates(attackerPlayer, targetPlayer) || ScavengerTeamManager.isSameTeam(attackerPlayer, targetPlayer))) {
+                    me.tuanzi.util.ModLog.debug(attackerPlayer, targetPlayer, "【拾荒回廊】队伍Debuff免疫：已拦截队友来源的有害药水效果: " + newEffect.getEffect().value().getDisplayName().getString());
+                    cir.setReturnValue(false);
+                }
+            }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.Unique
+    private static ServerPlayer tuanzis_mod$resolveSourcePlayer(Entity source) {
+        if (source == null) {
+            return null;
+        }
+        if (source instanceof ServerPlayer player) {
+            return player;
+        }
+        if (source instanceof TraceableEntity traceable) {
+            Entity owner = traceable.getOwner();
+            if (owner instanceof ServerPlayer player) {
+                return player;
+            }
+            if (owner instanceof TraceableEntity nestedTraceable && nestedTraceable.getOwner() instanceof ServerPlayer player) {
+                return player;
+            }
+        }
+        if (source instanceof Projectile projectile) {
+            Entity owner = projectile.getOwner();
+            if (owner instanceof ServerPlayer player) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    @Inject(method = "doPush", at = @At("HEAD"), cancellable = true)
+    private void tuanzis_mod$cancelTeammateDoPush(Entity entity, CallbackInfo ci) {
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (me.tuanzi.world.scavenger.team.ScavengerTeamCollisionHelper.areTeammates(self, entity)) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
+    private void tuanzis_mod$onAddEffect(MobEffectInstance newEffect, Entity source, CallbackInfoReturnable<Boolean> cir) {
+        if (newEffect != null && newEffect.is(MobEffects.POISON) && source instanceof net.minecraft.world.entity.animal.bee.Bee) {
+            LivingEntity self = (LivingEntity) (Object) this;
+            net.minecraft.world.item.ItemStack legsStack = self.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.LEGS);
+            if (!legsStack.isEmpty()) {
+                var enchRegistry = self.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                var wayfarerEnch = enchRegistry.getOrThrow(me.tuanzi.init.ModEnchantments.WAYFARER);
+                int level = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(wayfarerEnch, legsStack);
+                if (level > 2) {
+                    me.tuanzi.util.ModLog.debug(source, self, "【旅者】附魔生效（等级: " + level + " > 2）！免疫蜜蜂攻击施加的中毒效果。");
+                    cir.setReturnValue(false);
+                }
             }
         }
     }

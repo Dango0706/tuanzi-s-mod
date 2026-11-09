@@ -13,6 +13,7 @@
     - 为了支持不重启修改 Mixin，请在 IDE 运行配置的 VM 参数中手动添加：`-Dmixin.hotSwap=true`
     - 若使用 JBR，可额外添加 `-XX:+AllowEnhancedClassRedefinition` 以开启增强类重定义。
 - **创造模式集成:** 每次创作的物品、方块、附魔（包括其附魔书）等，均必须放进对应的创造模式物品栏中，确保玩家能在创造模式直接获取。
+- **拾荒回廊创造模式物品栏:** 为“拾荒回廊”系统设立了专属创造模式物品栏（`scavenger_corridor_tab`）。凡是制作“拾荒回廊”系统的道具、方块或相关物品时，必须统一归类并注册到该专属创造模式物品栏中，禁止随意混入通用物品栏。
 - **JEI 支持:** 每次新增的物品/附魔等，均需为其注册对应的 JEI 信息页，清晰展示该物品/附魔的用途与规则。
 - **更新日志更新:** 每次新增或重大调整的内容，均必须及时更新到对应的模组更新日志（如 `Update_log/` 下的中英文 md 文件）中。
 - **模型设计规范:** 每次需要制作模型（包括方块、生物、道具模型等）时,禁止使用无头模式,生成好后使用ask_question工具询问用户是否满意，**必须严格参考并遵守项目根目录下的 `blockbench.md` 文件中定义的开发规范**。严格禁止写实主义、平滑圆弧、高面数抛光，必须且仅使用低多边形阶梯状立方体构造，确保符合 Minecraft 的经典原版风格。
@@ -37,6 +38,12 @@
 - **伤害计算规范**: 模组内所有自定义伤害或受到伤害的计算与加成调整，必须严格使用 `me.tuanzi.util.DamageCalculator` 类进行（支持加法累加模型），禁止在各处分散编写 ad-hoc 的伤害修改逻辑，以确保伤害计算的统一与可维护性。
 - **禁止删除文件**: 禁止你使用任何方式（包括工具、所有命令、各种脚本等）删除任何文件。需要删除文件时，将其重命名为原来的名字后缀加上 `.bak`，如 `xxx.png` -> `xxx.png.bak`。
 - **逻辑与伤害计算调试日志**: 将所有逻辑性的计算/获得效果/伤害计算/概率计算等全部使用 `me.tuanzi.util.ModLog` 的 `debug` 方法进行输出，便于调试和寻找问题。
+- **分层自动化测试与交付规范 (Testing & Delivery Conventions)**: 代码编写完毕后，必须遵循**由浅入深、先代码后真机**的分层测试流程，直至全部测试通过后方可向用户交付，严禁带错交付：
+  - **1. Fabric Loader JUnit 单元/逻辑测试**: 统一置于 `src/test/java` 下，优先针对纯算法、数学公式、数据结构、NBT 解析、伤害计算公式（如 `DamageCalculator`）等编写并运行单元测试（`./gradlew test`），极速验证底层核心计算与基础逻辑是否有误。
+  - **2. Minecraft GameTest 机制/结构测试**: 针对方块状态转变、红石信号、掉落物机制、实体基础 AI、结构生成等原版交互机制，使用 GameTest 框架编写并运行批处理测试（`./gradlew runGametest`），快速排查基础游戏机制是否有误。
+  - **3. MCTest MCP 最终端到端动态交互测试**: 在基础逻辑与机制测试通过后，最后全面采用 `mctest` MCP 工具链（如 `mc_launch`、`mc_world_create`/`mc_world_join`、`mc_teleport`、`mc_click_widget`、`mc_interact_entity`、`mc_screenshot` 等）在真实游戏环境中模拟玩家操作、GUI 交互、技能释放与视觉渲染核验。测试执行完毕或发生异常时，**必须调用 `mc_close_all` 及时清理释放游戏进程**。
+  - **测试截图前置调整**: 在使用 MCTest MCP 截取测试结果图片前，**必须先调整好玩家位置（Position/Coordinates）、视角朝向与角度（Pitch/Yaw 或 Look At）以及飞行状态（Flying）**，确保被测目标（方块、实体、界面、粒子等）处于最佳可视观察范围，杜绝视线遮挡、距离过远或视角偏离。
+  - **交付标准**: 底层测试（JUnit/GameTest）无失败断言，且最终在 MCTest MCP 真实游戏环境中端到端验证通过、功能完全符合预期、截图核对无误且客户端无未捕获异常或崩溃后，方可向用户交付。
 
 ## Project Overview
 **tuanzi's_mod** is a Minecraft mod built on the **Fabric Loader** for Minecraft version 26.3 (as specified in `gradle.properties`). It utilizes the **Fabric API** and follows the standard Fabric mod structure.
@@ -70,6 +77,16 @@ The project uses the Gradle wrapper (`./gradlew`) for all tasks.
   ```powershell
   ./gradlew clean
   ```
+- **Run Tests (Fabric Loader JUnit):**
+  ```powershell
+  ./gradlew test
+  ```
+- **Run GameTests (GameTest Server):**
+  ```powershell
+  ./gradlew runGametest
+  ```
+- **Run MCTest MCP (Dynamic E2E Testing):**
+  全面使用 MCTest MCP 工具链（如 `mc_launch`, `mc_wait_ready`, `mc_world_create`, `mc_teleport`, `mc_screenshot`, `mc_close_all` 等）进行游戏内端到端自动化与动态测试。
 
 ## Development Conventions
 - **Naming:** Mod ID `tuanzis_mod` should be used for assets and registration.
@@ -82,6 +99,7 @@ The project uses the Gradle wrapper (`./gradlew`) for all tasks.
 ## Project Structure
 - `src/main/java`: Source code.
 - `src/main/resources`: Mod configuration, assets, and data.
+- `src/test/java`: Test source code (Fabric Loader JUnit & GameTest).
 - `build.gradle`: Project dependencies and build configuration.
 - `gradle.properties`: Versioning and environment settings.
 - `fabric.mod.json`: Mod metadata and entry points.

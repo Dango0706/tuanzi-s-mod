@@ -5,6 +5,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -142,6 +143,46 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
                 this.setXRot(xRot);
                 this.yRotO = yRot;
                 this.xRotO = xRot;
+            }
+        }
+    }
+
+    @Inject(method = "onHitEntity", at = @At("TAIL"))
+    private void tuanzis_mod$applyReturningSwanEffect(net.minecraft.world.phys.EntityHitResult hitResult, CallbackInfo ci) {
+        if (this.level().isClientSide()) return;
+        Entity target = hitResult.getEntity();
+        if (!(target instanceof net.minecraft.world.entity.LivingEntity livingTarget)) return;
+
+        AbstractArrow self = (AbstractArrow) (Object) this;
+        ItemStack weapon = self.getWeaponItem();
+        if (weapon != null && !weapon.isEmpty()) {
+            var enchRegistry = self.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+            var swanHolder = enchRegistry.getOrThrow(me.tuanzi.init.ModEnchantments.RETURNING_SWAN);
+            int level = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(swanHolder, weapon);
+            if (level > 0) {
+                long currentTime = self.level().getGameTime();
+                Entity owner = self.getOwner();
+                java.util.UUID cooldownKey = owner != null ? owner.getUUID() : self.getUUID();
+                long nextAvailableTime = me.tuanzi.util.ReturningSwanCooldownTracker.getNextAvailableTime(cooldownKey);
+                if (currentTime >= nextAvailableTime) {
+                    // 冷却：8/6/4秒 -> (10 - 2 * level) * 20 ticks
+                    int cooldownTicks = (10 - 2 * level) * 20;
+                    me.tuanzi.util.ReturningSwanCooldownTracker.setNextAvailableTime(cooldownKey, currentTime + cooldownTicks);
+
+                    // 持续时间：3/5/7秒 -> (1 + 2 * level) * 20 ticks
+                    int durationTicks = (1 + 2 * level) * 20;
+                    livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        me.tuanzi.init.ModStatusEffects.HONG_HEN,
+                        durationTicks,
+                        level - 1
+                    ), owner);
+
+                    me.tuanzi.util.ModLog.debug(owner, livingTarget, "【归鸿】箭矢命中生物！施加【鸿痕】状态效果（持续 %d 秒，等级: %d，进入冷却 %d 秒）",
+                        1 + 2 * level, level, 10 - 2 * level);
+                } else {
+                    me.tuanzi.util.ModLog.debug(owner, livingTarget, "【归鸿】触发受限：处于冷却中（剩余 %d ticks）",
+                        nextAvailableTime - currentTime);
+                }
             }
         }
     }

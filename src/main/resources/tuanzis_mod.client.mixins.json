@@ -1,6 +1,7 @@
 {
 	"required": true,
 	"package": "me.tuanzi.mixin.client",
+	"plugin": "me.tuanzi.mixin.client.LitematicaClientMixinPlugin",
 	"compatibilityLevel": "JAVA_25",
 	"refmap": "tuanzis_mod.refmap.json",
 	"mixins": [
@@ -11,7 +12,10 @@
 		"MinecraftMixin",
 		"AnvilScreenMixin",
 		"EnchantmentScreenMixin",
-		"LocalPlayerMixin"
+		"LocalPlayerMixin",
+		"InventoryScreenMixin",
+		"LitematicaMaterialListUtilsMixin",
+		"MalilibInventoryUtilsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

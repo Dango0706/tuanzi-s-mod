@@ -90,6 +90,22 @@ public class GachaHistoryMenu extends ChestMenu {
                     if (entry.getPoolName().contains("国庆") || entry.getPoolName().contains("National")) {
                         filtered.add(entry);
                     }
+                } else if ("halloween".equals(targetPoolId)) {
+                    if (entry.getPoolName().contains("万圣") || entry.getPoolName().contains("Halloween")) {
+                        filtered.add(entry);
+                    }
+                } else if ("christmas".equals(targetPoolId)) {
+                    if (entry.getPoolName().contains("圣诞") || entry.getPoolName().contains("Christmas")) {
+                        filtered.add(entry);
+                    }
+                } else if ("new_year".equals(targetPoolId)) {
+                    if (entry.getPoolName().contains("元旦") || entry.getPoolName().contains("New Year")) {
+                        filtered.add(entry);
+                    }
+                } else if ("prime_minister_new_year".equals(targetPoolId)) {
+                    if (entry.getPoolName().contains("新年") || entry.getPoolName().contains("首相") || entry.getPoolName().contains("Prime Minister")) {
+                        filtered.add(entry);
+                    }
                 } else {
                     if (entry.getPoolName().contains("限定") || entry.getPoolName().contains("樱") || entry.getPoolName().contains("Sakura") || entry.getPoolName().contains("Moon")) {
                         filtered.add(entry);

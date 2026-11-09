@@ -19,6 +19,38 @@
     {
       "id": "tuanzis_mod:finality",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:ranged_strike",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:satiation",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:void_anchor",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:trading_master",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:echolocation",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:moon_embrace",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:dormant_repair",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:metabolism",
+      "required": false
     }
   ]
 }

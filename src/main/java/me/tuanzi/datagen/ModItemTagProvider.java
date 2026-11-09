@@ -57,5 +57,15 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
             .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
             .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
             .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
+
+        // 注册经验亲和适用的斧、镐、锄标签
+        builder(me.tuanzi.init.ModItemTags.AXE_PICKAXE_HOE_ENCHANTABLE)
+            .addOptionalTag(ItemTags.AXES)
+            .addOptionalTag(ItemTags.PICKAXES)
+            .addOptionalTag(ItemTags.HOES);
+
+        // 注册鞘翅专属附魔标签
+        builder(me.tuanzi.init.ModItemTags.ELYTRA_ENCHANTABLE)
+            .add(net.minecraft.world.item.Items.ELYTRA.builtInRegistryHolder().key());
     }
 }

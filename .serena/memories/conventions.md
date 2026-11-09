@@ -19,3 +19,10 @@
 
 ## Safety & File Maintenance
 - NEVER delete files. Always rename with a `.bak` extension (e.g. `file.png.bak`).
+
+## Testing Matrix & Delivery Standards
+- Three Testing Tiers:
+  1. Fabric Loader JUnit (`./gradlew test`): Unit/logic/algorithm tests (DamageCalculator, math, NBT).
+  2. Minecraft GameTest (`./gradlew runGametest`): Block states, structures, entity AI, automated batch testing.
+  3. MCTest MCP: Interactive E2E player simulation, GUI/screen clicking, screenshot/visual testing, network sync. Always call `mc_close_all` after testing.
+- Combination Requirement: If a single test method cannot completely cover the written code, combine multiple test methods until all features are verified before delivery.

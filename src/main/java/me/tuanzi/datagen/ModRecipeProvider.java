@@ -12,7 +12,10 @@ import net.minecraft.world.item.Items;
 import net.minecraft.tags.ItemTags;
 
 import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.world.item.crafting.AxeStripRecipe;
 import me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.item.ItemStackTemplate;
@@ -372,9 +375,60 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     BrewingRecipeBuilder.brewingMix(container, ModPotions.ADRENALINE_POTION, Items.GLOWSTONE_DUST, ModPotions.ADRENALINE_POTION_II).save(exporter);
                     BrewingRecipeBuilder.brewingMix(container, ModPotions.ADRENALINE_POTION, Items.REDSTONE, ModPotions.LONG_ADRENALINE_POTION).save(exporter);
                 }
+
+                // 斧头 + 木头/原木 => 对应去皮原木/去皮木块（斧头消耗 1 点耐久）
+                var axeTag = registryLookup.lookupOrThrow(Registries.ITEM).getOrThrow(ItemTags.AXES);
+                Ingredient axeIngredient = Ingredient.of(axeTag);
+
+                List<StripPair> stripPairs = List.of(
+                    new StripPair(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG, "oak_log"),
+                    new StripPair(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD, "oak_wood"),
+                    new StripPair(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG, "spruce_log"),
+                    new StripPair(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD, "spruce_wood"),
+                    new StripPair(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG, "birch_log"),
+                    new StripPair(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD, "birch_wood"),
+                    new StripPair(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG, "jungle_log"),
+                    new StripPair(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, "jungle_wood"),
+                    new StripPair(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG, "acacia_log"),
+                    new StripPair(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD, "acacia_wood"),
+                    new StripPair(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG, "dark_oak_log"),
+                    new StripPair(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD, "dark_oak_wood"),
+                    new StripPair(Blocks.MANGROVE_LOG, Blocks.STRIPPED_MANGROVE_LOG, "mangrove_log"),
+                    new StripPair(Blocks.MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD, "mangrove_wood"),
+                    new StripPair(Blocks.CHERRY_LOG, Blocks.STRIPPED_CHERRY_LOG, "cherry_log"),
+                    new StripPair(Blocks.CHERRY_WOOD, Blocks.STRIPPED_CHERRY_WOOD, "cherry_wood"),
+                    new StripPair(Blocks.PALE_OAK_LOG, Blocks.STRIPPED_PALE_OAK_LOG, "pale_oak_log"),
+                    new StripPair(Blocks.PALE_OAK_WOOD, Blocks.STRIPPED_PALE_OAK_WOOD, "pale_oak_wood"),
+                    new StripPair(Blocks.POPLAR_LOG, Blocks.STRIPPED_POPLAR_LOG, "poplar_log"),
+                    new StripPair(Blocks.POPLAR_WOOD, Blocks.STRIPPED_POPLAR_WOOD, "poplar_wood"),
+                    new StripPair(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, "crimson_stem"),
+                    new StripPair(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE, "crimson_hyphae"),
+                    new StripPair(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, "warped_stem"),
+                    new StripPair(Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE, "warped_hyphae"),
+                    new StripPair(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK, "bamboo_block")
+                );
+
+                for (StripPair pair : stripPairs) {
+                    ItemStackTemplate stripResult = new ItemStackTemplate(pair.output().asItem(), 1);
+                    Recipe.CommonInfo stripInfo = new Recipe.CommonInfo(true);
+                    CraftingRecipe.CraftingBookInfo stripBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "stripped_wood");
+                    AxeStripRecipe stripRecipe = new AxeStripRecipe(
+                        stripInfo,
+                        stripBook,
+                        stripResult,
+                        List.of(axeIngredient, Ingredient.of(pair.input()))
+                    );
+                    exporter.accept(
+                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "axe_strip_" + pair.name())),
+                        stripRecipe,
+                        null
+                    );
+                }
             }
         };
     }
+
+    private record StripPair(ItemLike input, ItemLike output, String name) {}
 
     @Override
     public String getName() {

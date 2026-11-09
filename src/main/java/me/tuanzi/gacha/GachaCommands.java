@@ -68,6 +68,14 @@ public class GachaCommands {
                                 poolTitle = "§d樱花祭限定卡池抽卡历史记录";
                             } else if ("national_day".equals(heldItem.getPoolId())) {
                                 poolTitle = "§c国庆祭限定卡池抽卡历史记录";
+                            } else if ("halloween".equals(heldItem.getPoolId())) {
+                                poolTitle = "§6万圣祭限定卡池抽卡历史记录";
+                            } else if ("christmas".equals(heldItem.getPoolId())) {
+                                poolTitle = "§a圣诞祭限定卡池抽卡历史记录";
+                            } else if ("new_year".equals(heldItem.getPoolId())) {
+                                poolTitle = "§e元旦祭限定卡池抽卡历史记录";
+                            } else if ("prime_minister_new_year".equals(heldItem.getPoolId())) {
+                                poolTitle = "§c新年祭限定卡池抽卡历史记录";
                             }
                         }
 
@@ -375,7 +383,7 @@ public class GachaCommands {
                 state.setNormalLegendaryCounter(0);
                 state.setNormalEpicCounter(0);
             }
-            if (poolId.equalsIgnoreCase("sakura_moon") || poolId.equalsIgnoreCase("national_day") || poolId.equalsIgnoreCase("limited") || poolId.equalsIgnoreCase("all")) {
+            if (GachaLogic.isLimitedPool(poolId) || poolId.equalsIgnoreCase("limited") || poolId.equalsIgnoreCase("all")) {
                 state.setSakuraLegendaryCounter(0);
                 state.setSakuraEpicCounter(0);
             }
@@ -385,7 +393,7 @@ public class GachaCommands {
 
     private static void setCounter(ServerPlayer op, ServerPlayer target, String poolId, String counterType, int value) {
         PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(target.getUUID());
-        boolean isLimited = poolId.equalsIgnoreCase("sakura_moon") || poolId.equalsIgnoreCase("national_day") || poolId.equalsIgnoreCase("limited");
+        boolean isLimited = GachaLogic.isLimitedPool(poolId) || poolId.equalsIgnoreCase("limited");
         boolean isLegendary = counterType.equalsIgnoreCase("legendary");
 
         synchronized (state) {

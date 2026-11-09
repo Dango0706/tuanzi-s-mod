@@ -24,11 +24,23 @@ public class ModLog {
         }
     }
 
+    public static void debug(net.minecraft.world.entity.Entity player, net.minecraft.world.entity.Entity target, String format, Object... args) {
+        debug(player, target, String.format(java.util.Locale.ROOT, format, args));
+    }
+
     public static void debug(net.minecraft.world.entity.Entity player, net.minecraft.world.entity.Entity target, String message) {
         String time = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(java.time.LocalDateTime.now());
         String playerStr = player != null ? "[" + player.getName().getString() + "]" : "";
         String targetStr = target != null ? "[" + target.getName().getString() + "]" : "";
         debug("[" + time + "]" + playerStr + targetStr + " " + message);
+    }
+
+    public static void debug(net.minecraft.world.entity.Entity player, String format, Object... args) {
+        debug(player, (net.minecraft.world.entity.Entity) null, String.format(java.util.Locale.ROOT, format, args));
+    }
+
+    public static void debug(String format, Object... args) {
+        debug(String.format(java.util.Locale.ROOT, format, args));
     }
 
     public static void debug(String player, String target, String message) {

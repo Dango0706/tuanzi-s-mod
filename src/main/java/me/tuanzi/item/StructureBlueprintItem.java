@@ -60,6 +60,9 @@ public class StructureBlueprintItem extends Item {
                 tag.putBoolean("Mirrored", false);
 
                 stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.containerMenu.broadcastChanges();
+                }
                 player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.ghost_placed", targetPos.getX(), targetPos.getY(), targetPos.getZ()).withStyle(ChatFormatting.GREEN));
             } else {
                 // 已生成虚影时，再次点击将其清除
@@ -74,6 +77,9 @@ public class StructureBlueprintItem extends Item {
                 tag.remove("Mirrored");
 
                 stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.containerMenu.broadcastChanges();
+                }
                 player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.ghost_cleared").withStyle(ChatFormatting.YELLOW));
             }
         }
@@ -98,6 +104,9 @@ public class StructureBlueprintItem extends Item {
                 tag.remove("Rotation");
                 tag.remove("Mirrored");
                 stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                    serverPlayer.containerMenu.broadcastChanges();
+                }
                 player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.ghost_cleared").withStyle(ChatFormatting.YELLOW));
                 return InteractionResult.SUCCESS;
             }

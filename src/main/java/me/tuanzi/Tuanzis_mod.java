@@ -24,6 +24,8 @@ public class Tuanzis_mod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		// 注册二段跳网络包
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.DoubleJumpC2SPacket.TYPE, me.tuanzi.network.DoubleJumpC2SPacket.CODEC);
 		// 注册连锁采掘按键网络包
 		PayloadTypeRegistry.serverboundPlay().register(ChainMiningKeyPacket.TYPE, ChainMiningKeyPacket.CODEC);
 		// 注册油漆桶颜色修改包
@@ -36,6 +38,7 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.WorldSculptorsPenModePacket.TYPE, me.tuanzi.network.WorldSculptorsPenModePacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostTransformPacket.TYPE, me.tuanzi.network.GhostTransformPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.BlueprintCannonShootS2CPacket.TYPE, me.tuanzi.network.BlueprintCannonShootS2CPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, me.tuanzi.network.BlueprintMaterialBookPacket.CODEC);
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.ChromaticSkullRequestPacket.TYPE, me.tuanzi.network.ChromaticSkullRequestPacket.CODEC);
@@ -45,6 +48,80 @@ public class Tuanzis_mod implements ModInitializer {
 		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiBeatPacket.TYPE, me.tuanzi.network.NodachiBeatPacket.CODEC);
 		// 注册日冕过热状态同步网络包
 		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.CinderHeatSyncPacket.TYPE, me.tuanzi.network.CinderHeatSyncPacket.CODEC);
+		// 注册拾荒回廊队伍状态同步网络包
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.ScavengerTeamSyncPacket.TYPE, me.tuanzi.network.ScavengerTeamSyncPacket.CODEC);
+		// 注册拾荒回廊专属饰品槽同步与信标激活网络包
+		PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.CorridorAccessorySyncPacket.TYPE, me.tuanzi.network.CorridorAccessorySyncPacket.CODEC);
+		PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.CorridorBeaconUsePacket.TYPE, me.tuanzi.network.CorridorBeaconUsePacket.CODEC);
+		// 注册拾荒回廊搜刮元数据热重载全量同步 S2C 网络包
+		PayloadTypeRegistry.clientboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerDataSyncS2CPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerDataSyncS2CPacket.CODEC
+		);
+		// 注册拾荒回廊战术网格与搜索交互 C2S / S2C 网络包
+		PayloadTypeRegistry.serverboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerGridActionC2SPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerGridActionC2SPacket.CODEC
+		);
+		PayloadTypeRegistry.serverboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerPrioritizeSearchC2SPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerPrioritizeSearchC2SPacket.CODEC
+		);
+		PayloadTypeRegistry.serverboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerBaseUpgradeC2SPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerBaseUpgradeC2SPacket.CODEC
+		);
+		PayloadTypeRegistry.serverboundPlay().register(
+				me.tuanzi.network.scavenger.OpenCorridorLoadoutC2SPacket.TYPE,
+				me.tuanzi.network.scavenger.OpenCorridorLoadoutC2SPacket.CODEC
+		);
+
+		PayloadTypeRegistry.clientboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerContainerSyncS2CPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerContainerSyncS2CPacket.CODEC
+		);
+		PayloadTypeRegistry.clientboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerSearchProgressS2CPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerSearchProgressS2CPacket.CODEC
+		);
+		PayloadTypeRegistry.clientboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerItemRevealedS2CPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerItemRevealedS2CPacket.CODEC
+		);
+		PayloadTypeRegistry.clientboundPlay().register(
+				me.tuanzi.network.scavenger.ScavengerProfileSyncS2CPacket.TYPE,
+				me.tuanzi.network.scavenger.ScavengerProfileSyncS2CPacket.CODEC
+		);
+
+		// 注册拾荒回廊战术网格与升级 C2S 接收器
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerGridActionC2SPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> me.tuanzi.network.scavenger.ScavengerServerPacketHandler.handleGridAction(context.player(), payload));
+		});
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerPrioritizeSearchC2SPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> me.tuanzi.network.scavenger.ScavengerServerPacketHandler.handlePrioritizeSearch(context.player(), payload));
+		});
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerBaseUpgradeC2SPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> me.tuanzi.network.scavenger.ScavengerServerPacketHandler.handleBaseUpgrade(context.player(), payload));
+		});
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.OpenCorridorLoadoutC2SPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				ServerPlayer player = context.player();
+				if (player.level().dimension() == me.tuanzi.init.ModDimensions.SCAVENGER_CORRIDOR_LEVEL) {
+					player.openMenu(new net.minecraft.world.SimpleMenuProvider(
+							(containerId, playerInv, p) -> new me.tuanzi.world.inventory.scavenger.CorridorTacticalLoadoutMenu(containerId, playerInv),
+							net.minecraft.network.chat.Component.translatable("gui.tuanzis_mod.scavenger_loadout")
+					));
+					me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
+				}
+			});
+		});
+
+		// 注册回廊信标使用 C2S 接收器
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.CorridorBeaconUsePacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				me.tuanzi.world.scavenger.ScavengerManager.handleBeaconUsePacket(context.player(), payload.slot());
+			});
+		});
 
 		// 注册 C2S 接收器
 		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.NodachiBeatPacket.TYPE, (payload, context) -> {
@@ -130,6 +207,11 @@ public class Tuanzis_mod implements ModInitializer {
 			net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "color_block_shaped"),
 			me.tuanzi.world.item.crafting.ColorBlockShapedRecipe.SERIALIZER
 		);
+		net.minecraft.core.Registry.register(
+			net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER,
+			net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "crafting_axe_strip"),
+			me.tuanzi.world.item.crafting.AxeStripRecipe.SERIALIZER
+		);
 
 		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
 			context.server().execute(() -> {
@@ -166,6 +248,7 @@ public class Tuanzis_mod implements ModInitializer {
 					tag.putInt("Rotation", payload.rotation());
 					tag.putBoolean("Mirrored", payload.mirrored());
 					stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+					player.containerMenu.broadcastChanges();
 					me.tuanzi.util.ModLog.debug(player, null, "收到虚影变换：offset=" + payload.offset() + ", rotation=" + payload.rotation() + ", mirrored=" + payload.mirrored());
 				}
 			});
@@ -218,7 +301,21 @@ public class Tuanzis_mod implements ModInitializer {
 			});
 		});
 
+		// 注册二段跳网络包接收器
+		ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.DoubleJumpC2SPacket.TYPE, (payload, context) -> {
+			context.server().execute(() -> {
+				me.tuanzi.util.DoubleJumpHandler.handleServerDoubleJump(context.player());
+			});
+		});
+
 		ModEnchantments.initialize();
+
+		// 允许鞘翅在附魔台中直接附魔（添加 ENCHANTABLE 数据组件）
+		net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents.MODIFY.register(context -> {
+			context.modify(net.minecraft.world.item.Items.ELYTRA, builder -> {
+				builder.set(net.minecraft.core.component.DataComponents.ENCHANTABLE, new net.minecraft.world.item.enchantment.Enchantable(1));
+			});
+		});
 
 		// 注册击杀生物获得血怒状态效果的监听
 		net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, killer, killedEntity, damageSource) -> {
@@ -251,6 +348,7 @@ public class Tuanzis_mod implements ModInitializer {
 		me.tuanzi.gacha.PlayerGachaManager.initialize();
 		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			me.tuanzi.gacha.PlayerGachaManager.onPlayerDisconnect(handler.getPlayer().getUUID());
+			me.tuanzi.world.scavenger.loot.search.SearchSessionManager.closeSession(handler.getPlayer().getUUID(), "玩家断开连接");
 		});
 		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
 			me.tuanzi.gacha.PoolManager.loadAllPools(server.registryAccess());
@@ -260,10 +358,34 @@ public class Tuanzis_mod implements ModInitializer {
 			me.tuanzi.gacha.PoolManager.shutdown(server.registryAccess());
 		});
 
+		// 初始化拾荒回廊搜刮元数据加载、/reload 热更新广播与进服同步
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+			me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.reloadServerData(server.getResourceManager());
+		});
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
+			if (success) {
+				me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.reloadServerData(resourceManager);
+				me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.syncToAllPlayers(server);
+				for (ServerPlayer online : server.getPlayerList().getPlayers()) {
+					if (online instanceof me.tuanzi.world.scavenger.ScavengerPlayerTracker tracker) {
+						tracker.tuanzis_mod$getCorridorProfile().syncEquipmentAndStashDimensionsWithConfig();
+					}
+				}
+			}
+		});
+		net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+			me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.syncToPlayer(handler.getPlayer());
+		});
+		net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+			me.tuanzi.world.scavenger.loot.search.SearchSessionManager.tickAllSessions(server);
+		});
+
 		// 注册抽卡系统指令
 		net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 			me.tuanzi.gacha.GachaCommands.register(dispatcher);
 			me.tuanzi.command.BlueprintCommand.register(dispatcher);
+			me.tuanzi.command.CorridorCommand.register(dispatcher);
+			me.tuanzi.command.WitherKillsCommand.register(dispatcher);
 		});
 
 		ModLog.debug("Mod initialization started in development mode!");

@@ -16,6 +16,11 @@ public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> BLUEPRINT_CANNON_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon"));
     public static final ResourceKey<MenuType<?>> BLUEPRINT_TABLE_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table"));
     public static final ResourceKey<MenuType<?>> PLAYER_SIMULATOR_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "player_simulator"));
+    public static final ResourceKey<MenuType<?>> GOLDEN_POCKET_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "golden_pocket"));
+    public static final ResourceKey<MenuType<?>> CORRIDOR_TACTICAL_LOADOUT_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "corridor_tactical_loadout"));
+    public static final ResourceKey<MenuType<?>> SCAVENGER_TACTICAL_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_tactical"));
+    public static final ResourceKey<MenuType<?>> BASE_STASH_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_stash"));
+    public static final ResourceKey<MenuType<?>> BASE_UPGRADE_STATION_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_upgrade_station"));
 
     public static final MenuType<TravelersNotebookMenu> TRAVELERS_NOTEBOOK = Registry.register(
             BuiltInRegistries.MENU,
@@ -45,6 +50,36 @@ public class ModMenuTypes {
             BuiltInRegistries.MENU,
             PLAYER_SIMULATOR_KEY,
             new MenuType<>(me.tuanzi.world.inventory.PlayerSimulatorMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.GoldenPocketMenu> GOLDEN_POCKET = Registry.register(
+            BuiltInRegistries.MENU,
+            GOLDEN_POCKET_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.GoldenPocketMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.scavenger.CorridorTacticalLoadoutMenu> CORRIDOR_TACTICAL_LOADOUT = Registry.register(
+            BuiltInRegistries.MENU,
+            CORRIDOR_TACTICAL_LOADOUT_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.scavenger.CorridorTacticalLoadoutMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu> SCAVENGER_TACTICAL = Registry.register(
+            BuiltInRegistries.MENU,
+            SCAVENGER_TACTICAL_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.scavenger.BaseStashMenu> BASE_STASH = Registry.register(
+            BuiltInRegistries.MENU,
+            BASE_STASH_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.scavenger.BaseStashMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.scavenger.BaseUpgradeStationMenu> BASE_UPGRADE_STATION = Registry.register(
+            BuiltInRegistries.MENU,
+            BASE_UPGRADE_STATION_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.scavenger.BaseUpgradeStationMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static void initialize() {

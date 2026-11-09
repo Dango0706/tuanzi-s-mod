@@ -25,6 +25,9 @@ import java.util.Optional;
 @Mixin(FireworkRocketEntity.class)
 public class FireworkRocketEntityMixin implements IGachaFirework {
     
+    @org.spongepowered.asm.mixin.Shadow
+    private int lifetime;
+
     @Unique
     private ItemStack tuanziGachaPrize = ItemStack.EMPTY;
     @Unique
@@ -37,6 +40,27 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
         this.tuanziGachaPrize = prize != null ? prize : ItemStack.EMPTY;
         this.tuanziGachaTarget = target;
         this.tuanziGachaRarity = rarity != null ? rarity : "common";
+    }
+
+    @Inject(
+        method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V",
+        at = @At("RETURN")
+    )
+    private void tuanzis_mod$applyBoostEnchantment(net.minecraft.world.level.Level level, ItemStack sourceItemStack, net.minecraft.world.entity.LivingEntity stuckTo, CallbackInfo ci) {
+        if (stuckTo != null) {
+            ItemStack chest = stuckTo.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
+            if (!chest.isEmpty()) {
+                var enchRegistry = stuckTo.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+                var boostHolder = enchRegistry.getOrThrow(me.tuanzi.init.ModEnchantments.BOOST);
+                int boostLevel = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(boostHolder, chest);
+                if (boostLevel > 0) {
+                    float multiplier = 1.0f + 0.15f * boostLevel; // 15%, 30%, 45%
+                    int oldLifetime = this.lifetime;
+                    this.lifetime = Math.round(this.lifetime * multiplier);
+                    ModLog.debug(stuckTo, "【增效】附魔生效（等级: " + boostLevel + "）！烟花加速时长延长 +" + String.format(java.util.Locale.ROOT, "%.0f%%", 15f * boostLevel) + "（从 " + oldLifetime + " ticks 延长至 " + this.lifetime + " ticks）");
+                }
+            }
+        }
     }
 
     @Inject(method = "explode", at = @At("HEAD"))

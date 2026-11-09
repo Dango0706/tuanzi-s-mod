@@ -23,6 +23,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(me.tuanzi.datagen.ModItemTagProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModRecipeProvider::new);
 		pack.addProvider(me.tuanzi.datagen.ModModelProvider::new);
+		pack.addProvider(me.tuanzi.datagen.ModDimensionGenerator::new);
 		pack.addProvider(TuanziChineseLanguageProvider::new);
 		pack.addProvider(TuanziEnglishLanguageProvider::new);
 	}
@@ -30,6 +31,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 	@Override
 	public void buildRegistry(RegistrySetBuilder registryBuilder) {
 		registryBuilder.add(Registries.ENCHANTMENT, context -> {});
+		registryBuilder.add(Registries.DIMENSION_TYPE, me.tuanzi.init.ModDimensions::bootstrapDimensionType);
+		registryBuilder.add(Registries.LEVEL_STEM, me.tuanzi.init.ModDimensions::bootstrapLevelStem);
 	}
 
 	private static class TuanziChineseLanguageProvider extends FabricLanguageProvider {
@@ -71,8 +74,11 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "结构蓝图");
 			translationBuilder.add(ModItems.LOGIC_CORE, "逻辑核心");
 			translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "玩家控制核心");
+			translationBuilder.add(ModItems.CREATIVE_CORE, "创造核心");
+			translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§e调试用道具§7，当蓝图大炮检测到周围箱子内有此物品时，无视材料的缺少继续打印。");
 			translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【逻辑核心】\n这是合成玩家模拟器所必需的关键控制硬件。\n\n主体是一个精密的微芯片电路板，外部带有钢制外壳，内部密布着闪烁幽红光芒的微缩红石走线，能够稳定处理各种复杂的高速脉冲逻辑计算。");
 			translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【玩家控制核心】\n这是用于读取并解析玩家行为模式的高级智能运算核心，是合成玩家模拟器的神经中枢。\n\n其核心是一个微型人类头颅模样的生物电子芯片，通过外部的红石电路和红石能量流，能够高度模拟并映射在线玩家的左键、右键以及充能攻击等各种交互逻辑行为。");
+			translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【创造核心】\n这是专为蓝图构筑系统设计的调试核心道具。\n\n§e核心机制：\n当蓝图大炮在其周围 5 格内的任意容器（包括普通箱子、木桶以及潜影盒内部）中检测到存有【创造核心】时，将自动开启无限创造建造模式：\n1. §b无视材料缺失：即使箱子内缺乏蓝图所需的方块或实体材料，蓝图大炮也不会暂停，而是无视材料缺失直接继续打印构建。\n2. §b零材料消耗：建造过程中完全不扣除或消耗容器中的任何建筑方块与实体材料。");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "蓝图大炮");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "蓝图大炮");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "蓝图桌");
@@ -171,6 +177,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.saved_blueprints", "已存蓝图");
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "尺寸: %s x %s x %s");
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "共 %d 个方块");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.refresh", "刷新列表");
+
+			// 3D 蓝图检视器 GUI
+			translationBuilder.add("gui.tuanzis_mod.blueprint_inspector.title", "3D 蓝图检视器");
+			translationBuilder.add("gui.tuanzis_mod.inspector.search_hint", "搜索方块名称或 ID...");
+			translationBuilder.add("gui.tuanzis_mod.inspector.project_world", "投影到世界");
+			translationBuilder.add("gui.tuanzis_mod.inspector.clear_ghost", "清除虚影");
+			translationBuilder.add("gui.tuanzis_mod.inspector.back", "返回");
+			translationBuilder.add("gui.tuanzis_mod.inspector.sort", "切换排序");
+			translationBuilder.add("gui.tuanzis_mod.inspector.mode_single", "单层剖析");
+			translationBuilder.add("gui.tuanzis_mod.inspector.mode_all", "累计切层");
+			translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "方块清单");
 
 			// 实体捕获的 Tooltip
 			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "包含生物 (数量: %s):");
@@ -503,6 +521,14 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "樱花祭卡牌箱");
 			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_PACK, "国庆祭卡牌包");
 			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_CHEST, "国庆祭卡牌盒");
+			translationBuilder.add(ModItems.HALLOWEEN_CARD_PACK, "万圣祭卡牌包");
+			translationBuilder.add(ModItems.HALLOWEEN_CARD_CHEST, "万圣祭卡牌盒");
+			translationBuilder.add(ModItems.CHRISTMAS_CARD_PACK, "圣诞祭卡牌包");
+			translationBuilder.add(ModItems.CHRISTMAS_CARD_CHEST, "圣诞祭卡牌盒");
+			translationBuilder.add(ModItems.NEW_YEAR_CARD_PACK, "元旦祭卡牌包");
+			translationBuilder.add(ModItems.NEW_YEAR_CARD_CHEST, "元旦祭卡牌盒");
+			translationBuilder.add(ModItems.PRIME_MINISTER_CARD_PACK, "新年祭卡牌包");
+			translationBuilder.add(ModItems.PRIME_MINISTER_CARD_CHEST, "新年祭卡牌盒");
 			translationBuilder.add("jei.tuanzis_mod.national_day_card_pack.description",
 				"【国庆祭卡牌包】\n" +
 				"国庆祭限定抽卡消耗凭证（单抽）。\n\n" +
@@ -516,6 +542,76 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"国庆祭限定抽卡礼盒（十连抽）。\n\n" +
 				"§e使用方式：§r\n" +
 				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次国庆祭限定奖励！\n" +
+				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
+				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+
+			translationBuilder.add("jei.tuanzis_mod.halloween_card_pack.description",
+				"【万圣祭卡牌包】\n" +
+				"万圣祭限定抽卡消耗凭证（单抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b单抽体验§r：手持右键点击使用，消耗 1 个卡牌包并在面前发射烟花，抽取 1 次万圣祭限定卡池奖励。\n" +
+				"2. §b卡池预览§r：按住 Shift + 右键点击，可直接打开卡池详情与定轨设置面板，实时查看各品质物品与当前保底抽数。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.halloween_card_chest.description",
+				"【万圣祭卡牌盒】\n" +
+				"万圣祭限定抽卡礼盒（十连抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次万圣祭限定奖励！\n" +
+				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
+				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+
+			translationBuilder.add("jei.tuanzis_mod.christmas_card_pack.description",
+				"【圣诞祭卡牌包】\n" +
+				"圣诞祭限定抽卡消耗凭证（单抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b单抽体验§r：手持右键点击使用，消耗 1 个卡牌包并在面前发射烟花，抽取 1 次圣诞祭限定卡池奖励。\n" +
+				"2. §b卡池预览§r：按住 Shift + 右键点击，可直接打开卡池详情与定轨设置面板，实时查看各品质物品与当前保底抽数。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.christmas_card_chest.description",
+				"【圣诞祭卡牌盒】\n" +
+				"圣诞祭限定抽卡礼盒（十连抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次圣诞祭限定奖励！\n" +
+				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
+				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.new_year_card_pack.description",
+				"【元旦祭卡牌包】\n" +
+				"元旦祭限定抽卡消耗凭证（单抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b单抽体验§r：手持右键点击使用，消耗 1 个卡牌包并在面前发射烟花，抽取 1 次元旦祭限定卡池奖励。\n" +
+				"2. §b卡池预览§r：按住 Shift + 右键点击，可直接打开卡池详情与定轨设置面板，实时查看各品质物品与当前保底抽数。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.new_year_card_chest.description",
+				"【元旦祭卡牌盒】\n" +
+				"元旦祭限定抽卡礼盒（十连抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次元旦祭限定奖励！\n" +
+				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
+				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.prime_minister_card_pack.description",
+				"【新年祭卡牌包】\n" +
+				"2027新年祭限定抽卡消耗凭证（以“首相”为主题，单抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b单抽体验§r：手持右键点击使用，消耗 1 个卡牌包并在面前发射烟花，抽取 1 次2027新年祭限定卡池奖励。\n" +
+				"2. §b卡池预览§r：按住 Shift + 右键点击，可直接打开卡池详情与定轨设置面板，实时查看各品质物品与当前保底抽数。\n\n" +
+				"§e保底机制：§r\n" +
+				"与限定池共享保底。最多 90 抽必出当期限定传说大奖，20 抽内必出史诗级奖励！");
+			translationBuilder.add("jei.tuanzis_mod.prime_minister_card_chest.description",
+				"【新年祭卡牌盒】\n" +
+				"2027新年祭限定抽卡礼盒（以“首相”为主题，十连抽）。\n\n" +
+				"§e使用方式：§r\n" +
+				"1. §b十连盛典§r：手持右键点击使用，消耗 1 个卡牌盒，环绕玩家周身升空 10 枚绚烂烟花，连续抽取 10 次2027新年祭限定奖励！\n" +
 				"2. §b十连保底§r：十连抽必定至少获得 1 件稀有（含）以上品质奖励。\n" +
 				"3. §b卡池预览§r：按住 Shift + 右键点击打开卡池预览与定轨面板。\n\n" +
 				"§e保底机制：§r\n" +
@@ -842,6 +938,57 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
 			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description", reservedChamberJeiDesc);
 
+			// 古卷附魔-屹立不倒 (Ancient Scroll - Standing Firm)
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_standing_firm", "古卷附魔-屹立不倒");
+			String standingFirmJeiDesc = "【古卷附魔-屹立不倒】\n" +
+				"失落古卷中记载的不屈御体秘法。最高等级 V 级。适用类型：胸甲。\n\n" +
+				"§e核心效果：§r\n" +
+				"当玩家受到致命伤害时，有 §a(等级 × 20%)§r 的概率进行判定（早于不死图腾与不死药水等一切免死触发之前）：\n" +
+				"- §b等级 I§r：§a20%§r 触发概率\n" +
+				"- §b等级 II§r：§a40%§r 触发概率\n" +
+				"- §b等级 III§r：§a60%§r 触发概率\n" +
+				"- §b等级 IV§r：§a80%§r 触发概率\n" +
+				"- §b等级 V§r：§a100%§r 触发概率\n\n" +
+				"§e经验判定与消耗机制：§r\n" +
+				"1. §b致死伤害值 x§r：若玩家有 10 血受到 20 血伤害，保留 1 血则承受 9 点伤害，免除额外 11 点致死伤害（即 x = 11）。\n" +
+				"2. §b消耗经验计算 E(x, y) 与保底要求§r：单次免死判定与消耗存在保底经验最小值：§6300 - 50 × 等级§r 点经验（I 级 250 点，V 级 50 点）。若玩家持有的总经验点数 > E(x, y)，则扣除 E 点经验值（不少于保底），使玩家免疫额外超额致死伤害并保留 1.0F 生命值，同时获得短暂受击无敌帧与专属音效粒子护体。\n" +
+				"3. §b保命顺位§r：若判定未通过或经验不足（未大于保底或所需经验），则保留原有伤害，后续正常结算不死图腾/不死药水。\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 V 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_standing_firm.description", standingFirmJeiDesc);
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.advanced_header", "§d【古卷附魔-屹立不倒】§r");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_chance", "§7- 免死判定概率: §a%s%%");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_damage", "§7- 当前经验可抵挡致死伤害: §e+%s 点");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.insufficient_xp", "§7- 当前经验可抵挡致死伤害: §c0.0 点 (经验不足)");
+
+			// 古卷附魔-经验老辣 (Ancient Scroll - Seasoned)
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_seasoned", "古卷附魔-经验老辣");
+			String seasonedJeiDesc = "【古卷附魔-经验老辣】\n" +
+				"失落古卷中记载的汲灵炼魄秘法。最高等级 IV 级。适用类型：头盔（仅能附魔在头盔上）。\n\n" +
+				"§e核心效果：§r\n" +
+				"当玩家汲取经验球时，大幅提升实际获得的经验数量：\n" +
+				"§7提升比例公式：§a5% × 等级 + max(0, 等级 - 3) × 5%§r\n" +
+				"- §b等级 I§r：提升 §a+5.0%§r 经验获得\n" +
+				"- §b等级 II§r：提升 §a+10.0%§r 经验获得\n" +
+				"- §b等级 III§r：提升 §a+15.0%§r 经验获得\n" +
+				"- §b等级 IV§r：提升 §a+25.0%§r 经验获得\n\n" +
+				"§e经验结算机制：§r\n" +
+				"1. §b实际获得经验公式§r：基础经验值 × (1 + 5% × 等级 + max(0, 等级 - 3) × 5%)。\n" +
+				"   例如：汲取基础经验值为 5 的经验球，IV 级时实际理论获得经验为 5 × (1 + 25%) = 6.25 点。\n" +
+				"2. §b概率进位期望守恒§r：若计算产生的额外增量包含小数，采用期望守恒随机进位算法，确保小额经验球（如 1 点经验）长期收益无损。\n" +
+				"3. §b全面受惠§r：增幅的经验同样完全支持装备经验修补（Mending）与直接经验吸收。\n\n" +
+				"§e获取途径与古卷规则：§r\n" +
+				"1. §b附魔台限定§r：古卷附魔仅能在附魔台中自然生成，无法通过村民交易、宝箱战利品或生物生成获得。\n" +
+				"2. §b等级门槛§r：强制需求附魔台等级 §630 级及以上§r（需摆满 15 个书架的第 3 槽位）才有可能出现。\n" +
+				"3. §b初生等级限制§r：附魔台中最高仅能获取 §e1 级§r 附魔。\n" +
+				"4. §b铁砧升级§r：后续需使用两件 1 级附魔物品或附魔书在铁砧中合并升级，逐级升至最高 IV 级。";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_seasoned.description", seasonedJeiDesc);
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_seasoned.advanced_header", "§d【古卷附魔-经验老辣】§r");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_seasoned.boost", "§7- 汲取经验数量提升: §a+%s%%");
+
 			// 幽匿裂片（Scully Shard）与 共振脉冲（Resonance Pulse）翻译
 			translationBuilder.add(ModItems.SCULLY_SHARD, "幽匿裂片");
 			translationBuilder.add(ModStatusEffects.RESONANCE.value(), "共鸣");
@@ -934,7 +1081,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("tuanzis_mod.mode.semi_replace", "半替换");
 			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "仅替换空气");
 			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6塑世之笔切换为: %s 模式");
-			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型（优先更换方块而非撤销）。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒中扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，面对空气潜行 (Shift) + 右键可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型（优先更换方块而非撤销），且自动记录方块的 face/facing 朝向，若为楼梯或半砖还会记录其 type、half、shape 状态。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒、黄金口袋中扣除。若填充双半砖 (type=double) 则每个方块按 2 个半砖精确扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，面对空气潜行 (Shift) + 右键可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块（双半砖精准返还 2 个）及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
 			translationBuilder.add(ModItems.VOID_INK_INGOT, "虚空墨锭");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "一方由龙息凝华与回响粉末压制的深紫色墨锭，");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。");
@@ -1040,6 +1187,340 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"宝藏型附魔，仅可通过各类遗迹与地牢战利品宝箱、钓鱼或特定村民交易等途径获取附魔书。";
 			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDesc);
 
+			translationBuilder.add("enchantment.tuanzis_mod.double_jump", "二段跳");
+			String doubleJumpJeiDesc = "【二段跳】\n" +
+				"靴子专属附魔。最高等级 I 级。稀有度：极度罕见 (Very Rare)。\n" +
+				"适用类型：靴子。无法在生存模式中通过常规途径获取（无法在附魔台、战利品宝箱、钓鱼或村民交易中获得，仅创造模式可获取）。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b空中二段跳跃§r：装备附有二段跳的靴子后，在空中再次按下跳跃键可进行一次额外的腾空起跳。\n" +
+				"2. §b药水与属性完美继承§r：跳跃高度与玩家地面正常起跳完全一致，完美享受跳跃提升 (Jump Boost) 药水效果与跳跃属性加成。\n" +
+				"3. §b空中摔落重置§r：二段跳成功释放时，将重置当前下落距离。落地后重新充能二段跳次数。";
+			translationBuilder.add("jei.tuanzis_mod.double_jump.description", doubleJumpJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.extension", "延展");
+			String extensionJeiDesc = "【延展】\n" +
+				"胸甲专属附魔。最高等级 V 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用类型：胸甲。非宝藏附魔。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b方块触及距离延长§r：穿戴附有延展的胸甲时，延长玩家对方块的交互与挖掘触及距离（注意：仅对敲击与放置方块生效，不对生物生效）。\n" +
+				"2. §b数值公式§r：延长 §a0.75 + 0.3 × 等级§r 格触及距离（I级 +1.05格，II级 +1.35格，III级 +1.65格，IV级 +1.95格，V级 +2.25格）。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、各类战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.extension.description", extensionJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.ranged_strike", "遥击");
+			String rangedStrikeJeiDesc = "【遥击】\n" +
+				"胸甲专属宝藏附魔。最高等级 V 级。稀有度：稀有 (Rare)。\n" +
+				"适用类型：胸甲。为宝藏型附魔（无法在附魔台中直接附出）。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b生物触及距离延长§r：穿戴附有遥击的胸甲时，延长玩家对生物实体的攻击与交互触及距离（注意：仅对生物生效，不对破坏/放置方块生效）。\n" +
+				"2. §b数值公式§r：延长 §a0.5 + 0.25 × 等级§r 格生物触及距离（I级 +0.75格，II级 +1.00格，III级 +1.25格，IV级 +1.50格，V级 +1.75格）。\n\n" +
+				"§e获取途径：§r\n" +
+				"宝藏型附魔，仅可通过遗迹地牢战利品宝箱或钓鱼获取（无法通过村民交易获得）。";
+			translationBuilder.add("jei.tuanzis_mod.ranged_strike.description", rangedStrikeJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.wayfarer", "旅者");
+			String wayfarerJeiDesc = "【旅者】\n" +
+				"护腿专属附魔。最高等级 III 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用部位：护腿。\n\n" +
+				"§e核心效果：§r\n" +
+				"免除部分探险中的伤害：\n" +
+				"1. §b鞘翅撞击伤害§r：免除 §a2 × 等级 + 2 × (等级 - 1)§r 点伤害（I级 2点，II级 6点，III级 10点）。\n" +
+				"2. §b仙人掌伤害§r：免除 §a2 × 等级§r 点伤害（I级 2点，II级 4点，III级 6点）。\n" +
+				"3. §b末影珍珠伤害§r：免除 §a2 × 等级§r 点伤害（I级 2点，II级 4点，III级 6点完全免除）。\n" +
+				"4. §b蜜蜂攻击伤害§r：免除 §a2 × 等级§r 点伤害（I级 2点，II级 4点，III级 6点）。\n" +
+				"5. §b蜜蜂毒素免疫§r：附魔等级大于 2 级（III级）时，完全免疫蜜蜂攻击所施加的中毒效果。\n" +
+				"6. §b摔落伤害§r：免除 §a1.5 × (等级 + 1)§r 点伤害（I级 3.0点，II级 4.5点，III级 6.0点）。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、遗迹战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.wayfarer.description", wayfarerJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.step_up", "登阶");
+			String stepUpJeiDesc = "【登阶】\n" +
+				"靴子专属附魔。最高等级 II 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用部位：靴子。\n\n" +
+				"§e核心效果：§r\n" +
+				"无需跳跃即可直接走上更高地形（步高提升）：\n" +
+				"1. §bI级效果§r：最大步高拓展至 1.0 格，无需跳跃即可直接走上一整格高的完整方块。\n" +
+				"2. §bII级效果§r：最大步高拓展至 1.5 格，无需跳跃即可直接走上 1.5 格高的高度（如栅栏、墙壁等）。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、遗迹战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.step_up.description", stepUpJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.satiation", "饱腹");
+			String satiationJeiDesc = "【饱腹】\n" +
+				"胸甲专属宝藏附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：胸甲。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b移动/跳跃饥饿减耗§r：玩家移动、疾跑、跳跃产生的饥饿度消耗每级降低 8%（I级降低 8%，II级降低 16%，III级降低 24%）。\n" +
+				"2. §b非移动消耗不受影响§r：不降低挖掘方块、近战攻击、承受伤害等其它行为所产生的饥饿度消耗。\n\n" +
+				"§e获取途径：§r\n" +
+				"属于宝藏型附魔（无法在附魔台中直接附魔）：\n" +
+				"- 沙漠神殿战利品箱\n" +
+				"- 丛林神庙战利品箱\n" +
+				"- 埋藏宝藏战利品箱\n" +
+				"- 钓鱼宝藏\n" +
+				"- 大师级图书管理员村民交易";
+			translationBuilder.add("jei.tuanzis_mod.satiation.description", satiationJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.bountiful_harvest", "丰获");
+			String bountifulHarvestJeiDesc = "【丰获】\n" +
+				"锄头专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：锄。\n\n" +
+				"§e核心效果：§r\n" +
+				"手持该锄破坏成熟作物时触发：\n" +
+				"1. §b额外作物掉落§r：每级有 10% 概率额外掉落 1 个同类作物（I级 10%，II级 20%，III级 30%）。仅作用于小麦、胡萝卜、马铃薯、甜菜根。\n" +
+				"2. §b经验掉落§r：额外掉落 §a3 × 等级§r 点经验值（I级 3点，II级 6点，III级 9点）。\n" +
+				"3. §b联动特性§r：不自动补种；若锄头同时附有【经验亲和】，额外掉落的经验值将享受经验亲和的增幅！\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、遗迹战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.bountiful_harvest.description", bountifulHarvestJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.experience_affinity", "经验亲和");
+			String experienceAffinityJeiDesc = "【经验亲和】\n" +
+				"工具/武器通用附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：斧、镐、锄。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b击杀/采矿经验增幅§r：手持附魔工具击杀生物或挖掘矿石所获得的经验值每级增加 8%（I级 +8%，II级 +16%，III级 +24%）。\n" +
+				"2. §b限制与联动§r：不作用于熔炉、交易、钓鱼等经验来源；附魔于锄头上时，可与【丰获】附魔联动，提高丰获产生的经验值！\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、遗迹战利品宝箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.experience_affinity.description", experienceAffinityJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.bounty_of_the_sea", "海之馈赠");
+			String bountyOfTheSeaJeiDesc = "【海之馈赠】\n" +
+				"钓鱼竿专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：钓鱼竿。\n\n" +
+				"§e核心效果：§r\n" +
+				"钓到鱼时，每级有 12% 概率额外获得 1 条同种鱼（I级 12%，II级 24%，III级 36%）。\n" +
+				"额外鱼不受海之眷顾和渔汛影响，且不额外消耗鱼竿耐久度。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、沉船战利品箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.bounty_of_the_sea.description", bountyOfTheSeaJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.snow_strider", "踏雪");
+			String snowStriderJeiDesc = "【踏雪】\n" +
+				"靴子专属附魔。最高等级 III 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用部位：靴子。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b冰雪移动加速§r：在雪块、细雪和冰面（普通冰、浮冰、蓝冰、霜冰）上移动速度每级提高 8%（I级 +8%，II级 +16%，III级 +24%）。\n" +
+				"2. §b细雪踏行§r：穿戴附有踏雪的靴子时，不会陷入细雪之中。\n\n" +
+				"§e获取途径：§r\n" +
+				"可在附魔台、雪屋战利品箱及村民交易中获得。";
+			translationBuilder.add("jei.tuanzis_mod.snow_strider.description", snowStriderJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.void_anchor", "虚空锚");
+			String voidAnchorJeiDesc = "【虚空锚】\n" +
+				"靴子专属宝藏附魔。最高等级 I 级。稀有度：极度罕见 (Very Rare)。\n" +
+				"适用部位：靴子。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"玩家坠入虚空并受到虚空伤害时，免除本次虚空伤害并立即传送回最近一次站立的安全地面。\n" +
+				"冷却时间：300 秒（5 分钟）。\n" +
+				"每次成功触发传送消耗 10 点靴子耐久度。\n\n" +
+				"§e获取途径：§r\n" +
+				"仅限战利品箱（如末地城战利品宝箱等）。";
+			translationBuilder.add("jei.tuanzis_mod.void_anchor.description", voidAnchorJeiDesc);
+
+			translationBuilder.add("enchantment.tuanzis_mod.trading_master", "交易大师");
+			String tradingMasterJeiDesc = "【交易大师】\n" +
+				"头盔专属宝藏附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：头盔。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b村民交易折扣§r：村民交易所需物品数量每级降低 10%/20%/30%（I级 -10%，II级 -20%，III级 -30%，最低减少至 1 个）。\n" +
+				"2. §b交易经验增幅§r：交易获得的经验值每级增加 20%/40%/60%（I级 +20%，II级 +40%，III级 +60%）。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 村庄英雄奖励：每当玩家参与袭击并荣获村庄英雄称号时，必定获得一本【交易大师 I】附魔书！\n" +
+				"- 掠夺者前哨站及村庄战利品宝箱。";
+			translationBuilder.add("jei.tuanzis_mod.trading_master.description", tradingMasterJeiDesc);
+
+			translationBuilder.add("effect.tuanzis_mod.hong_hen", "鸿痕");
+
+			// 增效 (Boost)
+			translationBuilder.add("enchantment.tuanzis_mod.boost", "增效");
+			String boostJeiDesc = "【增效】\n" +
+				"鞘翅专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：鞘翅。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b火箭加速延长§r：使用烟花火箭加速时，加速持续时间每级延长 15%/30%/45%。\n" +
+				"2. §b耐久损耗降低§r：鞘翅耐久消耗每级降低 10%/20%/30%。\n" +
+				"3. §b规则说明§r：不减少烟花火箭消耗数量。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 末地城战利品宝箱。";
+			translationBuilder.add("jei.tuanzis_mod.boost.description", boostJeiDesc);
+
+			// 回声定位 (Echolocation)
+			translationBuilder.add("enchantment.tuanzis_mod.echolocation", "回声定位");
+			String echolocationJeiDesc = "【回声定位】\n" +
+				"头盔专属宝藏附魔。最高等级 III 级。稀有度：极度罕见 (Very Rare)。\n" +
+				"适用部位：头盔。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b声呐脉冲§r：每 12/9/6 秒自动释放一次声呐脉冲，使半径 10/14/18 格内所有生物发光 5 秒。\n" +
+				"2. §b佩戴者专属§r：生物发光仅佩戴者个人可见，不影响其他玩家。\n" +
+				"3. §b潜行抑制§r：潜行时脉冲探测半径降低 50%。\n" +
+				"4. §b零耐久消耗§r：脉冲触发不消耗头盔耐久。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 远古城市战利品宝箱；\n" +
+				"- 要塞图书馆战利品宝箱；\n" +
+				"- 大师级图书管理员村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.echolocation.description", echolocationJeiDesc);
+
+			// 抱朴 (Purity)
+			translationBuilder.add("enchantment.tuanzis_mod.purity", "抱朴");
+			String purityJeiDesc = "【抱朴】\n" +
+				"头盔专属附魔。最高等级 III 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用部位：头盔。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"缩短进食时间，进食时间每级缩短 10%/20%/30%。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 村庄战利品宝箱。";
+			translationBuilder.add("jei.tuanzis_mod.purity.description", purityJeiDesc);
+
+			// 衔月 (Moon Embrace)
+			translationBuilder.add("enchantment.tuanzis_mod.moon_embrace", "衔月");
+			String moonEmbraceJeiDesc = "【衔月】\n" +
+				"头盔专属宝藏附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：头盔。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"夜晚且头顶无方块遮挡（露天）时，饥饿值≥14（7个鸡腿）每 8/6/4 秒恢复 1 点生命值。\n" +
+				"§c注意：不恢复饱和度，不提供伤害免疫，白天或处于室内/遮挡下方时不生效。§r\n\n" +
+				"§e获取途径：§r\n" +
+				"- 雪屋地下室战利品箱；\n" +
+				"- 埋藏的宝藏；\n" +
+				"- 大师级图书管理员村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.moon_embrace.description", moonEmbraceJeiDesc);
+
+			// 听涛 (Wave Listener)
+			translationBuilder.add("enchantment.tuanzis_mod.wave_listener", "听涛");
+			String waveListenerJeiDesc = "【听涛】\n" +
+				"三叉戟专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：三叉戟。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b水雨增伤§r：在水中或雨中投掷三叉戟命中目标时，伤害每级提高 10%/20%/30%。\n" +
+				"2. §b水中破浪§r：三叉戟在水中的飞行速度每级提高 15%/30%/45%。\n" +
+				"3. §b近战排除§r：仅增加投掷伤害，不增加近战攻击伤害。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 海底废墟战利品箱。";
+			translationBuilder.add("jei.tuanzis_mod.wave_listener.description", waveListenerJeiDesc);
+
+			// 归鸿 (Returning Swan)
+			translationBuilder.add("enchantment.tuanzis_mod.returning_swan", "归鸿");
+			String returningSwanJeiDesc = "【归鸿】\n" +
+				"弩专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：弩。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b鸿痕标记§r：发射箭矢命中生物后，使目标获得对应附魔等级的“鸿痕”状态 3/5/7 秒（触发冷却：8/6/4 秒）。\n" +
+				"2. §b鸿痕效果§r：被标记的目标会散发深红色轮廓光芒，且受到玩家造成的任意伤害每级提高 3%/6%/9%。\n" +
+				"3. §b规则说明§r：不增加箭矢自身的基础伤害。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 掠夺者前哨站战利品箱。";
+			translationBuilder.add("jei.tuanzis_mod.returning_swan.description", returningSwanJeiDesc);
+
+			// 花间 (Among Flowers)
+			translationBuilder.add("enchantment.tuanzis_mod.among_flowers", "花间");
+			String amongFlowersJeiDesc = "【花间】\n" +
+				"护腿专属附魔。最高等级 III 级。稀有度：罕见 (Uncommon)。\n" +
+				"适用部位：护腿。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b百花迅捷§r：半径 4/6/8 格内存在花朵时，移动速度每级提高 5%/10%/15%。\n" +
+				"2. §b花香充饥§r：在花丛范围内且饥饿值≥14时，每 10/8/6 秒恢复 1 点饱和度。\n" +
+				"3. §b规则说明§r：不恢复生命值。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 村庄战利品宝箱。";
+			translationBuilder.add("jei.tuanzis_mod.among_flowers.description", amongFlowersJeiDesc);
+
+			// 石心 (Stone Heart)
+			translationBuilder.add("enchantment.tuanzis_mod.stone_heart", "石心");
+			String stoneHeartJeiDesc = "【石心】\n" +
+				"镐专属附魔。最高等级 III 级。稀有度：稀有 (Rare)。\n" +
+				"适用部位：镐。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b岩心萃萃§r：挖掘石头、深板岩、安山岩、闪长岩、花岗岩时，每级有 5%/10%/15% 概率掉落 1 个经验球（提供 1~3 点经验）。\n" +
+				"2. §b联动与保护§r：不额外消耗镐耐久度；不受时运附魔影响；可与【经验亲和】附魔强力联动增幅所获经验值。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台直接附魔；\n" +
+				"- 图书管理员村民交易；\n" +
+				"- 废弃矿井战利品宝箱。";
+			translationBuilder.add("jei.tuanzis_mod.stone_heart.description", stoneHeartJeiDesc);
+
+			// 通惠 (Tonghui)
+			translationBuilder.add("enchantment.tuanzis_mod.tonghui", "通惠");
+			String tonghuiJeiDesc = "【通惠】\n" +
+				"全物品通用附魔。最高等级 I 级。\n" +
+				"适用部位：任何物品。附魔类型：特殊。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b重置累积惩罚§r：在铁砧中附魔时，将该物品目前所积累的铁砧“累积惩罚”彻底重置为 0。\n" +
+				"2. §b附魔代价§r：附魔时固定需要 20 级的经验等级。\n" +
+				"3. §c防重复惩罚保护§r：当物品已拥有此附魔时，禁止再次附魔“通惠”（铁砧不输出），无法再次重置惩罚；但该物品后续仍可进行其他正常附魔或材料修复。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 无任何生存获取方式，仅可在创造模式物品栏中获取。";
+			translationBuilder.add("jei.tuanzis_mod.tonghui.description", tonghuiJeiDesc);
+
+			// 药理 (Pharmacology)
+			translationBuilder.add("enchantment.tuanzis_mod.pharmacology", "药理");
+			String pharmacologyJeiDesc = "【药理】\n" +
+				"头盔专属附魔。最高等级 III 级。\n" +
+				"适用部位：头盔。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b药效延展§r：饮用普通瓶装正面药水后，该药水提供的正面状态效果持续时间额外 ×1.08/1.16/1.24。\n" +
+				"2. §b判定规则§r：喷溅药水、滞留药水、药箭不触发；不改变状态效果等级。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台 25~30 级直接附魔；\n" +
+				"- 图书管理员村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.pharmacology.description", pharmacologyJeiDesc);
+
+			// 休眠修复 (Dormant Repair)
+			translationBuilder.add("enchantment.tuanzis_mod.dormant_repair", "休眠修复");
+			String dormantRepairJeiDesc = "【休眠修复】\n" +
+				"装备与工具通用附魔。最高等级 III 级。\n" +
+				"适用部位：任意有耐久的工具、武器、防具。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b休眠自愈§r：物品在玩家背包、快捷栏或装备栏中连续 180/150/120 秒未消耗耐久时，恢复 1 点耐久；每件物品独立计时。\n" +
+				"2. §b消耗重置§r：挖掘、攻击、受伤、格挡等任何耐久消耗都会重置计时；耐久为 0 时不修复。\n" +
+				"3. §b无耗共存§r：不消耗经验；可与“经验修补”共存，但同一次耐久消耗后必须先经过上述未使用间隔才会触发休眠修复。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 远古城市、要塞、地牢、下界要塞宝箱；\n" +
+				"- 钓鱼宝藏极低概率；\n" +
+				"- 不进入附魔台与村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.dormant_repair.description", dormantRepairJeiDesc);
+
+			// 牧养 (Husbandry)
+			translationBuilder.add("enchantment.tuanzis_mod.husbandry", "牧养");
+			String husbandryJeiDesc = "【牧养】\n" +
+				"护腿专属附魔。最高等级 III 级。\n" +
+				"适用部位：护腿。附魔类型：非宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b繁育速生§r：对动物使用繁殖食物时，繁殖冷却 -20%/40%/60%。\n" +
+				"2. §b雏兽润泽§r：半径 8 格内幼崽成长速度 +10%/20%/30%。\n" +
+				"3. §b适用范围§r：只对牛、羊、猪、鸡、兔、马、驴、骡、羊驼、山羊等可繁殖动物生效；不改变掉落物与经验。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 附魔台 15~25 级直接附魔；\n" +
+				"- 图书管理员村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.husbandry.description", husbandryJeiDesc);
+
+			// 代谢 (Metabolism)
+			translationBuilder.add("enchantment.tuanzis_mod.metabolism", "代谢");
+			String metabolismJeiDesc = "【代谢】\n" +
+				"胸甲专属附魔。最高等级 III 级。\n" +
+				"适用部位：胸甲。附魔类型：宝藏。\n\n" +
+				"§e核心效果：§r\n" +
+				"1. §b门槛下调§r：饥饿值 ≥14 时即可触发自然生命恢复。\n" +
+				"2. §b极速自愈§r：自然恢复间隔从原版约 4 秒缩短为 3.6/3.2/2.8 秒。\n" +
+				"3. §b规则与兼容§r：不恢复饱和度，不改变饥饿消耗，不与“衔月”的夜间额外回血冲突；两者可同时触发，但单次回血仍按各自判定独立结算。\n\n" +
+				"§e获取途径：§r\n" +
+				"- 远古城市、要塞、地牢宝箱；\n" +
+				"- 不进入附魔台与村民交易。";
+			translationBuilder.add("jei.tuanzis_mod.metabolism.description", metabolismJeiDesc);
+
 			translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "日冕核心 · 烈焰统领");
 			translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "日冕黑石重盾");
 			translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "日冕烈焰棒");
@@ -1058,6 +1539,174 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.altitude_change", "日冕核心 垂直冲刺");
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.phase2_overload", "日冕核心 二阶段超载");
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.death", "日冕核心 湮灭解体");
+
+			// 拾荒回廊
+			translationBuilder.add("itemGroup.tuanzis_mod.scavenger_corridor_tab", "拾荒回廊");
+			translationBuilder.add(ModItems.HALL_RETURN_BEACON, "归厅信标");
+			translationBuilder.add(ModItems.ROOM_RETURN_BEACON, "归室信标");
+			translationBuilder.add(ModItems.MARKET_RETURN_BEACON, "归市信标");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.desc1", "手掌大小的六棱柱微型传送塔，嵌有青蓝发光水晶。");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.desc2", "水晶内流淌着微缩传送裂隙，顶部悬浮旋转黄铜立方。");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.usage", "右键使用或按 [H] 键：瞬发接引回回廊中央大厅 (0, 64, 0)。");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.desc1", "深色橡木与磨制安山岩拼接的门牌信标，嵌有暖琥珀门型水晶。");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.desc2", "做旧铜边刻有微缩铭文，顶部悬浮旋转黄铜小钥匙。");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.usage", "右键使用或按 [R] 键：瞬发接引回专属出生房间。");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.desc1", "磨制深板岩与抛光云杉木拼接的八边形信标，嵌有翠绿天平水晶。");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.desc2", "黄铜边框刻有货架与天平细纹，顶部悬浮旋转黄铜小钱币。");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.usage", "右键使用或按 [M] 键：瞬发接引前往回廊集市 (5000, 64, -5000)。");
+			translationBuilder.add("tooltip.tuanzis_mod.beacon.cooldown_tip", "仅限在拾荒回廊维度内生效，冷却时间 15 秒，不消耗物品。");
+			translationBuilder.add("message.tuanzis_mod.beacon.wrong_dimension", "信标在当前维度失去空间共鸣，仅可在拾荒回廊内激活！");
+			translationBuilder.add("message.tuanzis_mod.hall_beacon.success", "信标微光闪烁，已将你安全接引至中央大厅！");
+			translationBuilder.add("message.tuanzis_mod.room_beacon.success", "门框微光展开，已将你接引回专属归所！");
+			translationBuilder.add("message.tuanzis_mod.market_beacon.success", "金绿微光展开如摊位遮篷，已将你安全接引至回廊集市！");
+			translationBuilder.add("key.tuanzis_mod.use_hall_beacon", "使用归厅信标");
+			translationBuilder.add("key.tuanzis_mod.use_room_beacon", "使用归室信标");
+			translationBuilder.add("key.tuanzis_mod.use_market_beacon", "使用归市信标");
+			translationBuilder.add("jei.tuanzis_mod.hall_return_beacon.description", "【归厅信标】\n拾荒回廊专属便携传送道具，外观为六棱柱微型传送塔，嵌有青蓝发光水晶与悬浮黄铜立方。\n\n§e功能机制：\n1. §b中央大厅接引：在拾荒回廊维度内，右键使用或按快捷键 [H] 激活，瞬发传送至回廊中央大厅 (0, 64, 0)。\n2. §b独立专属槽位：进入拾荒回廊时自动装配于独立饰品栏，不占常规背包，在回廊内死亡不掉落。\n3. §b无消耗与冷却：使用不消耗任何材料，带 15 秒冷却时间。离开回廊后自动安全封存。");
+			translationBuilder.add("jei.tuanzis_mod.room_return_beacon.description", "【归室信标】\n拾荒回廊专属便携传送道具，外观为深色橡木门牌信标，嵌有暖琥珀门型水晶与悬浮黄铜钥匙。\n\n§e功能机制：\n1. §b专属房间接引：在拾荒回廊维度内，右键使用或按快捷键 [R] 激活，瞬发传送至玩家专属出生房间平台。\n2. §b独立专属槽位：进入拾荒回廊时自动装配于独立饰品栏，不占常规背包，在回廊内死亡不掉落。\n3. §b无消耗与冷却：使用不消耗任何材料，带 15 秒冷却时间。离开回廊后自动安全封存。");
+			translationBuilder.add("jei.tuanzis_mod.market_return_beacon.description", "【归市信标】\n拾荒回廊专属便携传送道具，外观为八边形扁盒信标，嵌有翠绿天平水晶与悬浮黄铜钱币。\n\n§e功能机制：\n1. §b集市商店接引：在拾荒回廊维度内，右键使用或按快捷键 [M] 激活，瞬发传送至回廊集市 (5000, 64, -5000)。\n2. §b独立专属槽位：进入拾荒回廊时自动装配于独立饰品栏，不占常规背包，在回廊内死亡不掉落。\n3. §b无消耗与冷却：使用不消耗任何材料，带 15 秒冷却时间。离开回廊后自动安全封存。");
+			translationBuilder.add("message.tuanzis_mod.scavenger_corridor.no_sleep", "回廊空间扭曲，无法在此入眠与设置重生点");
+			translationBuilder.add("container.tuanzis_mod.scavenger_enderchest", "拾荒保险箱 (9格)");
+			translationBuilder.add("command.tuanzis_mod.corridor.already_in", "你已经身处拾荒回廊之中！");
+			translationBuilder.add("command.tuanzis_mod.corridor.not_in", "你当前不在拾荒回廊中，无法离开！");
+			translationBuilder.add("command.tuanzis_mod.corridor.enter_success", "已进入拾荒回廊！身上状态已备份，当前为冒险模式。");
+			translationBuilder.add("command.tuanzis_mod.corridor.leave_success", "已安全离开拾荒回廊！原世界状态与物品已完全恢复。");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE, "黑匣子数据核心箱");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE.asItem(), "黑匣子数据核心箱");
+			translationBuilder.add("container.tuanzis_mod.blackbox_core_case", "黑匣子数据核心箱");
+			translationBuilder.add("jei.tuanzis_mod.blackbox_core_case.description", "【黑匣子数据核心箱】\n拾荒回廊中的高价值电子与情报类物资方块，外形为加固服务器机箱与航空黑匣子的结合体。\n\n§e外观与细节：\n1. §b精密合金箱体：主体为哑光黑色合金，四边包覆暗银色金属护角与青色光带，正面搭载六色状态指示灯与圆形解码接口。\n2. §b脉动数据天线：箱顶设有短粗天线，天线顶端悬浮着脉动的蓝色能量光点。\n3. §b环境反馈：靠近时可听见细微的硬盘转动与电流杂音，开启搜刮时喷发出青色数据流粒子。\n4. §b高容量储存：拥有 27 格独立高保密数据储存空间，可用于在回廊中安全存放核心情报物资。");
+
+			// 拾荒回廊基地设施方块
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_STASH_CABINET, "基地仓库柜");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_STASH_CABINET.asItem(), "基地仓库柜");
+			translationBuilder.add("container.tuanzis_mod.base_stash_cabinet", "基地私人仓库");
+			translationBuilder.add("jei.tuanzis_mod.base_stash_cabinet.description", "【基地仓库柜】\n位于拾荒回廊玩家专属基地的私人储物柜。\n\n§e功能机制：\n1. §b独立仓储：专属于玩家个人的安全空间，其他玩家无法打开。\n2. §b支持扩容：初始拥有 10 行（90格）空间，可在基地整备台最高扩容至 55 行。\n3. §b智能检索：支持按名称与类别筛选，并支持一键自动整理。");
+
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_UPGRADE_STATION, "基地整备升级台");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_UPGRADE_STATION.asItem(), "基地整备升级台");
+			translationBuilder.add("container.tuanzis_mod.base_upgrade_station", "基地整备升级台");
+			translationBuilder.add("jei.tuanzis_mod.base_upgrade_station.description", "【基地整备升级台】\n位于拾荒回廊基地的单兵系统升级核心工作台。\n\n§e功能机制：\n1. §b单兵负重升级：消耗回廊搜刮物资将单兵负重系统从 1 级升至 8 级（负重与超负荷阈值各提升 35kg）。\n2. §b基地仓库扩容：消耗回廊搜刮物资将基地仓库从 10 行扩容至最高 55 行。\n3. §b材料安全扣除：升级时优先消耗身上背包与快捷栏物资，界面实时显示消耗进度。");
+
+			// 拾荒回廊 6 阶搜刮物
+			translationBuilder.add(ModItems.SCAVENGER_BANDAGE_ROLL, "战地加压绷带卷");
+			translationBuilder.add("item.tuanzis_mod.scavenger_bandage_roll.lore", "战地急救必备加压止血绷带，质地轻盈。");
+			translationBuilder.add("jei.tuanzis_mod.scavenger_bandage_roll.description", "【战地加压绷带卷】\n品质：普通 (COMMON)\n类别：医疗物资 | 占地：1x1 | 重量：0.20 kg | 标定价值：800 勘探金\n基础搜索时长：1.2 秒\n用于基地设施升级与战地基础止血。");
+
+			translationBuilder.add(ModItems.STASIS_GEL_INJECTOR, "凝滞凝胶注射器");
+			translationBuilder.add("item.tuanzis_mod.stasis_gel_injector.lore", "含高浓度微晶凝滞剂的医用注射器，能迅速稳定体征。");
+			translationBuilder.add("jei.tuanzis_mod.stasis_gel_injector.description", "【凝滞凝胶注射器】\n品质：精良 (UNCOMMON)\n类别：医疗物资 | 占地：1x2 | 重量：0.45 kg | 标定价值：2400 勘探金\n基础搜索时长：1.6 秒\n用于基地系统升级与战地深度急救。");
+
+			translationBuilder.add(ModItems.PHASE_RELAY_CHIP, "相位中继芯片");
+			translationBuilder.add("item.tuanzis_mod.phase_relay_chip.lore", "精密超导芯片，表面刻有微米级相位跳跃走线。");
+			translationBuilder.add("jei.tuanzis_mod.phase_relay_chip.description", "【相位中继芯片】\n品质：稀有 (RARE)\n类别：电子元件 | 占地：1x1 | 重量：0.30 kg | 标定价值：6800 勘探金\n基础搜索时长：2.0 秒\n用于高阶基地整备与数据传输。");
+
+			translationBuilder.add(ModItems.HYDRAULIC_SERVO_ARM, "液压伺服机械臂");
+			translationBuilder.add("item.tuanzis_mod.hydraulic_servo_arm.lore", "重型外骨骼液压驱动臂，输出扭矩极其惊人。");
+			translationBuilder.add("jei.tuanzis_mod.hydraulic_servo_arm.description", "【液压伺服机械臂】\n品质：史诗 (EPIC)\n类别：工业部件 | 占地：2x2 | 重量：3.80 kg | 标定价值：19500 勘探金\n基础搜索时长：3.0 秒\n用于强化负重结构与仓储自动化构架。");
+
+			translationBuilder.add(ModItems.SECTOR_07_CIPHER_CARD, "07区加密密钥卡");
+			translationBuilder.add("item.tuanzis_mod.sector_07_cipher_card.lore", "军工级非对称量子加密卡，印有 07 实验区识别标记。");
+			translationBuilder.add("jei.tuanzis_mod.sector_07_cipher_card.description", "【07区加密密钥卡】\n品质：传说 (LEGENDARY)\n类别：密钥卡 | 占地：1x1 | 重量：0.10 kg | 标定价值：65000 勘探金\n基础搜索时长：0.8 秒\n极高价值的机密解密卡，用于开启机密设施与高阶升级。");
+
+			translationBuilder.add(ModItems.ABYSSAL_PRISM_CORE, "深渊棱镜核心");
+			translationBuilder.add("item.tuanzis_mod.abyssal_prism_core.lore", "凝结深渊裂隙虚空能量的多面结晶，散发未知脉动。");
+			translationBuilder.add("jei.tuanzis_mod.abyssal_prism_core.description", "【深渊棱镜核心】\n品质：神话 (MYTHIC)\n类别：深渊遗物 | 占地：2x3 | 重量：6.50 kg | 标定价值：320000 勘探金\n基础搜索时长：4.5 秒\n回廊深处的无价瑰宝，蕴含逆转维度的终极能量。");
+
+			// 拾荒回廊 3 阶战术背囊
+			translationBuilder.add(ModItems.FIELD_SLING_PACK, "野战斜挎包 (4x4)");
+			translationBuilder.add("item.tuanzis_mod.field_sling_pack.lore", "轻便单肩斜挎背囊，内部提供 4x4 二维战术网格空间。");
+			translationBuilder.add("jei.tuanzis_mod.field_sling_pack.description", "【野战斜挎包】\n品质：普通 (COMMON)\n类别：战术背囊 | 占地：2x2 | 自身重量：1.20 kg | 标定价值：3000 勘探金\n装备后在回廊战术界面展开 4x4 内部网格。");
+
+			translationBuilder.add(ModItems.TACTICAL_ASSAULT_PACK, "战术突击背囊 (6x5)");
+			translationBuilder.add("item.tuanzis_mod.tactical_assault_pack.lore", "军规级双肩战术背囊，内部提供 6x5 二维战术网格空间。");
+			translationBuilder.add("jei.tuanzis_mod.tactical_assault_pack.description", "【战术突击背囊】\n品质：稀有 (RARE)\n类别：战术背囊 | 占地：3x3 | 自身重量：2.50 kg | 标定价值：15000 勘探金\n装备后在回廊战术界面展开 6x5 内部网格。");
+
+			translationBuilder.add(ModItems.EXPEDITION_HEAVY_RIG, "远征重型携行具 (8x6)");
+			translationBuilder.add("item.tuanzis_mod.expedition_heavy_rig.lore", "重型外骨骼支撑远征背囊，内部提供 8x6 超大二维战术网格空间。");
+			translationBuilder.add("jei.tuanzis_mod.expedition_heavy_rig.description", "【远征重型携行具】\n品质：传说 (LEGENDARY)\n类别：战术背囊 | 占地：3x4 | 自身重量：4.50 kg | 标定价值：58000 勘探金\n装备后在回廊战术界面展开 8x6 内部网格。");
+
+			// 拾荒回廊 4 阶黑匣安全箱
+			translationBuilder.add(ModItems.PROTO_LOCKBOX_1X2, "原型黑匣保险舱 (1x2)");
+			translationBuilder.add("item.tuanzis_mod.proto_lockbox_1x2.lore", "单兵基础数据黑匣，死亡不掉落，内部提供 1x2 保全空间。");
+			translationBuilder.add("jei.tuanzis_mod.proto_lockbox_1x2.description", "【原型黑匣保险舱】\n品质：普通 (COMMON)\n类别：黑匣保险舱 | 占地：1x2 | 内部空间：1x2\n死亡绝对保全，舱内物资不掉落。");
+
+			translationBuilder.add(ModItems.REINFORCED_SAFEBOX_2X2, "强化黑匣保险舱 (2x2)");
+			translationBuilder.add("item.tuanzis_mod.reinforced_safebox_2x2.lore", "加固钛合金单兵保险舱，死亡不掉落，内部提供 2x2 保全空间。");
+			translationBuilder.add("jei.tuanzis_mod.reinforced_safebox_2x2.description", "【强化黑匣保险舱】\n品质：稀有 (RARE)\n类别：黑匣保险舱 | 占地：2x2 | 内部空间：2x2\n死亡绝对保全，舱内物资不掉落。");
+
+			translationBuilder.add(ModItems.CIPHER_SAFEBOX_2X3, "保密黑匣保险舱 (2x3)");
+			translationBuilder.add("item.tuanzis_mod.cipher_safebox_2x3.lore", "量子加密军用保险舱，死亡不掉落，内部提供 2x3 保全空间。");
+			translationBuilder.add("jei.tuanzis_mod.cipher_safebox_2x3.description", "【保密黑匣保险舱】\n品质：史诗 (EPIC)\n类别：黑匣保险舱 | 占地：2x3 | 内部空间：2x3\n死亡绝对保全，舱内物资不掉落。");
+
+			translationBuilder.add(ModItems.AEGIS_CORE_VAULT_3X3, "宙斯盾核心保险舱 (3x3)");
+			translationBuilder.add("item.tuanzis_mod.aegis_core_vault_3x3.lore", "终极防卫宙斯盾级保密金库，死亡不掉落，内部提供 3x3 超大保全空间。");
+			translationBuilder.add("jei.tuanzis_mod.aegis_core_vault_3x3.description", "【宙斯盾核心保险舱】\n品质：神话 (MYTHIC)\n类别：黑匣保险舱 | 占地：3x3 | 内部空间：3x3\n死亡绝对保全，舱内物资不掉落。");
+
+			// GUI 界面与状态翻译
+			translationBuilder.add("container.tuanzis_mod.corridor_loadout", "回廊战术负重装备");
+			translationBuilder.add("container.tuanzis_mod.scavenger_tactical", "回廊战术搜刮");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.backpack", "战术背囊");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.safebox", "黑匣保险舱 (死亡保全)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.container", "搜刮目标");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.base_stash", "基地中央仓储");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.weight", "战术负重: %s / %s kg");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.overweight", "超重");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.overloaded", "严重超负荷 (禁止奔跑)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.normal_weight", "负重正常");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.auto_sort", "自动整理");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.search_hint", "点击未搜刮物品加速搜索，右键/R键旋转");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.level", "等级 %s");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.upgrade", "升级");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.max_level", "已达到最高等级");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.materials_insufficient", "升级所需物资不足");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.weight_system", "单兵负重系统 (最高 8 级)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.stash_system", "基地仓库扩容 (最高 10 级)");
+
+			// 品质与类别
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.common", "普通");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.uncommon", "精良");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.rare", "稀有");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.epic", "史诗");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.legendary", "传说");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.mythic", "神话");
+			translationBuilder.add("scavenger.category.tuanzis_mod.medical", "医疗物资");
+			translationBuilder.add("scavenger.category.tuanzis_mod.electronics", "电子元件");
+			translationBuilder.add("scavenger.category.tuanzis_mod.industrial", "工业部件");
+			translationBuilder.add("scavenger.category.tuanzis_mod.keycard", "密钥卡");
+			translationBuilder.add("scavenger.category.tuanzis_mod.provision", "生存补给");
+			translationBuilder.add("scavenger.category.tuanzis_mod.tool", "战术工具");
+			translationBuilder.add("scavenger.category.tuanzis_mod.relic", "深渊遗物");
+			translationBuilder.add("scavenger.category.tuanzis_mod.backpack", "战术背囊");
+			translationBuilder.add("scavenger.category.tuanzis_mod.safebox", "黑匣保险舱");
+			translationBuilder.add("scavenger.category.tuanzis_mod.misc", "杂项物资");
+
+			// Tooltip 属性行
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.size_and_weight", "占地尺寸: %s | 单件重量: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.calibrated_value", "标定基础价值: %s 勘探金");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.backpack_capacity", "🎒 战术背囊网格: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.safebox_capacity", "🔒 黑匣保全网格: %s (死亡不掉落)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger_loadout", "拾荒回廊 · 角色战术整备");
+
+			// 侦察战术背包 (4x5)
+			translationBuilder.add(ModItems.SCOUT_TACTICAL_PACK, "侦察战术背包 (4x5)");
+			translationBuilder.add("item.tuanzis_mod.scout_tactical_pack.lore", "中型双肩侦察背囊，内部提供 4x5 二维战术网格空间。");
+			translationBuilder.add("jei.tuanzis_mod.scout_tactical_pack.description", "【侦察战术背包】\n品质：精良 (UNCOMMON)\n类别：战术背囊 | 占地：2x3 | 自身重量：1.80 kg | 标定价值：7500 勘探金\n装备后在回廊战术界面展开 4x5 内部网格。");
+		
+			// 黄金口袋
+			translationBuilder.add(ModItems.GOLDEN_POCKET, "黄金口袋");
+			translationBuilder.add("container.tuanzis_mod.golden_pocket", "黄金口袋");
+			translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "黄金口袋是一个拥有 6×9（54格，即大箱子）超大便携存储空间的道具。\n手持右键即可随时随地打开。\n【防套娃机制】内部严禁放入黄金口袋与任何潜影盒。\n【模组联动】原生深度联动“投影 (Litematica)”，投影界面的材料清单会自动统计并计入黄金口袋内装载的所有材料。");
+
+			// 凋灵击杀与灵魂绑定获取
+			translationBuilder.add("chat.tuanzis_mod.witherkills.actionbar", "已累计击杀凋灵：%s/%s");
+			translationBuilder.add("chat.tuanzis_mod.witherkills.reward", "§6§l【成就达成】§e你已累计击杀 §b%s§e 只凋灵（玩家总体伤害占比≥90%%），已在身旁掉落 1 本§d《灵魂绑定》§e附魔书！");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.player_only", "该指令只能由玩家执行！");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.query.self", "§a当前已累计击杀凋灵（玩家总体伤害占比≥90%%）：§e%s§a 只。距离下一本灵魂绑定附魔书还差：§e%s§a 只。");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.query.other", "§a玩家 §b%s§a 当前已累计击杀凋灵：§e%s§a 只，距离下一本灵魂绑定附魔书还差：§e%s§a 只。");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.add.success", "§a已为玩家 §b%s§a 增加 §e%s§a 只凋灵击杀数，当前总数：§e%s§a 只。");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.set.success", "§a已将玩家 §b%s§a 的凋灵击杀数设置为：§e%s§a 只。");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.reset.success", "§a已重置玩家 §b%s§a 的凋灵击杀数为 0。");
+			translationBuilder.add("jei.tuanzis_mod.soulbound.description", "【灵魂绑定】附魔书\n\n§e功能机制：\n死亡时附有此附魔的物品直接保留在背包中，不会掉落。\n无法通过普通附魔台获得。\n\n§b获取途径：\n1. §e监守者击杀掉落：单人对监守者造成超过 50% 伤害击杀时有 10%（每级抢夺 +2.5%）概率掉落。\n2. §e凋灵击杀累计奖励：玩家群体对凋灵造成的总伤害占比 ≥ 90% 且最后一击由玩家杀死凋灵时，为该击杀者累计有效击杀数。累计达到 1000 次（及后续每满 1000 次）时，将在击杀者身旁直接掉落 1 本《灵魂绑定》附魔书！\n- 可使用指令 §b/witherkills§e 查看个人当前击杀进度。");
 		}
 	}
 
@@ -1094,6 +1743,14 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.SAKURA_FESTIVAL_CARD_CHEST, "Sakura Festival Card Chest");
 			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_PACK, "National Day Card Pack");
 			translationBuilder.add(ModItems.NATIONAL_DAY_CARD_CHEST, "National Day Card Chest");
+			translationBuilder.add(ModItems.HALLOWEEN_CARD_PACK, "Halloween Card Pack");
+			translationBuilder.add(ModItems.HALLOWEEN_CARD_CHEST, "Halloween Card Chest");
+			translationBuilder.add(ModItems.CHRISTMAS_CARD_PACK, "Christmas Card Pack");
+			translationBuilder.add(ModItems.CHRISTMAS_CARD_CHEST, "Christmas Card Chest");
+			translationBuilder.add(ModItems.NEW_YEAR_CARD_PACK, "New Year Card Pack");
+			translationBuilder.add(ModItems.NEW_YEAR_CARD_CHEST, "New Year Card Chest");
+			translationBuilder.add(ModItems.PRIME_MINISTER_CARD_PACK, "New Year Festival Card Pack");
+			translationBuilder.add(ModItems.PRIME_MINISTER_CARD_CHEST, "New Year Festival Card Chest");
 			translationBuilder.add("jei.tuanzis_mod.national_day_card_pack.description",
 				"【National Day Card Pack】\n" +
 				"Gacha voucher used for single rolls in the National Day Festival limited pool.\n\n" +
@@ -1112,14 +1769,87 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"§ePity Mechanics:§r\n" +
 				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
 
+			translationBuilder.add("jei.tuanzis_mod.halloween_card_pack.description",
+				"【Halloween Card Pack】\n" +
+				"Gacha voucher used for single rolls in the Halloween Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §bSingle Roll§r: Right-click to consume 1 card pack and launch a firework rocket to roll 1 prize from the Halloween limited pool.\n" +
+				"2. §bPool Preview§r: Sneak (Shift) + Right-click to open pool item preview and fate anchor configuration.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.halloween_card_chest.description",
+				"【Halloween Card Chest】\n" +
+				"Gacha chest used for 10-fold rolls in the Halloween Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §b10-Fold Rolls§r: Right-click to consume 1 chest, launching 10 firework rockets in a circle to roll 10 prizes consecutively!\n" +
+				"2. §b10-Fold Guarantee§r: Guaranteed at least 1 Rare or higher prize per 10-fold roll.\n" +
+				"3. §bPool Preview§r: Sneak (Shift) + Right-click to open pool details and fate anchor interface.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+
+			translationBuilder.add("jei.tuanzis_mod.christmas_card_pack.description",
+				"【Christmas Card Pack】\n" +
+				"Gacha voucher used for single rolls in the Christmas Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §bSingle Roll§r: Right-click to consume 1 card pack and launch a firework rocket to roll 1 prize from the Christmas limited pool.\n" +
+				"2. §bPool Preview§r: Sneak (Shift) + Right-click to open pool item preview and fate anchor configuration.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.christmas_card_chest.description",
+				"【Christmas Card Chest】\n" +
+				"Gacha chest used for 10-fold rolls in the Christmas Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §b10-Fold Rolls§r: Right-click to consume 1 chest, launching 10 firework rockets in a circle to roll 10 prizes consecutively!\n" +
+				"2. §b10-Fold Guarantee§r: Guaranteed at least 1 Rare or higher prize per 10-fold roll.\n" +
+				"3. §bPool Preview§r: Sneak (Shift) + Right-click to open pool details and fate anchor interface.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.new_year_card_pack.description",
+				"【New Year Card Pack】\n" +
+				"Gacha voucher used for single rolls in the New Year Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §bSingle Roll§r: Right-click to consume 1 card pack and launch a firework rocket to roll 1 prize from the New Year limited pool.\n" +
+				"2. §bPool Preview§r: Sneak (Shift) + Right-click to open pool item preview and fate anchor configuration.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.new_year_card_chest.description",
+				"【New Year Card Chest】\n" +
+				"Gacha chest used for 10-fold rolls in the New Year Festival limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §b10-Fold Rolls§r: Right-click to consume 1 chest, launching 10 firework rockets in a circle to roll 10 prizes consecutively!\n" +
+				"2. §b10-Fold Guarantee§r: Guaranteed at least 1 Rare or higher prize per 10-fold roll.\n" +
+				"3. §bPool Preview§r: Sneak (Shift) + Right-click to open pool details and fate anchor interface.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.prime_minister_card_pack.description",
+				"【New Year Festival Card Pack】\n" +
+				"Gacha voucher used for single rolls in the 2027 New Year Festival (Prime Minister themed) limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §bSingle Roll§r: Right-click to consume 1 card pack and launch a firework rocket to roll 1 prize from the 2027 New Year limited pool.\n" +
+				"2. §bPool Preview§r: Sneak (Shift) + Right-click to open pool item preview and fate anchor configuration.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+			translationBuilder.add("jei.tuanzis_mod.prime_minister_card_chest.description",
+				"【New Year Festival Card Chest】\n" +
+				"Gacha chest used for 10-fold rolls in the 2027 New Year Festival (Prime Minister themed) limited pool.\n\n" +
+				"§eUsage:§r\n" +
+				"1. §b10-Fold Rolls§r: Right-click to consume 1 chest, launching 10 firework rockets in a circle to roll 10 prizes consecutively!\n" +
+				"2. §b10-Fold Guarantee§r: Guaranteed at least 1 Rare or higher prize per 10-fold roll.\n" +
+				"3. §bPool Preview§r: Sneak (Shift) + Right-click to open pool details and fate anchor interface.\n\n" +
+				"§ePity Mechanics:§r\n" +
+				"Shares pity with other limited pools. Guaranteed featured legendary within 90 rolls, and epic within 20 rolls!");
+
 			// Blueprint system English translations
 			translationBuilder.add(ModItems.COMPRESSED_BUILD_SLURRY, "Compressed Build Slurry");
 			translationBuilder.add(ModItems.BLANK_BLUEPRINT, "Blank Blueprint");
 			translationBuilder.add(ModItems.STRUCTURE_BLUEPRINT, "Structure Blueprint");
 			translationBuilder.add(ModItems.LOGIC_CORE, "Logic Core");
 			translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "Player Control Core");
+			translationBuilder.add(ModItems.CREATIVE_CORE, "Creative Core");
+			translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§eDebug Item§7: When detected in nearby chests by a Blueprint Cannon, continues printing regardless of missing materials.");
 			translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【Logic Core】\nA critical control hardware component required to craft the Player Simulator.\n\nIt features a precise microchip circuit board enclosed in a steel casing with glowing redstone wires. Specially optimized for processing complex high-speed pulse logic calculations.");
 			translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【Player Control Core】\nAn advanced bio-electronic computing core used to read and map player behavior patterns. Serves as the neural hub of the Player Simulator.\n\nFormed by a skull-shaped microchip integrated with external redstone circuitry, it maps and replicates various user interactions such as left-clicks, right-clicks, and charge-attacks.");
+			translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【Creative Core】\nA debug core item tailored for the Blueprint Construction System.\n\n§eMechanics:\nWhen a Blueprint Cannon detects a 【Creative Core】 inside any container (chests, barrels, or shulker boxes) within a 5-block radius, it unlocks infinite creative construction mode:\n1. §bIgnore Missing Materials: The Blueprint Cannon will continue printing without pausing even if required blocks or entity items are completely missing.\n2. §bZero Material Deduction: Does not consume or deduct any building blocks or entity items from the containers.");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "Blueprint Cannon");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "Blueprint Cannon");
 			translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "Blueprint Table");
@@ -1218,6 +1948,18 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.saved_blueprints", "Saved Blueprints");
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "Size: %s x %s x %s");
 			translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "%d Blocks Total");
+			translationBuilder.add("gui.tuanzis_mod.blueprint_table.refresh", "Refresh");
+
+			// 3D Blueprint Inspector GUI
+			translationBuilder.add("gui.tuanzis_mod.blueprint_inspector.title", "3D Blueprint Inspector");
+			translationBuilder.add("gui.tuanzis_mod.inspector.search_hint", "Search block name or ID...");
+			translationBuilder.add("gui.tuanzis_mod.inspector.project_world", "Project to World");
+			translationBuilder.add("gui.tuanzis_mod.inspector.clear_ghost", "Clear Ghost");
+			translationBuilder.add("gui.tuanzis_mod.inspector.back", "Back");
+			translationBuilder.add("gui.tuanzis_mod.inspector.sort", "Sort");
+			translationBuilder.add("gui.tuanzis_mod.inspector.mode_single", "Single Layer");
+			translationBuilder.add("gui.tuanzis_mod.inspector.mode_all", "Cumulative");
+			translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "Block List");
 
 			// Entity capture Tooltip
 			translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "Contains Entities (Count: %s):");
@@ -1620,6 +2362,57 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"4. §bAnvil Upgrades§r: Must be upgraded up to Level IV by combining items or books on an anvil.";
 			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_reserved_chamber.description", reservedChamberJeiDescEn);
 
+			// Ancient Scroll - Standing Firm English translations
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_standing_firm", "Ancient Scroll - Standing Firm");
+			String standingFirmJeiDescEn = "[Ancient Scroll - Standing Firm]\n" +
+				"An archaic defensive secret inscribed in ancient scrolls. Max Level V. Applicable to: Chestplates.\n\n" +
+				"§eCore Effect:§r\n" +
+				"When receiving lethal damage, has a §a(Level × 20%)§r chance to trigger protective evaluation (precedes Totem of Undying and Potions of Undying):\n" +
+				"- §bLevel I§r: §a20%§r trigger chance\n" +
+				"- §bLevel II§r: §a40%§r trigger chance\n" +
+				"- §bLevel III§r: §a60%§r trigger chance\n" +
+				"- §bLevel IV§r: §a80%§r trigger chance\n" +
+				"- §bLevel V§r: §a100%§r trigger chance\n\n" +
+				"§eExperience Cost & Survival Rules:§r\n" +
+				"1. §bLethal Excess Damage x§r: If the player has 10 HP and receives 20 damage, surviving with 1 HP incurs 9 damage and negates 11 excess damage (x = 11).\n" +
+				"2. §bExperience Cost E(x, y)§r: If total current experience points > E(x, y), consumes E experience points to nullify excess lethal damage, leaving the player with 1.0 HP alongside temporary invulnerability frames and custom visual/auditory effects.\n" +
+				"3. §bPriority§r: If evaluation fails or experience is insufficient, original damage proceeds to normal Totem of Undying or death processing.\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient scrolls can only naturally generate in Enchanting Tables, not from villager trades or loot chests.\n" +
+				"2. §bLevel Requirement§r: Requires Enchanting Table Level §630 or above§r (Tier 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel 1§r can be obtained directly from Enchanting Tables.\n" +
+				"4. §bAnvil Upgrades§r: Must be upgraded up to Level V by combining items or books on an anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_standing_firm.description", standingFirmJeiDescEn);
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.advanced_header", "§d[Ancient Scroll - Standing Firm]§r");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_chance", "§7- Cheat-Death Chance: §a%s%%");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.block_damage", "§7- Max Blockable Lethal Damage: §e+%s HP");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_standing_firm.insufficient_xp", "§7- Max Blockable Lethal Damage: §c0.0 HP (Insufficient XP)");
+
+			// Ancient Scroll - Seasoned
+			translationBuilder.add("enchantment.tuanzis_mod.ancient_scroll_seasoned", "Ancient Scroll - Seasoned");
+			String seasonedJeiDescEn = "[Ancient Scroll - Seasoned]\n" +
+				"An ancient scroll art of harvesting essence. Max Level: IV. Applicable to: Helmets only.\n\n" +
+				"§eCore Effect:§r\n" +
+				"When absorbing experience orbs, significantly boosts the amount of experience received:\n" +
+				"§7Boost formula: §a5% × Level + max(0, Level - 3) × 5%§r\n" +
+				"- §bLevel I§r: +§a5.0%§r experience gained\n" +
+				"- §bLevel II§r: +§a10.0%§r experience gained\n" +
+				"- §bLevel III§r: +§a15.0%§r experience gained\n" +
+				"- §bLevel IV§r: +§a25.0%§r experience gained\n\n" +
+				"§eCalculation Rules:§r\n" +
+				"1. §bActual Experience Formula§r: Base XP × (1 + 5% × Level + max(0, Level - 3) × 5%).\n" +
+				"   For example, absorbing an orb with 5 XP at Level IV yields 5 × (1 + 25%) = 6.25 XP.\n" +
+				"2. §bExpectation-Preserving Rounding§r: Fractional XP increments use stochastic rounding to preserve long-term mathematical expectations without rounding-down loss on small orbs.\n" +
+				"3. §bUniversal Benefit§r: Boosted XP fully applies to both Mending gear repairs and direct player experience bar growth.\n\n" +
+				"§eAcquisition & Ancient Scroll Rules:§r\n" +
+				"1. §bEnchanting Table Only§r: Ancient scrolls can only naturally generate in Enchanting Tables, not from villager trades or loot chests.\n" +
+				"2. §bLevel Requirement§r: Requires Enchanting Table Level §630 or above§r (Tier 3 with 15 bookshelves) to appear.\n" +
+				"3. §bInitial Level Cap§r: Only §eLevel 1§r can be obtained directly from Enchanting Tables.\n" +
+				"4. §bAnvil Upgrades§r: Must be upgraded up to Level IV by combining items or books on an anvil.";
+			translationBuilder.add("jei.tuanzis_mod.ancient_scroll_seasoned.description", seasonedJeiDescEn);
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_seasoned.advanced_header", "§d[Ancient Scroll - Seasoned]§r");
+			translationBuilder.add("tooltip.tuanzis_mod.ancient_scroll_seasoned.boost", "§7- Absorbed XP Boost: §a+%s%%");
+
 			translationBuilder.add(ModStatusEffects.FLIGHT.value(), "Flight");
 			translationBuilder.add(ModStatusEffects.UNDYING.value(), "Undying");
 			translationBuilder.add(ModStatusEffects.TEARING.value(), "Tearing");
@@ -1966,7 +2759,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("tuanzis_mod.mode.semi_replace", "Semi Replace");
 			translationBuilder.add("tuanzis_mod.mode.replace_air_only", "Replace Air Only");
 			translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6World Sculptor's Pen toggled to: %s Mode");
-			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it (prioritizes selecting/changing block over undo). The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory and shulker boxes inside. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click in the air within 60 seconds to undo. Only returns blocks and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
+			translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it (prioritizes selecting/changing block over undo). Accurately records block face/facing, and stores type, half, shape states for stairs and slabs. The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory, shulker boxes, and golden pockets. Double slabs (type=double) strictly consume 2 slab items each. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click in the air within 60 seconds to undo. Only returns blocks (2 items per double slab) and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
 			translationBuilder.add(ModItems.VOID_INK_INGOT, "Void Ink Ingot");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "A deep purple ink ingot pressed from condensed dragon's breath and echo shards,");
 			translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.");
@@ -2075,6 +2868,340 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 				"Treasure enchantment, obtainable exclusively from structure/dungeon loot chests, fishing, or villager trading.";
 			translationBuilder.add("jei.tuanzis_mod.finality.description", finalityJeiDescEn);
 
+			translationBuilder.add("enchantment.tuanzis_mod.double_jump", "Double Jump");
+			String doubleJumpJeiDescEn = "[Double Jump]\n" +
+				"Boots exclusive enchantment. Max Level: I. Rarity: Very Rare.\n" +
+				"Applicable to: Boots. Cannot be obtained in survival mode through standard means (unavailable via Enchanting Tables, loot chests, fishing, or trading; obtainable only in Creative Mode).\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bMid-air Double Jump§r: While wearing enchanted boots, pressing the jump key in mid-air performs an additional leap.\n" +
+				"2. §bFull Stat & Potion Scaling§r: Jump height mirrors standard ground jump height and fully benefits from Jump Boost potion effects.\n" +
+				"3. §bFall Distance Reset§r: Resets fall distance upon execution. Recharged once touching ground.";
+			translationBuilder.add("jei.tuanzis_mod.double_jump.description", doubleJumpJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.extension", "Extension");
+			String extensionJeiDescEn = "[Extension]\n" +
+				"Chestplate exclusive enchantment. Max Level: V. Rarity: Uncommon.\n" +
+				"Applicable to: Chestplate. Non-treasure enchantment.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bBlock Reach Extension§r: While wearing enchanted chestplate, extends the player's reach distance when interacting with and breaking blocks (does not affect entities).\n" +
+				"2. §bReach Formula§r: Extends block reach by §a0.75 + 0.3 × level§r blocks (+1.05 at Lv.I, +1.35 at Lv.II, +1.65 at Lv.III, +1.95 at Lv.IV, +2.25 at Lv.V).\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, dungeon/loot chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.extension.description", extensionJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.ranged_strike", "Ranged Strike");
+			String rangedStrikeJeiDescEn = "[Ranged Strike]\n" +
+				"Chestplate exclusive treasure enchantment. Max Level: V. Rarity: Rare.\n" +
+				"Applicable to: Chestplate. Treasure enchantment (cannot be obtained directly from Enchanting Tables).\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bEntity Reach Extension§r: While wearing enchanted chestplate, extends attack and interaction reach against entities (does not affect blocks).\n" +
+				"2. §bReach Formula§r: Extends entity reach by §a0.5 + 0.25 × level§r blocks (+0.75 at Lv.I, +1.00 at Lv.II, +1.25 at Lv.III, +1.50 at Lv.IV, +1.75 at Lv.V).\n\n" +
+				"§eAcquisition:§r\n" +
+				"Treasure enchantment, obtainable from dungeon/structure loot chests or fishing (cannot be obtained from villager trades).";
+			translationBuilder.add("jei.tuanzis_mod.ranged_strike.description", rangedStrikeJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.wayfarer", "Wayfarer");
+			String wayfarerJeiDescEn = "[Wayfarer]\n" +
+				"Leggings exclusive enchantment. Max Level: III. Rarity: Uncommon.\n" +
+				"Applicable to: Leggings.\n\n" +
+				"§eCore Effects:§r\n" +
+				"Mitigates adventure-related damage:\n" +
+				"1. §bKinetic / Elytra Wall Impact§r: Mitigates §a2 × level + 2 × (level - 1)§r damage (Lv.I: 2, Lv.II: 6, Lv.III: 10).\n" +
+				"2. §bCactus Damage§r: Mitigates §a2 × level§r damage (Lv.I: 2, Lv.II: 4, Lv.III: 6).\n" +
+				"3. §bEnder Pearl Damage§r: Mitigates §a2 × level§r damage (Lv.I: 2, Lv.II: 4, Lv.III: 6).\n" +
+				"4. §bBee Sting Damage§r: Mitigates §a2 × level§r damage (Lv.I: 2, Lv.II: 4, Lv.III: 6).\n" +
+				"5. §bBee Poison Immunity§r: When level > 2 (Lv.III), immune to poison applied by bee attacks.\n" +
+				"6. §bFall Damage§r: Mitigates §a1.5 × (level + 1)§r damage (Lv.I: 3.0, Lv.II: 4.5, Lv.III: 6.0).\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, dungeon/structure loot chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.wayfarer.description", wayfarerJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.step_up", "Step Up");
+			String stepUpJeiDescEn = "[Step Up]\n" +
+				"Boots exclusive enchantment. Max Level: II. Rarity: Uncommon.\n" +
+				"Applicable to: Boots.\n\n" +
+				"§eCore Effects:§r\n" +
+				"Walk up higher obstacles without jumping (increases step height):\n" +
+				"1. §bLevel I§r: Maximum step height expands to 1.0 block, walking up full 1-block obstacles without jumping.\n" +
+				"2. §bLevel II§r: Maximum step height expands to 1.5 blocks, walking up 1.5-block obstacles (such as fences) without jumping.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, dungeon/structure loot chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.step_up.description", stepUpJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.satiation", "Satiation");
+			String satiationJeiDescEn = "[Satiation]\n" +
+				"Chestplate exclusive treasure enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Chestplate. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bMovement Exhaustion Reduction§r: Exhaustion caused by moving, sprinting, and jumping is reduced by 8% per level (Lv.I: 8%, Lv.II: 16%, Lv.III: 24%).\n" +
+				"2. §bUnchanged Actions§r: Does not reduce exhaustion from mining blocks, attacking, or taking damage.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Treasure enchantment (cannot be obtained directly from Enchanting Tables):\n" +
+				"- Desert Pyramid chests\n" +
+				"- Jungle Temple chests\n" +
+				"- Buried Treasure chests\n" +
+				"- Fishing treasure\n" +
+				"- Master-level Librarian villager trade";
+			translationBuilder.add("jei.tuanzis_mod.satiation.description", satiationJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.bountiful_harvest", "Bountiful Harvest");
+			String bountifulHarvestJeiDescEn = "[Bountiful Harvest]\n" +
+				"Hoe exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Hoe.\n\n" +
+				"§eCore Effects:§r\n" +
+				"Triggers when harvesting mature crops with this hoe:\n" +
+				"1. §bExtra Crop Drop§r: Each level grants a 10% chance to drop 1 extra crop of the same type (Lv.I: 10%, Lv.II: 20%, Lv.III: 30%). Only applies to wheat, carrots, potatoes, and beetroot.\n" +
+				"2. §bExperience Drop§r: Drops §a3 × level§r extra experience points (Lv.I: 3, Lv.II: 6, Lv.III: 9).\n" +
+				"3. §bSynergy§r: Does not replant automatically; if the hoe also has [Experience Affinity], the extra XP benefits from Experience Affinity's bonus!\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, dungeon/structure loot chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.bountiful_harvest.description", bountifulHarvestJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.experience_affinity", "Experience Affinity");
+			String experienceAffinityJeiDescEn = "[Experience Affinity]\n" +
+				"Tool/weapon enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Axe, Pickaxe, Hoe.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bMob & Ore XP Boost§r: Experience gained from killing mobs or mining ores is increased by 8% per level (Lv.I: +8%, Lv.II: +16%, Lv.III: +24%).\n" +
+				"2. §bRestrictions & Synergy§r: Does not affect furnace, trading, or fishing XP; when applied to a hoe, synergies with [Bountiful Harvest] to boost crop XP!\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, dungeon/structure loot chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.experience_affinity.description", experienceAffinityJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.bounty_of_the_sea", "Bounty of the Sea");
+			String bountyOfTheSeaJeiDescEn = "[Bounty of the Sea]\n" +
+				"Fishing Rod exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Fishing Rod.\n\n" +
+				"§eCore Effects:§r\n" +
+				"When catching a fish, each level has a 12% chance to obtain 1 extra fish of the same kind (Lv.I: 12%, Lv.II: 24%, Lv.III: 36%).\n" +
+				"The extra fish is unaffected by Luck of the Sea or Lure, and does not consume extra durability.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, shipwreck chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.bounty_of_the_sea.description", bountyOfTheSeaJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.snow_strider", "Snow Strider");
+			String snowStriderJeiDescEn = "[Snow Strider]\n" +
+				"Boots exclusive enchantment. Max Level: III. Rarity: Uncommon.\n" +
+				"Applicable to: Boots.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSnow & Ice Speed Boost§r: Movement speed on snow blocks, powder snow, and ice (ice, packed ice, blue ice, frosted ice) is increased by 8% per level (Lv.I: +8%, Lv.II: +16%, Lv.III: +24%).\n" +
+				"2. §bPowder Snow Walking§r: Prevents sinking into powder snow.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Available via Enchanting Tables, igloo chests, and villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.snow_strider.description", snowStriderJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.void_anchor", "Void Anchor");
+			String voidAnchorJeiDescEn = "[Void Anchor]\n" +
+				"Boots exclusive treasure enchantment. Max Level: I. Rarity: Very Rare.\n" +
+				"Applicable to: Boots. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"When falling into the void and taking void damage, negates the damage and immediately teleports back to the last safe ground stood on.\n" +
+				"Cooldown: 300 seconds (5 minutes).\n" +
+				"Each trigger consumes 10 durability from the boots.\n\n" +
+				"§eAcquisition:§r\n" +
+				"Loot chests only (such as End City treasure chests).";
+			translationBuilder.add("jei.tuanzis_mod.void_anchor.description", voidAnchorJeiDescEn);
+
+			translationBuilder.add("enchantment.tuanzis_mod.trading_master", "Trading Master");
+			String tradingMasterJeiDescEn = "[Trading Master]\n" +
+				"Helmet exclusive treasure enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Helmet. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bVillager Trade Discount§r: Item cost required for villager trades reduced by 10%/20%/30% per level (minimum reduced to 1).\n" +
+				"2. §bTrade XP Boost§r: Experience gained from trading increased by 20%/40%/60% per level.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Hero of the Village Reward: Guaranteed to receive a [Trading Master I] enchanted book upon completing a raid and becoming Hero of the Village!\n" +
+				"- Pillager Outpost and Village loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.trading_master.description", tradingMasterJeiDescEn);
+
+			translationBuilder.add("effect.tuanzis_mod.hong_hen", "Swan Mark");
+
+			// 增效 (Boost)
+			translationBuilder.add("enchantment.tuanzis_mod.boost", "Boost");
+			String boostJeiDescEn = "[Boost]\n" +
+				"Elytra exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Elytra. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bRocket Duration Extension§r: When boosting with firework rockets, boost duration is extended by 15%/30%/45% per level.\n" +
+				"2. §bDurability Conservation§r: Elytra durability consumption is reduced by 10%/20%/30% per level.\n" +
+				"3. §bRules§r: Does not reduce firework rocket item consumption.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- End City loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.boost.description", boostJeiDescEn);
+
+			// 回声定位 (Echolocation)
+			translationBuilder.add("enchantment.tuanzis_mod.echolocation", "Echolocation");
+			String echolocationJeiDescEn = "[Echolocation]\n" +
+				"Helmet exclusive treasure enchantment. Max Level: III. Rarity: Very Rare.\n" +
+				"Applicable to: Helmet. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSonar Pulse§r: Emits a sonar pulse every 12/9/6 seconds, making all mobs within 10/14/18 blocks glow for 5 seconds.\n" +
+				"2. §bWearer-Only Visibility§r: The glowing outline is visible only to the wearer.\n" +
+				"3. §bCrouch Dampening§r: Pulse detection radius is reduced by 50% while sneaking.\n" +
+				"4. §bDurability Free§r: Consumes no durability.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Ancient City loot chests;\n" +
+				"- Stronghold Library loot chests;\n" +
+				"- Master Librarian villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.echolocation.description", echolocationJeiDescEn);
+
+			// 抱朴 (Purity)
+			translationBuilder.add("enchantment.tuanzis_mod.purity", "Purity");
+			String purityJeiDescEn = "[Purity]\n" +
+				"Helmet exclusive enchantment. Max Level: III. Rarity: Uncommon.\n" +
+				"Applicable to: Helmet. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"Shortens eating duration by 10%/20%/30% per level.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- Village loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.purity.description", purityJeiDescEn);
+
+			// 衔月 (Moon Embrace)
+			translationBuilder.add("enchantment.tuanzis_mod.moon_embrace", "Moon Embrace");
+			String moonEmbraceJeiDescEn = "[Moon Embrace]\n" +
+				"Helmet exclusive treasure enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Helmet. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"At night with no obstruction above (open sky), heals 1 HP every 8/6/4 seconds when hunger level is at least 14.\n" +
+				"§cNote: Does not restore saturation, grant damage invulnerability, or trigger during the day or indoors.§r\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Igloo basement loot chests;\n" +
+				"- Buried Treasure;\n" +
+				"- Master Librarian villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.moon_embrace.description", moonEmbraceJeiDescEn);
+
+			// 听涛 (Wave Listener)
+			translationBuilder.add("enchantment.tuanzis_mod.wave_listener", "Wave Listener");
+			String waveListenerJeiDescEn = "[Wave Listener]\n" +
+				"Trident exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Trident. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bWater & Rain Damage Boost§r: When thrown in water or rain, damage is increased by 10%/20%/30% per level.\n" +
+				"2. §bWater Flight Speed§r: Flight velocity in water is increased by 15%/30%/45% per level.\n" +
+				"3. §bExclusion§r: Increases thrown damage only; does not increase melee attack damage.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- Underwater Ruins loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.wave_listener.description", waveListenerJeiDescEn);
+
+			// 归鸿 (Returning Swan)
+			translationBuilder.add("enchantment.tuanzis_mod.returning_swan", "Returning Swan");
+			String returningSwanJeiDescEn = "[Returning Swan]\n" +
+				"Crossbow exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Crossbow. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bSwan Mark§r: Hitting an entity with an arrow inflicts the \"Swan Mark\" status effect corresponding to the enchantment level for 3/5/7 seconds (Cooldown: 8/6/4 seconds).\n" +
+				"2. §bMark Effects§r: Marked targets glow red and take 3%/6%/9% increased damage per level from players.\n" +
+				"3. §bRules§r: Does not increase base arrow damage.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- Pillager Outpost loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.returning_swan.description", returningSwanJeiDescEn);
+
+			// 花间 (Among Flowers)
+			translationBuilder.add("enchantment.tuanzis_mod.among_flowers", "Among Flowers");
+			String amongFlowersJeiDescEn = "[Among Flowers]\n" +
+				"Leggings exclusive enchantment. Max Level: III. Rarity: Uncommon.\n" +
+				"Applicable to: Leggings. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bFloral Swiftness§r: When flowers exist within 4/6/8 blocks, movement speed is increased by 5%/10%/15% per level.\n" +
+				"2. §bScent Satiation§r: Restores 1 saturation every 10/8/6 seconds when within flower range and hunger level >= 14.\n" +
+				"3. §bRules§r: Does not restore health.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- Village loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.among_flowers.description", amongFlowersJeiDescEn);
+
+			// 石心 (Stone Heart)
+			translationBuilder.add("enchantment.tuanzis_mod.stone_heart", "Stone Heart");
+			String stoneHeartJeiDescEn = "[Stone Heart]\n" +
+				"Pickaxe exclusive enchantment. Max Level: III. Rarity: Rare.\n" +
+				"Applicable to: Pickaxe. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bMineral Essence§r: Mining stone, deepslate, andesite, diorite, or granite has a 5%/10%/15% chance per level to drop 1 XP orb (1-3 XP).\n" +
+				"2. §bSynergy & Protection§r: Consumes no extra durability; unaffected by Fortune; synergizes with Experience Affinity for enhanced XP gain.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table;\n" +
+				"- Librarian villager trades;\n" +
+				"- Abandoned Mineshaft loot chests.";
+			translationBuilder.add("jei.tuanzis_mod.stone_heart.description", stoneHeartJeiDescEn);
+
+			// 通惠 (Tonghui)
+			translationBuilder.add("enchantment.tuanzis_mod.tonghui", "Tonghui");
+			String tonghuiJeiDescEn = "[Tonghui]\n" +
+				"Universal enchantment. Max Level: I.\n" +
+				"Applicable to: Any item. Type: Special.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bReset Prior Work Penalty§r: When combined on an anvil, completely resets the item's accumulated anvil 'Prior Work Penalty' to 0.\n" +
+				"2. §bEnchantment Cost§r: Requires a fixed 20 experience levels when enchanted on an anvil.\n" +
+				"3. §cSingle Reset Constraint§r: Items already bearing Tonghui cannot have Tonghui applied again (anvil produces no output); however, other normal enchantments or repair operations remain fully functional.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- No survival acquisition method; creative inventory only.";
+			translationBuilder.add("jei.tuanzis_mod.tonghui.description", tonghuiJeiDescEn);
+
+			// 药理 (Pharmacology)
+			translationBuilder.add("enchantment.tuanzis_mod.pharmacology", "Pharmacology");
+			String pharmacologyJeiDescEn = "[Pharmacology]\n" +
+				"Helmet enchantment. Max Level: III.\n" +
+				"Applicable to: Helmet. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bPotion Extension§r: After drinking a regular beneficial bottled potion, the duration of beneficial status effects granted is increased by ×1.08/1.16/1.24.\n" +
+				"2. §bMechanics§r: Splash potions, lingering potions, and tipped arrows do not trigger this effect; effect amplifier remains unchanged.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table (level 25~30);\n" +
+				"- Librarian villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.pharmacology.description", pharmacologyJeiDescEn);
+
+			// 休眠修复 (Dormant Repair)
+			translationBuilder.add("enchantment.tuanzis_mod.dormant_repair", "Dormant Repair");
+			String dormantRepairJeiDescEn = "[Dormant Repair]\n" +
+				"Equipment & tool enchantment. Max Level: III.\n" +
+				"Applicable to: Any damageable tool, weapon, or armor. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bDormant Regeneration§r: When resting continuously in player inventory, hotbar, or equipment slots without consuming durability for 180/150/120 seconds, restores 1 durability point. Each item tracks time independently.\n" +
+				"2. §bUsage Reset§r: Any durability loss (mining, attacking, taking damage, blocking) resets the timer; will not repair items with 0 durability.\n" +
+				"3. §bZero-Cost Coexistence§r: Consumes no experience; coexists with Mending, but the item must remain unused for the required duration following any durability loss to trigger repair.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Ancient City, Stronghold, Dungeon, Nether Fortress chests;\n" +
+				"- Extremely rare fishing treasure;\n" +
+				"- Excluded from Enchanting Tables and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.dormant_repair.description", dormantRepairJeiDescEn);
+
+			// 牧养 (Husbandry)
+			translationBuilder.add("enchantment.tuanzis_mod.husbandry", "Husbandry");
+			String husbandryJeiDescEn = "[Husbandry]\n" +
+				"Leggings enchantment. Max Level: III.\n" +
+				"Applicable to: Leggings. Type: Non-treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bBreeding Acceleration§r: When feeding breeding food to animals, breeding cooldown is reduced by 20%/40%/60%.\n" +
+				"2. §bGrowth Nurturing§r: Baby animal growth rate within 8 blocks is boosted by +10%/20%/30%.\n" +
+				"3. §bApplicable Scope§r: Only affects breedable animals (Cows, Sheep, Pigs, Chickens, Rabbits, Horses, Donkeys, Mules, Llamas, Goats); drops and XP remain unchanged.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Enchanting Table (level 15~25);\n" +
+				"- Librarian villager trades.";
+			translationBuilder.add("jei.tuanzis_mod.husbandry.description", husbandryJeiDescEn);
+
+			// 代谢 (Metabolism)
+			translationBuilder.add("enchantment.tuanzis_mod.metabolism", "Metabolism");
+			String metabolismJeiDescEn = "[Metabolism]\n" +
+				"Chestplate enchantment. Max Level: III.\n" +
+				"Applicable to: Chestplate. Type: Treasure.\n\n" +
+				"§eCore Effects:§r\n" +
+				"1. §bLower Threshold§r: Triggers natural health regeneration whenever hunger is ≥14.\n" +
+				"2. §bAccelerated Regen§r: Reduces natural regeneration interval from vanilla ~4.0s to 3.6/3.2/2.8 seconds.\n" +
+				"3. §bRules & Compatibility§r: Does not restore saturation, does not alter food exhaustion, and does not conflict with Moon Embrace nighttime regeneration; both can trigger concurrently with independent checks.\n\n" +
+				"§eAcquisition:§r\n" +
+				"- Ancient City, Stronghold, Dungeon chests;\n" +
+				"- Excluded from Enchanting Tables and Villager Trades.";
+			translationBuilder.add("jei.tuanzis_mod.metabolism.description", metabolismJeiDescEn);
+
 			translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "The Cinder Sovereign");
 			translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "Corona Blackstone Shield");
 			translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "Corona Blaze Rod");
@@ -2093,6 +3220,174 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.altitude_change", "The Cinder Sovereign dives");
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.phase2_overload", "The Cinder Sovereign overloads");
 			translationBuilder.add("subtitles.tuanzis_mod.entity.cinder_sovereign.death", "The Cinder Sovereign dissipates");
+
+			// Scavenger Corridor
+			translationBuilder.add("itemGroup.tuanzis_mod.scavenger_corridor_tab", "Scavenger Corridor");
+			translationBuilder.add(ModItems.HALL_RETURN_BEACON, "Hall Return Beacon");
+			translationBuilder.add(ModItems.ROOM_RETURN_BEACON, "Room Return Beacon");
+			translationBuilder.add(ModItems.MARKET_RETURN_BEACON, "Market Return Beacon");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.desc1", "A palm-sized hexagonal miniature beacon tower with a glowing cyan crystal.");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.desc2", "Flowing spatial rift filaments within, orbiting brass cubes overhead.");
+			translationBuilder.add("tooltip.tuanzis_mod.hall_return_beacon.usage", "Right-click or press [H]: Instantly teleports to the Central Hall (0, 64, 0).");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.desc1", "A plaque-like beacon carved from dark oak and andesite with an amber door-shaped crystal.");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.desc2", "Weathered brass borders with runes and an orbiting brass key overhead.");
+			translationBuilder.add("tooltip.tuanzis_mod.room_return_beacon.usage", "Right-click or press [R]: Instantly teleports to your personal spawn room.");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.desc1", "An octagonal beacon crafted of polished deepslate and spruce with an emerald scale crystal.");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.desc2", "Weathered brass borders engraved with shelves and scales, an orbiting brass coin overhead.");
+			translationBuilder.add("tooltip.tuanzis_mod.market_return_beacon.usage", "Right-click or press [M]: Instantly teleports to the Corridor Market (5000, 64, -5000).");
+			translationBuilder.add("tooltip.tuanzis_mod.beacon.cooldown_tip", "Only functions within Scavenger Corridor. 15s cooldown. Not consumed on use.");
+			translationBuilder.add("message.tuanzis_mod.beacon.wrong_dimension", "The beacon loses resonance in this dimension! It can only be activated in Scavenger Corridor.");
+			translationBuilder.add("message.tuanzis_mod.hall_beacon.success", "Beacon flashes with light, safely guiding you to the Central Hall!");
+			translationBuilder.add("message.tuanzis_mod.room_beacon.success", "A radiant gateway opens, guiding you home to your personal sanctuary!");
+			translationBuilder.add("message.tuanzis_mod.market_beacon.success", "A golden-green canopy of light unfolds, safely guiding you to the Corridor Market!");
+			translationBuilder.add("key.tuanzis_mod.use_hall_beacon", "Use Hall Return Beacon");
+			translationBuilder.add("key.tuanzis_mod.use_room_beacon", "Use Room Return Beacon");
+			translationBuilder.add("key.tuanzis_mod.use_market_beacon", "Use Market Return Beacon");
+			translationBuilder.add("jei.tuanzis_mod.hall_return_beacon.description", "【Hall Return Beacon】\nExclusive teleportation item for the Scavenger Corridor. Hexagonal tower beacon with a glowing cyan crystal.\n\n§eMechanics:\n1. §bCentral Hall Return: Inside Scavenger Corridor, right-click or press [H] to instantly teleport to the Central Hall (0, 64, 0).\n2. §bDedicated Slot: Automatically equipped in dedicated accessory slots upon entering corridor. Does not occupy normal inventory and never drops on death.\n3. §bNo Consumption & Cooldown: Infinite uses with a 15-second cooldown. Safely sealed when leaving the corridor.");
+			translationBuilder.add("jei.tuanzis_mod.room_return_beacon.description", "【Room Return Beacon】\nExclusive teleportation item for the Scavenger Corridor. Plaque beacon with an amber doorway crystal.\n\n§eMechanics:\n1. §bPersonal Room Return: Inside Scavenger Corridor, right-click or press [R] to instantly teleport to your personal spawn platform.\n2. §bDedicated Slot: Automatically equipped in dedicated accessory slots upon entering corridor. Does not occupy normal inventory and never drops on death.\n3. §bNo Consumption & Cooldown: Infinite uses with a 15-second cooldown. Safely sealed when leaving the corridor.");
+			translationBuilder.add("jei.tuanzis_mod.market_return_beacon.description", "【Market Return Beacon】\nExclusive teleportation item for the Scavenger Corridor. Octagonal box beacon with an emerald scale crystal and an orbiting brass coin.\n\n§eMechanics:\n1. §bCorridor Market Return: Inside Scavenger Corridor, right-click or press [M] to instantly teleport to the Corridor Market (5000, 64, -5000).\n2. §bDedicated Slot: Automatically equipped in dedicated accessory slots upon entering corridor. Does not occupy normal inventory and never drops on death.\n3. §bNo Consumption & Cooldown: Infinite uses with a 15-second cooldown. Safely sealed when leaving the corridor.");
+			translationBuilder.add("message.tuanzis_mod.scavenger_corridor.no_sleep", "Space is warped here, you cannot sleep or set a spawn point in the corridor.");
+			translationBuilder.add("container.tuanzis_mod.scavenger_enderchest", "Scavenger Safe (9 Slots)");
+			translationBuilder.add("command.tuanzis_mod.corridor.already_in", "You are already in the Scavenger Corridor!");
+			translationBuilder.add("command.tuanzis_mod.corridor.not_in", "You are not in the Scavenger Corridor!");
+			translationBuilder.add("command.tuanzis_mod.corridor.enter_success", "Entered Scavenger Corridor! Previous state saved, mode set to Adventure.");
+			translationBuilder.add("command.tuanzis_mod.corridor.leave_success", "Left Scavenger Corridor! Previous inventory and state fully restored.");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE, "Black Box Data Core Case");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE.asItem(), "Black Box Data Core Case");
+			translationBuilder.add("container.tuanzis_mod.blackbox_core_case", "Black Box Data Core Case");
+			translationBuilder.add("jei.tuanzis_mod.blackbox_core_case.description", "【Black Box Data Core Case】\nA high-value electronic and intelligence supply container in the Scavenger Corridor, combining reinforced server chassis with a flight black box.\n\n§eAppearance & Features:\n1. §bPrecision Alloy Chassis: Matte black alloy casing with dark silver corner reinforcements, cyan light strips, status indicator LEDs, and a circular decode port.\n2. §bData Antenna: Short antenna on top with a floating, gently pulsating blue energy dot.\n3. §bAmbient Feedback: Emits subtle hard drive spinning and electrical hum when nearby, and bursts with cyan data particles upon opening.\n4. §bHigh Capacity: Contains 27 secure slots for storing high-priority intelligence and electronic loot.");
+
+			// Base Facility Blocks
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_STASH_CABINET, "Base Stash Cabinet");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_STASH_CABINET.asItem(), "Base Stash Cabinet");
+			translationBuilder.add("container.tuanzis_mod.base_stash_cabinet", "Base Personal Stash");
+			translationBuilder.add("jei.tuanzis_mod.base_stash_cabinet.description", "【Base Stash Cabinet】\nA secure storage locker located in the player's private base in Scavenger Corridor.\n\n§eMechanics:\n1. §bPrivate Storage: Bound strictly to owner; unauthorized players cannot open.\n2. §bExpandable: Starts with 10 rows (90 slots), expandable up to 55 rows via the Upgrade Station.\n3. §bSmart Organization: Supports category/name filter and one-click auto sort.");
+
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_UPGRADE_STATION, "Base Upgrade Station");
+			translationBuilder.add(me.tuanzi.init.ModBlocks.BASE_UPGRADE_STATION.asItem(), "Base Upgrade Station");
+			translationBuilder.add("container.tuanzis_mod.base_upgrade_station", "Base Upgrade Station");
+			translationBuilder.add("jei.tuanzis_mod.base_upgrade_station.description", "【Base Upgrade Station】\nCentral facility in the player's base for system modifications and upgrades.\n\n§eMechanics:\n1. §bWeight Capacity: Upgrade individual soldier carry limits from Lv.1 to Lv.8 (+35kg each for overweight & overloaded thresholds).\n2. §bStash Expansion: Upgrade personal base stash from 10 rows to up to 55 rows.\n3. §bDirect Material Consumption: Safely draws required materials from player inventory.");
+
+			// 6 Loot items
+			translationBuilder.add(ModItems.SCAVENGER_BANDAGE_ROLL, "Field Pressure Bandage Roll");
+			translationBuilder.add("item.tuanzis_mod.scavenger_bandage_roll.lore", "Lightweight compression bandage essential for battlefield triage.");
+			translationBuilder.add("jei.tuanzis_mod.scavenger_bandage_roll.description", "【Field Pressure Bandage Roll】\nRarity: COMMON | Category: MEDICAL\nSize: 1x1 | Weight: 0.20 kg | Value: 800 Credits\nSearch Time: 1.2s\nUsed for emergency healing and base facility maintenance.");
+
+			translationBuilder.add(ModItems.STASIS_GEL_INJECTOR, "Stasis Gel Injector");
+			translationBuilder.add("item.tuanzis_mod.stasis_gel_injector.lore", "Medical injector charged with crystalline stasis compound.");
+			translationBuilder.add("jei.tuanzis_mod.stasis_gel_injector.description", "【Stasis Gel Injector】\nRarity: UNCOMMON | Category: MEDICAL\nSize: 1x2 | Weight: 0.45 kg | Value: 2400 Credits\nSearch Time: 1.6s\nUsed for vital organ stabilization and base upgrades.");
+
+			translationBuilder.add(ModItems.PHASE_RELAY_CHIP, "Phase Relay Chip");
+			translationBuilder.add("item.tuanzis_mod.phase_relay_chip.lore", "Superconducting semiconductor etched with micro-phase logic paths.");
+			translationBuilder.add("jei.tuanzis_mod.phase_relay_chip.description", "【Phase Relay Chip】\nRarity: RARE | Category: ELECTRONICS\nSize: 1x1 | Weight: 0.30 kg | Value: 6800 Credits\nSearch Time: 2.0s\nHigh-speed computational core used for advanced facility overhauls.");
+
+			translationBuilder.add(ModItems.HYDRAULIC_SERVO_ARM, "Hydraulic Servo Arm");
+			translationBuilder.add("item.tuanzis_mod.hydraulic_servo_arm.lore", "Industrial-grade powered exoskeleton actuator capable of massive torque.");
+			translationBuilder.add("jei.tuanzis_mod.hydraulic_servo_arm.description", "【Hydraulic Servo Arm】\nRarity: EPIC | Category: INDUSTRIAL\nSize: 2x2 | Weight: 3.80 kg | Value: 19500 Credits\nSearch Time: 3.0s\nHeavy-duty reinforcement component for tactical weight systems.");
+
+			translationBuilder.add(ModItems.SECTOR_07_CIPHER_CARD, "Sector-07 Cipher Card");
+			translationBuilder.add("item.tuanzis_mod.sector_07_cipher_card.lore", "Quantum-encrypted military clearance card stamped with Sector 07 insignia.");
+			translationBuilder.add("jei.tuanzis_mod.sector_07_cipher_card.description", "【Sector-07 Cipher Card】\nRarity: LEGENDARY | Category: KEYCARD\nSize: 1x1 | Weight: 0.10 kg | Value: 65000 Credits\nSearch Time: 0.8s\nHigh-value keycard utilized for top-tier system unlocks.");
+
+			translationBuilder.add(ModItems.ABYSSAL_PRISM_CORE, "Abyssal Prism Core");
+			translationBuilder.add("item.tuanzis_mod.abyssal_prism_core.lore", "Pulsating crystalline artifact harvesting void energy from dimension rifts.");
+			translationBuilder.add("jei.tuanzis_mod.abyssal_prism_core.description", "【Abyssal Prism Core】\nRarity: MYTHIC | Category: RELIC\nSize: 2x3 | Weight: 6.50 kg | Value: 320000 Credits\nSearch Time: 4.5s\nPriceless mythic relic from the deepest corridors, bending spatial limits.");
+
+			// 3 Backpacks
+			translationBuilder.add(ModItems.FIELD_SLING_PACK, "Field Sling Pack (4x4)");
+			translationBuilder.add("item.tuanzis_mod.field_sling_pack.lore", "Lightweight single-strap tactical pack providing a 4x4 inner grid.");
+			translationBuilder.add("jei.tuanzis_mod.field_sling_pack.description", "【Field Sling Pack】\nRarity: COMMON | Category: BACKPACK\nSize: 2x2 | Weight: 1.20 kg | Value: 3000 Credits\nExpands tactical inventory by 4x4 slots when equipped.");
+
+			translationBuilder.add(ModItems.TACTICAL_ASSAULT_PACK, "Tactical Assault Pack (6x5)");
+			translationBuilder.add("item.tuanzis_mod.tactical_assault_pack.lore", "Military double-strap tactical pack providing a 6x5 inner grid.");
+			translationBuilder.add("jei.tuanzis_mod.tactical_assault_pack.description", "【Tactical Assault Pack】\nRarity: RARE | Category: BACKPACK\nSize: 3x3 | Weight: 2.50 kg | Value: 15000 Credits\nExpands tactical inventory by 6x5 slots when equipped.");
+
+			translationBuilder.add(ModItems.EXPEDITION_HEAVY_RIG, "Expedition Heavy Rig (8x6)");
+			translationBuilder.add("item.tuanzis_mod.expedition_heavy_rig.lore", "Exoskeleton-assisted expedition rig providing a massive 8x6 inner grid.");
+			translationBuilder.add("jei.tuanzis_mod.expedition_heavy_rig.description", "【Expedition Heavy Rig】\nRarity: LEGENDARY | Category: BACKPACK\nSize: 3x4 | Weight: 4.50 kg | Value: 58000 Credits\nExpands tactical inventory by 8x6 slots when equipped.");
+
+			// 4 Safeboxes
+			translationBuilder.add(ModItems.PROTO_LOCKBOX_1X2, "Proto Lockbox (1x2)");
+			translationBuilder.add("item.tuanzis_mod.proto_lockbox_1x2.lore", "Basic tactical black box with guaranteed death retention. 1x2 inner space.");
+			translationBuilder.add("jei.tuanzis_mod.proto_lockbox_1x2.description", "【Proto Lockbox】\nRarity: COMMON | Category: SAFEBOX\nSize: 1x2 | Inner: 1x2\nGuaranteed protection upon death; contained items never drop.");
+
+			translationBuilder.add(ModItems.REINFORCED_SAFEBOX_2X2, "Reinforced Safebox (2x2)");
+			translationBuilder.add("item.tuanzis_mod.reinforced_safebox_2x2.lore", "Hardened titanium safebox with guaranteed death retention. 2x2 inner space.");
+			translationBuilder.add("jei.tuanzis_mod.reinforced_safebox_2x2.description", "【Reinforced Safebox】\nRarity: RARE | Category: SAFEBOX\nSize: 2x2 | Inner: 2x2\nGuaranteed protection upon death; contained items never drop.");
+
+			translationBuilder.add(ModItems.CIPHER_SAFEBOX_2X3, "Cipher Safebox (2x3)");
+			translationBuilder.add("item.tuanzis_mod.cipher_safebox_2x3.lore", "Quantum-shielded safebox with guaranteed death retention. 2x3 inner space.");
+			translationBuilder.add("jei.tuanzis_mod.cipher_safebox_2x3.description", "【Cipher Safebox】\nRarity: EPIC | Category: SAFEBOX\nSize: 2x3 | Inner: 2x3\nGuaranteed protection upon death; contained items never drop.");
+
+			translationBuilder.add(ModItems.AEGIS_CORE_VAULT_3X3, "Aegis Core Vault (3x3)");
+			translationBuilder.add("item.tuanzis_mod.aegis_core_vault_3x3.lore", "Mythic Aegis tactical vault with guaranteed death retention. 3x3 inner space.");
+			translationBuilder.add("jei.tuanzis_mod.aegis_core_vault_3x3.description", "【Aegis Core Vault】\nRarity: MYTHIC | Category: SAFEBOX\nSize: 3x3 | Inner: 3x3\nGuaranteed protection upon death; contained items never drop.");
+
+			// GUI & States
+			translationBuilder.add("container.tuanzis_mod.corridor_loadout", "Corridor Tactical Loadout");
+			translationBuilder.add("container.tuanzis_mod.scavenger_tactical", "Corridor Tactical Scavenge");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.backpack", "Tactical Backpack");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.safebox", "Safebox (Death Protected)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.container", "Scavenge Target");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.base_stash", "Base Central Stash");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.weight", "Weight: %s / %s kg");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.overweight", "OVERWEIGHT");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.overloaded", "OVERLOADED (Sprinting Forbidden)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.normal_weight", "Normal Weight");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.auto_sort", "Auto Sort");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.search_hint", "Click undiscovered item to focus search, R to rotate");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.level", "Level %s");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.upgrade", "Upgrade");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.max_level", "Max Level Reached");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.materials_insufficient", "Insufficient Materials");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.weight_system", "Weight System (Max Lv.8)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger.stash_system", "Base Stash Expansion (Max Lv.10)");
+
+			// Rarity & Categories
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.common", "Common");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.uncommon", "Uncommon");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.rare", "Rare");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.epic", "Epic");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.legendary", "Legendary");
+			translationBuilder.add("scavenger.rarity.tuanzis_mod.mythic", "Mythic");
+			translationBuilder.add("scavenger.category.tuanzis_mod.medical", "Medical Supplies");
+			translationBuilder.add("scavenger.category.tuanzis_mod.electronics", "Electronics");
+			translationBuilder.add("scavenger.category.tuanzis_mod.industrial", "Industrial Parts");
+			translationBuilder.add("scavenger.category.tuanzis_mod.keycard", "Keycard");
+			translationBuilder.add("scavenger.category.tuanzis_mod.provision", "Provisions");
+			translationBuilder.add("scavenger.category.tuanzis_mod.tool", "Tactical Tool");
+			translationBuilder.add("scavenger.category.tuanzis_mod.relic", "Abyssal Relic");
+			translationBuilder.add("scavenger.category.tuanzis_mod.backpack", "Tactical Backpack");
+			translationBuilder.add("scavenger.category.tuanzis_mod.safebox", "Safebox");
+			translationBuilder.add("scavenger.category.tuanzis_mod.misc", "Miscellaneous");
+
+			// Tooltip attribute lines
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.size_and_weight", "Grid Size: %s | Weight: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.calibrated_value", "Calibrated Value: %s Gold");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.backpack_capacity", "🎒 Backpack Storage: %s");
+			translationBuilder.add("tooltip.tuanzis_mod.scavenger.safebox_capacity", "🔒 Safebox Storage: %s (Protected)");
+			translationBuilder.add("gui.tuanzis_mod.scavenger_loadout", "Scavenger Corridor Tactical Loadout");
+
+			// Scout Tactical Backpack (4x5)
+			translationBuilder.add(ModItems.SCOUT_TACTICAL_PACK, "Scout Tactical Backpack (4x5)");
+			translationBuilder.add("item.tuanzis_mod.scout_tactical_pack.lore", "Medium reconnaissance backpack providing 4x5 tactical grid storage.");
+			translationBuilder.add("jei.tuanzis_mod.scout_tactical_pack.description", "【Scout Tactical Backpack】\nRarity: UNCOMMON\nCategory: Tactical Backpack | Size: 2x3 | Weight: 1.80 kg | Value: 7,500 Gold\nExpands a 4x5 internal tactical grid when equipped in Scavenger Corridor.");
+
+			// Golden Pocket
+			translationBuilder.add(ModItems.GOLDEN_POCKET, "Golden Pocket");
+			translationBuilder.add("container.tuanzis_mod.golden_pocket", "Golden Pocket");
+			translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "A portable storage item with a massive 6x9 (54 slots) capacity.\nRight-click while holding to open anytime.\n[Anti-Nesting] Cannot store other Golden Pockets or Shulker Boxes inside.\n[Litematica Integration] Fully integrated with Litematica, allowing the Material List to accurately recognize and tally items inside.");
+
+			// Wither kills & Soulbound acquisition
+			translationBuilder.add("chat.tuanzis_mod.witherkills.actionbar", "Wither Kills Progress: %s/%s");
+			translationBuilder.add("chat.tuanzis_mod.witherkills.reward", "§6§l[Achievement] §eYou have slain §b%s§e Withers (player total damage share >= 90%%)! Dropped 1 §d[Soulbound]§e Enchanted Book near you!");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.player_only", "This command can only be executed by a player!");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.query.self", "§aTotal Withers slain (player total damage share >= 90%%): §e%s§a. Kills until next Soulbound book: §e%s§a.");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.query.other", "§aPlayer §b%s§a total Withers slain: §e%s§a, kills until next Soulbound book: §e%s§a.");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.add.success", "§aAdded §e%s§a Wither kills to player §b%s§a. Current total: §e%s§a.");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.set.success", "§aSet Wither kills of player §b%s§a to: §e%s§a.");
+			translationBuilder.add("commands.tuanzis_mod.witherkills.reset.success", "§aReset Wither kills of player §b%s§a to 0.");
+			translationBuilder.add("jei.tuanzis_mod.soulbound.description", "【Soulbound】Enchanted Book\n\n§eMechanics:\nItems with this enchantment remain in your inventory upon death and are not dropped.\nCannot be obtained through normal Enchanting Tables.\n\n§bAcquisition Methods:\n1. §eWarden Drop: 10% base chance (+2.5% per Looting level) when dealing >50% damage to a Warden and slaying it.\n2. §eWither Slaying Milestone: When total player damage accounts for >=90% of a Wither's total damage taken and a player lands the final blow, kill progress increments for that killer. Reaching 1,000 kills (and every 1,000 kills thereafter) drops 1 Soulbound enchanted book beside the killer!\n- Use command §b/witherkills§e to view your current progress.");
 		}
 	}
 }

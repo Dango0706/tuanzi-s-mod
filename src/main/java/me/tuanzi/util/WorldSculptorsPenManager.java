@@ -21,8 +21,9 @@ public class WorldSculptorsPenManager {
         public final String blockId; // 填充的方块注册ID
         public final int fillCount;  // 填充的方块数
         public final Integer color;  // 填充的方块色彩数据 (若非彩色方块系列则为 null)
+        public final int itemsPerBlock; // 每个方块消耗的物品数 (普通方块/单半砖为1, 双半砖为2)
 
-        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color) {
+        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color, int itemsPerBlock) {
             this.recordId = recordId;
             this.dimension = dimension;
             this.blockRecords = blockRecords;
@@ -30,10 +31,15 @@ public class WorldSculptorsPenManager {
             this.blockId = blockId;
             this.fillCount = fillCount;
             this.color = color;
+            this.itemsPerBlock = itemsPerBlock;
+        }
+
+        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color) {
+            this(recordId, dimension, blockRecords, blockId, fillCount, color, 1);
         }
 
         public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount) {
-            this(recordId, dimension, blockRecords, blockId, fillCount, null);
+            this(recordId, dimension, blockRecords, blockId, fillCount, null, 1);
         }
 
         public boolean isExpired() {
@@ -67,11 +73,18 @@ public class WorldSculptorsPenManager {
      }
 
     /**
+     * 新增一次带色彩数据与物品单耗的填充记录
+     */
+    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color, int itemsPerBlock) {
+        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color, itemsPerBlock));
+        cleanExpiredRecords();
+    }
+
+    /**
      * 新增一次带色彩数据的填充记录
      */
     public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color) {
-        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color));
-        cleanExpiredRecords();
+        addRecord(id, dimension, records, blockId, count, color, 1);
     }
 
     /**

@@ -20,158 +20,62 @@ public class ModItemGroups {
             .icon(() -> new ItemStack(Items.ENCHANTED_BOOK)) 
             .displayItems((displayContext, entries) -> {
                 var enchantmentRegistry = displayContext.holders().lookupOrThrow(Registries.ENCHANTMENT);
-                var soulbound = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
-                var experience = enchantmentRegistry.getOrThrow(ModEnchantments.EXPERIENCE);
-                var smelting = enchantmentRegistry.getOrThrow(ModEnchantments.SMELTING);
-                var chainMining = enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_MINING);
-                
-                ItemStack soulboundBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(soulboundBook, mutable -> mutable.set(soulbound, 1));
-                entries.accept(soulboundBook);
-
-                ItemStack experienceBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(experienceBook, mutable -> mutable.set(experience, 4));
-                entries.accept(experienceBook);
-
-                ItemStack smeltingBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(smeltingBook, mutable -> mutable.set(smelting, 1));
-                entries.accept(smeltingBook);
-
-                ItemStack chainMiningBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(chainMiningBook, mutable -> mutable.set(chainMining, 4));
-                entries.accept(chainMiningBook);
-
-                var bloodRage = enchantmentRegistry.getOrThrow(ModEnchantments.BLOOD_RAGE);
-                ItemStack bloodRageBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(bloodRageBook, mutable -> mutable.set(bloodRage, 1));
-                entries.accept(bloodRageBook);
-
-                var berserker = enchantmentRegistry.getOrThrow(ModEnchantments.BERSERKER);
-                ItemStack berserkerBook2 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(berserkerBook2, mutable -> mutable.set(berserker, 2));
-                entries.accept(berserkerBook2);
-
-                var execute = enchantmentRegistry.getOrThrow(ModEnchantments.EXECUTE);
-                ItemStack executeBook3 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(executeBook3, mutable -> mutable.set(execute, 3));
-                entries.accept(executeBook3);
-
-                var chainPain = enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_PAIN);
-                ItemStack chainPainBook1 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(chainPainBook1, mutable -> mutable.set(chainPain, 1));
-                entries.accept(chainPainBook1);
-
-                var seekingArrow = enchantmentRegistry.getOrThrow(ModEnchantments.SEEKING_ARROW);
-                ItemStack seekingArrowBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(seekingArrowBook, mutable -> mutable.set(seekingArrow, 1));
-                entries.accept(seekingArrowBook);
-
-                var buzzingRhythm = enchantmentRegistry.getOrThrow(ModEnchantments.BUZZING_RHYTHM);
-                ItemStack buzzingRhythmBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(buzzingRhythmBook, mutable -> mutable.set(buzzingRhythm, 4));
-                entries.accept(buzzingRhythmBook);
-
-                var resonancePulse = enchantmentRegistry.getOrThrow(ModEnchantments.RESONANCE_PULSE);
-                ItemStack resonancePulseBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(resonancePulseBook, mutable -> mutable.set(resonancePulse, 3));
-                entries.accept(resonancePulseBook);
-
-                var abyssalRhythm = enchantmentRegistry.getOrThrow(ModEnchantments.ABYSSAL_RHYTHM);
-                ItemStack abyssalRhythmBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(abyssalRhythmBook, mutable -> mutable.set(abyssalRhythm, 4));
-                entries.accept(abyssalRhythmBook);
-
-                var voidResonance = enchantmentRegistry.getOrThrow(ModEnchantments.VOID_RESONANCE);
-                ItemStack voidResonanceBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(voidResonanceBook, mutable -> mutable.set(voidResonance, 5));
-                entries.accept(voidResonanceBook);
-
-                var steelShieldGift = enchantmentRegistry.getOrThrow(ModEnchantments.STEEL_SHIELD_GIFT);
-                ItemStack steelShieldGiftBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(steelShieldGiftBook, mutable -> mutable.set(steelShieldGift, 4));
-                entries.accept(steelShieldGiftBook);
-
-                var overloadProtocol = enchantmentRegistry.getOrThrow(ModEnchantments.OVERLOAD_PROTOCOL);
-                ItemStack overloadProtocolBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(overloadProtocolBook, mutable -> mutable.set(overloadProtocol, 5));
-                entries.accept(overloadProtocolBook);
-
-                var bloodLeech = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH);
-                ItemStack bloodLeechBook1 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(bloodLeechBook1, mutable -> mutable.set(bloodLeech, 1));
-                entries.accept(bloodLeechBook1);
-
-                ItemStack bloodLeechBook4 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(bloodLeechBook4, mutable -> mutable.set(bloodLeech, 4));
-                entries.accept(bloodLeechBook4);
-
-                var metalCutter = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER);
-                ItemStack metalCutterBook4 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(metalCutterBook4, mutable -> mutable.set(metalCutter, 4));
-                entries.accept(metalCutterBook4);
-
-                var leatherPiercer = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER);
-                ItemStack leatherPiercerBook4 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(leatherPiercerBook4, mutable -> mutable.set(leatherPiercer, 4));
-                entries.accept(leatherPiercerBook4);
-
-                var reservedChamber = enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER);
-                ItemStack reservedChamberBook4 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(reservedChamberBook4, mutable -> mutable.set(reservedChamber, 4));
-                entries.accept(reservedChamberBook4);
-
-                // 天气附魔：玄冥雨刃、青女霜刃、雷公霆刃、金乌炽刃 (满级5级)
-                var rainBlade = enchantmentRegistry.getOrThrow(ModEnchantments.RAIN_BLADE);
-                ItemStack rainBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(rainBladeBook5, mutable -> mutable.set(rainBlade, 5));
-                entries.accept(rainBladeBook5);
-
-                var frostBlade = enchantmentRegistry.getOrThrow(ModEnchantments.FROST_BLADE);
-                ItemStack frostBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(frostBladeBook5, mutable -> mutable.set(frostBlade, 5));
-                entries.accept(frostBladeBook5);
-
-                var thunderBlade = enchantmentRegistry.getOrThrow(ModEnchantments.THUNDER_BLADE);
-                ItemStack thunderBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(thunderBladeBook5, mutable -> mutable.set(thunderBlade, 5));
-                entries.accept(thunderBladeBook5);
-
-                var sunBlade = enchantmentRegistry.getOrThrow(ModEnchantments.SUN_BLADE);
-                ItemStack sunBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(sunBladeBook5, mutable -> mutable.set(sunBlade, 5));
-                entries.accept(sunBladeBook5);
-
-                // 昼夜附魔：羲和昼刃、望舒夜刃 (满级5级)
-                var dayBlade = enchantmentRegistry.getOrThrow(ModEnchantments.DAY_BLADE);
-                ItemStack dayBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(dayBladeBook5, mutable -> mutable.set(dayBlade, 5));
-                entries.accept(dayBladeBook5);
-
-                var nightBlade = enchantmentRegistry.getOrThrow(ModEnchantments.NIGHT_BLADE);
-                ItemStack nightBladeBook5 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(nightBladeBook5, mutable -> mutable.set(nightBlade, 5));
-                entries.accept(nightBladeBook5);
-
-                // 游侠速装 (最高I级)
-                var rangerReload = enchantmentRegistry.getOrThrow(ModEnchantments.RANGER_RELOAD);
-                ItemStack rangerReloadBook = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(rangerReloadBook, mutable -> mutable.set(rangerReload, 1));
-                entries.accept(rangerReloadBook);
-
-                // 回流 (最高IV级)
-                var flowState = enchantmentRegistry.getOrThrow(ModEnchantments.FLOW_STATE);
-                ItemStack flowStateBook1 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(flowStateBook1, mutable -> mutable.set(flowState, 1));
-                entries.accept(flowStateBook1);
-                ItemStack flowStateBook4 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(flowStateBook4, mutable -> mutable.set(flowState, 4));
-                entries.accept(flowStateBook4);
-
-                // 绝式 (最高I级，宝藏附魔)
-                var finality = enchantmentRegistry.getOrThrow(ModEnchantments.FINALITY);
-                ItemStack finalityBook1 = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.updateEnchantments(finalityBook1, mutable -> mutable.set(finality, 1));
-                entries.accept(finalityBook1);
+                // 统一注册附魔书：仅保留 1 级与最高等级
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.EXPERIENCE), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SMELTING), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_MINING), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BLOOD_RAGE), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BERSERKER), 2);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.EXECUTE), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.CHAIN_PAIN), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SEEKING_ARROW), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BUZZING_RHYTHM), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.RESONANCE_PULSE), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ABYSSAL_RHYTHM), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.VOID_RESONANCE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.STEEL_SHIELD_GIFT), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.OVERLOAD_PROTOCOL), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_METAL_CUTTER), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_LEATHER_PIERCER), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_STANDING_FIRM), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ANCIENT_SCROLL_SEASONED), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.RAIN_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.FROST_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.THUNDER_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SUN_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.DAY_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.NIGHT_BLADE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.RANGER_RELOAD), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.FLOW_STATE), 4);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.FINALITY), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.DOUBLE_JUMP), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.EXTENSION), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.RANGED_STRIKE), 5);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.WAYFARER), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.STEP_UP), 2);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SATIATION), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BOUNTIFUL_HARVEST), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.EXPERIENCE_AFFINITY), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BOUNTY_OF_THE_SEA), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.SNOW_STRIDER), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.VOID_ANCHOR), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.TRADING_MASTER), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.BOOST), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ECHOLOCATION), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.PURITY), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.MOON_EMBRACE), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.WAVE_LISTENER), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.RETURNING_SWAN), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.AMONG_FLOWERS), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.STONE_HEART), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.TONGHUI), 1);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.PHARMACOLOGY), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.DORMANT_REPAIR), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.HUSBANDRY), 3);
+                addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.METABOLISM), 3);
 
                 // 加入彩虹海绵
                 entries.accept(ModItems.RAINBOW_SPONGE);
@@ -227,6 +131,7 @@ public class ModItemGroups {
                 entries.accept(ModBlocks.PLAYER_SIMULATOR);
                 entries.accept(ModItems.LOGIC_CORE);
                 entries.accept(ModItems.PLAYER_CONTROL_CORE);
+                entries.accept(ModItems.CREATIVE_CORE);
 
                 // 加入旅者手札、传送纸与道标符石
                 entries.accept(ModItems.TRAVELERS_NOTEBOOK);
@@ -244,6 +149,7 @@ public class ModItemGroups {
                 entries.accept(ModItems.CHROMATIC_SKULL);
                 entries.accept(ModItems.CODEX_OF_ENCHANTING);
                 entries.accept(ModItems.GLASS_ITEM_FRAME);
+                entries.accept(ModItems.GOLDEN_POCKET);
                 entries.accept(ModItems.CINDER_SOVEREIGN_SPAWN_EGG);
 
                 // 加入抽卡道具
@@ -253,6 +159,14 @@ public class ModItemGroups {
                 entries.accept(ModItems.SAKURA_FESTIVAL_CARD_CHEST);
                 entries.accept(ModItems.NATIONAL_DAY_CARD_PACK);
                 entries.accept(ModItems.NATIONAL_DAY_CARD_CHEST);
+                entries.accept(ModItems.HALLOWEEN_CARD_PACK);
+                entries.accept(ModItems.HALLOWEEN_CARD_CHEST);
+                entries.accept(ModItems.CHRISTMAS_CARD_PACK);
+                entries.accept(ModItems.CHRISTMAS_CARD_CHEST);
+                entries.accept(ModItems.NEW_YEAR_CARD_PACK);
+                entries.accept(ModItems.NEW_YEAR_CARD_CHEST);
+                entries.accept(ModItems.PRIME_MINISTER_CARD_PACK);
+                entries.accept(ModItems.PRIME_MINISTER_CARD_CHEST);
 
                 // 加入飞行药水及其变体
                 addPotionVariants(entries, ModPotions.FLIGHT_POTION);
@@ -266,6 +180,43 @@ public class ModItemGroups {
                 addPotionVariants(entries, ModPotions.ADRENALINE_POTION);
                 addPotionVariants(entries, ModPotions.ADRENALINE_POTION_II);
                 addPotionVariants(entries, ModPotions.LONG_ADRENALINE_POTION);
+                        })
+            .build()
+    );
+
+    public static final CreativeModeTab SCAVENGER_CORRIDOR_TAB = Registry.register(
+        BuiltInRegistries.CREATIVE_MODE_TAB,
+        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor_tab"),
+        CreativeModeTab.builder(CreativeModeTab.Row.TOP, 1)
+            .title(Component.translatable("itemGroup.tuanzis_mod.scavenger_corridor_tab"))
+            .icon(() -> new ItemStack(ModItems.HALL_RETURN_BEACON))
+            .displayItems((displayContext, entries) -> {
+                entries.accept(ModItems.HALL_RETURN_BEACON);
+                entries.accept(ModItems.ROOM_RETURN_BEACON);
+                entries.accept(ModItems.MARKET_RETURN_BEACON);
+                entries.accept(ModBlocks.BLACKBOX_CORE_CASE);
+                entries.accept(ModBlocks.BASE_STASH_CABINET);
+                entries.accept(ModBlocks.BASE_UPGRADE_STATION);
+
+                // 6 阶示范搜刮物
+                entries.accept(ModItems.SCAVENGER_BANDAGE_ROLL);
+                entries.accept(ModItems.STASIS_GEL_INJECTOR);
+                entries.accept(ModItems.PHASE_RELAY_CHIP);
+                entries.accept(ModItems.HYDRAULIC_SERVO_ARM);
+                entries.accept(ModItems.SECTOR_07_CIPHER_CARD);
+                entries.accept(ModItems.ABYSSAL_PRISM_CORE);
+
+                // 4 阶战术背囊
+                entries.accept(ModItems.FIELD_SLING_PACK);
+                entries.accept(ModItems.SCOUT_TACTICAL_PACK);
+                entries.accept(ModItems.TACTICAL_ASSAULT_PACK);
+                entries.accept(ModItems.EXPEDITION_HEAVY_RIG);
+
+                // 4 阶黑匣安全箱
+                entries.accept(ModItems.PROTO_LOCKBOX_1X2);
+                entries.accept(ModItems.REINFORCED_SAFEBOX_2X2);
+                entries.accept(ModItems.CIPHER_SAFEBOX_2X3);
+                entries.accept(ModItems.AEGIS_CORE_VAULT_3X3);
             })
             .build()
     );
@@ -277,6 +228,19 @@ public class ModItemGroups {
         entries.accept(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.TIPPED_ARROW, potion));
     }
 
+    private static void addEnchantmentBooks(CreativeModeTab.Output entries, net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment> enchantment, int maxLevel) {
+        ItemStack book1 = new ItemStack(Items.ENCHANTED_BOOK);
+        EnchantmentHelper.updateEnchantments(book1, mutable -> mutable.set(enchantment, 1));
+        entries.accept(book1);
+
+        if (maxLevel > 1) {
+            ItemStack bookMax = new ItemStack(Items.ENCHANTED_BOOK);
+            EnchantmentHelper.updateEnchantments(bookMax, mutable -> mutable.set(enchantment, maxLevel));
+            entries.accept(bookMax);
+        }
+    }
+
     public static void initialize() {
+
     }
 }

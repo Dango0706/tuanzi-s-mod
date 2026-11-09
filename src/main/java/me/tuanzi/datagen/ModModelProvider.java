@@ -111,10 +111,36 @@ public class ModModelProvider extends FabricModelProvider {
                         return obj;
                     };
                     blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/blackbox_core_case")) {
+                    net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                        com.google.gson.JsonObject obj = readModelJson.apply("blackbox_core_case.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        return obj;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/base_stash_cabinet")) {
+                    net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                        com.google.gson.JsonObject obj = readModelJson.apply("base_stash_cabinet.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        return obj;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/base_upgrade_station")) {
+                    net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                        com.google.gson.JsonObject obj = readModelJson.apply("base_upgrade_station.json");
+                        if (obj == null) obj = new com.google.gson.JsonObject();
+                        obj.addProperty("parent", "minecraft:block/block");
+                        return obj;
+                    };
+                    blockStateModelGenerator.modelOutput.accept(id, customInstance);
                 } else if (id.getNamespace().equals("tuanzis_mod") && 
                            (path.equals("item/soul_merchant_station") ||
                             path.equals("item/blueprint_cannon") ||
-                            path.equals("item/blueprint_table"))) {
+                            path.equals("item/blueprint_table") ||
+                            path.equals("item/base_stash_cabinet") ||
+                            path.equals("item/base_upgrade_station"))) {
                     net.minecraft.client.data.models.model.ModelInstance customItemInstance = () -> {
                         com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
                         String parentName = "tuanzis_mod:" + path.replace("item/", "block/");
@@ -300,10 +326,22 @@ public class ModModelProvider extends FabricModelProvider {
             net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/blueprint_table"),
             () -> new com.google.gson.JsonObject()
         );
+        decoratedOutput.accept(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/base_stash_cabinet"),
+            () -> new com.google.gson.JsonObject()
+        );
+        decoratedOutput.accept(
+            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/base_upgrade_station"),
+            () -> new com.google.gson.JsonObject()
+        );
 
         // 自动生成蓝图大炮与蓝图桌的简单 blockstate 并关联自定义拦截模型
         temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON);
         temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE);
+        temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BASE_STASH_CABINET);
+        temporaryGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.BASE_UPGRADE_STATION);
+
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE, me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE);
 
         // 自动生成玩家模拟器的方向性方块模型和状态
         TextureMapping simulatorHorizontalTextures = new TextureMapping()
@@ -387,6 +425,7 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.NETHER_STEW, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.LOGIC_CORE, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.PLAYER_CONTROL_CORE, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CREATIVE_CORE, ModelTemplates.FLAT_ITEM);
 
         // 抽卡包/箱模型生成
         itemModelGenerator.generateFlatItem(ModItems.STAR_TRAVEL_CARD_PACK, ModelTemplates.FLAT_ITEM);
@@ -395,6 +434,14 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.SAKURA_FESTIVAL_CARD_CHEST, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.NATIONAL_DAY_CARD_PACK, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.NATIONAL_DAY_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.HALLOWEEN_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.HALLOWEEN_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CHRISTMAS_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CHRISTMAS_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.NEW_YEAR_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.NEW_YEAR_CARD_CHEST, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PRIME_MINISTER_CARD_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PRIME_MINISTER_CARD_CHEST, ModelTemplates.FLAT_ITEM);
 
         // 潮汐织靴物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.TIDAL_WEAVE_BOOTS, ModelTemplates.FLAT_ITEM);
@@ -404,6 +451,7 @@ public class ModModelProvider extends FabricModelProvider {
 
         // 虚空墨锭物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.VOID_INK_INGOT, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.GOLDEN_POCKET, ModelTemplates.FLAT_ITEM);
 
         // 蓝图系统物品扁平模型生成
         itemModelGenerator.generateFlatItem(ModItems.COMPRESSED_BUILD_SLURRY, ModelTemplates.FLAT_ITEM);
@@ -412,6 +460,30 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.CHROMATIC_SKULL, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.CODEX_OF_ENCHANTING, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.GLASS_ITEM_FRAME, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.HALL_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE.asItem(), ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.ROOM_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.MARKET_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
+
+        // 拾荒回廊 6 阶搜刮物扁平模型
+        itemModelGenerator.generateFlatItem(ModItems.SCAVENGER_BANDAGE_ROLL, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.STASIS_GEL_INJECTOR, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PHASE_RELAY_CHIP, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.HYDRAULIC_SERVO_ARM, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.SECTOR_07_CIPHER_CARD, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.ABYSSAL_PRISM_CORE, ModelTemplates.FLAT_ITEM);
+
+        // 拾荒回廊 4 阶战术背囊扁平模型
+        itemModelGenerator.generateFlatItem(ModItems.FIELD_SLING_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.SCOUT_TACTICAL_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.TACTICAL_ASSAULT_PACK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.EXPEDITION_HEAVY_RIG, ModelTemplates.FLAT_ITEM);
+
+        // 拾荒回廊 4 阶黑匣安全箱扁平模型
+        itemModelGenerator.generateFlatItem(ModItems.PROTO_LOCKBOX_1X2, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.REINFORCED_SAFEBOX_2X2, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CIPHER_SAFEBOX_2X3, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.AEGIS_CORE_VAULT_3X3, ModelTemplates.FLAT_ITEM);
 
         // 缠皮长握柄与连击斩马刀系列模型生成
         itemModelGenerator.generateFlatItem(ModItems.REINFORCED_LONG_HILT, ModelTemplates.FLAT_ITEM);
