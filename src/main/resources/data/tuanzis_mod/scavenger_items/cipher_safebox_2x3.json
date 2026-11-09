@@ -1,0 +1,20 @@
+{
+  "item": "tuanzis_mod:cipher_safebox_2x3",
+  "category": "SAFEBOX",
+  "rarity": "EPIC",
+  "grid_size": {
+    "width": 2,
+    "height": 3
+  },
+  "weight_kg": 1.50,
+  "base_value": 88000,
+  "base_search_seconds": 2.0,
+  "allowed_container_tags": ["*"],
+  "equipment_grid": {
+    "slot_type": "SAFEBOX",
+    "columns": 2,
+    "rows": 3
+  },
+  "sound_profile": "TECH_BEEP",
+  "lore_translation_key": "item.tuanzis_mod.cipher_safebox_2x3.lore"
+}

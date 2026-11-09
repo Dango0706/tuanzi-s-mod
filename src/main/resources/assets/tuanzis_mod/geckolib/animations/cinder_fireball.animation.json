@@ -1,0 +1,49 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.cinder_fireball.idle": {
+			"loop": true,
+			"animation_length": 1.0,
+			"bones": {
+				"root": {
+					"rotation": {
+						"0.0": {
+							"post": [0, 0, 0],
+							"lerp_mode": "linear"
+						},
+						"0.5": {
+							"post": [180, 180, 180],
+							"lerp_mode": "linear"
+						},
+						"1.0": {
+							"post": [360, 360, 360],
+							"lerp_mode": "linear"
+						}
+					},
+					"scale": {
+						"0.0": {
+							"post": [1.0, 1.0, 1.0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.25": {
+							"post": [1.12, 1.12, 1.12],
+							"lerp_mode": "catmullrom"
+						},
+						"0.5": {
+							"post": [1.0, 1.0, 1.0],
+							"lerp_mode": "catmullrom"
+						},
+						"0.75": {
+							"post": [1.12, 1.12, 1.12],
+							"lerp_mode": "catmullrom"
+						},
+						"1.0": {
+							"post": [1.0, 1.0, 1.0],
+							"lerp_mode": "catmullrom"
+						}
+					}
+				}
+			}
+		}
+	}
+}

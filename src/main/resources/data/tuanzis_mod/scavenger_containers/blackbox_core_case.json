@@ -1,0 +1,24 @@
+{
+  "container_id": "tuanzis_mod:blackbox_core_case",
+  "title_key": "container.tuanzis_mod.blackbox_core_case",
+  "columns": 6,
+  "rows": 6,
+  "container_tags": ["blackbox", "general"],
+  "accepted_deposit_tags": ["*"],
+  "requires_search": true,
+  "loot_generation": {
+    "min_rolls": 2,
+    "max_rolls": 6,
+    "max_fill_ratio": 0.70,
+    "rarity_weight_modifiers": {
+      "COMMON": 1.0,
+      "UNCOMMON": 1.0,
+      "RARE": 1.2,
+      "EPIC": 1.5,
+      "LEGENDARY": 1.8,
+      "MYTHIC": 2.0
+    },
+    "pool_filter_tags": ["*"]
+  },
+  "sound_theme": "metal_case"
+}

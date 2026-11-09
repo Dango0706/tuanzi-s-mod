@@ -1,0 +1,20 @@
+{
+  "item": "tuanzis_mod:scout_tactical_pack",
+  "category": "BACKPACK",
+  "rarity": "UNCOMMON",
+  "grid_size": {
+    "width": 2,
+    "height": 3
+  },
+  "weight_kg": 1.80,
+  "base_value": 7500,
+  "base_search_seconds": 1.8,
+  "allowed_container_tags": ["*"],
+  "equipment_grid": {
+    "slot_type": "BACKPACK",
+    "columns": 4,
+    "rows": 5
+  },
+  "sound_profile": "FABRIC_RUSTLE",
+  "lore_translation_key": "item.tuanzis_mod.scout_tactical_pack.lore"
+}

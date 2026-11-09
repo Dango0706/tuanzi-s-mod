@@ -1,0 +1,82 @@
+{
+  "music.cinder_sovereign_theme": {
+    "category": "music",
+    "subtitle": "subtitles.tuanzis_mod.music.cinder_sovereign_theme",
+    "sounds": [
+      {
+        "name": "tuanzis_mod:music/cinder_sovereign_theme",
+        "stream": true
+      }
+    ]
+  },
+  "entity.cinder_sovereign.spawn": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.spawn",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/spawn"
+    ]
+  },
+  "entity.cinder_sovereign.pulse": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.pulse",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/pulse"
+    ]
+  },
+  "entity.cinder_sovereign.spot_target": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.spot_target",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/spot_target"
+    ]
+  },
+  "entity.cinder_sovereign.hurt_shield": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_shield",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/hurt_shield"
+    ]
+  },
+  "entity.cinder_sovereign.hurt_core": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.hurt_core",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/hurt_core"
+    ]
+  },
+  "entity.cinder_sovereign.deflect": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.deflect",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/deflect"
+    ]
+  },
+  "entity.cinder_sovereign.dash": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.dash",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/dash"
+    ]
+  },
+  "entity.cinder_sovereign.altitude_change": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.altitude_change",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/altitude_change"
+    ]
+  },
+  "entity.cinder_sovereign.phase2_overload": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.phase2_overload",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/phase2_overload"
+    ]
+  },
+  "entity.cinder_sovereign.death": {
+    "category": "hostile",
+    "subtitle": "subtitles.tuanzis_mod.entity.cinder_sovereign.death",
+    "sounds": [
+      "tuanzis_mod:entity/cinder_sovereign/death"
+    ]
+  }
+}

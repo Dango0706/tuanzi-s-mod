@@ -1,0 +1,45 @@
+package me.tuanzi.client.sound;
+
+import me.tuanzi.entity.CinderSovereignEntity;
+import me.tuanzi.init.ModSounds;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundSource;
+
+/**
+ * 日冕核心 · 烈焰统领 常驻待机与环境音效 (等离子嗡鸣与烈焰棒风切声)
+ * - 客户端持续循环播放 (loop: true)
+ * - 实时跟随 Boss 实体绝对坐标
+ * - 线性距离衰减 (音量 0.8，衰减半径约 16 格)
+ */
+@Environment(EnvType.CLIENT)
+public class CinderSovereignLoopSoundInstance extends AbstractTickableSoundInstance {
+    private final CinderSovereignEntity boss;
+
+    public CinderSovereignLoopSoundInstance(CinderSovereignEntity boss) {
+        super(ModSounds.CINDER_SOVEREIGN_LOOP, SoundSource.HOSTILE, SoundInstance.createUnseededRandom());
+        this.boss = boss;
+        this.looping = true;
+        this.delay = 0;
+        this.volume = 0.8F;
+        this.pitch = 1.0F;
+        this.attenuation = SoundInstance.Attenuation.LINEAR;
+        this.x = boss.getX();
+        this.y = boss.getY();
+        this.z = boss.getZ();
+    }
+
+    @Override
+    public void tick() {
+        if (this.boss.isRemoved() || !this.boss.isAlive()) {
+            this.stop();
+            return;
+        }
+
+        this.x = this.boss.getX();
+        this.y = this.boss.getY();
+        this.z = this.boss.getZ();
+    }
+}

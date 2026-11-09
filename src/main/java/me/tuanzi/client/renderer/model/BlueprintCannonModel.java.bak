@@ -1,0 +1,61 @@
+package me.tuanzi.client.renderer.model;
+
+import me.tuanzi.Tuanzis_mod;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Unit;
+
+/**
+ * 蓝图大炮活动部件模型（低模阶梯像素风，严格遵循 blockbench.md 规范）
+ * 包含：
+ * - turret: 回转机身（绕 Y 轴做偏航角 Yaw 转向）
+ * - barrel: 炮身与炮管（安装在 turret 上，绕 X 轴做俯仰角 Pitch 仰头，并做液压后坐力抽退）
+ */
+@Environment(EnvType.CLIENT)
+public class BlueprintCannonModel extends Model<Unit> {
+    public static final ModelLayerLocation LAYER_LOCATION =
+        new ModelLayerLocation(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon"), "main");
+
+    public final ModelPart turret;
+    public final ModelPart barrel;
+
+    public BlueprintCannonModel(ModelPart root) {
+        super(root, RenderTypes::entityCutout);
+        this.turret = root.getChild("turret");
+        this.barrel = this.turret.getChild("barrel");
+    }
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition mesh = new MeshDefinition();
+        PartDefinition root = mesh.getRoot();
+
+        // 1. turret（中心回转台：宽8×高6×长8，旋转中心位于 Y=4）
+        // 纹理坐标对应 64x64 贴图规范
+        PartDefinition turret = root.addOrReplaceChild("turret",
+            CubeListBuilder.create()
+                .texOffs(0, 0).addBox(-4.0F, -6.0F, -4.0F, 8.0F, 6.0F, 8.0F),
+            PartPose.offset(0.0F, 10.0F, 0.0F));
+
+        // 2. barrel（铰链与双重炮身：高仰角与后坐力活动部件）
+        turret.addOrReplaceChild("barrel",
+            CubeListBuilder.create()
+                // 炮身铰链底座 (宽4×高3×长6)
+                .texOffs(32, 0).addBox(-2.0F, -3.0F, -3.0F, 4.0F, 3.0F, 6.0F)
+                // 突出炮管 (宽3×高3×长7，朝向前上方)
+                .texOffs(0, 16).addBox(-1.5F, -4.0F, -7.0F, 3.0F, 3.0F, 7.0F),
+            PartPose.offset(0.0F, -4.0F, 0.0F));
+
+        return LayerDefinition.create(mesh, 64, 64);
+    }
+}

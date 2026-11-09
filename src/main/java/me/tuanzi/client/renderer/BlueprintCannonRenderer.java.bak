@@ -1,0 +1,212 @@
+package me.tuanzi.client.renderer;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import me.tuanzi.Tuanzis_mod;
+import me.tuanzi.block.cannon.LaunchedItem;
+import me.tuanzi.block.entity.BlueprintCannonBlockEntity;
+import me.tuanzi.client.renderer.model.BlueprintCannonModel;
+import me.tuanzi.client.renderer.state.BlueprintCannonRenderState;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.MovingBlockRenderState;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * 蓝图大炮客户端渲染器（全面参考机械动力 Create SchematicannonRenderer 官方架构）
+ * 包含：
+ * 1. 偏航角 Yaw 与俯仰角 Pitch 几何解算，驱动回转机身与后坐力炮身；
+ * 2. 空中微缩方块抛物线贝塞尔弹道渲染；
+ * 3. 炮口出膛浓云烟雾与火花粒子。
+ */
+@Environment(EnvType.CLIENT)
+public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCannonBlockEntity, BlueprintCannonRenderState> {
+    public static final Identifier TEXTURE =
+        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "textures/block/blueprint_cannon_model.png");
+
+    private final BlueprintCannonModel model;
+
+    public BlueprintCannonRenderer(BlockEntityRendererProvider.Context context) {
+        this.model = new BlueprintCannonModel(context.bakeLayer(BlueprintCannonModel.LAYER_LOCATION));
+    }
+
+    @Override
+    public BlueprintCannonRenderState createRenderState() {
+        return new BlueprintCannonRenderState();
+    }
+
+    @Override
+    public void extractRenderState(
+        BlueprintCannonBlockEntity blockEntity,
+        BlueprintCannonRenderState state,
+        float partialTicks,
+        Vec3 cameraPosition,
+        ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress
+    ) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        BlockPos pos = blockEntity.getBlockPos();
+        state.cannonPos = pos;
+
+        // 1. 解算偏航角与俯仰角（Create 官方算法）
+        double[] angles = getCannonAngles(blockEntity, pos, partialTicks);
+        state.yaw = angles[0];
+        state.pitch = angles[1];
+
+        // 2. 解算液压后坐力
+        state.recoil = getRecoil(blockEntity, partialTicks);
+
+        // 3. 拷贝飞行方块状态
+        state.flyingBlocks.clear();
+        state.flyingBlocks.addAll(blockEntity.flyingBlocks);
+    }
+
+    @Override
+    public void submit(
+        BlueprintCannonRenderState state,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector,
+        CameraRenderState camera
+    ) {
+        // === 1. 渲染回转机身与俯仰炮管 ===
+        poseStack.pushPose();
+        // 移至大炮中心底座上方
+        poseStack.translate(0.5, 0.25, 0.5);
+        // 旋转偏航角（Create 官方对齐角度）
+        poseStack.mulPose(new org.joml.Matrix4f().rotationY((float) Math.toRadians(state.yaw + 180.0)));
+
+        // 姿态调整
+        this.model.turret.yRot = 0.0f;
+        this.model.barrel.xRot = (float) Math.toRadians(-state.pitch);
+        // 后坐力向后抽退
+        this.model.barrel.z = (float) (state.recoil * 0.1);
+
+        submitNodeCollector.submitModelPart(
+            this.model.turret,
+            poseStack,
+            this.model.renderType(TEXTURE),
+            state.lightCoords,
+            OverlayTexture.NO_OVERLAY,
+            null
+        );
+        poseStack.popPose();
+
+        // === 2. 渲染空中飞行微缩方块（Create 官方三维贝塞尔抛物线方程） ===
+        if (!state.flyingBlocks.isEmpty()) {
+            renderLaunchedBlocks(state, poseStack, submitNodeCollector);
+        }
+    }
+
+    /**
+     * 官方偏航角 Yaw 与俯仰角 Pitch 解析几何解算
+     */
+    public static double[] getCannonAngles(BlueprintCannonBlockEntity blockEntity, BlockPos pos, float partialTicks) {
+        double yaw;
+        double pitch;
+
+        BlockPos target = blockEntity.currentTarget;
+        if (target != null) {
+            Vec3 diff = Vec3.atLowerCornerOf(target.subtract(pos));
+            if (blockEntity.previousTarget != null) {
+                diff = (Vec3.atLowerCornerOf(blockEntity.previousTarget)
+                    .add(Vec3.atLowerCornerOf(target.subtract(blockEntity.previousTarget))
+                        .scale(partialTicks))).subtract(Vec3.atLowerCornerOf(pos));
+            }
+
+            double diffX = diff.x();
+            double diffZ = diff.z();
+            yaw = Mth.atan2(diffX, diffZ) / Math.PI * 180.0;
+
+            float distance = Mth.sqrt((float) (diffX * diffX + diffZ * diffZ));
+            double yOffset = distance * 2.0;
+            pitch = Mth.atan2(distance, diff.y() * 3.0 + yOffset) / Math.PI * 180.0 + 10.0;
+        } else {
+            yaw = blockEntity.defaultYaw;
+            pitch = 35.0;
+        }
+
+        return new double[] { yaw, pitch };
+    }
+
+    /**
+     * 官方出膛前 10 ticks 线性后坐力衰减判定
+     */
+    public static double getRecoil(BlueprintCannonBlockEntity blockEntity, float partialTicks) {
+        double recoil = 0.0;
+        for (LaunchedItem launched : blockEntity.flyingBlocks) {
+            if (launched.ticksRemaining == 0) continue;
+            if ((launched.ticksRemaining + 1 - partialTicks) > launched.totalTicks - 10) {
+                recoil = Math.max(recoil, (launched.ticksRemaining + 1 - partialTicks) - launched.totalTicks + 10);
+            }
+        }
+        return recoil;
+    }
+
+    /**
+     * 空中抛物线微缩方块渲染（Create 经典贝塞尔方程）
+     */
+    private static void renderLaunchedBlocks(
+        BlueprintCannonRenderState state,
+        PoseStack poseStack,
+        SubmitNodeCollector submitNodeCollector
+    ) {
+        for (LaunchedItem launched : state.flyingBlocks) {
+            if (launched.ticksRemaining == 0) continue;
+
+            Vec3 start = Vec3.atCenterOf(state.cannonPos.above());
+            Vec3 target = Vec3.atCenterOf(launched.target);
+            Vec3 distance = target.subtract(start);
+
+            double yDifference = target.y - start.y;
+            double throwHeight = Math.sqrt(distance.lengthSqr()) * 0.6 + yDifference;
+            Vec3 cannonOffset = distance.add(0, throwHeight, 0).normalize().scale(1.5);
+            start = start.add(cannonOffset);
+            yDifference = target.y - start.y;
+
+            float progress = ((float) launched.totalTicks - launched.ticksRemaining) / (float) launched.totalTicks;
+            progress = Mth.clamp(progress, 0.0f, 1.0f);
+            Vec3 blockLocationXZ = target.subtract(start).scale(progress).multiply(1, 0, 1);
+
+            float t = progress;
+            double yOffset = 2 * (1 - t) * t * throwHeight + t * t * yDifference;
+            Vec3 blockLocation = blockLocationXZ.add(0.5, yOffset + 0.8, 0.5).add(cannonOffset);
+
+            if (launched instanceof LaunchedItem.ForBlockState forBlock && !forBlock.state.isAir()) {
+                poseStack.pushPose();
+                poseStack.translate(blockLocation.x - 0.5, blockLocation.y, blockLocation.z - 0.5);
+                poseStack.mulPose(new org.joml.Matrix4f().rotationY((float) Math.toRadians(360.0f * t)).rotateX((float) Math.toRadians(360.0f * t)));
+                float scale = 0.35f;
+                poseStack.scale(scale, scale, scale);
+
+                MovingBlockRenderState movingBlock = new MovingBlockRenderState();
+                movingBlock.blockState = forBlock.state;
+                movingBlock.blockPos = launched.target;
+                movingBlock.randomSeedPos = launched.target;
+
+                submitNodeCollector.submitMovingBlock(poseStack, movingBlock, 0);
+                poseStack.popPose();
+            }
+        }
+    }
+
+    @Override
+    public boolean shouldRenderOffScreen() {
+        return true;
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 128;
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "item": "tuanzis_mod:sector_07_cipher_card",
+  "category": "KEYCARD",
+  "rarity": "LEGENDARY",
+  "grid_size": {
+    "width": 1,
+    "height": 1
+  },
+  "weight_kg": 0.10,
+  "base_value": 65000,
+  "base_search_seconds": 0.8,
+  "allowed_container_tags": ["*"],
+  "sound_profile": "CARD_SWIPE",
+  "lore_translation_key": "item.tuanzis_mod.sector_07_cipher_card.lore"
+}

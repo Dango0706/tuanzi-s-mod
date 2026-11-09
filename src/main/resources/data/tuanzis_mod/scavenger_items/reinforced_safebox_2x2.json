@@ -1,0 +1,20 @@
+{
+  "item": "tuanzis_mod:reinforced_safebox_2x2",
+  "category": "SAFEBOX",
+  "rarity": "RARE",
+  "grid_size": {
+    "width": 2,
+    "height": 2
+  },
+  "weight_kg": 1.00,
+  "base_value": 25000,
+  "base_search_seconds": 1.5,
+  "allowed_container_tags": ["*"],
+  "equipment_grid": {
+    "slot_type": "SAFEBOX",
+    "columns": 2,
+    "rows": 2
+  },
+  "sound_profile": "HEAVY_METAL",
+  "lore_translation_key": "item.tuanzis_mod.reinforced_safebox_2x2.lore"
+}

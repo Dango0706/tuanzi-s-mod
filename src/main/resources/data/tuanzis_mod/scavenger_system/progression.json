@@ -1,0 +1,92 @@
+{
+  "search_formula": {
+    "per_cell_seconds": 0.20,
+    "random_jitter_min": 0.05,
+    "random_jitter_max": 0.65,
+    "rarity_bonus_seconds": {
+      "COMMON": 0.0,
+      "UNCOMMON": 0.3,
+      "RARE": 0.75,
+      "EPIC": 1.3,
+      "LEGENDARY": 2.0,
+      "MYTHIC": 3.2
+    }
+  },
+  "weight_progression": {
+    "max_level": 8,
+    "base_overweight_kg": 30.0,
+    "base_overloaded_kg": 40.0,
+    "per_level_bonus_kg": 5.0,
+    "level_costs": {
+      "2": [
+        { "item": "tuanzis_mod:scavenger_bandage_roll", "count": 2 },
+        { "item": "tuanzis_mod:stasis_gel_injector", "count": 1 }
+      ],
+      "3": [
+        { "item": "tuanzis_mod:stasis_gel_injector", "count": 2 },
+        { "item": "tuanzis_mod:phase_relay_chip", "count": 1 }
+      ],
+      "4": [
+        { "item": "tuanzis_mod:phase_relay_chip", "count": 2 },
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 1 }
+      ],
+      "5": [
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 2 },
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 1 }
+      ],
+      "6": [
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 2 },
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 2 }
+      ],
+      "7": [
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 3 },
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 1 }
+      ],
+      "8": [
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 2 }
+      ]
+    }
+  },
+  "stash_progression": {
+    "max_level": 10,
+    "columns": 9,
+    "base_rows": 10,
+    "per_level_bonus_rows": 5,
+    "level_costs": {
+      "2": [
+        { "item": "tuanzis_mod:scavenger_bandage_roll", "count": 3 },
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 1 }
+      ],
+      "3": [
+        { "item": "tuanzis_mod:stasis_gel_injector", "count": 2 },
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 2 }
+      ],
+      "4": [
+        { "item": "tuanzis_mod:phase_relay_chip", "count": 2 },
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 2 }
+      ],
+      "5": [
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 3 },
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 1 }
+      ],
+      "6": [
+        { "item": "tuanzis_mod:hydraulic_servo_arm", "count": 4 },
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 2 }
+      ],
+      "7": [
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 3 },
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 1 }
+      ],
+      "8": [
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 1 },
+        { "item": "tuanzis_mod:sector_07_cipher_card", "count": 4 }
+      ],
+      "9": [
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 2 }
+      ],
+      "10": [
+        { "item": "tuanzis_mod:abyssal_prism_core", "count": 3 }
+      ]
+    }
+  }
+}
