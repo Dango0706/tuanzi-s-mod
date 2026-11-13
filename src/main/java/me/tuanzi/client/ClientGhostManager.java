@@ -35,12 +35,9 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public class ClientGhostManager {
 
-    public record GhostBlock(int relX, int relY, int relZ, BlockState state) {}
-
     private static final List<GhostBlock> parsedGhostBlocks = new ArrayList<>();
     private static final Map<BlockState, BlockModelRenderState> cachedModelStates = new HashMap<>();
     private static final BlockDisplayContext DISPLAY_CONTEXT = BlockDisplayContext.create();
-
     private static CompoundTag activeBlueprintTag = null;
     private static BlockPos basePos = null;
     private static BlockPos offset = BlockPos.ZERO;
@@ -51,11 +48,9 @@ public class ClientGhostManager {
     private static boolean singleLayerMode = false;
     private static boolean smartAssistance = true;
     private static boolean boundToHeldItem = false;
-
     private static int structureWidth = 0;
     private static int structureHeight = 0;
     private static int structureLength = 0;
-
     private static ItemStack lastCheckedStack = ItemStack.EMPTY;
     private static boolean loggedOnce = false;
 
@@ -440,5 +435,8 @@ public class ClientGhostManager {
 
     public static BlockState parseBlockStateFromNbt(CompoundTag tag) {
         return LitematicaParser.parseBlockStateFromNbt(tag);
+    }
+
+    public record GhostBlock(int relX, int relY, int relZ, BlockState state) {
     }
 }

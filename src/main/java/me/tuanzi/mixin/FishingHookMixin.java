@@ -24,9 +24,9 @@ public abstract class FishingHookMixin {
     }
 
     @org.spongepowered.asm.mixin.injection.ModifyArg(
-        method = "retrieve",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z", ordinal = 0),
-        index = 0
+            method = "retrieve",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z", ordinal = 0),
+            index = 0
     )
     private Entity tuanzis_mod$duplicateFish(Entity entity) {
         if (entity instanceof net.minecraft.world.entity.item.ItemEntity itemEntity) {
@@ -41,7 +41,7 @@ public abstract class FishingHookMixin {
                     if (hook.getRandom().nextFloat() < chance) {
                         net.minecraft.world.entity.player.Player owner = hook.getPlayerOwner();
                         net.minecraft.world.entity.item.ItemEntity extra = new net.minecraft.world.entity.item.ItemEntity(
-                            hook.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), stack.copyWithCount(1)
+                                hook.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), stack.copyWithCount(1)
                         );
                         extra.setDeltaMovement(itemEntity.getDeltaMovement());
                         hook.level().addFreshEntity(extra);

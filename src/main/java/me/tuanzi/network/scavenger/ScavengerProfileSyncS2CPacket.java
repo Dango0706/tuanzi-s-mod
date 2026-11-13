@@ -31,10 +31,8 @@ public record ScavengerProfileSyncS2CPacket(
 
     public static final Type<ScavengerProfileSyncS2CPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_profile_sync_s2c"));
-
     private static final StreamCodec<RegistryFriendlyByteBuf, List<GridItemEntry>> ENTRIES_STREAM_CODEC =
             GridItemEntry.STREAM_CODEC.apply(ByteBufCodecs.list());
-
     public static final StreamCodec<RegistryFriendlyByteBuf, ScavengerProfileSyncS2CPacket> CODEC = StreamCodec.of(
             (buf, pkt) -> {
                 ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, pkt.equippedBackpack());

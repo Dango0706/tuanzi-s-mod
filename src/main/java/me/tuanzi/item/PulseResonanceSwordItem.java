@@ -1,12 +1,9 @@
 package me.tuanzi.item;
 
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -35,7 +32,7 @@ public class PulseResonanceSwordItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 CustomModelData cmd = new CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
 

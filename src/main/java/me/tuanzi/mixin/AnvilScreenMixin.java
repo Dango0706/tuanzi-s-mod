@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AnvilScreen.class)
 public abstract class AnvilScreenMixin {
-    @Shadow private EditBox name;
+    @Shadow
+    private EditBox name;
 
     /**
      * 移除客户端铁砧界面 40 级“过于昂贵”的红色警告显示限制。

@@ -1,6 +1,5 @@
 package me.tuanzi.client.sound;
 
-import me.tuanzi.client.gui.CinderHeatHud;
 import me.tuanzi.entity.CinderSovereignEntity;
 import me.tuanzi.init.ModSounds;
 import net.fabricmc.api.EnvType;

@@ -1,19 +1,30 @@
 package me.tuanzi.block.entity;
 
-import java.util.*;
+import me.tuanzi.block.cannon.LaunchedItem;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.item.StructureBlueprintItem;
+import me.tuanzi.network.BlueprintCannonShootS2CPacket;
 import me.tuanzi.world.inventory.BlueprintCannonMenu;
 import me.tuanzi.world.inventory.GoldenPocketMenu;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.Filterable;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -36,47 +47,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.Nullable;
 
-import me.tuanzi.block.cannon.LaunchedItem;
-import me.tuanzi.network.BlueprintCannonShootS2CPacket;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.core.HolderLookup;
+import java.util.*;
 
 public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvider, Container {
 
     // 机械动力风格飞行方块列表（LaunchedItem 队列与瞄准状态）
     public final List<LaunchedItem> flyingBlocks = new LinkedList<>();
-    public BlockPos currentTarget = null;
-    public BlockPos previousTarget = null;
-    public float defaultYaw = 0.0f;
-    public boolean firstRenderTick = true;
-
-    // 3 个物品槽：Slot 0 为蓝图，Slot 1 为压缩浆料燃料，Slot 2 为书与笔（材料清单输出）
-    private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
-
-    // 建造状态：0=IDLE, 1=RUNNING, 2=PAUSED
-    private int buildState = 0;
-    private int currentIndex = 0; // 已处理的蓝图格子索引（进度分子）
-    private int totalBlocks = 0;  // 蓝图 blocks 数组总长度（进度分母）——不持久化，每 tick 从蓝图重新读取
-    private boolean destroyMode = false;
-    private boolean exactMatch = false;
-
-    private int fuel = 0;
-    private int pauseReason = 0; // 0=none, 1=no fuel, 2=no blocks
-
-    private int ticksToNextPlace = 5;
-    private List<ContainerSource> cachedSources = null;
-
     // GUI 属性同步 Data（共 11 个槽位）
     public final ContainerData dataAccess = new ContainerData() {
         @Override
@@ -113,349 +91,30 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             return 11;
         }
     };
+    // 3 个物品槽：Slot 0 为蓝图，Slot 1 为压缩浆料燃料，Slot 2 为书与笔（材料清单输出）
+    private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
+    public BlockPos currentTarget = null;
+    public BlockPos previousTarget = null;
+    public float defaultYaw = 0.0f;
+    public boolean firstRenderTick = true;
+    // 建造状态：0=IDLE, 1=RUNNING, 2=PAUSED
+    private int buildState = 0;
+    private int currentIndex = 0; // 已处理的蓝图格子索引（进度分子）
+    private int totalBlocks = 0;  // 蓝图 blocks 数组总长度（进度分母）——不持久化，每 tick 从蓝图重新读取
+    private boolean destroyMode = false;
+    private boolean exactMatch = false;
+    private int fuel = 0;
+    private int pauseReason = 0; // 0=none, 1=no fuel, 2=no blocks
+    private int ticksToNextPlace = 5;
+    private List<ContainerSource> cachedSources = null;
 
     public BlueprintCannonBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY, pos, state);
     }
 
-    public NonNullList<ItemStack> getItems() {
-        return this.items;
-    }
-
-    // Container implementation
-    @Override
-    public int getContainerSize() {
-        return this.items.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (ItemStack stack : this.items) {
-            if (!stack.isEmpty()) return false;
-        }
-        return true;
-    }
-
-    @Override
-    public ItemStack getItem(int slot) {
-        return this.items.get(slot);
-    }
-
-    @Override
-    public ItemStack removeItem(int slot, int amount) {
-        ItemStack result = ContainerHelper.removeItem(this.items, slot, amount);
-        if (!result.isEmpty()) {
-            this.setChanged();
-        }
-        return result;
-    }
-
-    @Override
-    public ItemStack removeItemNoUpdate(int slot) {
-        return ContainerHelper.takeItem(this.items, slot);
-    }
-
-    @Override
-    public void setItem(int slot, ItemStack stack) {
-        this.items.set(slot, stack);
-        if (stack.getCount() > this.getMaxStackSize()) {
-            stack.setCount(this.getMaxStackSize());
-        }
-        this.setChanged();
-    }
-
-    @Override
-    public boolean stillValid(Player player) {
-        return Container.stillValidBlockEntity(this, player);
-    }
-
-    @Override
-    public void clearContent() {
-        this.items.clear();
-        this.setChanged();
-    }
-
-    private int getSlurryDurability() {
-        return this.fuel;
-    }
-
-    @Override
-    public Component getDisplayName() {
-        return Component.translatable("container.tuanzis_mod.blueprint_cannon");
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new BlueprintCannonMenu(containerId, playerInventory, this, this.dataAccess);
-    }
-
-    public void handleAction(String action, boolean destroyMode, boolean exactMatch) {
-        this.destroyMode = destroyMode;
-        this.exactMatch = exactMatch;
-        this.pauseReason = 0;
-        switch (action) {
-            case "START" -> {
-                // 从 IDLE（含任务完成后）重新启动时，必须重置进度
-                // 从 PAUSE 恢复时不重置，以继续上次进度
-                if (this.buildState == 0) {
-                    this.currentIndex = 0;
-                    me.tuanzi.util.ModLog.debug("START from IDLE: 重置进度 currentIndex=0");
-                }
-                this.buildState = 1;
-                this.cachedSources = null; // 重新触发扫描
-            }
-            case "PAUSE" -> this.buildState = 2;
-            case "TERMINATE" -> {
-                this.buildState = 0;
-                this.currentIndex = 0;
-                this.cachedSources = null;
-            }
-        }
-        this.setChanged();
-    }
     public static Item getRequiredItemForEntity(String entityId, CompoundTag nbt) {
         ItemStack base = me.tuanzi.block.cannon.BlueprintEntityHelper.getBaseItemStack(entityId, nbt, null);
         return base.getItem();
-    }
-
-    /**
-     * 服务端：将蓝图材料需求统计写入 Slot 2 中的书与笔，产出成书。
-     * 格式：物品名: 现有 / 总需
-     * 绿色行（✔）表示材料充足，红色行（✗）表示材料缺失。
-     */
-    public boolean writeMaterialBook(Level level, BlockPos cannonPos) {
-        // Slot 2 必须放有书与笔或已生成的成书
-        ItemStack bookStack = this.items.get(2);
-        if (!bookStack.is(Items.WRITABLE_BOOK) && !bookStack.is(Items.WRITTEN_BOOK)) {
-            return false;
-        }
-
-        // 读取蓝图
-        ItemStack blueprint = this.items.get(0);
-        if (blueprint.isEmpty() || !(blueprint.getItem() instanceof StructureBlueprintItem)) {
-            return false;
-        }
-        CustomData customData = blueprint.get(DataComponents.CUSTOM_DATA);
-        if (customData == null) return false;
-        CompoundTag blueprintTag = customData.copyTag();
-        if (!blueprintTag.contains("Width")) return false;
-
-        int width  = blueprintTag.getIntOr("Width",  0);
-        int height = blueprintTag.getIntOr("Height", 0);
-        int length = blueprintTag.getIntOr("Length", 0);
-        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
-        if (blocks.length == 0) return false;
-
-        // 解码调色板
-        ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
-        BlockState[] blockStates = new BlockState[paletteNbt.size()];
-        for (int i = 0; i < paletteNbt.size(); i++) {
-            net.minecraft.nbt.Tag stateTag = paletteNbt.get(i);
-            blockStates[i] = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag)
-                .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
-        }
-
-        // 统计蓝图总需量
-        Map<Item, Integer> totalNeeded = new LinkedHashMap<>();
-        for (int idx = 0; idx < blocks.length; idx++) {
-            int paletteIdx = blocks[idx];
-            if (paletteIdx < 0 || paletteIdx >= blockStates.length) continue;
-            BlockState state = blockStates[paletteIdx];
-            if (state.isAir() || state.is(Blocks.BARRIER)) continue;
-            Item item = state.getBlock().asItem();
-            if (item == Blocks.AIR.asItem()) continue;
-            totalNeeded.merge(item, 1, Integer::sum);
-        }
-
-        // 统计非活体建筑实体与挂载物所需物料
-        if (blueprintTag.contains("Entities")) {
-            ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
-            for (int i = 0; i < entitiesTag.size(); i++) {
-                CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
-                String id = entityNbt.getStringOr("id", "");
-                if (me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(id)) continue;
-                if (!me.tuanzi.block.cannon.BlueprintEntityHelper.isBuildableNonLivingEntity(id)) continue;
-
-                List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
-                    me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, entityNbt, level.registryAccess());
-                for (me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement req : reqs) {
-                    if (!req.template().isEmpty()) {
-                        totalNeeded.merge(req.template().getItem(), 1, Integer::sum);
-                    }
-                }
-            }
-        }
-
-        // 统计周围容器现有数量（服务端扫描，可靠）
-        Map<Item, Integer> available = new HashMap<>();
-        int radius = 5;
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dy = -radius; dy <= radius; dy++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    BlockPos p = cannonPos.offset(dx, dy, dz);
-                    BlockEntity be = level.getBlockEntity(p);
-                    if (be instanceof Container container && be != this) {
-                        countContainerItems(container, available, 1);
-                    }
-                }
-            }
-        }
-
-        // 按是否足量分组，不足的在前，足量的在后
-        List<Map.Entry<Item, Integer>> missing   = new ArrayList<>();
-        List<Map.Entry<Item, Integer>> fulfilled = new ArrayList<>();
-        for (Map.Entry<Item, Integer> entry : totalNeeded.entrySet()) {
-            int avail = available.getOrDefault(entry.getKey(), 0);
-            if (avail >= entry.getValue()) {
-                fulfilled.add(entry);
-            } else {
-                missing.add(entry);
-            }
-        }
-
-        // 组装书页（每页最多 13 行，每行约 25 字符）
-        final int LINES_PER_PAGE = 13;
-        List<Component> allComponents = new ArrayList<>();
-
-        if (!missing.isEmpty()) {
-            allComponents.add(Component.literal("=== 缺少材料 ==="));
-            for (Map.Entry<Item, Integer> e : missing) {
-                int avail = available.getOrDefault(e.getKey(), 0);
-                allComponents.add(
-                    Component.literal("§c✗ ")
-                        .append(Component.translatable(e.getKey().getDescriptionId()))
-                        .append(Component.literal(": " + avail + "/" + e.getValue()))
-                );
-            }
-        }
-        if (!fulfilled.isEmpty()) {
-            allComponents.add(Component.literal("=== 足量材料 ==="));
-            for (Map.Entry<Item, Integer> e : fulfilled) {
-                int avail = available.getOrDefault(e.getKey(), 0);
-                allComponents.add(
-                    Component.literal("§a✔ ")
-                        .append(Component.translatable(e.getKey().getDescriptionId()))
-                        .append(Component.literal(": " + avail + "/" + e.getValue()))
-                );
-            }
-        }
-        if (allComponents.isEmpty()) {
-            allComponents.add(Component.literal("蓝图中无需要的材料。"));
-        }
-
-        // 按 LINES_PER_PAGE 切分页面
-        List<Filterable<Component>> pages = new ArrayList<>();
-        int lineIdx = 0;
-        while (lineIdx < allComponents.size()) {
-            net.minecraft.network.chat.MutableComponent pageComponent = Component.empty();
-            for (int l = 0; l < LINES_PER_PAGE && lineIdx < allComponents.size(); l++, lineIdx++) {
-                if (l > 0) {
-                    pageComponent.append("\n");
-                }
-                pageComponent.append(allComponents.get(lineIdx));
-            }
-            pages.add(Filterable.passThrough(pageComponent));
-        }
-
-        // 生成成书并替换 Slot 2
-        ItemStack writtenBook = new ItemStack(Items.WRITTEN_BOOK);
-        writtenBook.set(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(
-            Filterable.passThrough("材料清单"),   // title
-            "蓝图大炮",                           // author
-            0,                                   // generation
-            pages,
-            true                                 // resolved
-        ));
-        this.items.set(2, writtenBook);
-        this.setChanged();
-        me.tuanzi.util.ModLog.debug("已写入材料清单：" + missing.size() + " 种缺失，" + fulfilled.size() + " 种足量，共 " + pages.size() + " 页，坐标：" + cannonPos);
-        return true;
-    }
-
-    /** 递归扫描容器，统计各物品数量到 countMap */
-    private void countContainerItems(Container container, Map<Item, Integer> countMap, int depth) {
-        if (depth > 3) return;
-        for (int i = 0; i < container.getContainerSize(); i++) {
-            ItemStack stack = container.getItem(i);
-            if (stack.isEmpty()) continue;
-            if (isNestedContainerItem(stack)) {
-                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
-                if (contents != null) {
-                    int containerSize = getNestedContainerSize(stack);
-                    NonNullList<ItemStack> inner = NonNullList.withSize(containerSize, ItemStack.EMPTY);
-                    contents.copyInto(inner);
-                    SimpleContainer virtual = new SimpleContainer(inner.toArray(new ItemStack[0]));
-                    countContainerItems(virtual, countMap, depth + 1);
-                }
-            } else {
-                countMap.merge(stack.getItem(), stack.getCount(), Integer::sum);
-            }
-        }
-    }
-
-    public void tickFlyingBlocks(Level level) {
-        if (this.flyingBlocks.isEmpty()) return;
-        List<LaunchedItem> toRemove = new LinkedList<>();
-        for (LaunchedItem item : this.flyingBlocks) {
-            if (item.update(level)) {
-                toRemove.add(item);
-            }
-        }
-        if (!toRemove.isEmpty()) {
-            this.flyingBlocks.removeAll(toRemove);
-            this.setChanged();
-        }
-    }
-
-    public void launchBlock(Level level, BlockPos target, ItemStack stack, BlockState state, @Nullable CompoundTag data, boolean isDestroy) {
-        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
-            this.previousTarget = this.currentTarget;
-        }
-        this.currentTarget = target;
-        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
-        this.flyingBlocks.add(new LaunchedItem.ForBlockState(this.worldPosition, target, stack, state, data, isDestroy));
-
-        // 播放大炮轰击发射音效
-        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
-        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
-
-        if (level instanceof ServerLevel serverLevel) {
-            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
-                this.worldPosition, target, net.minecraft.world.level.block.Block.getId(state), totalTicks, isDestroy
-            );
-            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
-                ServerPlayNetworking.send(player, packet);
-            }
-        }
-        this.setChanged();
-    }
-
-    public void launchEntity(Level level, BlockPos target, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
-        launchEntity(level, net.minecraft.world.phys.Vec3.atBottomCenterOf(target), stack, entityId, entityNbt);
-    }
-
-    public void launchEntity(Level level, net.minecraft.world.phys.Vec3 exactTarget, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
-        BlockPos target = BlockPos.containing(exactTarget);
-        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
-            this.previousTarget = this.currentTarget;
-        }
-        this.currentTarget = target;
-        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
-        this.flyingBlocks.add(new LaunchedItem.ForEntity(this.worldPosition, target, exactTarget, stack, entityId, entityNbt));
-
-        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
-        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
-
-        if (level instanceof ServerLevel serverLevel) {
-            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
-                this.worldPosition, target, 0, totalTicks, false
-            );
-            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
-                ServerPlayNetworking.send(player, packet);
-            }
-        }
-        this.setChanged();
     }
 
     public static void clientTick(Level level, BlockPos pos, BlockState state, BlueprintCannonBlockEntity be) {
@@ -575,9 +234,9 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     boolean mirrored = blueprintTag.getBooleanOr("Mirrored", false);
 
                     me.tuanzi.block.cannon.BlueprintEntityHelper.TransformedEntity transformed =
-                        me.tuanzi.block.cannon.BlueprintEntityHelper.transformEntity(
-                            entityNbt, width, height, length, basePos, offset, rotationIdx, mirrored, level.registryAccess()
-                        );
+                            me.tuanzi.block.cannon.BlueprintEntityHelper.transformEntity(
+                                    entityNbt, width, height, length, basePos, offset, rotationIdx, mirrored, level.registryAccess()
+                            );
                     net.minecraft.world.phys.Vec3 exactPos = transformed.exactPos();
                     BlockPos targetBlockPos = transformed.targetBlockPos();
                     net.minecraft.core.Direction facing = transformed.facing();
@@ -585,10 +244,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     // 4. 空中飞行队列查重
                     boolean alreadyFlying = be.flyingBlocks.stream().anyMatch(item ->
-                        item instanceof LaunchedItem.ForEntity forEntity &&
-                        forEntity.exactTarget != null &&
-                        forEntity.exactTarget.distanceToSqr(exactPos) < 0.05 &&
-                        forEntity.entityId.equals(id)
+                            item instanceof LaunchedItem.ForEntity forEntity &&
+                                    forEntity.exactTarget != null &&
+                                    forEntity.exactTarget.distanceToSqr(exactPos) < 0.05 &&
+                                    forEntity.entityId.equals(id)
                     );
                     if (alreadyFlying) {
                         be.currentIndex++;
@@ -597,15 +256,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     // 5. 世界目标位置实体检测与拆除模式联动
                     net.minecraft.world.entity.EntityType<?> entityType =
-                        net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id)).orElse(null);
+                            net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id)).orElse(null);
                     if (entityType == null) {
                         be.currentIndex++;
                         continue;
                     }
 
                     net.minecraft.world.phys.AABB checkBox = new net.minecraft.world.phys.AABB(
-                        exactPos.x - 0.5, exactPos.y - 0.5, exactPos.z - 0.5,
-                        exactPos.x + 0.5, exactPos.y + 0.5, exactPos.z + 0.5
+                            exactPos.x - 0.5, exactPos.y - 0.5, exactPos.z - 0.5,
+                            exactPos.x + 0.5, exactPos.y + 0.5, exactPos.z + 0.5
                     );
 
                     boolean shouldSkip = false;
@@ -615,7 +274,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     if (id.contains("item_frame") || id.equals("minecraft:painting")) {
                         // 挂饰类：精准匹配所在锚点方块与朝向
                         List<net.minecraft.world.entity.decoration.HangingEntity> hangings =
-                            level.getEntitiesOfClass(net.minecraft.world.entity.decoration.HangingEntity.class, new net.minecraft.world.phys.AABB(targetBlockPos).inflate(0.5));
+                                level.getEntitiesOfClass(net.minecraft.world.entity.decoration.HangingEntity.class, new net.minecraft.world.phys.AABB(targetBlockPos).inflate(0.5));
                         for (net.minecraft.world.entity.decoration.HangingEntity hanging : hangings) {
                             if (hanging.getDirection() == facing) {
                                 if (hanging.getType() == entityType) {
@@ -635,7 +294,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         } else if (be.destroyMode) {
                             // 检查是否有其他冲突的非活体建筑实体
                             List<net.minecraft.world.entity.Entity> conflicts = level.getEntities((net.minecraft.world.entity.Entity) null, checkBox,
-                                e -> !(e instanceof net.minecraft.world.entity.player.Player) && !(e instanceof net.minecraft.world.entity.LivingEntity living && !(living instanceof net.minecraft.world.entity.decoration.ArmorStand)));
+                                    e -> !(e instanceof net.minecraft.world.entity.player.Player) && !(e instanceof net.minecraft.world.entity.LivingEntity living && !(living instanceof net.minecraft.world.entity.decoration.ArmorStand)));
                             if (!conflicts.isEmpty()) {
                                 needDestroyConflict = true;
                                 conflictTarget = conflicts.getFirst();
@@ -666,9 +325,9 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     Map<String, ItemStack> consumedItems = new LinkedHashMap<>();
                     if (!hasCreativeCore) {
                         List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
-                            me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, transformedNbt, level.registryAccess());
+                                me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, transformedNbt, level.registryAccess());
                         boolean canConsume = me.tuanzi.block.cannon.BlueprintEntityHelper.tryReserveAndConsume(
-                            be.cachedSources, reqs, be.exactMatch, consumedItems
+                                be.cachedSources, reqs, be.exactMatch, consumedItems
                         );
                         if (!canConsume) {
                             // 材料不足，自动暂停
@@ -684,7 +343,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     // 7. 消耗燃料并精准发射实体
                     if (be.consumeFuel(level, pos)) {
                         CompoundTag sanitizedNbt = me.tuanzi.block.cannon.BlueprintEntityHelper.buildSanitizedEntityNbt(
-                            transformedNbt, id, consumedItems, hasCreativeCore, level.registryAccess()
+                                transformedNbt, id, consumedItems, hasCreativeCore, level.registryAccess()
                         );
                         ItemStack baseStack = consumedItems.getOrDefault("BASE", ItemStack.EMPTY);
                         be.launchEntity(level, exactPos, baseStack, id, sanitizedNbt);
@@ -747,7 +406,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                 net.minecraft.nbt.Tag stateTag = paletteNbt.get(paletteIdx);
                 BlockState blueprintState = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag)
-                    .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
+                        .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
                 // 应用旋转和镜像转换
                 BlockState transformedState = blueprintState.rotate(rot).mirror(mir);
 
@@ -871,6 +530,344 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 be.setChanged();
             }
         }
+    }
+
+    public NonNullList<ItemStack> getItems() {
+        return this.items;
+    }
+
+    // Container implementation
+    @Override
+    public int getContainerSize() {
+        return this.items.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (ItemStack stack : this.items) {
+            if (!stack.isEmpty()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return this.items.get(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        ItemStack result = ContainerHelper.removeItem(this.items, slot, amount);
+        if (!result.isEmpty()) {
+            this.setChanged();
+        }
+        return result;
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        return ContainerHelper.takeItem(this.items, slot);
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        this.items.set(slot, stack);
+        if (stack.getCount() > this.getMaxStackSize()) {
+            stack.setCount(this.getMaxStackSize());
+        }
+        this.setChanged();
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return Container.stillValidBlockEntity(this, player);
+    }
+
+    @Override
+    public void clearContent() {
+        this.items.clear();
+        this.setChanged();
+    }
+
+    private int getSlurryDurability() {
+        return this.fuel;
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("container.tuanzis_mod.blueprint_cannon");
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+        return new BlueprintCannonMenu(containerId, playerInventory, this, this.dataAccess);
+    }
+
+    public void handleAction(String action, boolean destroyMode, boolean exactMatch) {
+        this.destroyMode = destroyMode;
+        this.exactMatch = exactMatch;
+        this.pauseReason = 0;
+        switch (action) {
+            case "START" -> {
+                // 从 IDLE（含任务完成后）重新启动时，必须重置进度
+                // 从 PAUSE 恢复时不重置，以继续上次进度
+                if (this.buildState == 0) {
+                    this.currentIndex = 0;
+                    me.tuanzi.util.ModLog.debug("START from IDLE: 重置进度 currentIndex=0");
+                }
+                this.buildState = 1;
+                this.cachedSources = null; // 重新触发扫描
+            }
+            case "PAUSE" -> this.buildState = 2;
+            case "TERMINATE" -> {
+                this.buildState = 0;
+                this.currentIndex = 0;
+                this.cachedSources = null;
+            }
+        }
+        this.setChanged();
+    }
+
+    /**
+     * 服务端：将蓝图材料需求统计写入 Slot 2 中的书与笔，产出成书。
+     * 格式：物品名: 现有 / 总需
+     * 绿色行（✔）表示材料充足，红色行（✗）表示材料缺失。
+     */
+    public boolean writeMaterialBook(Level level, BlockPos cannonPos) {
+        // Slot 2 必须放有书与笔或已生成的成书
+        ItemStack bookStack = this.items.get(2);
+        if (!bookStack.is(Items.WRITABLE_BOOK) && !bookStack.is(Items.WRITTEN_BOOK)) {
+            return false;
+        }
+
+        // 读取蓝图
+        ItemStack blueprint = this.items.get(0);
+        if (blueprint.isEmpty() || !(blueprint.getItem() instanceof StructureBlueprintItem)) {
+            return false;
+        }
+        CustomData customData = blueprint.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return false;
+        CompoundTag blueprintTag = customData.copyTag();
+        if (!blueprintTag.contains("Width")) return false;
+
+        int width = blueprintTag.getIntOr("Width", 0);
+        int height = blueprintTag.getIntOr("Height", 0);
+        int length = blueprintTag.getIntOr("Length", 0);
+        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
+        if (blocks.length == 0) return false;
+
+        // 解码调色板
+        ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
+        BlockState[] blockStates = new BlockState[paletteNbt.size()];
+        for (int i = 0; i < paletteNbt.size(); i++) {
+            net.minecraft.nbt.Tag stateTag = paletteNbt.get(i);
+            blockStates[i] = BlockState.CODEC.parse(NbtOps.INSTANCE, stateTag)
+                    .result().orElseGet(() -> me.tuanzi.util.LitematicaParser.parseBlockStateFromTag(stateTag));
+        }
+
+        // 统计蓝图总需量
+        Map<Item, Integer> totalNeeded = new LinkedHashMap<>();
+        for (int idx = 0; idx < blocks.length; idx++) {
+            int paletteIdx = blocks[idx];
+            if (paletteIdx < 0 || paletteIdx >= blockStates.length) continue;
+            BlockState state = blockStates[paletteIdx];
+            if (state.isAir() || state.is(Blocks.BARRIER)) continue;
+            Item item = state.getBlock().asItem();
+            if (item == Blocks.AIR.asItem()) continue;
+            totalNeeded.merge(item, 1, Integer::sum);
+        }
+
+        // 统计非活体建筑实体与挂载物所需物料
+        if (blueprintTag.contains("Entities")) {
+            ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
+            for (int i = 0; i < entitiesTag.size(); i++) {
+                CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
+                String id = entityNbt.getStringOr("id", "");
+                if (me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(id)) continue;
+                if (!me.tuanzi.block.cannon.BlueprintEntityHelper.isBuildableNonLivingEntity(id)) continue;
+
+                List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
+                        me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, entityNbt, level.registryAccess());
+                for (me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement req : reqs) {
+                    if (!req.template().isEmpty()) {
+                        totalNeeded.merge(req.template().getItem(), 1, Integer::sum);
+                    }
+                }
+            }
+        }
+
+        // 统计周围容器现有数量（服务端扫描，可靠）
+        Map<Item, Integer> available = new HashMap<>();
+        int radius = 5;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    BlockPos p = cannonPos.offset(dx, dy, dz);
+                    BlockEntity be = level.getBlockEntity(p);
+                    if (be instanceof Container container && be != this) {
+                        countContainerItems(container, available, 1);
+                    }
+                }
+            }
+        }
+
+        // 按是否足量分组，不足的在前，足量的在后
+        List<Map.Entry<Item, Integer>> missing = new ArrayList<>();
+        List<Map.Entry<Item, Integer>> fulfilled = new ArrayList<>();
+        for (Map.Entry<Item, Integer> entry : totalNeeded.entrySet()) {
+            int avail = available.getOrDefault(entry.getKey(), 0);
+            if (avail >= entry.getValue()) {
+                fulfilled.add(entry);
+            } else {
+                missing.add(entry);
+            }
+        }
+
+        // 组装书页（每页最多 13 行，每行约 25 字符）
+        final int LINES_PER_PAGE = 13;
+        List<Component> allComponents = new ArrayList<>();
+
+        if (!missing.isEmpty()) {
+            allComponents.add(Component.literal("=== 缺少材料 ==="));
+            for (Map.Entry<Item, Integer> e : missing) {
+                int avail = available.getOrDefault(e.getKey(), 0);
+                allComponents.add(
+                        Component.literal("§c✗ ")
+                                .append(Component.translatable(e.getKey().getDescriptionId()))
+                                .append(Component.literal(": " + avail + "/" + e.getValue()))
+                );
+            }
+        }
+        if (!fulfilled.isEmpty()) {
+            allComponents.add(Component.literal("=== 足量材料 ==="));
+            for (Map.Entry<Item, Integer> e : fulfilled) {
+                int avail = available.getOrDefault(e.getKey(), 0);
+                allComponents.add(
+                        Component.literal("§a✔ ")
+                                .append(Component.translatable(e.getKey().getDescriptionId()))
+                                .append(Component.literal(": " + avail + "/" + e.getValue()))
+                );
+            }
+        }
+        if (allComponents.isEmpty()) {
+            allComponents.add(Component.literal("蓝图中无需要的材料。"));
+        }
+
+        // 按 LINES_PER_PAGE 切分页面
+        List<Filterable<Component>> pages = new ArrayList<>();
+        int lineIdx = 0;
+        while (lineIdx < allComponents.size()) {
+            net.minecraft.network.chat.MutableComponent pageComponent = Component.empty();
+            for (int l = 0; l < LINES_PER_PAGE && lineIdx < allComponents.size(); l++, lineIdx++) {
+                if (l > 0) {
+                    pageComponent.append("\n");
+                }
+                pageComponent.append(allComponents.get(lineIdx));
+            }
+            pages.add(Filterable.passThrough(pageComponent));
+        }
+
+        // 生成成书并替换 Slot 2
+        ItemStack writtenBook = new ItemStack(Items.WRITTEN_BOOK);
+        writtenBook.set(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(
+                Filterable.passThrough("材料清单"),   // title
+                "蓝图大炮",                           // author
+                0,                                   // generation
+                pages,
+                true                                 // resolved
+        ));
+        this.items.set(2, writtenBook);
+        this.setChanged();
+        me.tuanzi.util.ModLog.debug("已写入材料清单：" + missing.size() + " 种缺失，" + fulfilled.size() + " 种足量，共 " + pages.size() + " 页，坐标：" + cannonPos);
+        return true;
+    }
+
+    /**
+     * 递归扫描容器，统计各物品数量到 countMap
+     */
+    private void countContainerItems(Container container, Map<Item, Integer> countMap, int depth) {
+        if (depth > 3) return;
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.isEmpty()) continue;
+            if (isNestedContainerItem(stack)) {
+                ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
+                if (contents != null) {
+                    int containerSize = getNestedContainerSize(stack);
+                    NonNullList<ItemStack> inner = NonNullList.withSize(containerSize, ItemStack.EMPTY);
+                    contents.copyInto(inner);
+                    SimpleContainer virtual = new SimpleContainer(inner.toArray(new ItemStack[0]));
+                    countContainerItems(virtual, countMap, depth + 1);
+                }
+            } else {
+                countMap.merge(stack.getItem(), stack.getCount(), Integer::sum);
+            }
+        }
+    }
+
+    public void tickFlyingBlocks(Level level) {
+        if (this.flyingBlocks.isEmpty()) return;
+        List<LaunchedItem> toRemove = new LinkedList<>();
+        for (LaunchedItem item : this.flyingBlocks) {
+            if (item.update(level)) {
+                toRemove.add(item);
+            }
+        }
+        if (!toRemove.isEmpty()) {
+            this.flyingBlocks.removeAll(toRemove);
+            this.setChanged();
+        }
+    }
+
+    public void launchBlock(Level level, BlockPos target, ItemStack stack, BlockState state, @Nullable CompoundTag data, boolean isDestroy) {
+        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
+            this.previousTarget = this.currentTarget;
+        }
+        this.currentTarget = target;
+        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
+        this.flyingBlocks.add(new LaunchedItem.ForBlockState(this.worldPosition, target, stack, state, data, isDestroy));
+
+        // 播放大炮轰击发射音效
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
+
+        if (level instanceof ServerLevel serverLevel) {
+            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
+                    this.worldPosition, target, net.minecraft.world.level.block.Block.getId(state), totalTicks, isDestroy
+            );
+            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
+                ServerPlayNetworking.send(player, packet);
+            }
+        }
+        this.setChanged();
+    }
+
+    public void launchEntity(Level level, BlockPos target, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
+        launchEntity(level, net.minecraft.world.phys.Vec3.atBottomCenterOf(target), stack, entityId, entityNbt);
+    }
+
+    public void launchEntity(Level level, net.minecraft.world.phys.Vec3 exactTarget, ItemStack stack, String entityId, @Nullable CompoundTag entityNbt) {
+        BlockPos target = BlockPos.containing(exactTarget);
+        if (this.currentTarget != null && !this.currentTarget.equals(target)) {
+            this.previousTarget = this.currentTarget;
+        }
+        this.currentTarget = target;
+        int totalTicks = LaunchedItem.ticksForDistance(this.worldPosition, target);
+        this.flyingBlocks.add(new LaunchedItem.ForEntity(this.worldPosition, target, exactTarget, stack, entityId, entityNbt));
+
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.75f, 1.4f);
+        level.playSound(null, this.worldPosition, net.minecraft.sounds.SoundEvents.DISPENSER_LAUNCH, SoundSource.BLOCKS, 1.0f, 0.8f);
+
+        if (level instanceof ServerLevel serverLevel) {
+            BlueprintCannonShootS2CPacket packet = new BlueprintCannonShootS2CPacket(
+                    this.worldPosition, target, 0, totalTicks, false
+            );
+            for (ServerPlayer player : PlayerLookup.tracking(serverLevel, this.worldPosition)) {
+                ServerPlayNetworking.send(player, packet);
+            }
+        }
+        this.setChanged();
     }
 
     private boolean consumeFuel(Level level, BlockPos pos) {
@@ -1061,13 +1058,13 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
         /**
          * 标记物品已变更，将修改持久化回父链直至根容器（箱子 BlockEntity）。
-         *
+         * <p>
          * cachedSources 中所有条目的 shulkerStack 均为 null（只有普通物品被添加）。
          * 因此 markChanged() 的调用者 this.shulkerStack 始终为 null。
          * - 若 parent == null：item 直接在箱子中 → 直接 setChanged() 即可。
          * - 若 parent != null：item 在潜影盒的 virtualContainer 中
-         *   → 将 this.container（virtualContainer）序列化回 parent.shulkerStack 的 NBT
-         *   → 再调用 parent.propagateChangedToRoot() 沿父链向上逐层传播，直至根箱子。
+         * → 将 this.container（virtualContainer）序列化回 parent.shulkerStack 的 NBT
+         * → 再调用 parent.propagateChangedToRoot() 沿父链向上逐层传播，直至根箱子。
          */
         public void markChanged() {
             if (this.parent != null) {
@@ -1090,13 +1087,13 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
          * 沿父链向上逐层传播变更，将每一层的 container（virtualContainer）序列化
          * 回上一层的 shulkerStack，直至到达根节点（无父节点的箱子 ContainerSource），
          * 调用 container.setChanged() 标记箱子 BlockEntity 需要保存。
-         *
+         * <p>
          * 仅由 markChanged() 内部调用，不应从外部直接调用。
-         *
+         * <p>
          * 节点结构（以嵌套示例）：
-         *   根节点: { container=chest,            shulkerStack=outerShulker, parent=null     }
-         *   中间层: { container=outerVirtual,      shulkerStack=innerShulker, parent=根节点  }
-         *   叶节点: { container=innerVirtual,      shulkerStack=null,         parent=中间层  }
+         * 根节点: { container=chest,            shulkerStack=outerShulker, parent=null     }
+         * 中间层: { container=outerVirtual,      shulkerStack=innerShulker, parent=根节点  }
+         * 叶节点: { container=innerVirtual,      shulkerStack=null,         parent=中间层  }
          */
         private void propagateChangedToRoot() {
             if (this.parent != null) {

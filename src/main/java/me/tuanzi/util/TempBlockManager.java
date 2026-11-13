@@ -19,8 +19,6 @@ import java.util.List;
  * 负责管理陨石坑中心等临时生成的岩浆方块，在指定延迟（如 6 秒后）自动冷却固化或还原。
  */
 public class TempBlockManager {
-    public record TempEntry(ServerLevel level, BlockPos pos, long expireTick, BlockState targetState) {}
-
     private static final List<TempEntry> PENDING_ENTRIES = new ArrayList<>();
 
     public static void initialize() {
@@ -52,5 +50,8 @@ public class TempBlockManager {
                 }
             }
         }
+    }
+
+    public record TempEntry(ServerLevel level, BlockPos pos, long expireTick, BlockState targetState) {
     }
 }

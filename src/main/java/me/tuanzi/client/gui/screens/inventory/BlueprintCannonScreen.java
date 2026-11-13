@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
@@ -36,7 +35,7 @@ public class BlueprintCannonScreen extends AbstractContainerScreen<BlueprintCann
         super.init();
         int x = this.leftPos;
         int y = this.topPos;
-          // 开始 / 继续按钮 (▶)
+        // 开始 / 继续按钮 (▶)
         this.startButton = this.addRenderableWidget(Button.builder(Component.literal("▶"), btn -> {
             sendAction("START");
         }).bounds(x + 8, y + 17, 16, 16).build());
@@ -88,9 +87,9 @@ public class BlueprintCannonScreen extends AbstractContainerScreen<BlueprintCann
 
         // 覆盖非活动槽
         int[][] disabledSlots = {
-            {62, 17}, {80, 17}, {98, 17},
-            {80, 35},
-            {62, 53},           {98, 53}
+                {62, 17}, {80, 17}, {98, 17},
+                {80, 35},
+                {62, 53}, {98, 53}
         };
         for (int[] ds : disabledSlots) {
             graphics.fill(x + ds[0] - 1, y + ds[1] - 1, x + ds[0] + 17, y + ds[1] + 17, 0xAA2E2E2E);
@@ -116,9 +115,9 @@ public class BlueprintCannonScreen extends AbstractContainerScreen<BlueprintCann
         }
 
         // 设置按钮的文字显示
-        settingsButton.setMessage(menu.isDestroyMode() ? 
-            Component.translatable("gui.tuanzis_mod.blueprint_cannon.destroy") : 
-            Component.translatable("gui.tuanzis_mod.blueprint_cannon.drop"));
+        settingsButton.setMessage(menu.isDestroyMode() ?
+                Component.translatable("gui.tuanzis_mod.blueprint_cannon.destroy") :
+                Component.translatable("gui.tuanzis_mod.blueprint_cannon.drop"));
 
         // 读取进度：currentIndex（已处理格子数）/ totalBlocks（蓝图 blocks 数组总长度）
         // 这样完成时 currentIndex == totalBlocks → 100%
@@ -155,9 +154,12 @@ public class BlueprintCannonScreen extends AbstractContainerScreen<BlueprintCann
             stateText = Component.translatable("gui.tuanzis_mod.blueprint_cannon.block_missing").withStyle(ChatFormatting.RED);
         } else {
             Component st = switch (state) {
-                case 1 -> Component.translatable("gui.tuanzis_mod.blueprint_cannon.running").withStyle(ChatFormatting.GREEN);
-                case 2 -> Component.translatable("gui.tuanzis_mod.blueprint_cannon.paused").withStyle(ChatFormatting.GOLD);
-                default -> Component.translatable("gui.tuanzis_mod.blueprint_cannon.terminated").withStyle(ChatFormatting.GRAY);
+                case 1 ->
+                        Component.translatable("gui.tuanzis_mod.blueprint_cannon.running").withStyle(ChatFormatting.GREEN);
+                case 2 ->
+                        Component.translatable("gui.tuanzis_mod.blueprint_cannon.paused").withStyle(ChatFormatting.GOLD);
+                default ->
+                        Component.translatable("gui.tuanzis_mod.blueprint_cannon.terminated").withStyle(ChatFormatting.GRAY);
             };
             stateText = Component.translatable("gui.tuanzis_mod.blueprint_cannon.status_prefix", st);
         }
@@ -168,8 +170,8 @@ public class BlueprintCannonScreen extends AbstractContainerScreen<BlueprintCann
         int fillWidth = (int) (160.0F * pct / 100.0F);
         // 完成时（pct=100）绿色；暂停时橙色；运行中绿色；空闲/无蓝图灰色
         int barColor = (totalBlks <= 0 || state == 0) ? 0xFF555555
-                     : (state == 2) ? 0xFFFF8800
-                     : 0xFF00FF44;
+                : (state == 2) ? 0xFFFF8800
+                : 0xFF00FF44;
         graphics.fill(x + 8, y + 170, x + 8 + fillWidth, y + 174, barColor);
 
         int textWidth = this.font.width(pctText);

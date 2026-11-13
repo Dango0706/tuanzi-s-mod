@@ -30,7 +30,7 @@ public class AnimalMixin {
             self.setAge(cooldown);
             partner.setAge(cooldown);
             ModLog.debug(cause, "【牧养】动物繁殖成功，繁殖冷却缩短为 %d ticks (-%.0f%%, 等级: %d)",
-                cooldown, reduction * 100f, husbandryLevel);
+                    cooldown, reduction * 100f, husbandryLevel);
         }
     }
 }

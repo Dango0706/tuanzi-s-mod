@@ -9,38 +9,32 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.*;
 
 public class ColorBlockShapedRecipe extends ShapedRecipe {
-    private final ShapedRecipePattern myPattern;
-    private final ItemStackTemplate myResult;
-
     public static final MapCodec<ColorBlockShapedRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-                Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
-                CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
-                ShapedRecipePattern.MAP_CODEC.forGetter(o -> o.myPattern),
-                ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.myResult)
-            )
-            .apply(i, ColorBlockShapedRecipe::new)
+            i -> i.group(
+                            Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
+                            CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
+                            ShapedRecipePattern.MAP_CODEC.forGetter(o -> o.myPattern),
+                            ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.myResult)
+                    )
+                    .apply(i, ColorBlockShapedRecipe::new)
     );
     public static final StreamCodec<RegistryFriendlyByteBuf, ColorBlockShapedRecipe> STREAM_CODEC = StreamCodec.composite(
-        Recipe.CommonInfo.STREAM_CODEC,
-        o -> o.commonInfo,
-        CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
-        o -> o.bookInfo,
-        ShapedRecipePattern.STREAM_CODEC,
-        o -> o.myPattern,
-        ItemStackTemplate.STREAM_CODEC,
-        o -> o.myResult,
-        ColorBlockShapedRecipe::new
+            Recipe.CommonInfo.STREAM_CODEC,
+            o -> o.commonInfo,
+            CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
+            o -> o.bookInfo,
+            ShapedRecipePattern.STREAM_CODEC,
+            o -> o.myPattern,
+            ItemStackTemplate.STREAM_CODEC,
+            o -> o.myResult,
+            ColorBlockShapedRecipe::new
     );
     public static final RecipeSerializer<ColorBlockShapedRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
+    private final ShapedRecipePattern myPattern;
+    private final ItemStackTemplate myResult;
 
     public ColorBlockShapedRecipe(Recipe.CommonInfo commonInfo, CraftingRecipe.CraftingBookInfo bookInfo, ShapedRecipePattern pattern, ItemStackTemplate result) {
         super(commonInfo, bookInfo, pattern, result);
@@ -67,9 +61,9 @@ public class ColorBlockShapedRecipe extends ShapedRecipe {
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
-                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) || 
-                    stack.is(ModBlocks.COLOR_SLAB.asItem()) || 
-                    stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
+                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) ||
+                        stack.is(ModBlocks.COLOR_SLAB.asItem()) ||
+                        stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
                     DyedItemColor dye = stack.get(DataComponents.DYED_COLOR);
                     int rgb = dye != null ? dye.rgb() : 0xFFFFFF;
                     rSum += (rgb >> 16) & 0xFF;
@@ -81,9 +75,9 @@ public class ColorBlockShapedRecipe extends ShapedRecipe {
         }
 
         if (colorCount > 0) {
-            int r = (int)(rSum / colorCount);
-            int g = (int)(gSum / colorCount);
-            int b = (int)(bSum / colorCount);
+            int r = (int) (rSum / colorCount);
+            int g = (int) (gSum / colorCount);
+            int b = (int) (bSum / colorCount);
             int finalColor = (r << 16) | (g << 8) | b;
             result.set(DataComponents.DYED_COLOR, new DyedItemColor(finalColor));
         }

@@ -4,13 +4,12 @@ import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.init.ModEnchantments;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,13 +26,16 @@ import java.util.Set;
 @Mixin(ServerPlayerGameMode.class)
 public abstract class ChainMiningMixin {
 
-    @Shadow @Final protected ServerPlayer player;
-    @Shadow protected ServerLevel level;
-
-    @Shadow public abstract boolean destroyBlock(BlockPos pos);
-
     private static final ThreadLocal<Boolean> tuanzis_mod$isVeinMining = ThreadLocal.withInitial(() -> false);
+    @Shadow
+    @Final
+    protected ServerPlayer player;
+    @Shadow
+    protected ServerLevel level;
     private BlockState tuanzis_mod$firstBlockState;
+
+    @Shadow
+    public abstract boolean destroyBlock(BlockPos pos);
 
     @Inject(method = "destroyBlock", at = @At("HEAD"))
     private void tuanzis_mod$beforeDestroy(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {

@@ -6,18 +6,14 @@ import java.util.UUID;
 
 public class PlayerGachaState {
     private final UUID uuid;
-    
+    // 抽卡历史记录列表（无上限）
+    private final List<GachaHistoryEntry> history = new ArrayList<>();
     // 常驻池保底计数器
     private int normalLegendaryCounter = 0;
     private int normalEpicCounter = 0;
-
     // 限定池保底计数器（全局限定池共享）
     private int sakuraLegendaryCounter = 0;
     private int sakuraEpicCounter = 0;
-
-    // 抽卡历史记录列表（无上限）
-    private final List<GachaHistoryEntry> history = new ArrayList<>();
-
     // 定轨数据存储 (poolId -> FateAnchor)
     private java.util.Map<String, FateAnchor> fateAnchors = new java.util.HashMap<>();
 
@@ -55,29 +51,6 @@ public class PlayerGachaState {
         }
         this.isDirty = true;
         PlayerGachaManager.saveStateSafe(this);
-    }
-
-    public static class FateAnchor {
-        private String targetItemId;
-        private int fateValue = 0;
-
-        public FateAnchor() {}
-
-        public String getTargetItemId() {
-            return targetItemId;
-        }
-
-        public void setTargetItemId(String targetItemId) {
-            this.targetItemId = targetItemId;
-        }
-
-        public int getFateValue() {
-            return fateValue;
-        }
-
-        public void setFateValue(int fateValue) {
-            this.fateValue = fateValue;
-        }
     }
 
     public UUID getUuid() {
@@ -135,5 +108,29 @@ public class PlayerGachaState {
 
     public void setDirty(boolean dirty) {
         this.isDirty = dirty;
+    }
+
+    public static class FateAnchor {
+        private String targetItemId;
+        private int fateValue = 0;
+
+        public FateAnchor() {
+        }
+
+        public String getTargetItemId() {
+            return targetItemId;
+        }
+
+        public void setTargetItemId(String targetItemId) {
+            this.targetItemId = targetItemId;
+        }
+
+        public int getFateValue() {
+            return fateValue;
+        }
+
+        public void setFateValue(int fateValue) {
+            this.fateValue = fateValue;
+        }
     }
 }

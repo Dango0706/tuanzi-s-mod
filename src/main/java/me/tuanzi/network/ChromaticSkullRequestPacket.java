@@ -8,15 +8,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 public record ChromaticSkullRequestPacket(String playerName, boolean isMainHand) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ChromaticSkullRequestPacket> TYPE = 
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "chromatic_skull_request"));
+    public static final CustomPacketPayload.Type<ChromaticSkullRequestPacket> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "chromatic_skull_request"));
 
     public static final StreamCodec<FriendlyByteBuf, ChromaticSkullRequestPacket> CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8,
-        ChromaticSkullRequestPacket::playerName,
-        ByteBufCodecs.BOOL,
-        ChromaticSkullRequestPacket::isMainHand,
-        ChromaticSkullRequestPacket::new
+            ByteBufCodecs.STRING_UTF8,
+            ChromaticSkullRequestPacket::playerName,
+            ByteBufCodecs.BOOL,
+            ChromaticSkullRequestPacket::isMainHand,
+            ChromaticSkullRequestPacket::new
     );
 
     @Override

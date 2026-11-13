@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class PlayerActuallyHurtMixin {
 
     @ModifyVariable(
-        method = "actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/CombatTracker;recordDamage(Lnet/minecraft/world/damagesource/DamageSource;F)V"),
-        argsOnly = true
+            method = "actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/damagesource/CombatTracker;recordDamage(Lnet/minecraft/world/damagesource/DamageSource;F)V"),
+            argsOnly = true
     )
     private float tuanzis_mod$applyStandingFirmProtection(float dmg, ServerLevel level, DamageSource source) {
         Player player = (Player) (Object) this;

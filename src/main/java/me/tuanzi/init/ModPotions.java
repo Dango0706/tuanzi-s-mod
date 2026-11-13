@@ -23,5 +23,6 @@ public class ModPotions {
         return Registry.registerForHolder(BuiltInRegistries.POTION, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, name), potion);
     }
 
-    public static void initialize() {}
+    public static void initialize() {
+    }
 }

@@ -5,7 +5,6 @@ import me.tuanzi.util.ModLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -14,11 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -35,13 +30,13 @@ public class BlackboxCoreCaseBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
     private static final VoxelShape SHAPE_NORTH_SOUTH = Shapes.or(
-        Block.box(0.0, 0.0, 2.5, 16.0, 13.0, 13.5),
-        Block.box(7.0, 13.0, 7.0, 9.0, 16.5, 9.0)
+            Block.box(0.0, 0.0, 2.5, 16.0, 13.0, 13.5),
+            Block.box(7.0, 13.0, 7.0, 9.0, 16.5, 9.0)
     );
 
     private static final VoxelShape SHAPE_EAST_WEST = Shapes.or(
-        Block.box(2.5, 0.0, 0.0, 13.5, 13.0, 16.0),
-        Block.box(7.0, 13.0, 7.0, 9.0, 16.5, 9.0)
+            Block.box(2.5, 0.0, 0.0, 13.5, 13.0, 16.0),
+            Block.box(7.0, 13.0, 7.0, 9.0, 16.5, 9.0)
     );
 
     public BlackboxCoreCaseBlock(BlockBehaviour.Properties properties) {
@@ -133,11 +128,11 @@ public class BlackboxCoreCaseBlock extends BaseEntityBlock {
         // 天线顶端脉动的悬浮蓝色光点 (Y 轴约 1.15 格高)
         double antennaTipY = pos.getY() + 1.15;
         level.addParticle(
-            ParticleTypes.ELECTRIC_SPARK,
-            centerX + (random.nextDouble() - 0.5) * 0.04,
-            antennaTipY + (random.nextDouble() - 0.5) * 0.04,
-            centerZ + (random.nextDouble() - 0.5) * 0.04,
-            0.0, 0.005, 0.0
+                ParticleTypes.ELECTRIC_SPARK,
+                centerX + (random.nextDouble() - 0.5) * 0.04,
+                antennaTipY + (random.nextDouble() - 0.5) * 0.04,
+                centerZ + (random.nextDouble() - 0.5) * 0.04,
+                0.0, 0.005, 0.0
         );
 
         if (random.nextInt(4) == 0) {

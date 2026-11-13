@@ -49,10 +49,10 @@ public abstract class MobMixin {
 
                             // 播放撕咬音效（委托给 WolfAccessor）
                             accessor.tuanzis_mod$playGrowlSound(livingTarget);
-                            
+
                             if (wolf.level() instanceof ServerLevel serverLevel) {
                                 serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK,
-                                    livingTarget.getX(), livingTarget.getY() + 0.5, livingTarget.getZ(), 1, 0.1, 0.1, 0.1, 0.0);
+                                        livingTarget.getX(), livingTarget.getY() + 0.5, livingTarget.getZ(), 1, 0.1, 0.1, 0.1, 0.0);
                             }
                         }
                     }

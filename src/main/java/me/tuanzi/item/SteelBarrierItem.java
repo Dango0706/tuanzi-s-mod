@@ -1,18 +1,17 @@
 package me.tuanzi.item;
 
+import me.tuanzi.init.ModStatusEffects;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.level.Level;
-import me.tuanzi.init.ModStatusEffects;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class SteelBarrierItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 net.minecraft.world.item.component.CustomModelData cmd = new net.minecraft.world.item.component.CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
 
@@ -65,11 +64,11 @@ public class SteelBarrierItem extends Item {
                 wearValue = tag.getDoubleOr("WearValue", 0.0);
             }
         }
-        
+
         // 播放格挡音效，音调随磨损度加深而降低
         float pitch = 1.5f - (float) wearValue * 0.8f;
         attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(),
-            SoundEvents.SHIELD_BLOCK, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, pitch);
+                SoundEvents.SHIELD_BLOCK, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, pitch);
 
         // 仅在服务器端处理状态效果
         if (!attacker.level().isClientSide()) {

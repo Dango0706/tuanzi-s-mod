@@ -16,14 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
@@ -41,64 +34,6 @@ import java.util.function.Predicate;
 public final class SearchSessionManager {
 
     public static final double MAX_INTERACTION_DISTANCE_SQ = 36.0; // 6.0 米
-
-    public interface SessionEventListener {
-        void onSearchTick(ServerPlayer player, int entryId, int elapsedTicks, int totalTicks);
-        void onStagePulse(ServerPlayer player, int entryId, float threshold, ScavengerRarity rarity);
-        void onItemRevealed(ServerPlayer player, int entryId, ItemStack revealedStack);
-        void onSessionClosed(ServerPlayer player, String reason);
-    }
-
-    public static final class SearchSession {
-        private final UUID playerId;
-        private final IScavengerLootContainer container;
-        private final BlockPos containerPos;
-        private final ResourceKey<Level> dimension;
-        private final Deque<Integer> queue = new ArrayDeque<>();
-        private int activeEntryId = -1;
-        private int activeElapsedTicks = 0;
-        private int activeTotalTicks = 20;
-        private int lastPulseStageIndex = -1;
-        private final SessionEventListener listener;
-
-        public SearchSession(
-                UUID playerId,
-                IScavengerLootContainer container,
-                BlockPos containerPos,
-                ResourceKey<Level> dimension,
-                SessionEventListener listener
-        ) {
-            this.playerId = playerId;
-            this.container = container;
-            this.containerPos = containerPos;
-            this.dimension = dimension;
-            this.listener = listener != null ? listener : new DummyListener();
-        }
-
-        public int activeEntryId() {
-            return this.activeEntryId;
-        }
-
-        public int activeElapsedTicks() {
-            return this.activeElapsedTicks;
-        }
-
-        public int activeTotalTicks() {
-            return this.activeTotalTicks;
-        }
-
-        public IScavengerLootContainer container() {
-            return this.container;
-        }
-    }
-
-    private static final class DummyListener implements SessionEventListener {
-        @Override public void onSearchTick(ServerPlayer player, int entryId, int elapsedTicks, int totalTicks) {}
-        @Override public void onStagePulse(ServerPlayer player, int entryId, float threshold, ScavengerRarity rarity) {}
-        @Override public void onItemRevealed(ServerPlayer player, int entryId, ItemStack revealedStack) {}
-        @Override public void onSessionClosed(ServerPlayer player, String reason) {}
-    }
-
     private static final Map<UUID, SearchSession> ACTIVE_SESSIONS = new ConcurrentHashMap<>();
 
     private SearchSessionManager() {
@@ -315,5 +250,76 @@ public final class SearchSessionManager {
 
         session.activeEntryId = -1;
         return false;
+    }
+
+    public interface SessionEventListener {
+        void onSearchTick(ServerPlayer player, int entryId, int elapsedTicks, int totalTicks);
+
+        void onStagePulse(ServerPlayer player, int entryId, float threshold, ScavengerRarity rarity);
+
+        void onItemRevealed(ServerPlayer player, int entryId, ItemStack revealedStack);
+
+        void onSessionClosed(ServerPlayer player, String reason);
+    }
+
+    public static final class SearchSession {
+        private final UUID playerId;
+        private final IScavengerLootContainer container;
+        private final BlockPos containerPos;
+        private final ResourceKey<Level> dimension;
+        private final Deque<Integer> queue = new ArrayDeque<>();
+        private final SessionEventListener listener;
+        private int activeEntryId = -1;
+        private int activeElapsedTicks = 0;
+        private int activeTotalTicks = 20;
+        private int lastPulseStageIndex = -1;
+
+        public SearchSession(
+                UUID playerId,
+                IScavengerLootContainer container,
+                BlockPos containerPos,
+                ResourceKey<Level> dimension,
+                SessionEventListener listener
+        ) {
+            this.playerId = playerId;
+            this.container = container;
+            this.containerPos = containerPos;
+            this.dimension = dimension;
+            this.listener = listener != null ? listener : new DummyListener();
+        }
+
+        public int activeEntryId() {
+            return this.activeEntryId;
+        }
+
+        public int activeElapsedTicks() {
+            return this.activeElapsedTicks;
+        }
+
+        public int activeTotalTicks() {
+            return this.activeTotalTicks;
+        }
+
+        public IScavengerLootContainer container() {
+            return this.container;
+        }
+    }
+
+    private static final class DummyListener implements SessionEventListener {
+        @Override
+        public void onSearchTick(ServerPlayer player, int entryId, int elapsedTicks, int totalTicks) {
+        }
+
+        @Override
+        public void onStagePulse(ServerPlayer player, int entryId, float threshold, ScavengerRarity rarity) {
+        }
+
+        @Override
+        public void onItemRevealed(ServerPlayer player, int entryId, ItemStack revealedStack) {
+        }
+
+        @Override
+        public void onSessionClosed(ServerPlayer player, String reason) {
+        }
     }
 }

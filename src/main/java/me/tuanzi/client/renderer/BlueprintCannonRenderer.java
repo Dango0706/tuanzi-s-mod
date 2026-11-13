@@ -27,91 +27,12 @@ import org.jetbrains.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCannonBlockEntity, BlueprintCannonRenderState> {
     public static final Identifier TEXTURE =
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "textures/block/blueprint_cannon_model.png");
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "textures/block/blueprint_cannon_model.png");
 
     private final BlueprintCannonModel model;
 
     public BlueprintCannonRenderer(BlockEntityRendererProvider.Context context) {
         this.model = new BlueprintCannonModel(context.bakeLayer(BlueprintCannonModel.LAYER_LOCATION));
-    }
-
-    @Override
-    public BlueprintCannonRenderState createRenderState() {
-        return new BlueprintCannonRenderState();
-    }
-
-    @Override
-    public void extractRenderState(
-        BlueprintCannonBlockEntity blockEntity,
-        BlueprintCannonRenderState state,
-        float partialTicks,
-        Vec3 cameraPosition,
-        ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress
-    ) {
-        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
-        BlockPos pos = blockEntity.getBlockPos();
-        state.cannonPos = pos;
-
-        // 1. 解算偏航角与俯仰角
-        double[] angles = getCannonAngles(blockEntity, pos, partialTicks);
-        state.yaw = angles[0];
-        state.pitch = angles[1];
-
-        // 2. 解算液压后坐力
-        state.recoil = getRecoil(blockEntity, partialTicks);
-
-        // 3. 拷贝飞行方块状态
-        state.flyingBlocks.clear();
-        state.flyingBlocks.addAll(blockEntity.flyingBlocks);
-    }
-
-    @Override
-    public void submit(
-        BlueprintCannonRenderState state,
-        PoseStack poseStack,
-        SubmitNodeCollector submitNodeCollector,
-        CameraRenderState camera
-    ) {
-        poseStack.pushPose();
-        // 移至大炮中心底座 (Pivot 位于方块中心地基 Y=0)
-        poseStack.translate(0.5, 0.0, 0.5);
-
-        // === 1. 渲染固定底座 base（不随偏航角旋转，永远稳稳坐落于地面） ===
-        submitNodeCollector.submitModelPart(
-            this.model.base,
-            poseStack,
-            this.model.renderType(TEXTURE),
-            state.lightCoords,
-            OverlayTexture.NO_OVERLAY,
-            null
-        );
-
-        // === 2. 渲染回转机身 turret 与俯仰炮管 barrel ===
-        poseStack.pushPose();
-        // 水平偏航角旋转（JOML 绕 +Y 轴旋转：+state.yaw 使 +Z 炮口精准朝向目标方位）
-        poseStack.mulPose(new org.joml.Matrix4f().rotationY((float) Math.toRadians(state.yaw)));
-
-        // 姿态调整：炮口昂首指向目标仰角（负 X 轴旋转使得 +Z 炮口向上扬起）
-        this.model.turret.yRot = 0.0f;
-        this.model.barrel.xRot = (float) Math.toRadians(-state.pitch);
-        // 后坐力向后抽退（炮口在 +Z，后坐力沿轴线向 -Z 抽动）
-        this.model.barrel.z = (float) (-state.recoil * 0.05);
-
-        submitNodeCollector.submitModelPart(
-            this.model.turret,
-            poseStack,
-            this.model.renderType(TEXTURE),
-            state.lightCoords,
-            OverlayTexture.NO_OVERLAY,
-            null
-        );
-        poseStack.popPose();
-        poseStack.popPose();
-
-        // === 3. 渲染空中飞行微缩方块（严格从真实炮口射出） ===
-        if (!state.flyingBlocks.isEmpty()) {
-            renderLaunchedBlocks(state, poseStack, submitNodeCollector);
-        }
     }
 
     /**
@@ -135,9 +56,9 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
         double length = 0.875 - recoil * 0.05 / 16.0;
 
         return new Vec3(
-            hingeX + dirX * length,
-            hingeY + dirY * length,
-            hingeZ + dirZ * length
+                hingeX + dirX * length,
+                hingeY + dirY * length,
+                hingeZ + dirZ * length
         );
     }
 
@@ -148,9 +69,9 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
         double yawRad = Math.toRadians(yaw);
         double pitchRad = Math.toRadians(pitch);
         return new Vec3(
-            Math.sin(yawRad) * Math.cos(pitchRad),
-            Math.sin(pitchRad),
-            Math.cos(yawRad) * Math.cos(pitchRad)
+                Math.sin(yawRad) * Math.cos(pitchRad),
+                Math.sin(pitchRad),
+                Math.cos(yawRad) * Math.cos(pitchRad)
         );
     }
 
@@ -166,8 +87,8 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
             Vec3 diff = Vec3.atLowerCornerOf(target.subtract(pos));
             if (blockEntity.previousTarget != null) {
                 diff = (Vec3.atLowerCornerOf(blockEntity.previousTarget)
-                    .add(Vec3.atLowerCornerOf(target.subtract(blockEntity.previousTarget))
-                        .scale(partialTicks))).subtract(Vec3.atLowerCornerOf(pos));
+                        .add(Vec3.atLowerCornerOf(target.subtract(blockEntity.previousTarget))
+                                .scale(partialTicks))).subtract(Vec3.atLowerCornerOf(pos));
             }
 
             double diffX = diff.x();
@@ -183,7 +104,7 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
             pitch = 30.0;
         }
 
-        return new double[] { yaw, pitch };
+        return new double[]{yaw, pitch};
     }
 
     /**
@@ -204,9 +125,9 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
      * 空中抛物线微缩方块渲染（严格以真实炮口为弹道起始点）
      */
     private static void renderLaunchedBlocks(
-        BlueprintCannonRenderState state,
-        PoseStack poseStack,
-        SubmitNodeCollector submitNodeCollector
+            BlueprintCannonRenderState state,
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector
     ) {
         for (LaunchedItem launched : state.flyingBlocks) {
             if (launched.ticksRemaining == 0) continue;
@@ -236,9 +157,9 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
                 poseStack.pushPose();
                 // 移至当前弹道相对于大炮的位置
                 poseStack.translate(
-                    blockLocation.x - state.cannonPos.getX() - 0.5,
-                    blockLocation.y - state.cannonPos.getY(),
-                    blockLocation.z - state.cannonPos.getZ() - 0.5
+                        blockLocation.x - state.cannonPos.getX() - 0.5,
+                        blockLocation.y - state.cannonPos.getY(),
+                        blockLocation.z - state.cannonPos.getZ() - 0.5
                 );
                 // 优雅自转
                 poseStack.mulPose(new org.joml.Matrix4f().rotationY((float) Math.toRadians(360.0f * t)).rotateX((float) Math.toRadians(360.0f * t)));
@@ -253,6 +174,85 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
                 submitNodeCollector.submitMovingBlock(poseStack, movingBlock, 0);
                 poseStack.popPose();
             }
+        }
+    }
+
+    @Override
+    public BlueprintCannonRenderState createRenderState() {
+        return new BlueprintCannonRenderState();
+    }
+
+    @Override
+    public void extractRenderState(
+            BlueprintCannonBlockEntity blockEntity,
+            BlueprintCannonRenderState state,
+            float partialTicks,
+            Vec3 cameraPosition,
+            ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress
+    ) {
+        BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
+        BlockPos pos = blockEntity.getBlockPos();
+        state.cannonPos = pos;
+
+        // 1. 解算偏航角与俯仰角
+        double[] angles = getCannonAngles(blockEntity, pos, partialTicks);
+        state.yaw = angles[0];
+        state.pitch = angles[1];
+
+        // 2. 解算液压后坐力
+        state.recoil = getRecoil(blockEntity, partialTicks);
+
+        // 3. 拷贝飞行方块状态
+        state.flyingBlocks.clear();
+        state.flyingBlocks.addAll(blockEntity.flyingBlocks);
+    }
+
+    @Override
+    public void submit(
+            BlueprintCannonRenderState state,
+            PoseStack poseStack,
+            SubmitNodeCollector submitNodeCollector,
+            CameraRenderState camera
+    ) {
+        poseStack.pushPose();
+        // 移至大炮中心底座 (Pivot 位于方块中心地基 Y=0)
+        poseStack.translate(0.5, 0.0, 0.5);
+
+        // === 1. 渲染固定底座 base（不随偏航角旋转，永远稳稳坐落于地面） ===
+        submitNodeCollector.submitModelPart(
+                this.model.base,
+                poseStack,
+                this.model.renderType(TEXTURE),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                null
+        );
+
+        // === 2. 渲染回转机身 turret 与俯仰炮管 barrel ===
+        poseStack.pushPose();
+        // 水平偏航角旋转（JOML 绕 +Y 轴旋转：+state.yaw 使 +Z 炮口精准朝向目标方位）
+        poseStack.mulPose(new org.joml.Matrix4f().rotationY((float) Math.toRadians(state.yaw)));
+
+        // 姿态调整：炮口昂首指向目标仰角（负 X 轴旋转使得 +Z 炮口向上扬起）
+        this.model.turret.yRot = 0.0f;
+        this.model.barrel.xRot = (float) Math.toRadians(-state.pitch);
+        // 后坐力向后抽退（炮口在 +Z，后坐力沿轴线向 -Z 抽动）
+        this.model.barrel.z = (float) (-state.recoil * 0.05);
+
+        submitNodeCollector.submitModelPart(
+                this.model.turret,
+                poseStack,
+                this.model.renderType(TEXTURE),
+                state.lightCoords,
+                OverlayTexture.NO_OVERLAY,
+                null
+        );
+        poseStack.popPose();
+        poseStack.popPose();
+
+        // === 3. 渲染空中飞行微缩方块（严格从真实炮口射出） ===
+        if (!state.flyingBlocks.isEmpty()) {
+            renderLaunchedBlocks(state, poseStack, submitNodeCollector);
         }
     }
 

@@ -35,18 +35,16 @@ import java.util.Optional;
  */
 public class PlayerCorridorProfile {
 
-    /** 首次进入拾荒回廊自动发放的初始默认 1x2 安全箱物品注册 ID */
+    /**
+     * 首次进入拾荒回廊自动发放的初始默认 1x2 安全箱物品注册 ID
+     */
     public static final Identifier DEFAULT_STARTER_SAFEBOX_ID =
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "proto_lockbox_1x2");
-
+    private final GridInventory baseStashGrid;
     private ItemStack equippedBackpack = ItemStack.EMPTY;
     private @Nullable GridInventory backpackGrid = null;
-
     private ItemStack equippedSafebox = ItemStack.EMPTY;
     private @Nullable GridInventory safeboxGrid = null;
-
-    private final GridInventory baseStashGrid;
-
     private int weightLevel = 1;
     private int stashLevel = 1;
     private boolean starterSafeboxGranted = false;
@@ -58,6 +56,23 @@ public class PlayerCorridorProfile {
     }
 
     // ==================== 基础状态访问 ====================
+
+    /**
+     * 判断指定物品是否为合法的战术背包装备道具。
+     */
+    public static Optional<EquipmentGridSpec> resolveEquipmentSpec(
+            ItemStack stack,
+            EquipmentGridSpec.SlotType expectedType
+    ) {
+        if (stack == null || stack.isEmpty()) {
+            return Optional.empty();
+        }
+        ScavengerItemMeta meta = ScavengerDataRegistry.resolveItemMeta(stack);
+        if (meta.equipmentGrid().isPresent() && meta.equipmentGrid().get().slotType() == expectedType) {
+            return meta.equipmentGrid();
+        }
+        return Optional.empty();
+    }
 
     public ItemStack equippedBackpack() {
         return this.equippedBackpack;
@@ -103,31 +118,14 @@ public class PlayerCorridorProfile {
         this.dirty = true;
     }
 
+    // ==================== 战术背包穿卸逻辑 ====================
+
     public boolean consumeDirty() {
         if (this.dirty) {
             this.dirty = false;
             return true;
         }
         return false;
-    }
-
-    // ==================== 战术背包穿卸逻辑 ====================
-
-    /**
-     * 判断指定物品是否为合法的战术背包装备道具。
-     */
-    public static Optional<EquipmentGridSpec> resolveEquipmentSpec(
-            ItemStack stack,
-            EquipmentGridSpec.SlotType expectedType
-    ) {
-        if (stack == null || stack.isEmpty()) {
-            return Optional.empty();
-        }
-        ScavengerItemMeta meta = ScavengerDataRegistry.resolveItemMeta(stack);
-        if (meta.equipmentGrid().isPresent() && meta.equipmentGrid().get().slotType() == expectedType) {
-            return meta.equipmentGrid();
-        }
-        return Optional.empty();
     }
 
     /**

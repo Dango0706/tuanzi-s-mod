@@ -1,5 +1,6 @@
 package me.tuanzi.client.update;
 
+import com.mojang.blaze3d.Blaze3D;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -7,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -52,14 +52,14 @@ public class UpdateConfirmScreen extends Screen {
         if (this.isDownloaded) {
             // 下载完成后提示立即重启或稍后重启
             this.addRenderableWidget(
-                Button.builder(Component.literal("立即重启"), button -> this.minecraft.stop())
-                    .bounds(this.width / 2 - 110, panelY + panelHeight - 35, 100, 20)
-                    .build()
+                    Button.builder(Component.literal("立即重启"), button -> this.minecraft.stop())
+                            .bounds(this.width / 2 - 110, panelY + panelHeight - 35, 100, 20)
+                            .build()
             );
             this.addRenderableWidget(
-                Button.builder(Component.literal("稍后重启"), button -> this.minecraft.setScreenAndShow(this.parent))
-                    .bounds(this.width / 2 + 10, panelY + panelHeight - 35, 100, 20)
-                    .build()
+                    Button.builder(Component.literal("稍后重启"), button -> this.minecraft.setScreenAndShow(this.parent))
+                            .bounds(this.width / 2 + 10, panelY + panelHeight - 35, 100, 20)
+                            .build()
             );
             return;
         }
@@ -70,61 +70,61 @@ public class UpdateConfirmScreen extends Screen {
         int changelogBtnX = panelX + (panelWidth - changelogBtnWidth) / 2;
         int changelogBtnY = panelY + 182;
         this.addRenderableWidget(
-            Button.builder(Component.literal("查看详细更新日志"), button -> {
-                ModLog.debug("[更新提示] 用户点击查看详细更新日志，正在跳转链接: " + DETAILED_CHANGELOG_URI);
-                Blaze3D.openUri(DETAILED_CHANGELOG_URI);
-            })
-            .bounds(changelogBtnX, changelogBtnY, changelogBtnWidth, 20)
-            .build()
+                Button.builder(Component.literal("查看详细更新日志"), button -> {
+                            ModLog.debug("[更新提示] 用户点击查看详细更新日志，正在跳转链接: " + DETAILED_CHANGELOG_URI);
+                            Blaze3D.openUri(DETAILED_CHANGELOG_URI);
+                        })
+                        .bounds(changelogBtnX, changelogBtnY, changelogBtnWidth, 20)
+                        .build()
         );
 
         // 2. 底部操作按钮行
         int btnWidth = 80;
         int btnY = panelY + 212;
-        
+
         // 自动更新
         this.addRenderableWidget(
-            Button.builder(Component.literal("自动更新"), button -> {
-                this.isDownloading = true;
-                this.statusText = "正在下载更新包，请稍候...";
-                this.init(); // 重新加载界面按钮
-                UpdateChecker.downloadAndInstall().thenAccept(success -> {
-                    this.minecraft.execute(() -> {
-                        this.isDownloading = false;
-                        if (success) {
-                            this.isDownloaded = true;
-                            this.statusText = "更新成功！重启游戏后生效。";
-                        } else {
-                            this.downloadFailed = true;
-                            this.statusText = "下载更新失败，请检查网络后再试！";
-                        }
-                        this.init();
-                    });
-                });
-            })
-            .bounds(panelX + 25, btnY, btnWidth, 20)
-            .build()
+                Button.builder(Component.literal("自动更新"), button -> {
+                            this.isDownloading = true;
+                            this.statusText = "正在下载更新包，请稍候...";
+                            this.init(); // 重新加载界面按钮
+                            UpdateChecker.downloadAndInstall().thenAccept(success -> {
+                                this.minecraft.execute(() -> {
+                                    this.isDownloading = false;
+                                    if (success) {
+                                        this.isDownloaded = true;
+                                        this.statusText = "更新成功！重启游戏后生效。";
+                                    } else {
+                                        this.downloadFailed = true;
+                                        this.statusText = "下载更新失败，请检查网络后再试！";
+                                    }
+                                    this.init();
+                                });
+                            });
+                        })
+                        .bounds(panelX + 25, btnY, btnWidth, 20)
+                        .build()
         );
 
         // 忽略更新一天
         this.addRenderableWidget(
-            Button.builder(Component.literal("忽略更新一天"), button -> {
-                UpdateChecker.saveIgnoreTime();
-                UpdateChecker.setAlreadyNotified(true); // 确保当次关闭阻断
-                this.minecraft.setScreenAndShow(this.parent);
-            })
-            .bounds(panelX + 120, btnY, btnWidth, 20)
-            .build()
+                Button.builder(Component.literal("忽略更新一天"), button -> {
+                            UpdateChecker.saveIgnoreTime();
+                            UpdateChecker.setAlreadyNotified(true); // 确保当次关闭阻断
+                            this.minecraft.setScreenAndShow(this.parent);
+                        })
+                        .bounds(panelX + 120, btnY, btnWidth, 20)
+                        .build()
         );
 
         // 暂不更新
         this.addRenderableWidget(
-            Button.builder(Component.literal("暂不更新"), button -> {
-                UpdateChecker.setAlreadyNotified(true); // 本次游戏不再弹窗
-                this.minecraft.setScreenAndShow(this.parent);
-            })
-            .bounds(panelX + 215, btnY, btnWidth, 20)
-            .build()
+                Button.builder(Component.literal("暂不更新"), button -> {
+                            UpdateChecker.setAlreadyNotified(true); // 本次游戏不再弹窗
+                            this.minecraft.setScreenAndShow(this.parent);
+                        })
+                        .bounds(panelX + 215, btnY, btnWidth, 20)
+                        .build()
         );
 
         // 预先使用自定义 Markdown 解析并切分折行，缓存至内存中，避免 extractRenderState 产生高频 GC
@@ -216,10 +216,10 @@ public class UpdateConfirmScreen extends Screen {
                 int scrollbarX = panelX + panelWidth - 9;
                 int scrollbarBgColor = ARGB.color(60, 255, 255, 255); // 极其柔和的磨砂玻璃白
                 int scrollerColor = ARGB.color(200, 66, 133, 244);    // 尊贵蔚蓝色滑块
-                
+
                 int scrollerHeight = Math.max(15, (int) ((float) (viewHeight * viewHeight) / (this.changelogLines.size() * 12)));
                 int scrollerY = scrollAreaY0 + (int) (this.scrollAmount * (viewHeight - scrollerHeight) / this.maxScrollAmount);
-                
+
                 // 绘制滚动条滑道背景
                 graphics.fill(scrollbarX, scrollAreaY0, scrollbarX + 2, scrollAreaY1, scrollbarBgColor);
                 // 绘制可移动的蔚蓝色滑块

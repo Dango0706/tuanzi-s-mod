@@ -4,16 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.authlib.GameProfile;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-import net.fabricmc.loader.impl.game.GameProvider;
-import net.fabricmc.loader.impl.game.GameProviderHelper;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.Minecraft;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -24,31 +19,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Environment(EnvType.CLIENT)
 public class UpdateChecker {
-    public enum Status {
-        IDLE, CHECKING, HAS_UPDATE, NO_UPDATE, FAILED, DOWNLOADING, DOWNLOADED, DOWNLOAD_FAILED
-    }
-
+    private static final String MODRINTH_PROJECT_ID = "zJPSl9H6";
+    private static final String GAME_VERSION = SharedConstants.getCurrentVersion().name();
     private static Status status = Status.IDLE;
     private static String latestVersion = "";
     private static String changelog = "";
     private static String downloadUrl = "";
     private static String downloadFilename = "";
     private static String errorMessage = "";
-
     // 用于记录是否需要弹出提醒
     private static boolean alreadyNotified = false;
     private static long ignoredTime = 0L;
-
     private static boolean hasShownFailedNotification = false;
     private static long failedNotificationStartTime = -1L;
-
-    private static final String MODRINTH_PROJECT_ID = "zJPSl9H6";
-    private static final String GAME_VERSION = SharedConstants.getCurrentVersion().name();
 
     public static boolean isHasShownFailedNotification() {
         return hasShownFailedNotification;
@@ -480,5 +467,9 @@ public class UpdateChecker {
                 return false;
             }
         });
+    }
+
+    public enum Status {
+        IDLE, CHECKING, HAS_UPDATE, NO_UPDATE, FAILED, DOWNLOADING, DOWNLOADED, DOWNLOAD_FAILED
     }
 }

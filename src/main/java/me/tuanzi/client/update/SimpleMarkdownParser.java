@@ -37,14 +37,14 @@ public class SimpleMarkdownParser {
                 String content = line.substring(2);
                 lineComponent = parseLineInlineStyles(content)
                         .withStyle(style -> style.withBold(true).withColor(ARGB.color(255, 255, 100, 100))); // 浅红
-            } 
+            }
             // 2. 解析列表 (Unordered Lists)
             else if (line.startsWith("- ") || line.startsWith("* ") || line.startsWith("+ ")) {
                 String content = line.substring(2);
                 lineComponent = Component.literal("  • ")
                         .withStyle(style -> style.withColor(ARGB.color(255, 200, 200, 200)));
                 lineComponent.append(parseLineInlineStyles(content));
-            } 
+            }
             // 3. 普通行
             else {
                 lineComponent = parseLineInlineStyles(line);
@@ -83,7 +83,7 @@ public class SimpleMarkdownParser {
                 }
                 isBold = !isBold;
                 i += 2;
-            } 
+            }
             // 检查斜体 *
             else if (text.charAt(i) == '*') {
                 if (currentSegment.length() > 0) {
@@ -92,7 +92,7 @@ public class SimpleMarkdownParser {
                 }
                 isItalic = !isItalic;
                 i++;
-            } 
+            }
             // 检查代码块 `
             else if (text.charAt(i) == '`') {
                 if (currentSegment.length() > 0) {
@@ -101,7 +101,7 @@ public class SimpleMarkdownParser {
                 }
                 isCode = !isCode;
                 i++;
-            } 
+            }
             // 普通字符
             else {
                 currentSegment.append(text.charAt(i));

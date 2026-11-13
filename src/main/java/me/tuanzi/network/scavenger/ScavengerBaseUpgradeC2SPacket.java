@@ -17,12 +17,6 @@ public record ScavengerBaseUpgradeC2SPacket(
 
     public static final Type<ScavengerBaseUpgradeC2SPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_base_upgrade_c2s"));
-
-    public enum UpgradeTarget {
-        WEIGHT_SYSTEM,
-        BASE_STASH
-    }
-
     public static final StreamCodec<RegistryFriendlyByteBuf, ScavengerBaseUpgradeC2SPacket> CODEC = StreamCodec.of(
             (buf, pkt) -> {
                 buf.writeBlockPos(pkt.stationPos());
@@ -37,5 +31,10 @@ public record ScavengerBaseUpgradeC2SPacket(
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    public enum UpgradeTarget {
+        WEIGHT_SYSTEM,
+        BASE_STASH
     }
 }

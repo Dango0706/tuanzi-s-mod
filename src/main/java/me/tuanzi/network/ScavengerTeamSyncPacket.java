@@ -14,7 +14,8 @@ import java.util.UUID;
  * 拾荒回廊组队数据 S2C 同步数据包
  * 用于向客户端同步自身队伍状态、高亮发光颜色与同队队友 UUID 列表。
  */
-public record ScavengerTeamSyncPacket(boolean inTeam, int colorRgb, List<UUID> memberUuids) implements CustomPacketPayload {
+public record ScavengerTeamSyncPacket(boolean inTeam, int colorRgb,
+                                      List<UUID> memberUuids) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<ScavengerTeamSyncPacket> TYPE =
             new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_team_sync"));

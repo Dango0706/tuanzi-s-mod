@@ -9,14 +9,14 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 public record GhostTransformPacket(BlockPos offset, int rotation, boolean mirrored) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<GhostTransformPacket> TYPE = 
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ghost_transform"));
+    public static final CustomPacketPayload.Type<GhostTransformPacket> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ghost_transform"));
 
     public static final StreamCodec<FriendlyByteBuf, GhostTransformPacket> CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC, GhostTransformPacket::offset,
-        ByteBufCodecs.VAR_INT, GhostTransformPacket::rotation,
-        ByteBufCodecs.BOOL, GhostTransformPacket::mirrored,
-        GhostTransformPacket::new
+            BlockPos.STREAM_CODEC, GhostTransformPacket::offset,
+            ByteBufCodecs.VAR_INT, GhostTransformPacket::rotation,
+            ByteBufCodecs.BOOL, GhostTransformPacket::mirrored,
+            GhostTransformPacket::new
     );
 
     @Override

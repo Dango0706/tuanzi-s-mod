@@ -1,9 +1,12 @@
 package me.tuanzi.item;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -11,9 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.core.particles.ParticleTypes;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class RiftScarItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 CustomModelData cmd = new CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
 
@@ -48,7 +48,7 @@ public class RiftScarItem extends Item {
     @Override
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.postHurtEnemy(stack, target, attacker);
-        
+
         // 读取磨损度
         double wearValue = 0.0;
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
@@ -58,25 +58,25 @@ public class RiftScarItem extends Item {
                 wearValue = tag.getDoubleOr("WearValue", 0.0);
             }
         }
-        
+
         // 播放末影传送/虚空音效，音调随磨损度加深而愈发低沉，符合虚空崩解崩落细碎虚空尘/残响暗影的设定
         float pitch = 1.6f - (float) wearValue * 1.1f;
         target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-            SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.45f, pitch);
+                SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.45f, pitch);
 
         // 仅在服务器端播放虚空粒子效果
         if (!target.level().isClientSide() && target.level() instanceof ServerLevel serverLevel) {
             // 根据不同的磨损度，释放不同密度的虚空传送门/传送粒子，以及龙息粒子
-            int particleCount = 5 + (int)(wearValue * 15);
+            int particleCount = 5 + (int) (wearValue * 15);
             serverLevel.sendParticles(ParticleTypes.PORTAL,
-                target.getX(), target.getY() + 1.0, target.getZ(),
-                particleCount, 0.2, 0.3, 0.2, 0.1);
-            
+                    target.getX(), target.getY() + 1.0, target.getZ(),
+                    particleCount, 0.2, 0.3, 0.2, 0.1);
+
             if (wearValue >= 0.6) {
                 // 崩解和残响阶段产生女巫紫色粒子（虚空尘）
                 serverLevel.sendParticles(ParticleTypes.WITCH,
-                    target.getX(), target.getY() + 1.0, target.getZ(),
-                    6, 0.15, 0.15, 0.15, 0.02);
+                        target.getX(), target.getY() + 1.0, target.getZ(),
+                        6, 0.15, 0.15, 0.15, 0.02);
             }
         }
     }

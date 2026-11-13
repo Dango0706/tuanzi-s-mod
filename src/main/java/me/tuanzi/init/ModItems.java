@@ -1,23 +1,21 @@
 package me.tuanzi.init;
 
+import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.item.*;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.Weapon;
-import me.tuanzi.Tuanzis_mod;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
-
-import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.equipment.ArmorType;
 
 import java.util.function.Function;
 
@@ -33,94 +31,120 @@ public class ModItems {
     public static final Item WARDEN_HEART = register("warden_heart", (properties) -> new Item(properties.rarity(Rarity.UNCOMMON)));
     public static final Item ECHO_BREAKER = register("echo_breaker", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 8.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.8, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 8.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.8, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new EchoBreakerItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 8.0F, -2.8F)
-            .durability(1550)
-            .rarity(Rarity.RARE)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 8.0F, -2.8F)
+                .durability(1550)
+                .rarity(Rarity.RARE)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item BEE_STING_ECHO = register("bee_sting_echo", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.9, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "bee_sting_echo_reach"), -0.25, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.9, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "bee_sting_echo_reach"), -0.25, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new BeeStingEchoItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.0F, -1.9F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HONEYCOMB_BLOCK.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.0F, -1.9F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HONEYCOMB_BLOCK.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item STEEL_BARRIER = register("steel_barrier", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.7, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.7, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new SteelBarrierItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.7F, -2.4F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.NETHERITE_INGOT.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.7F, -2.4F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.NETHERITE_INGOT.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item RIFT_SCAR = register("rift_scar", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 4.12, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 4.12, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new RiftScarItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 4.12F, -2.0F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.ECHO_SHARD.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 4.12F, -2.0F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.ECHO_SHARD.builtInRegistryHolder())))
+                .attributes(modifiers));
+    });
+
+    public static final Item STAR_RIFT_BLADE = register("star_rift_blade", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
+        return new me.tuanzi.item.StarRiftBladeItem(properties
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.0F, -2.4F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.AMETHYST_SHARD.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item SCULLY_SHARD = register("scully_shard", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 9.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.75, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 9.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.75, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new ScullyShardItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 9.0F, -2.75F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 9.0F, -2.75F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(ModItems.WARDEN_HEART.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item TIDE_CLEAVER = register("tide_cleaver", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.3, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.34, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 6.3, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.34, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new TideCleaverItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.3F, -2.34F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HEART_OF_THE_SEA.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 6.3F, -2.34F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.HEART_OF_THE_SEA.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item PULSE_RESONANCE_SWORD = register("pulse_resonance_sword", (properties) -> {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-            .build();
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 5.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -1.5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
         return new me.tuanzi.item.PulseResonanceSwordItem(properties
-            .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 5.0F, -1.5F)
-            .durability(2031)
-            .rarity(Rarity.EPIC)
-            .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.AMETHYST_BLOCK.builtInRegistryHolder())))
-            .attributes(modifiers));
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 5.0F, -1.5F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.AMETHYST_BLOCK.builtInRegistryHolder())))
+                .attributes(modifiers));
+    });
+
+    public static final Item EARTH_PILE_HAMMER = register("earth_pile_hammer", (properties) -> {
+        ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, 15.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -3.2, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build();
+        return new EarthPileHammerItem(properties
+                .sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 15.0F, -3.2F)
+                .durability(2031)
+                .rarity(Rarity.EPIC)
+                .component(DataComponents.REPAIRABLE, new net.minecraft.world.item.enchantment.Repairable(net.minecraft.core.HolderSet.direct(net.minecraft.world.item.Items.CRYING_OBSIDIAN.builtInRegistryHolder())))
+                .attributes(modifiers));
     });
 
     public static final Item VILLAGER_CAGE = register("villager_cage", (properties) -> new me.tuanzi.item.VillagerCageItem(properties.stacksTo(1).durability(1).rarity(Rarity.UNCOMMON)));
@@ -130,12 +154,12 @@ public class ModItems {
     public static final Item SIGNPOST_RUNE = register("signpost_rune", (properties) -> new me.tuanzi.item.SignpostRuneItem(properties.stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final Item SHURIKEN = register("shuriken", (properties) -> new me.tuanzi.item.ShurikenItem(properties));
     public static final Item NETHER_STEW = register("nether_stew", (properties) -> new me.tuanzi.item.NetherStewItem(properties
-        .stacksTo(64)
-        .food(new net.minecraft.world.food.FoodProperties.Builder()
-            .nutrition(7)
-            .saturationModifier(0.57142857f)
-            .alwaysEdible()
-            .build())
+            .stacksTo(64)
+            .food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(7)
+                    .saturationModifier(0.57142857f)
+                    .alwaysEdible()
+                    .build())
     ));
 
     public static final Item STAR_TRAVEL_CARD_PACK = register("star_travel_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.UNCOMMON), "normal", false));
@@ -153,16 +177,16 @@ public class ModItems {
     public static final Item PRIME_MINISTER_CARD_PACK = register("prime_minister_card_pack", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "prime_minister_new_year", false));
     public static final Item PRIME_MINISTER_CARD_CHEST = register("prime_minister_card_chest", (properties) -> new me.tuanzi.item.GachaItem(properties.stacksTo(64).rarity(Rarity.EPIC), "prime_minister_new_year", true));
     public static final Item TIDAL_WEAVE_BOOTS = register("tidal_weave_boots", (properties) -> new Item(properties
-        .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
-        .rarity(Rarity.EPIC)
+            .humanoidArmor(ModArmorMaterials.TIDAL_WEAVE, ArmorType.BOOTS)
+            .rarity(Rarity.EPIC)
     ));
     public static final Item WORLD_SCULPTORS_PEN = register("world_sculptors_pen", (properties) -> new me.tuanzi.item.WorldSculptorsPenItem(properties
-        .stacksTo(1)
-        .durability(8192)
-        .rarity(Rarity.EPIC)
+            .stacksTo(1)
+            .durability(8192)
+            .rarity(Rarity.EPIC)
     ));
     public static final Item VOID_INK_INGOT = register("void_ink_ingot", (properties) -> new Item(properties
-        .rarity(Rarity.EPIC)
+            .rarity(Rarity.EPIC)
     ) {
         @Override
         public void appendHoverText(net.minecraft.world.item.ItemStack stack, net.minecraft.world.item.Item.TooltipContext context, net.minecraft.world.item.component.TooltipDisplay tooltipDisplay, java.util.function.Consumer<net.minecraft.network.chat.Component> tooltipComponents, net.minecraft.world.item.TooltipFlag tooltipFlag) {
@@ -217,9 +241,9 @@ public class ModItems {
     public static final Item CIPHER_SAFEBOX_2X3 = register("cipher_safebox_2x3", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
     public static final Item AEGIS_CORE_VAULT_3X3 = register("aegis_core_vault_3x3", p -> new me.tuanzi.item.scavenger.ScavengerEquipableItem(p.stacksTo(1)));
     public static final Item GOLDEN_POCKET = register("golden_pocket", properties -> new me.tuanzi.item.GoldenPocketItem(properties
-        .stacksTo(1)
-        .rarity(Rarity.UNCOMMON)
-        .component(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.EMPTY)
+            .stacksTo(1)
+            .rarity(Rarity.UNCOMMON)
+            .component(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.EMPTY)
     ));
 
 

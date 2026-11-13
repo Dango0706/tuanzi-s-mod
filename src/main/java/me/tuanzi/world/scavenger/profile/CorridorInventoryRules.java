@@ -58,13 +58,13 @@ public final class CorridorInventoryRules {
     /**
      * 执行拾荒回廊物品添加路由（纯抽象接口形式，支持真实 {@link Inventory} 与无实体 JUnit 测试调用）。
      *
-     * @param targetSlot      目标槽位（{@code -1} 表示自动拾取/自动分配；{@code 0..8} 表示指定快捷栏；{@code 9..35} 恒定拒绝）
-     * @param incomingStack   待拾取/添加的物品栈（成功容纳的部分会原地 {@code shrink} 扣减）
-     * @param hotbarGetter    读取快捷栏 {@code 0..8} 物品的访问器
-     * @param hotbarSetter    写入快捷栏 {@code 0..8} 物品的修改器
-     * @param profile         玩家的回廊战术装备档案
-     * @param registries      注册表上下文（可为 null）
-     * @param random          用于固化新战利品搜索时长的随机源
+     * @param targetSlot    目标槽位（{@code -1} 表示自动拾取/自动分配；{@code 0..8} 表示指定快捷栏；{@code 9..35} 恒定拒绝）
+     * @param incomingStack 待拾取/添加的物品栈（成功容纳的部分会原地 {@code shrink} 扣减）
+     * @param hotbarGetter  读取快捷栏 {@code 0..8} 物品的访问器
+     * @param hotbarSetter  写入快捷栏 {@code 0..8} 物品的修改器
+     * @param profile       玩家的回廊战术装备档案
+     * @param registries    注册表上下文（可为 null）
+     * @param random        用于固化新战利品搜索时长的随机源
      * @return 若至少成功接收了 1 件物品则返回 {@code true}，否则原封不动返回 {@code false}
      */
     public static boolean routeItemAddition(
@@ -172,11 +172,6 @@ public final class CorridorInventoryRules {
         return incomingStack.getCount() < initialCount;
     }
 
-    @FunctionalInterface
-    public interface HotkeySlotSetter {
-        void set(int slot, ItemStack stack);
-    }
-
     /**
      * 服务端安全巡检：若有外部逻辑绕过 {@link Inventory#add} 直接往 {@code 9..35} 塞入了物品，
      * 自动将其转入快捷栏/战术背包网格，实在塞不下则安全弹出到玩家脚下地面，确保隐藏 27 格永远为空。
@@ -223,5 +218,10 @@ public final class CorridorInventoryRules {
         if (changed && onChangedCallback != null) {
             onChangedCallback.accept(1);
         }
+    }
+
+    @FunctionalInterface
+    public interface HotkeySlotSetter {
+        void set(int slot, ItemStack stack);
     }
 }

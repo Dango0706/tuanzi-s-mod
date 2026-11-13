@@ -1,7 +1,6 @@
 package me.tuanzi.block;
 
 import me.tuanzi.block.entity.BlueprintTableBlockEntity;
-import me.tuanzi.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -10,8 +9,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -22,9 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlueprintTableBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(
-        box(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),   // 桌身与抽屉柜
-        box(1.0, 12.0, 1.0, 15.0, 14.0, 15.0),  // 桌面板底座
-        box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0)   // 桌台面板
+            box(0.0, 0.0, 0.0, 16.0, 12.0, 16.0),   // 桌身与抽屉柜
+            box(1.0, 12.0, 1.0, 15.0, 14.0, 15.0),  // 桌面板底座
+            box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0)   // 桌台面板
     );
 
     public BlueprintTableBlock(BlockBehaviour.Properties properties) {

@@ -61,13 +61,13 @@ public class ShurikenEntity extends ThrowableItemProjectile {
             float baseDamage = 4.0f;
             DamageSource source = this.damageSources().thrown(this, this.getOwner());
             float finalDamage = me.tuanzi.util.DamageCalculator.calculateDamage(baseDamage, source, target);
-            
+
             // 造成伤害
             target.hurt(source, finalDamage);
-            
+
             MobEffectInstance currentEffect = target.getEffect(ModStatusEffects.SHURIKEN_STUCK);
             int currentCount = currentEffect != null ? currentEffect.getAmplifier() + 1 : 0;
-            
+
             // 20% 概率附加“手里剑嵌入”效果
             if (target.level().getRandom().nextFloat() < 0.20f) {
                 int nextCount = Math.min(3, currentCount + 1);
@@ -85,15 +85,15 @@ public class ShurikenEntity extends ThrowableItemProjectile {
         super.onHit(hitResult);
         if (!this.level().isClientSide()) {
             // 播放清脆的金属碰撞音效
-            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), 
-                SoundEvents.METAL_HIT, SoundSource.NEUTRAL, 0.6F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
-            
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                    SoundEvents.METAL_HIT, SoundSource.NEUTRAL, 0.6F, 1.2F / (this.random.nextFloat() * 0.2F + 0.9F));
+
             // 产生十字星碎片粒子
             if (this.level() instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.CRIT, 
-                    this.getX(), this.getY(), this.getZ(), 8, 0.1, 0.1, 0.1, 0.15);
+                serverLevel.sendParticles(ParticleTypes.CRIT,
+                        this.getX(), this.getY(), this.getZ(), 8, 0.1, 0.1, 0.1, 0.15);
             }
-            
+
             this.discard();
         }
     }

@@ -14,16 +14,16 @@ public class DamageText {
     public DamageText(float damage, long spawnTime) {
         this.damage = damage;
         this.spawnTime = spawnTime;
-        
+
         // 初始产生在受击位置，无初始偏移
         this.xOffset = 0.0;
         this.yOffset = 0.0;
         this.zOffset = 0.0;
-        
+
         // 随机一个水平夹角，使得数字朝 360 度任意随机角度弹跳飞出
         double angle = Math.random() * 2.0 * Math.PI;
         double speed = 0.04 + Math.random() * 0.04;
-        
+
         // 计算 3D 空间三维速度分量
         this.xd = Math.cos(angle) * speed;
         this.yd = 0.09 + Math.random() * 0.03; // 轻快地上升斜喷

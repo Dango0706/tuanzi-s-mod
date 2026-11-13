@@ -98,14 +98,14 @@ public abstract class EnchantmentMenuMixin {
     }
 
     @org.spongepowered.asm.mixin.injection.Redirect(
-        method = "getEnchantmentList",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;selectEnchantment(Lnet/minecraft/util/RandomSource;Lnet/minecraft/world/item/ItemStack;ILjava/util/stream/Stream;)Ljava/util/List;"
-        )
+            method = "getEnchantmentList",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/enchantment/EnchantmentHelper;selectEnchantment(Lnet/minecraft/util/RandomSource;Lnet/minecraft/world/item/ItemStack;ILjava/util/stream/Stream;)Ljava/util/List;"
+            )
     )
     private java.util.List<net.minecraft.world.item.enchantment.EnchantmentInstance> tuanzis_mod$restrictAncientScrolls(
-        net.minecraft.util.RandomSource random, ItemStack itemStack, int enchantmentCost, java.util.stream.Stream<net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment>> source
+            net.minecraft.util.RandomSource random, ItemStack itemStack, int enchantmentCost, java.util.stream.Stream<net.minecraft.core.Holder<net.minecraft.world.item.enchantment.Enchantment>> source
     ) {
         // 强制需求附魔台等级 30 级及以上才可出现
         if (enchantmentCost < 30) {
@@ -113,7 +113,7 @@ public abstract class EnchantmentMenuMixin {
         }
 
         java.util.List<net.minecraft.world.item.enchantment.EnchantmentInstance> result = new java.util.ArrayList<>(
-            net.minecraft.world.item.enchantment.EnchantmentHelper.selectEnchantment(random, itemStack, enchantmentCost, source)
+                net.minecraft.world.item.enchantment.EnchantmentHelper.selectEnchantment(random, itemStack, enchantmentCost, source)
         );
 
         // 附魔台中最高仅能获取一级的古卷附魔

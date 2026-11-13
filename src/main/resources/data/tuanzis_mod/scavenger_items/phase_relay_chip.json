@@ -9,7 +9,9 @@
   "weight_kg": 0.30,
   "base_value": 6800,
   "base_search_seconds": 2.0,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "sound_profile": "TECH_BEEP",
   "lore_translation_key": "item.tuanzis_mod.phase_relay_chip.lore"
 }

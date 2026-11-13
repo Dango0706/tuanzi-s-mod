@@ -14,7 +14,8 @@ public class TideCleaverEnergyTintSource implements ItemTintSource {
     public static final TideCleaverEnergyTintSource INSTANCE = new TideCleaverEnergyTintSource();
     public static final MapCodec<TideCleaverEnergyTintSource> MAP_CODEC = MapCodec.unit(INSTANCE);
 
-    public TideCleaverEnergyTintSource() {}
+    public TideCleaverEnergyTintSource() {
+    }
 
     @Override
     public int calculate(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity owner) {

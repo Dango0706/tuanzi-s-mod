@@ -17,12 +17,12 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class RaidMixin {
 
     @ModifyArg(
-        method = "tick(Lnet/minecraft/server/level/ServerLevel;)V",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/advancements/triggers/PlayerTrigger;trigger(Lnet/minecraft/server/level/ServerPlayer;)V"
-        ),
-        index = 0
+            method = "tick(Lnet/minecraft/server/level/ServerLevel;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/advancements/triggers/PlayerTrigger;trigger(Lnet/minecraft/server/level/ServerPlayer;)V"
+            ),
+            index = 0
     )
     private ServerPlayer tuanzis_mod$rewardTradingMasterOnRaidWin(ServerPlayer playerHero) {
         if (playerHero != null) {

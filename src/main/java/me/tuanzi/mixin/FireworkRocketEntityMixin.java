@@ -2,29 +2,27 @@ package me.tuanzi.mixin;
 
 import me.tuanzi.util.IGachaFirework;
 import me.tuanzi.util.ModLog;
-import net.minecraft.ChatFormatting;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.TeamColor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.world.entity.player.Player;
-import java.util.UUID;
-import net.minecraft.world.scores.TeamColor;
 import java.util.Optional;
+import java.util.UUID;
 
 @Mixin(FireworkRocketEntity.class)
 public class FireworkRocketEntityMixin implements IGachaFirework {
-    
+
     @org.spongepowered.asm.mixin.Shadow
     private int lifetime;
 
@@ -43,8 +41,8 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
     }
 
     @Inject(
-        method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V",
-        at = @At("RETURN")
+            method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/LivingEntity;)V",
+            at = @At("RETURN")
     )
     private void tuanzis_mod$applyBoostEnchantment(net.minecraft.world.level.Level level, ItemStack sourceItemStack, net.minecraft.world.entity.LivingEntity stuckTo, CallbackInfo ci) {
         if (stuckTo != null) {
@@ -132,8 +130,8 @@ public class FireworkRocketEntityMixin implements IGachaFirework {
             level.addFreshEntity(itemEntity);
 
             // 7. 打印调试日志
-            ModLog.debug("Gacha Burst Spawned: Item " + this.tuanziGachaPrize.getHoverName().getString() 
-                    + " at (" + ex + ", " + ey + ", " + ez + ") with glowing rarity " + this.tuanziGachaRarity 
+            ModLog.debug("Gacha Burst Spawned: Item " + this.tuanziGachaPrize.getHoverName().getString()
+                    + " at (" + ex + ", " + ey + ", " + ez + ") with glowing rarity " + this.tuanziGachaRarity
                     + " for player " + this.tuanziGachaTarget);
         }
     }

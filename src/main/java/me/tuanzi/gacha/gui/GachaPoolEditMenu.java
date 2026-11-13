@@ -106,7 +106,7 @@ public class GachaPoolEditMenu extends ChestMenu {
             if (currentItemIdx < items.size()) {
                 GachaPoolItem poolItem = items.get(currentItemIdx);
                 ItemStack displayStack = poolItem.getItem().copy();
-                
+
                 // 给展示物品的 Lore 追加权重信息
                 ItemLore originalLoreObj = displayStack.get(DataComponents.LORE);
                 List<Component> newLoreList = new ArrayList<>();
@@ -127,7 +127,7 @@ public class GachaPoolEditMenu extends ChestMenu {
                 if (poolItem == pendingDeleteItem) {
                     newLoreList.add(Component.literal("§c§l⚠️ 警告：该操作将彻底移除物品！"));
                 }
-                
+
                 displayStack.set(DataComponents.LORE, new ItemLore(newLoreList));
                 container.setItem(targetSlot, displayStack);
             }
@@ -210,7 +210,7 @@ public class GachaPoolEditMenu extends ChestMenu {
                 int itemIdx = currentPage * 18 + (slotIndex - 18);
                 if (itemIdx < items.size()) {
                     GachaPoolItem clickedItem = items.get(itemIdx);
-                    
+
                     if (containerInput == ContainerInput.QUICK_MOVE || buttonNum == 2) {
                         // 复制物品到生存背包 (中键或 Shift 点击)
                         ItemStack giveStack = clickedItem.getItem().copy();
@@ -243,7 +243,7 @@ public class GachaPoolEditMenu extends ChestMenu {
                     }
                 }
             }
-            
+
             // 强行广播全状态，防止客户端拿取或发生任何残留闪烁
             this.broadcastFullState();
         } else {

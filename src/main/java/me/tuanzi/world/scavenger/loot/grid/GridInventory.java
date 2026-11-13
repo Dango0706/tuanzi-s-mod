@@ -15,17 +15,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -34,18 +24,19 @@ import java.util.function.Predicate;
  */
 public class GridInventory {
 
-    /** 存储在背包/安全箱物品 {@link DataComponents#CUSTOM_DATA} 内的嵌套网格 NBT 根键名 */
+    /**
+     * 存储在背包/安全箱物品 {@link DataComponents#CUSTOM_DATA} 内的嵌套网格 NBT 根键名
+     */
     public static final String NESTED_GRID_TAG_KEY = "ScavengerNestedGrid";
 
     public static final int EMPTY_CELL = -1;
-
+    private final LinkedHashMap<Integer, GridItemEntry> entriesById = new LinkedHashMap<>();
+    private final List<ItemStack> loadOverflowBuffer = new ArrayList<>();
     private int columns;
     private int rows;
     private int[] occupancy;
-    private final LinkedHashMap<Integer, GridItemEntry> entriesById = new LinkedHashMap<>();
     private int nextEntryId = 1;
     private Predicate<ItemStack> extraDepositPolicy;
-    private final List<ItemStack> loadOverflowBuffer = new ArrayList<>();
 
     public GridInventory(int columns, int rows) {
         this(columns, rows, stack -> true);

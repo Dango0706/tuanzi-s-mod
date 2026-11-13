@@ -53,6 +53,7 @@ public class BlueprintInspectorScreen extends Screen {
 
     // 6 个方向在单位立方体 [0,1]^3 上的 4 顶点偏移（从外侧观察均为逆时针，匹配 (u0,v0)->(u0,v1)->(u1,v1)->(u1,v0)）
     private static final float[][][] FACE_VERTICES = new float[6][4][3];
+
     static {
         // DOWN (0, -1, 0)
         FACE_VERTICES[Direction.DOWN.ordinal()] = new float[][]{
@@ -83,58 +84,31 @@ public class BlueprintInspectorScreen extends Screen {
     private final Screen parentScreen;
     private final CompoundTag blueprintTag;
     private final String blueprintTitle;
-
+    private final List<CulledFace> culledFaces = new ArrayList<>();
+    private final List<BlockStatEntry> allBlockStats = new ArrayList<>();
+    private final List<BlockStatEntry> filteredBlockStats = new ArrayList<>();
+    private final List<Button> presetButtons = new ArrayList<>();
+    private final List<ScreenLabel> frameOverlayLabels = new ArrayList<>();
     // 结构尺寸与方块数据
     private int structWidth = 0;
     private int structHeight = 0;
     private int structLength = 0;
     private int totalBlocks = 0;
     private BlockState[] palette = new BlockState[0];
-
-    public record FaceAppearance(float u0, float v0, float u1, float v1, int tintColor) {}
     private FaceAppearance[][] paletteAppearances = new FaceAppearance[0][0];
-
-    // sliceVisibility: 0 = 外部常驻可见面, 1 = 内部顶面(仅在 y == currentLayer 切层截面时封顶可见), 2 = 内部底面(仅在单层模式下可见)
-    public record CulledFace(int x, int y, int z, Direction dir, int paletteIdx, byte sliceVisibility) {}
-    private final List<CulledFace> culledFaces = new ArrayList<>();
-
-    // 按 Block 聚合去重后的方块统计列表项
-    public static class BlockStatEntry {
-        public final Block block;
-        public final ItemStack itemStack;
-        public final String localizedName;
-        public final String registryId;
-        public int count;
-
-        public BlockStatEntry(Block block, ItemStack itemStack, String localizedName, String registryId, int count) {
-            this.block = block;
-            this.itemStack = itemStack;
-            this.localizedName = localizedName;
-            this.registryId = registryId;
-            this.count = count;
-        }
-    }
-
-    private final List<BlockStatEntry> allBlockStats = new ArrayList<>();
-    private final List<BlockStatEntry> filteredBlockStats = new ArrayList<>();
-
     // 交互相机参数
     private float yaw = 45.0F;
     private float pitch = 30.0F;
     private float zoom = 1.0F;
     private float panX = 0.0F;
     private float panY = 0.0F;
-
     private boolean isDraggingOrbit = false;
     private boolean isDraggingPan = false;
-
     // 切层参数
     private int currentLayer = 0;
     private boolean singleLayerMode = false;
-
     // 选中的方块种类高亮过滤（按 Block 聚合高亮）
     private @Nullable Block selectedBlock = null;
-
     // 侧边栏与自适应控件引用
     private boolean sidebarCollapsed = false;
     private int listScrollOffset = 0;
@@ -148,13 +122,7 @@ public class BlueprintInspectorScreen extends Screen {
     private Button layerMinusButton;
     private Button layerPlusButton;
     private Button modeButton;
-    private final List<Button> presetButtons = new ArrayList<>();
     private boolean sortByCount = true;
-
-    // 每帧缓存的标尺文字位置（在前景文字层绘制）
-    private record ScreenLabel(String text, int x, int y, int color) {}
-    private final List<ScreenLabel> frameOverlayLabels = new ArrayList<>();
-
     public BlueprintInspectorScreen(Screen parentScreen, CompoundTag blueprintTag, String title) {
         super(Component.literal(title));
         this.parentScreen = parentScreen;
@@ -494,11 +462,26 @@ public class BlueprintInspectorScreen extends Screen {
         this.panX = 0.0F;
         this.panY = 0.0F;
         switch (idx) {
-            case 0 -> { yaw = 0.0F; pitch = 89.0F; }   // 俯视
-            case 1 -> { yaw = 0.0F; pitch = 0.0F; }    // 正前
-            case 2 -> { yaw = 90.0F; pitch = 0.0F; }   // 右侧
-            case 3 -> { yaw = 45.0F; pitch = 30.0F; }  // 等轴 3D
-            case 4 -> { yaw = 0.0F; pitch = -89.0F; }  // 仰视
+            case 0 -> {
+                yaw = 0.0F;
+                pitch = 89.0F;
+            }   // 俯视
+            case 1 -> {
+                yaw = 0.0F;
+                pitch = 0.0F;
+            }    // 正前
+            case 2 -> {
+                yaw = 90.0F;
+                pitch = 0.0F;
+            }   // 右侧
+            case 3 -> {
+                yaw = 45.0F;
+                pitch = 30.0F;
+            }  // 等轴 3D
+            case 4 -> {
+                yaw = 0.0F;
+                pitch = -89.0F;
+            }  // 仰视
         }
     }
 
@@ -835,10 +818,22 @@ public class BlueprintInspectorScreen extends Screen {
                     depthSum += dz;
 
                     switch (v) {
-                        case 0 -> { sx0 = px; sy0 = py; }
-                        case 1 -> { sx1 = px; sy1 = py; }
-                        case 2 -> { sx2 = px; sy2 = py; }
-                        case 3 -> { sx3 = px; sy3 = py; }
+                        case 0 -> {
+                            sx0 = px;
+                            sy0 = py;
+                        }
+                        case 1 -> {
+                            sx1 = px;
+                            sy1 = py;
+                        }
+                        case 2 -> {
+                            sx2 = px;
+                            sy2 = py;
+                        }
+                        case 3 -> {
+                            sx3 = px;
+                            sy3 = py;
+                        }
                     }
                 }
 
@@ -956,9 +951,9 @@ public class BlueprintInspectorScreen extends Screen {
         // 8 个包围盒顶点
         float[][] corners = {
                 {-halfW, -halfH, -halfL}, {halfW, -halfH, -halfL},
-                {halfW, -halfH, halfL},  {-halfW, -halfH, halfL},
-                {-halfW, halfH, -halfL},  {halfW, halfH, -halfL},
-                {halfW, halfH, halfL},   {-halfW, halfH, halfL}
+                {halfW, -halfH, halfL}, {-halfW, -halfH, halfL},
+                {-halfW, halfH, -halfL}, {halfW, halfH, -halfL},
+                {halfW, halfH, halfL}, {-halfW, halfH, halfL}
         };
         float[] sx = new float[8];
         float[] sy = new float[8];
@@ -988,7 +983,7 @@ public class BlueprintInspectorScreen extends Screen {
             float sliceY = (currentLayer + 1) - halfH;
             float[][] slicePts = {
                     {-halfW, sliceY, -halfL}, {halfW, sliceY, -halfL},
-                    {halfW, sliceY, halfL},  {-halfW, sliceY, halfL}
+                    {halfW, sliceY, halfL}, {-halfW, sliceY, halfL}
             };
             float[] slX = new float[4];
             float[] slY = new float[4];
@@ -1156,6 +1151,34 @@ public class BlueprintInspectorScreen extends Screen {
         } else {
             super.onClose();
         }
+    }
+
+    public record FaceAppearance(float u0, float v0, float u1, float v1, int tintColor) {
+    }
+
+    // sliceVisibility: 0 = 外部常驻可见面, 1 = 内部顶面(仅在 y == currentLayer 切层截面时封顶可见), 2 = 内部底面(仅在单层模式下可见)
+    public record CulledFace(int x, int y, int z, Direction dir, int paletteIdx, byte sliceVisibility) {
+    }
+
+    // 按 Block 聚合去重后的方块统计列表项
+    public static class BlockStatEntry {
+        public final Block block;
+        public final ItemStack itemStack;
+        public final String localizedName;
+        public final String registryId;
+        public int count;
+
+        public BlockStatEntry(Block block, ItemStack itemStack, String localizedName, String registryId, int count) {
+            this.block = block;
+            this.itemStack = itemStack;
+            this.localizedName = localizedName;
+            this.registryId = registryId;
+            this.count = count;
+        }
+    }
+
+    // 每帧缓存的标尺文字位置（在前景文字层绘制）
+    private record ScreenLabel(String text, int x, int y, int color) {
     }
 
     private static final class LineBatchBuilder {

@@ -26,9 +26,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ScavengerManager {
 
     private static final ThreadLocal<Boolean> RESTORING_SNAPSHOT = ThreadLocal.withInitial(() -> false);
@@ -52,7 +49,7 @@ public class ScavengerManager {
             CompoundTag snapshotTag = capturePlayerState(player, true);
             tracker.tuanzis_mod$setOtherDimensionSnapshot(snapshotTag);
             ModLog.debug(player, null, "【拾荒回廊】跨维度检测进入：成功捕获原世界背包与状态快照（返回点: " +
-                player.getX() + ", " + player.getY() + ", " + player.getZ() + "）。");
+                    player.getX() + ", " + player.getY() + ", " + player.getZ() + "）。");
         } else {
             ModLog.debug(player, null, "【拾荒回廊】跨维度检测进入：检测到已有原世界快照，保留原始返回点。");
         }
@@ -147,12 +144,12 @@ public class ScavengerManager {
         BlockPos spawnPos = CorridorSpawnManager.get(corridorLevel).getOrCreateSpawnPos(player, corridorLevel);
 
         TeleportTransition transition = new TeleportTransition(
-            corridorLevel,
-            new Vec3(spawnPos.getX() + 0.5, spawnPos.getY() + 1.0, spawnPos.getZ() + 0.5),
-            Vec3.ZERO,
-            0.0f,
-            0.0f,
-            TeleportTransition.DO_NOTHING
+                corridorLevel,
+                new Vec3(spawnPos.getX() + 0.5, spawnPos.getY() + 1.0, spawnPos.getZ() + 0.5),
+                Vec3.ZERO,
+                0.0f,
+                0.0f,
+                TeleportTransition.DO_NOTHING
         );
         player.teleport(transition);
         return true;
@@ -193,12 +190,12 @@ public class ScavengerManager {
         }
 
         TeleportTransition returnTransition = new TeleportTransition(
-            returnLevel,
-            returnPos,
-            Vec3.ZERO,
-            rYaw,
-            rPitch,
-            TeleportTransition.DO_NOTHING
+                returnLevel,
+                returnPos,
+                Vec3.ZERO,
+                rYaw,
+                rPitch,
+                TeleportTransition.DO_NOTHING
         );
         player.teleport(returnTransition);
         return true;
@@ -240,8 +237,8 @@ public class ScavengerManager {
         ListTag effectsList = new ListTag();
         for (MobEffectInstance effect : player.getActiveEffects()) {
             MobEffectInstance.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, registries), effect)
-                .result()
-                .ifPresent(effectsList::add);
+                    .result()
+                    .ifPresent(effectsList::add);
         }
         tag.put("ActiveEffects", effectsList);
 
@@ -305,8 +302,8 @@ public class ScavengerManager {
         ListTag effectsList = tag.getListOrEmpty("ActiveEffects");
         for (int i = 0; i < effectsList.size(); i++) {
             MobEffectInstance.CODEC.parse(RegistryOps.create(NbtOps.INSTANCE, registries), effectsList.get(i))
-                .result()
-                .ifPresent(player::addEffect);
+                    .result()
+                    .ifPresent(player::addEffect);
         }
 
         // 恢复回廊专属饰品槽
@@ -326,9 +323,9 @@ public class ScavengerManager {
         if (player instanceof ScavengerPlayerTracker tracker) {
             var acc = tracker.tuanzis_mod$getCorridorAccessories();
             net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, new me.tuanzi.network.CorridorAccessorySyncPacket(
-                acc.getItem(CorridorAccessoryContainer.SLOT_HALL),
-                acc.getItem(CorridorAccessoryContainer.SLOT_ROOM),
-                acc.getItem(CorridorAccessoryContainer.SLOT_MARKET)
+                    acc.getItem(CorridorAccessoryContainer.SLOT_HALL),
+                    acc.getItem(CorridorAccessoryContainer.SLOT_ROOM),
+                    acc.getItem(CorridorAccessoryContainer.SLOT_MARKET)
             ));
         }
     }
@@ -351,21 +348,21 @@ public class ScavengerManager {
             if (stack.is(me.tuanzi.init.ModItems.HALL_RETURN_BEACON)) {
                 me.tuanzi.item.scavenger.HallReturnBeaconItem.executeBeaconTeleport(player, stack);
                 syncCorridorAccessoriesToClient(player);
-        me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
+                me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
             }
         } else if (slot == CorridorAccessoryContainer.SLOT_ROOM) {
             ItemStack stack = acc.getItem(CorridorAccessoryContainer.SLOT_ROOM);
             if (stack.is(me.tuanzi.init.ModItems.ROOM_RETURN_BEACON)) {
                 me.tuanzi.item.scavenger.RoomReturnBeaconItem.executeBeaconTeleport(player, stack);
                 syncCorridorAccessoriesToClient(player);
-        me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
+                me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
             }
         } else if (slot == CorridorAccessoryContainer.SLOT_MARKET) {
             ItemStack stack = acc.getItem(CorridorAccessoryContainer.SLOT_MARKET);
             if (stack.is(me.tuanzi.init.ModItems.MARKET_RETURN_BEACON)) {
                 me.tuanzi.item.scavenger.MarketReturnBeaconItem.executeBeaconTeleport(player, stack);
                 syncCorridorAccessoriesToClient(player);
-        me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
+                me.tuanzi.network.scavenger.ScavengerServerPacketHandler.syncProfile(player);
             }
         }
     }

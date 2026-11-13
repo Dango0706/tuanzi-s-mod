@@ -4,14 +4,17 @@ import me.tuanzi.init.ModDimensions;
 import me.tuanzi.network.ScavengerTeamSyncPacket;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.world.scores.TeamColor;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.TeamColor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -21,9 +24,6 @@ public class ScavengerTeamManager {
 
     private static final Map<UUID, ScavengerTeam> teamsByTeamId = new ConcurrentHashMap<>();
     private static final Map<UUID, UUID> playerToTeamId = new ConcurrentHashMap<>();
-
-    // 邀请缓存：目标玩家 UUID -> 邀请详情，有效期 60 秒
-    private record TeamInvite(UUID inviterUuid, String inviterName, UUID teamId, long expireTimeMs) {}
     private static final Map<UUID, TeamInvite> pendingInvites = new ConcurrentHashMap<>();
 
     /**
@@ -34,7 +34,7 @@ public class ScavengerTeamManager {
             return false;
         }
         if (!a.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL) ||
-            !b.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
+                !b.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
             return false;
         }
 
@@ -51,7 +51,7 @@ public class ScavengerTeamManager {
             return false;
         }
         if (!a.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL) ||
-            !b.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
+                !b.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
             return false;
         }
 
@@ -90,7 +90,7 @@ public class ScavengerTeamManager {
      */
     public static boolean invitePlayer(ServerPlayer inviter, ServerPlayer target) {
         if (!inviter.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL) ||
-            !target.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
+                !target.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
             inviter.sendSystemMessage(Component.literal("§c只能邀请同在拾荒回廊中的玩家！"));
             return false;
         }
@@ -477,8 +477,8 @@ public class ScavengerTeamManager {
         Component wcBtn = Component.literal(wc ? "§a[已开启]" : "§c[已关闭]");
         if (isLeader) {
             wcBtn = wcBtn.copy().withStyle(style -> style
-                .withClickEvent(new ClickEvent.RunCommand("/corridor team config wind_charge " + !wc))
-                .withHoverEvent(new HoverEvent.ShowText(Component.literal("点击切换风弹影响（当前: " + (wc ? "允许" : "免疫") + "）")))
+                    .withClickEvent(new ClickEvent.RunCommand("/corridor team config wind_charge " + !wc))
+                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("点击切换风弹影响（当前: " + (wc ? "允许" : "免疫") + "）")))
             );
         }
         player.sendSystemMessage(Component.empty().append(Component.literal("§e风弹影响队友: ")).append(wcBtn).append(Component.literal(isLeader ? " §7(点击切换)" : "")));
@@ -488,20 +488,20 @@ public class ScavengerTeamManager {
         Component fhBtn = Component.literal(fh ? "§a[已开启]" : "§c[已关闭]");
         if (isLeader) {
             fhBtn = fhBtn.copy().withStyle(style -> style
-                .withClickEvent(new ClickEvent.RunCommand("/corridor team config fishing_rod " + !fh))
-                .withHoverEvent(new HoverEvent.ShowText(Component.literal("点击切换钓鱼竿影响（当前: " + (fh ? "允许" : "免疫") + "）")))
+                    .withClickEvent(new ClickEvent.RunCommand("/corridor team config fishing_rod " + !fh))
+                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("点击切换钓鱼竿影响（当前: " + (fh ? "允许" : "免疫") + "）")))
             );
         }
         player.sendSystemMessage(Component.empty().append(Component.literal("§e钓鱼竿影响队友: ")).append(fhBtn).append(Component.literal(isLeader ? " §7(点击切换)" : "")));
 
         if (isLeader) {
             Component allOnBtn = Component.literal("§a[全部开启]").withStyle(style -> style
-                .withClickEvent(new ClickEvent.RunCommand("/corridor team config friendly_physics true"))
-                .withHoverEvent(new HoverEvent.ShowText(Component.literal("一键开启风弹与钓鱼竿影响")))
+                    .withClickEvent(new ClickEvent.RunCommand("/corridor team config friendly_physics true"))
+                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("一键开启风弹与钓鱼竿影响")))
             );
             Component allOffBtn = Component.literal("§c[全部关闭]").withStyle(style -> style
-                .withClickEvent(new ClickEvent.RunCommand("/corridor team config friendly_physics false"))
-                .withHoverEvent(new HoverEvent.ShowText(Component.literal("一键关闭风弹与钓鱼竿影响")))
+                    .withClickEvent(new ClickEvent.RunCommand("/corridor team config friendly_physics false"))
+                    .withHoverEvent(new HoverEvent.ShowText(Component.literal("一键关闭风弹与钓鱼竿影响")))
             );
             player.sendSystemMessage(Component.empty().append(Component.literal("§e快捷切换: ")).append(allOnBtn).append(Component.literal("  ")).append(allOffBtn));
         }
@@ -575,5 +575,9 @@ public class ScavengerTeamManager {
     public static void clearPlayerClientTeam(ServerPlayer player) {
         ScavengerTeamSyncPacket packet = new ScavengerTeamSyncPacket(false, 0x55FF55, List.of());
         ServerPlayNetworking.send(player, packet);
+    }
+
+    // 邀请缓存：目标玩家 UUID -> 邀请详情，有效期 60 秒
+    private record TeamInvite(UUID inviterUuid, String inviterName, UUID teamId, long expireTimeMs) {
     }
 }

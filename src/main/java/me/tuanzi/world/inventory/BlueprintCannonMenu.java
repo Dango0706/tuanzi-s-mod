@@ -1,6 +1,5 @@
 package me.tuanzi.world.inventory;
 
-import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.init.ModMenuTypes;
 import net.minecraft.core.BlockPos;
@@ -8,7 +7,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class BlueprintCannonMenu extends AbstractContainerMenu {
@@ -17,10 +19,6 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
 
     public BlueprintCannonMenu(int containerId, Inventory playerInventory) {
         this(containerId, playerInventory, new SimpleContainer(3), new SimpleContainerData(11));
-    }
-
-    public BlockPos getCannonPos() {
-        return new BlockPos(this.data.get(6), this.data.get(7), this.data.get(8));
     }
 
     public BlueprintCannonMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
@@ -51,7 +49,7 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(net.minecraft.world.item.Items.WRITABLE_BOOK)
-                    || stack.is(net.minecraft.world.item.Items.WRITTEN_BOOK);
+                        || stack.is(net.minecraft.world.item.Items.WRITTEN_BOOK);
             }
         });
 
@@ -64,6 +62,10 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+    }
+
+    public BlockPos getCannonPos() {
+        return new BlockPos(this.data.get(6), this.data.get(7), this.data.get(8));
     }
 
     public int getBuildState() {

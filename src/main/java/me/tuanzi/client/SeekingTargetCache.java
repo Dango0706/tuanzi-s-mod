@@ -45,15 +45,15 @@ public class SeekingTargetCache {
         Vec3 eyePos = client.player.getEyePosition(1.0f);
         Vec3 viewVec = client.player.getViewVector(1.0f);
         Vec3 endPos = eyePos.add(viewVec.scale(maxDistance));
-        
+
         AABB searchArea = client.player.getBoundingBox().expandTowards(viewVec.scale(maxDistance)).inflate(1.0);
         EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(
-            client.player,
-            eyePos,
-            endPos,
-            searchArea,
-            entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable(),
-            maxDistance * maxDistance
+                client.player,
+                eyePos,
+                endPos,
+                searchArea,
+                entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable(),
+                maxDistance * maxDistance
         );
 
         if (entityHitResult != null) {

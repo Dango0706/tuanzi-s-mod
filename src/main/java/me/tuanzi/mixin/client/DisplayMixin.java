@@ -10,10 +10,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Display.class)
 public abstract class DisplayMixin {
     @Shadow
-    private Display.RenderState renderState;
-
-    @Shadow
     protected boolean updateRenderState;
+    @Shadow
+    private Display.RenderState renderState;
 
     @Shadow
     protected abstract Display.RenderState createFreshRenderState();
@@ -33,8 +32,8 @@ public abstract class DisplayMixin {
             } else if ((Object) this instanceof Display.TextDisplay textDisplay) {
                 details = "Text: " + textDisplay.getText().getString();
             }
-            me.tuanzi.util.ModLog.debug("DisplayMixin: renderState is null or needs update! Lazy initializing/updating for display subclass: " + this.getClass().getName() + ", ID: " + ((Display)(Object)this).getId() + " [" + details + "]");
-            
+            me.tuanzi.util.ModLog.debug("DisplayMixin: renderState is null or needs update! Lazy initializing/updating for display subclass: " + this.getClass().getName() + ", ID: " + ((Display) (Object) this).getId() + " [" + details + "]");
+
             this.renderState = this.createFreshRenderState();
             this.updateRenderSubState(false, 1.0F);
             me.tuanzi.util.ModLog.debug("DisplayMixin: Lazy initialized/updated! renderState=" + this.renderState);

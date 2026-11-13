@@ -1,6 +1,7 @@
 package me.tuanzi.item;
 
-import net.minecraft.world.entity.PostSpawnProcessor;
+import me.tuanzi.entity.ScarecrowEntity;
+import me.tuanzi.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.PostSpawnProcessor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,8 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import me.tuanzi.entity.ScarecrowEntity;
-import me.tuanzi.init.ModEntities;
 
 public class ScarecrowItem extends Item {
     public ScarecrowItem(Item.Properties properties) {

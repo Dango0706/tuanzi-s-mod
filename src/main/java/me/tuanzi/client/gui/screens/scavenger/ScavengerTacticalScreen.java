@@ -2,7 +2,6 @@ package me.tuanzi.client.gui.screens.scavenger;
 
 import me.tuanzi.client.scavenger.ScavengerClientState;
 import me.tuanzi.network.scavenger.ScavengerGridActionC2SPacket;
-import me.tuanzi.network.scavenger.ScavengerPrioritizeSearchC2SPacket;
 import me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu;
 import me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry;
 import me.tuanzi.world.scavenger.loot.grid.GridItemEntry;
@@ -19,10 +18,9 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collection;
 
@@ -35,11 +33,9 @@ public class ScavengerTacticalScreen extends AbstractContainerScreen<ScavengerTa
 
     private static final int SCREEN_WIDTH = 340;
     private static final int SCREEN_HEIGHT = 224;
-
-    private EditBox filterBox;
-
     // 拖拽与手持交互控制器
     private final ScavengerDragController dragController = new ScavengerDragController();
+    private EditBox filterBox;
 
     public ScavengerTacticalScreen(ScavengerTacticalMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, SCREEN_WIDTH, SCREEN_HEIGHT);

@@ -15,7 +15,7 @@ public abstract class BedrockBreakerMixin {
     @Inject(method = "getDestroyProgress", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$allowBedrockBreaking(Player player, net.minecraft.world.level.BlockGetter world, net.minecraft.core.BlockPos pos, CallbackInfoReturnable<Float> cir) {
         BlockState state = (BlockState) (Object) this;
-        
+
         // 如果玩家手持尤里的复仇
         if (player.getMainHandItem().getItem() instanceof YurisRevengeItem) {
             if (state.is(Blocks.BEDROCK)) {

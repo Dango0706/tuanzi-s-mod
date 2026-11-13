@@ -27,7 +27,7 @@ public class PoolManager {
     private static final Path BACKUP_DIR = Path.of("config", "tuanzis_mod", "backups", "pools");
 
     private static final Map<String, GachaPool> pools = new ConcurrentHashMap<>();
-    
+
     // 防抖定时器线程池
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             r -> {
@@ -55,7 +55,7 @@ public class PoolManager {
             if (!Files.exists(POOL_DIR)) {
                 Files.createDirectories(POOL_DIR);
             }
-            
+
             // 扫描 POOL_DIR 下所有 json
             List<Path> jsonFiles;
             try (var stream = Files.list(POOL_DIR)) {
@@ -134,7 +134,7 @@ public class PoolManager {
 
             // 2. 原子性移动替换
             Files.move(tempPath, targetPath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-            
+
             // 更新内存
             pools.put(pool.getPoolId(), pool);
             ModLog.debug("卡池 " + pool.getPoolName() + " (" + pool.getPoolId() + ") 安全原子保存成功！");
@@ -142,7 +142,8 @@ public class PoolManager {
             ModLog.debug("安全保存卡池 " + pool.getPoolId() + " 发生 IOException: " + e.getMessage());
             try {
                 Files.deleteIfExists(tempPath);
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -151,7 +152,7 @@ public class PoolManager {
     // ──────────────────────────────────────────────
     public static void scheduleDelayedSave(GachaPool pool, HolderLookup.Provider registries, Runnable onCompleteCallback) {
         String poolId = pool.getPoolId();
-        
+
         // 如果先前有待保存的任务，立刻取消以重置定时器 (Debounce)
         ScheduledFuture<?> oldFuture = pendingSaves.remove(poolId);
         if (oldFuture != null) {
@@ -163,7 +164,7 @@ public class PoolManager {
                 savePoolSafe(pool, registries);
                 backupPoolSafe(pool, registries);
                 pendingSaves.remove(poolId);
-                
+
                 if (onCompleteCallback != null) {
                     onCompleteCallback.run();
                 }
@@ -235,7 +236,7 @@ public class PoolManager {
     private static void generateDefaultTemplates(HolderLookup.Provider registries) {
         // 1. 常驻池模板
         GachaPool normalPool = new GachaPool("normal", "星旅常驻卡池");
-        normalPool.getLegendary().add(new GachaPoolItem("netherite_sword", 10, 
+        normalPool.getLegendary().add(new GachaPoolItem("netherite_sword", 10,
                 List.of("say 恭喜玩家 %player% 抽中了常驻传说神兵！"), new ItemStack(Items.NETHERITE_SWORD)));
         normalPool.getEpic().add(new GachaPoolItem("diamond_chestplate", 10, new ArrayList<>(), new ItemStack(Items.DIAMOND_CHESTPLATE)));
         normalPool.getRare().add(new GachaPoolItem("golden_apple", 15, new ArrayList<>(), new ItemStack(Items.GOLDEN_APPLE)));
@@ -245,7 +246,7 @@ public class PoolManager {
 
         // 2. 限定池模板 (樱花祭)
         GachaPool sakuraPool = new GachaPool("sakura_moon", "樱花祭限定卡池");
-        sakuraPool.getLegendary().add(new GachaPoolItem("elytra", 10, 
+        sakuraPool.getLegendary().add(new GachaPoolItem("elytra", 10,
                 List.of("say 恭喜玩家 %player% 抽中了限定传说鞘翅！"), new ItemStack(Items.ELYTRA)));
         sakuraPool.getEpic().add(new GachaPoolItem("netherite_upgrade_smithing_template", 10, new ArrayList<>(), new ItemStack(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE)));
         sakuraPool.getRare().add(new GachaPoolItem("ender_eye", 15, new ArrayList<>(), new ItemStack(Items.ENDER_EYE)));
@@ -292,7 +293,7 @@ public class PoolManager {
 
     private static void generateNationalDayTemplate(HolderLookup.Provider registries) {
         GachaPool nationalDayPool = new GachaPool("national_day", "国庆祭限定卡池");
-        nationalDayPool.getLegendary().add(new GachaPoolItem("mace", 10, 
+        nationalDayPool.getLegendary().add(new GachaPoolItem("mace", 10,
                 List.of("say 恭喜玩家 %player% 抽中了国庆限定传说重锤！"), new ItemStack(Items.MACE)));
         nationalDayPool.getEpic().add(new GachaPoolItem("totem_of_undying", 10, new ArrayList<>(), new ItemStack(Items.TOTEM_OF_UNDYING)));
         nationalDayPool.getRare().add(new GachaPoolItem("golden_apple", 15, new ArrayList<>(), new ItemStack(Items.GOLDEN_APPLE)));
@@ -303,7 +304,7 @@ public class PoolManager {
 
     public static void shutdown(HolderLookup.Provider registries) {
         ModLog.debug("正在关闭 PoolManager 调度器...");
-        
+
         // 立即同步落盘所有待保存的卡池，防止数据丢失
         for (Map.Entry<String, ScheduledFuture<?>> entry : pendingSaves.entrySet()) {
             entry.getValue().cancel(false);

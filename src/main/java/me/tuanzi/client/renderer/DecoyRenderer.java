@@ -1,18 +1,17 @@
 package me.tuanzi.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import me.tuanzi.client.entity.ClientDecoyEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.PlayerSkinRenderCache;
 import net.minecraft.world.entity.player.PlayerModelType;
-import me.tuanzi.entity.DecoyEntity;
-import me.tuanzi.client.entity.ClientDecoyEntity;
 
 @Environment(EnvType.CLIENT)
 public class DecoyRenderer extends EntityRenderer<ClientDecoyEntity, AvatarRenderState> {

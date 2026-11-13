@@ -21,15 +21,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -46,8 +38,8 @@ public class ScavengerLootContainerState {
 
     private final Identifier containerDefId;
     private final GridInventory grid;
-    private boolean lootGenerated = false;
     private final Map<Integer, Set<UUID>> revealedPlayersByEntry = new HashMap<>();
+    private boolean lootGenerated = false;
 
     public ScavengerLootContainerState(Identifier containerDefId, int columns, int rows) {
         this.containerDefId = containerDefId;

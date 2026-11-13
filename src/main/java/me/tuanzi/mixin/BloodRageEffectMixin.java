@@ -44,8 +44,8 @@ public abstract class BloodRageEffectMixin {
                     if (tuanzis_mod$shouldApplyBloodRageFeedback && player.isAlive() && !player.level().isClientSide()) {
                         // 施加 2 点 (1 颗心) 的无视护甲/保护反馈伤害
                         var typeHolder = player.registryAccess()
-                            .lookupOrThrow(Registries.DAMAGE_TYPE)
-                            .getOrThrow(DamageTypes.GENERIC);
+                                .lookupOrThrow(Registries.DAMAGE_TYPE)
+                                .getOrThrow(DamageTypes.GENERIC);
                         BloodRageDamageSource src = new BloodRageDamageSource(typeHolder);
 
                         // 绝对扣减生命值，以绝对无视护甲与任何效果减免

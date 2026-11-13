@@ -40,8 +40,8 @@ public abstract class EnderChestBlockMixin {
                         ScavengerEnderChestContainer container = tracker.tuanzis_mod$getScavengerEnderChest();
                         container.setActiveChest(enderChest);
                         player.openMenu(new SimpleMenuProvider(
-                            (containerId, inventory, p) -> new ChestMenu(MenuType.GENERIC_9x1, containerId, inventory, container, 1),
-                            Component.translatable("container.tuanzis_mod.scavenger_enderchest")
+                                (containerId, inventory, p) -> new ChestMenu(MenuType.GENERIC_9x1, containerId, inventory, container, 1),
+                                Component.translatable("container.tuanzis_mod.scavenger_enderchest")
                         ));
                         player.awardStat(Stats.OPEN_ENDERCHEST);
                         cir.setReturnValue(InteractionResult.SUCCESS);

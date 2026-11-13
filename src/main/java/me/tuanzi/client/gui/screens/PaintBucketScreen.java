@@ -7,46 +7,42 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.world.InteractionHand;
 
 @Environment(EnvType.CLIENT)
 public class PaintBucketScreen extends Screen {
+    // 16 种原版染料的经典 RGB 值
+    private static final int[] PRESET_COLORS = new int[]{
+            0xF9FFFE, // 0: 白色
+            0xF9801D, // 1: 橙色
+            0xC74EBD, // 2: 品红色
+            0x3AB3DA, // 3: 淡蓝色
+            0xFED83D, // 4: 黄色
+            0x80C71F, // 5: 黄绿色
+            0xF38BAA, // 6: 粉红色
+            0x474F52, // 7: 灰色
+            0x9D9D97, // 8: 淡灰色
+            0x169C9C, // 9: 青色
+            0x893293, // 10: 紫色
+            0x3C44AA, // 11: 蓝色
+            0x835432, // 12: 棕色
+            0x5E7C16, // 13: 绿色
+            0xB02E26, // 14: 红色
+            0x1D1D21  // 15: 黑色
+    };
     private final InteractionHand hand;
     private final int initialColor;
-
     private int r;
     private int g;
     private int b;
-
     private RGBSlider rSlider;
     private RGBSlider gSlider;
     private RGBSlider bSlider;
     private EditBox hexInput;
-
-    // 16 种原版染料的经典 RGB 值
-    private static final int[] PRESET_COLORS = new int[]{
-        0xF9FFFE, // 0: 白色
-        0xF9801D, // 1: 橙色
-        0xC74EBD, // 2: 品红色
-        0x3AB3DA, // 3: 淡蓝色
-        0xFED83D, // 4: 黄色
-        0x80C71F, // 5: 黄绿色
-        0xF38BAA, // 6: 粉红色
-        0x474F52, // 7: 灰色
-        0x9D9D97, // 8: 淡灰色
-        0x169C9C, // 9: 青色
-        0x893293, // 10: 紫色
-        0x3C44AA, // 11: 蓝色
-        0x835432, // 12: 棕色
-        0x5E7C16, // 13: 绿色
-        0xB02E26, // 14: 红色
-        0x1D1D21  // 15: 黑色
-    };
-
     private int presetX;
     private int presetY;
 
@@ -106,12 +102,12 @@ public class PaintBucketScreen extends Screen {
                     int nr = (parsedColor >> 16) & 0xFF;
                     int ng = (parsedColor >> 8) & 0xFF;
                     int nb = parsedColor & 0xFF;
-                    
+
                     if (nr != this.r || ng != this.g || nb != this.b) {
                         this.r = nr;
                         this.g = ng;
                         this.b = nb;
-                        
+
                         this.rSlider.setValueExternal(this.r / 255.0);
                         this.gSlider.setValueExternal(this.g / 255.0);
                         this.bSlider.setValueExternal(this.b / 255.0);
@@ -159,7 +155,7 @@ public class PaintBucketScreen extends Screen {
         int previewW = 110;
         int previewH = 60;
         int previewColor = (255 << 24) | (this.r << 16) | (this.g << 8) | this.b;
-        
+
         // 预览颜色大方块
         graphics.fill(previewX, previewY, previewX + previewW, previewY + previewH, previewColor);
         // 外围黑色立体边框
@@ -233,7 +229,7 @@ public class PaintBucketScreen extends Screen {
                 this.updateHexInputFromRGB();
 
                 Minecraft.getInstance().getSoundManager().play(
-                    net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+                        net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
                 );
                 return true;
             }
@@ -254,7 +250,7 @@ public class PaintBucketScreen extends Screen {
         private final String prefix;
 
         public RGBSlider(int x, int y, int width, int height, String prefix, double initialValue, java.util.function.Consumer<Integer> updateCallback) {
-            super(x, y, width, height, Component.literal(prefix + ": " + (int)(initialValue * 255)), initialValue);
+            super(x, y, width, height, Component.literal(prefix + ": " + (int) (initialValue * 255)), initialValue);
             this.prefix = prefix;
             this.updateCallback = updateCallback;
         }
@@ -266,12 +262,12 @@ public class PaintBucketScreen extends Screen {
 
         @Override
         protected void updateMessage() {
-            this.setMessage(Component.literal(prefix + ": " + (int)(this.value * 255)));
+            this.setMessage(Component.literal(prefix + ": " + (int) (this.value * 255)));
         }
 
         @Override
         protected void applyValue() {
-            this.updateCallback.accept((int)(this.value * 255));
+            this.updateCallback.accept((int) (this.value * 255));
         }
     }
 }

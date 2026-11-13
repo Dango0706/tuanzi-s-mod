@@ -29,8 +29,8 @@ import java.util.List;
 public class BlueprintCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("tuanzis_mod_confirm_blueprint")
-            .requires(source -> true)
-            .executes(BlueprintCommand::confirmBlueprint)
+                .requires(source -> true)
+                .executes(BlueprintCommand::confirmBlueprint)
         );
     }
 
@@ -105,7 +105,7 @@ public class BlueprintCommand {
                 for (int x = 0; x < width; x++) {
                     BlockPos p = new BlockPos(minX + x, minY + y, minZ + z);
                     BlockState state = level.getBlockState(p);
-                    
+
                     int paletteIdx = -1;
                     for (int i = 0; i < paletteList.size(); i++) {
                         if (paletteList.get(i).equals(state)) {
@@ -135,8 +135,8 @@ public class BlueprintCommand {
 
         // 捕获实体 (排除玩家与环境临时实体)
         net.minecraft.world.phys.AABB boundingBox = new net.minecraft.world.phys.AABB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
-        List<net.minecraft.world.entity.Entity> entities = level.getEntities((net.minecraft.world.entity.Entity)null, boundingBox,
-            entity -> !me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(entity));
+        List<net.minecraft.world.entity.Entity> entities = level.getEntities((net.minecraft.world.entity.Entity) null, boundingBox,
+                entity -> !me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(entity));
         ListTag entitiesTag = new ListTag();
         for (net.minecraft.world.entity.Entity entity : entities) {
             net.minecraft.world.level.storage.TagValueOutput valueOutput = net.minecraft.world.level.storage.TagValueOutput.createWithContext(net.minecraft.util.ProblemReporter.DISCARDING, level.registryAccess());
@@ -161,9 +161,9 @@ public class BlueprintCommand {
                 BlockPos attachedPos = attached.getPos();
                 if (attachedPos != null) {
                     entityNbt.putIntArray("block_pos", new int[]{
-                        attachedPos.getX() - minX,
-                        attachedPos.getY() - minY,
-                        attachedPos.getZ() - minZ
+                            attachedPos.getX() - minX,
+                            attachedPos.getY() - minY,
+                            attachedPos.getZ() - minZ
                     });
                 }
             }
@@ -174,8 +174,8 @@ public class BlueprintCommand {
         ListTag paletteNbt = new ListTag();
         for (BlockState state : paletteList) {
             Tag tag = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, state)
-                .result()
-                .orElse(BlockState.CODEC.encodeStart(NbtOps.INSTANCE, Blocks.AIR.defaultBlockState()).result().orElse(new CompoundTag()));
+                    .result()
+                    .orElse(BlockState.CODEC.encodeStart(NbtOps.INSTANCE, Blocks.AIR.defaultBlockState()).result().orElse(new CompoundTag()));
             paletteNbt.add(tag);
         }
 

@@ -2,17 +2,16 @@ package me.tuanzi.mixin;
 
 import me.tuanzi.client.TuanzisModClient;
 import me.tuanzi.init.ModEnchantments;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.client.DeltaTracker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,8 +22,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Hud.class)
 public abstract class GuiMixin {
 
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow public abstract boolean isHidden();
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+
+    @Shadow
+    public abstract boolean isHidden();
 
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void tuanzis_mod$onExtractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
@@ -65,30 +68,30 @@ public abstract class GuiMixin {
             var berserkerEnch = enchantmentRegistry.getOrThrow(ModEnchantments.BERSERKER);
             ItemStack chest = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
             int level = EnchantmentHelper.getItemEnchantmentLevel(berserkerEnch, chest);
-            
+
             if (level > 0) {
                 float healthPercent = player.getHealth() / player.getMaxHealth();
                 if (healthPercent < 0.30f) {
                     // 当血量低于30%时浮现血丝，低于5%时达到最大值
                     float t = (0.30f - healthPercent) / (0.30f - 0.05f);
                     t = net.minecraft.util.Mth.clamp(t, 0.0f, 1.0f);
-                    
+
                     // 平滑插值后的最大透明度设为 0.70f，保持极佳的视觉效果而不过度遮挡视野
                     float alpha = t * 0.70f;
-                    
+
                     // 完美应对 RenderPipelines.VIGNETTE 着色器通道映射反转机制：
                     // 传入的 red 参数控制绿蓝，传入的 green 和 blue 参数控制红色。
                     // 传入 (alpha, 0.0f, 0.5f, 0.5f) 可在屏幕上完美渲染出尊贵沉浸的暗红色血丝特效！
                     int color = net.minecraft.util.ARGB.colorFromFloat(alpha, 0.0f, 0.5f, 0.5f);
-                    
+
                     // 使用专属的 VIGNETTE_LOCATION 进行全屏暗角材质渲染
                     graphics.blit(
-                        net.minecraft.client.renderer.RenderPipelines.VIGNETTE,
-                        net.minecraft.resources.Identifier.withDefaultNamespace("textures/misc/vignette.png"),
-                        0, 0, 0.0F, 0.0F,
-                        graphics.guiWidth(), graphics.guiHeight(),
-                        graphics.guiWidth(), graphics.guiHeight(),
-                        color
+                            net.minecraft.client.renderer.RenderPipelines.VIGNETTE,
+                            net.minecraft.resources.Identifier.withDefaultNamespace("textures/misc/vignette.png"),
+                            0, 0, 0.0F, 0.0F,
+                            graphics.guiWidth(), graphics.guiHeight(),
+                            graphics.guiWidth(), graphics.guiHeight(),
+                            color
                     );
                 }
             }
@@ -112,11 +115,11 @@ public abstract class GuiMixin {
      * 当手持野太刀时，隐藏原版准星下方的剑形攻击指示器
      */
     @org.spongepowered.asm.mixin.injection.Redirect(
-        method = "extractCrosshair",
-        at = @org.spongepowered.asm.mixin.injection.At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"
-        )
+            method = "extractCrosshair",
+            at = @org.spongepowered.asm.mixin.injection.At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"
+            )
     )
     private Object tuanzis_mod$hideVanillaAttackIndicatorForNodachi(net.minecraft.client.OptionInstance<?> instance) {
         if (instance == this.minecraft.options.attackIndicator()) {

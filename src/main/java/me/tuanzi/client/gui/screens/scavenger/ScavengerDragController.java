@@ -32,6 +32,23 @@ public class ScavengerDragController {
     private double pressMouseY = 0;
     private boolean isDragMoved = false;
 
+    /**
+     * 判断是否为左键操作。
+     * 在 Minecraft 26.3 (SDL3 输入系统) 中，InputConstants.MOUSE_BUTTON_LEFT 为 1，
+     * 同时也兼容可能由部分测试环境传入的 0。
+     */
+    public static boolean isLeftButton(int button) {
+        return button == InputConstants.MOUSE_BUTTON_LEFT || button == 0;
+    }
+
+    /**
+     * 判断是否为右键操作。
+     * 在 Minecraft 26.3 (SDL3 输入系统) 中，InputConstants.MOUSE_BUTTON_RIGHT 为 3。
+     */
+    public static boolean isRightButton(int button) {
+        return button == InputConstants.MOUSE_BUTTON_RIGHT;
+    }
+
     public boolean isDragging() {
         return this.entryId != -1 && !this.stack.isEmpty();
     }
@@ -222,22 +239,5 @@ public class ScavengerDragController {
         this.grabOffsetX = 0;
         this.grabOffsetY = 0;
         this.isDragMoved = false;
-    }
-
-    /**
-     * 判断是否为左键操作。
-     * 在 Minecraft 26.3 (SDL3 输入系统) 中，InputConstants.MOUSE_BUTTON_LEFT 为 1，
-     * 同时也兼容可能由部分测试环境传入的 0。
-     */
-    public static boolean isLeftButton(int button) {
-        return button == InputConstants.MOUSE_BUTTON_LEFT || button == 0;
-    }
-
-    /**
-     * 判断是否为右键操作。
-     * 在 Minecraft 26.3 (SDL3 输入系统) 中，InputConstants.MOUSE_BUTTON_RIGHT 为 3。
-     */
-    public static boolean isRightButton(int button) {
-        return button == InputConstants.MOUSE_BUTTON_RIGHT;
     }
 }

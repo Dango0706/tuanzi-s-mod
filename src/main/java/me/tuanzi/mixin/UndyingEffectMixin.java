@@ -18,7 +18,7 @@ public abstract class UndyingEffectMixin {
     @Inject(method = "checkTotemDeathProtection", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$useUndyingEffect(DamageSource source, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        
+
         if (entity.hasEffect(ModStatusEffects.UNDYING)) {
             // 检查是否是玩家或已驯服生物 (拥有者不为空)
             boolean isPlayer = entity instanceof Player;
@@ -34,7 +34,7 @@ public abstract class UndyingEffectMixin {
             entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
             entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
             entity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
-            
+
             // 触发图腾颗粒和声音
             entity.level().broadcastEntityEvent(entity, (byte) 35);
 

@@ -18,9 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiGraphicsExtractor.class)
 public abstract class WorldSculptorsPenRendererMixin {
 
-    @Shadow @Final private Matrix3x2fStack pose;
+    @Shadow
+    @Final
+    private Matrix3x2fStack pose;
 
-    @Shadow public abstract void item(ItemStack itemStack, int x, int y);
+    @Shadow
+    public abstract void item(ItemStack itemStack, int x, int y);
 
     @Inject(method = "itemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At("TAIL"))
     private void tuanzis_mod$onItemDecorations(Font font, ItemStack itemStack, int x, int y, String countText, CallbackInfo ci) {

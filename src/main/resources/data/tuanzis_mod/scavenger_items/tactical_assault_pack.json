@@ -9,7 +9,9 @@
   "weight_kg": 2.50,
   "base_value": 15000,
   "base_search_seconds": 2.5,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "equipment_grid": {
     "slot_type": "BACKPACK",
     "columns": 6,

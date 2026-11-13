@@ -11,12 +11,12 @@ import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,13 +29,13 @@ public abstract class BlockMixin {
 
     @Inject(method = "playerDestroy", at = @At("TAIL"))
     private void tuanzis_mod$applyBlockDestructionEnchantments(
-        ServerLevel level,
-        ServerPlayer player,
-        BlockPos pos,
-        BlockState state,
-        @Nullable BlockEntity blockEntity,
-        ItemStack destroyedWith,
-        CallbackInfo ci
+            ServerLevel level,
+            ServerPlayer player,
+            BlockPos pos,
+            BlockState state,
+            @Nullable BlockEntity blockEntity,
+            ItemStack destroyedWith,
+            CallbackInfo ci
     ) {
         if (destroyedWith.isEmpty()) return;
 

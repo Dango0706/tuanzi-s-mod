@@ -10,25 +10,22 @@ import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin implements WitherKillTracker {
 
     @org.spongepowered.asm.mixin.Unique
+    private static final net.minecraft.resources.Identifier tuanzis_mod$AMONG_FLOWERS_SPEED_ID = net.minecraft.resources.Identifier.fromNamespaceAndPath(me.tuanzi.Tuanzis_mod.MOD_ID, "among_flowers_speed");
+    @org.spongepowered.asm.mixin.Unique
     private boolean tuanzis_mod$hadWolfCommandInOffhand = false;
-
     @org.spongepowered.asm.mixin.Unique
     private int tuanzis_mod$witherKills = 0;
-
     @org.spongepowered.asm.mixin.Unique
     private net.minecraft.world.phys.Vec3 tuanzis_mod$lastSafePos = null;
-
     @org.spongepowered.asm.mixin.Unique
     private net.minecraft.server.level.ServerLevel tuanzis_mod$lastSafeLevel = null;
-
     @org.spongepowered.asm.mixin.Unique
     private long tuanzis_mod$lastVoidAnchorGameTime = -6000L;
 
@@ -116,12 +113,12 @@ public class ServerPlayerMixin implements WitherKillTracker {
 
                     // 播放激活音效：不死图腾使用音效
                     player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                        net.minecraft.sounds.SoundEvents.TOTEM_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+                            net.minecraft.sounds.SoundEvents.TOTEM_USE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
 
                     // 产生粒子效果
                     if (player.level() instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME,
-                            player.getX(), player.getY() + 1.0, player.getZ(), 20, 0.5, 0.5, 0.5, 0.15);
+                                player.getX(), player.getY() + 1.0, player.getZ(), 20, 0.5, 0.5, 0.5, 0.15);
                     }
                 }
             }
@@ -132,10 +129,10 @@ public class ServerPlayerMixin implements WitherKillTracker {
         if (tuanzis_mod$hadWolfCommandInOffhand && !hasWolfCommand) {
             // 移除了，给予 5s (100 ticks) 的 CD 时间
             player.getCooldowns().addCooldown(new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.WOLF_COMMAND), 100);
-            
+
             // 播放一个护符移开的提示音，让反馈更真实
             player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                net.minecraft.sounds.SoundEvents.ENDER_DRAGON_FLAP, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
+                    net.minecraft.sounds.SoundEvents.ENDER_DRAGON_FLAP, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
         }
         tuanzis_mod$hadWolfCommandInOffhand = hasWolfCommand;
 
@@ -155,10 +152,10 @@ public class ServerPlayerMixin implements WitherKillTracker {
         ServerPlayer player = (ServerPlayer) (Object) this;
         if (!player.level().isClientSide() && source.getEntity() instanceof net.minecraft.world.entity.monster.Creeper creeper && creeper.isPowered()) {
             net.minecraft.world.item.ItemStack skullStack = new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.CHROMATIC_SKULL);
-            
+
             // 输出调试日志
             me.tuanzi.util.ModLog.debug("[彩色变化头颅掉落] 玩家 " + player.getName().getString() + " 被闪电苦力怕炸死，掉落彩色变化头颅。");
-            
+
             player.spawnAtLocation((ServerLevel) player.level(), skullStack);
         }
     }
@@ -209,23 +206,20 @@ public class ServerPlayerMixin implements WitherKillTracker {
     }
 
     @org.spongepowered.asm.mixin.injection.ModifyArg(
-        method = "checkMovementStatistics",
-        at = @org.spongepowered.asm.mixin.injection.At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;causeFoodExhaustion(F)V")
+            method = "checkMovementStatistics",
+            at = @org.spongepowered.asm.mixin.injection.At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;causeFoodExhaustion(F)V")
     )
     private float tuanzis_mod$modifyMovementExhaustion(float exhaustion) {
         return tuanzis_mod$applySatiationExhaustionReduction(exhaustion, "移动/疾跑");
     }
 
     @org.spongepowered.asm.mixin.injection.ModifyArg(
-        method = "jumpFromGround",
-        at = @org.spongepowered.asm.mixin.injection.At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;causeFoodExhaustion(F)V")
+            method = "jumpFromGround",
+            at = @org.spongepowered.asm.mixin.injection.At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;causeFoodExhaustion(F)V")
     )
     private float tuanzis_mod$modifyJumpExhaustion(float exhaustion) {
         return tuanzis_mod$applySatiationExhaustionReduction(exhaustion, "跳跃");
     }
-
-    @org.spongepowered.asm.mixin.Unique
-    private static final net.minecraft.resources.Identifier tuanzis_mod$AMONG_FLOWERS_SPEED_ID = net.minecraft.resources.Identifier.fromNamespaceAndPath(me.tuanzi.Tuanzis_mod.MOD_ID, "among_flowers_speed");
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tuanzis_mod$onServerPlayerTick(CallbackInfo ci) {
@@ -249,7 +243,7 @@ public class ServerPlayerMixin implements WitherKillTracker {
                         if (player.getHealth() < player.getMaxHealth()) {
                             player.heal(1.0F);
                             me.tuanzi.util.ModLog.debug(player, "【衔月】夜间头顶无遮挡触发生命恢复 1 点（当前生命: %.1f/%.1f，等级: %d）",
-                                player.getHealth(), player.getMaxHealth(), moonLevel);
+                                    player.getHealth(), player.getMaxHealth(), moonLevel);
                         }
                     }
                 }
@@ -286,9 +280,9 @@ public class ServerPlayerMixin implements WitherKillTracker {
                     if (speedAttr != null) {
                         double speedBoost = 0.05 * flowerLevel; // 5%, 10%, 15%
                         speedAttr.addOrUpdateTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                            tuanzis_mod$AMONG_FLOWERS_SPEED_ID,
-                            speedBoost,
-                            net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE
+                                tuanzis_mod$AMONG_FLOWERS_SPEED_ID,
+                                speedBoost,
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                         ));
                     }
 
@@ -300,7 +294,7 @@ public class ServerPlayerMixin implements WitherKillTracker {
                         if (currentSat < maxSat) {
                             player.getFoodData().setSaturation(Math.min(maxSat, currentSat + 1.0F));
                             me.tuanzi.util.ModLog.debug(player, "【花间】花香沁脾，恢复 1 点饱和度（当前饱和度: %.1f，饱食度: %d，等级: %d）",
-                                player.getFoodData().getSaturationLevel(), player.getFoodData().getFoodLevel(), flowerLevel);
+                                    player.getFoodData().getSaturationLevel(), player.getFoodData().getFoodLevel(), flowerLevel);
                         }
                     }
                 } else {

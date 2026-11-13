@@ -35,6 +35,13 @@ import java.util.function.Predicate;
  */
 public final class ScavengerServerPacketHandler {
 
+    private static final net.minecraft.world.item.Item[] SAFEBOX_TIERS = new net.minecraft.world.item.Item[]{
+            me.tuanzi.init.ModItems.PROTO_LOCKBOX_1X2,
+            me.tuanzi.init.ModItems.REINFORCED_SAFEBOX_2X2,
+            me.tuanzi.init.ModItems.CIPHER_SAFEBOX_2X3,
+            me.tuanzi.init.ModItems.AEGIS_CORE_VAULT_3X3
+    };
+
     private ScavengerServerPacketHandler() {
     }
 
@@ -635,7 +642,8 @@ public final class ScavengerServerPacketHandler {
                         net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.0f);
             }
             case MAX_LEVEL_REACHED -> player.sendSystemMessage(Component.literal("§e该系统已达到当前版本最高等级！"));
-            case INSUFFICIENT_MATERIALS -> player.sendSystemMessage(Component.literal("§c升级材料不足！请检查快捷栏、背包或基地仓库。"));
+            case INSUFFICIENT_MATERIALS ->
+                    player.sendSystemMessage(Component.literal("§c升级材料不足！请检查快捷栏、背包或基地仓库。"));
             case NO_COST_CONFIGURED -> player.sendSystemMessage(Component.literal("§7未配置下一级升级消耗。"));
         }
 
@@ -796,13 +804,6 @@ public final class ScavengerServerPacketHandler {
             ModLog.debug(player, null, "成功置换护甲槽 " + equipSlot + ": " + stack);
         }
     }
-
-    private static final net.minecraft.world.item.Item[] SAFEBOX_TIERS = new net.minecraft.world.item.Item[]{
-            me.tuanzi.init.ModItems.PROTO_LOCKBOX_1X2,
-            me.tuanzi.init.ModItems.REINFORCED_SAFEBOX_2X2,
-            me.tuanzi.init.ModItems.CIPHER_SAFEBOX_2X3,
-            me.tuanzi.init.ModItems.AEGIS_CORE_VAULT_3X3
-    };
 
     private static void handleSwitchSafebox(ServerPlayer player, PlayerCorridorProfile profile, ScavengerGridActionC2SPacket packet) {
         int tierIndex = packet.targetX();

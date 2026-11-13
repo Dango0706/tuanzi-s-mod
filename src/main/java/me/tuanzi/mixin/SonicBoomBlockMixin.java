@@ -23,9 +23,9 @@ public abstract class SonicBoomBlockMixin {
     private static boolean tuanzis_mod$isApplyingPassiveReduction = false;
 
     @Inject(
-        method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$redirectSonicBoomHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity target = (LivingEntity) (Object) this;
@@ -38,18 +38,18 @@ public abstract class SonicBoomBlockMixin {
             if (player.isUsingItem() && player.getUseItem().is(ModItems.ECHO_BREAKER)) {
                 // Block successful!
                 // 1. Play shield block and metallic chime sounds at player position
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), 
-                    SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 0.8F);
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), 
-                    SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 0.5F, 1.6F);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 0.8F);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 0.5F, 1.6F);
 
                 // 2. Spawn explosion and sonic particles
-                level.sendParticles(ParticleTypes.EXPLOSION, 
-                    player.getX(), player.getY() + 1.0, player.getZ(), 3, 0.2, 0.2, 0.2, 0.1);
-                
+                level.sendParticles(ParticleTypes.EXPLOSION,
+                        player.getX(), player.getY() + 1.0, player.getZ(), 3, 0.2, 0.2, 0.2, 0.1);
+
                 if (source.getEntity() instanceof Warden warden) {
-                    level.sendParticles(ParticleTypes.SONIC_BOOM, 
-                        warden.getX(), warden.getY() + 1.0, warden.getZ(), 2, 0.2, 0.2, 0.2, 0.1);
+                    level.sendParticles(ParticleTypes.SONIC_BOOM,
+                            warden.getX(), warden.getY() + 1.0, warden.getZ(), 2, 0.2, 0.2, 0.2, 0.1);
 
                     // 3. Deal 18 damage to Warden (source is player attack)
                     warden.hurtServer(level, level.damageSources().playerAttack(player), 18.0F);

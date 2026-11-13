@@ -18,6 +18,30 @@ import java.util.function.IntFunction;
  */
 public record EquipmentGridSpec(SlotType slotType, int columns, int rows) {
 
+    public static final Codec<EquipmentGridSpec> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            SlotType.CODEC.fieldOf("slot_type").forGetter(EquipmentGridSpec::slotType),
+            ExtraCodecs.intRange(1, 9).fieldOf("columns").forGetter(EquipmentGridSpec::columns),
+            ExtraCodecs.intRange(1, 12).fieldOf("rows").forGetter(EquipmentGridSpec::rows)
+    ).apply(instance, EquipmentGridSpec::new));
+    public static final StreamCodec<ByteBuf, EquipmentGridSpec> STREAM_CODEC = StreamCodec.composite(
+            SlotType.STREAM_CODEC,
+            EquipmentGridSpec::slotType,
+            ByteBufCodecs.VAR_INT,
+            EquipmentGridSpec::columns,
+            ByteBufCodecs.VAR_INT,
+            EquipmentGridSpec::rows,
+            EquipmentGridSpec::new
+    );
+
+    public EquipmentGridSpec {
+        columns = Mth.clamp(columns, 1, 9);
+        rows = Mth.clamp(rows, 1, 12);
+    }
+
+    public int totalCells() {
+        return this.columns * this.rows;
+    }
+
     public enum SlotType implements StringRepresentable {
         BACKPACK("BACKPACK"),
         SAFEBOX("SAFEBOX");
@@ -52,30 +76,5 @@ public record EquipmentGridSpec(SlotType slotType, int columns, int rows) {
         public String getSerializedName() {
             return this.serializedName;
         }
-    }
-
-    public static final Codec<EquipmentGridSpec> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            SlotType.CODEC.fieldOf("slot_type").forGetter(EquipmentGridSpec::slotType),
-            ExtraCodecs.intRange(1, 9).fieldOf("columns").forGetter(EquipmentGridSpec::columns),
-            ExtraCodecs.intRange(1, 12).fieldOf("rows").forGetter(EquipmentGridSpec::rows)
-    ).apply(instance, EquipmentGridSpec::new));
-
-    public static final StreamCodec<ByteBuf, EquipmentGridSpec> STREAM_CODEC = StreamCodec.composite(
-            SlotType.STREAM_CODEC,
-            EquipmentGridSpec::slotType,
-            ByteBufCodecs.VAR_INT,
-            EquipmentGridSpec::columns,
-            ByteBufCodecs.VAR_INT,
-            EquipmentGridSpec::rows,
-            EquipmentGridSpec::new
-    );
-
-    public EquipmentGridSpec {
-        columns = Mth.clamp(columns, 1, 9);
-        rows = Mth.clamp(rows, 1, 12);
-    }
-
-    public int totalCells() {
-        return this.columns * this.rows;
     }
 }

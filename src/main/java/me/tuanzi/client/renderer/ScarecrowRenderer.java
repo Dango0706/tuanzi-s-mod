@@ -33,12 +33,12 @@ public class ScarecrowRenderer extends LivingEntityRenderer<ArmorStand, ArmorSta
         super(context, new ScarecrowModel(context.bakeLayer(ScarecrowModel.SCARECROW_LAYER)), 0.0F);
         this.smallModel = new ScarecrowModel(context.bakeLayer(ScarecrowModel.SCARECROW_LAYER));
         this.addLayer(
-            new HumanoidArmorLayer<>(
-                this,
-                ArmorModelSet.bake(ModelLayers.ARMOR_STAND_ARMOR, context.getModelSet(), ArmorStandArmorModel::new),
-                ArmorModelSet.bake(ModelLayers.ARMOR_STAND_SMALL_ARMOR, context.getModelSet(), ArmorStandArmorModel::new),
-                context.getEquipmentRenderer()
-            )
+                new HumanoidArmorLayer<>(
+                        this,
+                        ArmorModelSet.bake(ModelLayers.ARMOR_STAND_ARMOR, context.getModelSet(), ArmorStandArmorModel::new),
+                        ArmorModelSet.bake(ModelLayers.ARMOR_STAND_SMALL_ARMOR, context.getModelSet(), ArmorStandArmorModel::new),
+                        context.getEquipmentRenderer()
+                )
         );
         this.addLayer(new ItemInHandLayer<>(this));
         this.addLayer(new WingsLayer<>(this, context.getModelSet(), context.getEquipmentRenderer()));
@@ -69,7 +69,7 @@ public class ScarecrowRenderer extends LivingEntityRenderer<ArmorStand, ArmorSta
         state.rightArmPose = entity.getRightArmPose();
         state.leftLegPose = entity.getLeftLegPose();
         state.rightLegPose = entity.getRightLegPose();
-        state.wiggle = (float)(entity.level().getGameTime() - entity.lastHit) + partialTicks;
+        state.wiggle = (float) (entity.level().getGameTime() - entity.lastHit) + partialTicks;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class TideCleaverItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 CustomModelData cmd = new CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
                 changed = true;

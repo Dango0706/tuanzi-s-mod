@@ -2,8 +2,8 @@ package me.tuanzi.init;
 
 import me.tuanzi.Tuanzis_mod;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 public class ModEnchantments {
@@ -22,6 +22,7 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> VOID_RESONANCE = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "void_resonance"));
     public static final ResourceKey<Enchantment> STEEL_SHIELD_GIFT = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "steel_shield_gift"));
     public static final ResourceKey<Enchantment> OVERLOAD_PROTOCOL = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "overload_protocol"));
+    public static final ResourceKey<Enchantment> PERVADING_VIBRATION = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "pervading_vibration"));
     public static final ResourceKey<Enchantment> ANCIENT_SCROLL_BLOOD_LEECH = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ancient_scroll_blood_leech"));
     public static final ResourceKey<Enchantment> ANCIENT_SCROLL_METAL_CUTTER = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ancient_scroll_metal_cutter"));
     public static final ResourceKey<Enchantment> ANCIENT_SCROLL_LEATHER_PIERCER = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ancient_scroll_leather_piercer"));
@@ -63,6 +64,7 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> DORMANT_REPAIR = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "dormant_repair"));
     public static final ResourceKey<Enchantment> HUSBANDRY = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "husbandry"));
     public static final ResourceKey<Enchantment> METABOLISM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "metabolism"));
+    public static final ResourceKey<Enchantment> GAP_VERDICT = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "gap_verdict"));
 
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_WEATHER_BLADES = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_weather_blades"));

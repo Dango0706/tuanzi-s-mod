@@ -4,8 +4,8 @@ import me.tuanzi.util.SeekingArrowAccessor;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,9 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(AbstractArrow.class)
 public abstract class AbstractArrowMixin extends Entity implements SeekingArrowAccessor {
 
-    @org.spongepowered.asm.mixin.Shadow
-    protected abstract boolean isInGround();
-
     @Unique
     private Entity tuanzis_mod$seekingTargetEntity;
     @Unique
@@ -27,10 +24,12 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
     private boolean tuanzis_mod$hasCorrectedTrajectory = false;
     @Unique
     private int tuanzis_mod$seekingTickCount = 0;
-
     protected AbstractArrowMixin(EntityType<?> type, Level level) {
         super(type, level);
     }
+
+    @org.spongepowered.asm.mixin.Shadow
+    protected abstract boolean isInGround();
 
     @Override
     public void tuanzis_mod$setSeekingTargetEntity(Entity entity) {
@@ -68,7 +67,7 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
             this.tuanzis_mod$seekingTickCount++;
             if (this.tuanzis_mod$seekingTickCount == 10) { // 射出后的第 10 个 tick (0.5秒)
                 this.tuanzis_mod$hasCorrectedTrajectory = true;
-                
+
                 Vec3 currentVelocity = this.getDeltaMovement();
                 if (currentVelocity.lengthSqr() < 1.0E-7) return;
 
@@ -85,10 +84,10 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
                     Vec3 arrowPos = this.position();
                     Vec3 desiredDirection = predictedPos.subtract(arrowPos).normalize();
                     Vec3 currentDirection = currentVelocity.normalize();
-                    
+
                     double dot = currentDirection.dot(desiredDirection);
                     double angleRad = Math.acos(net.minecraft.util.Mth.clamp(dot, -1.0, 1.0));
-                    
+
                     Vec3 newVelocity;
                     double maxAngleRad = Math.PI / 6.0; // 30度
                     if (angleRad <= maxAngleRad) {
@@ -98,27 +97,27 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
                         Vec3 blended = currentDirection.scale(1.0 - t).add(desiredDirection.scale(t)).normalize();
                         newVelocity = blended.scale(currentVelocity.length());
                     }
-                    
+
                     this.setDeltaMovement(newVelocity);
-                    
-                    net.minecraft.world.entity.Entity owner = ((AbstractArrow)(Object)this).getOwner();
+
+                    net.minecraft.world.entity.Entity owner = ((AbstractArrow) (Object) this).getOwner();
                     String ownerName = owner != null ? owner.getName().getString() : "未知射手";
                     String targetName = this.tuanzis_mod$seekingTargetEntity != null ? this.tuanzis_mod$seekingTargetEntity.getName().getString() : "无实体目标";
                     double angleDeg = Math.toDegrees(angleRad);
                     me.tuanzi.util.ModLog.debug(ownerName, targetName, "追踪箭弹道修正成功：修正角度为 " + String.format("%.2f", angleDeg) + "°，修正后目标坐标为 " + predictedPos + "。");
-                    
+
                     // 旋转同步
                     double d = newVelocity.x;
                     double e = newVelocity.y;
                     double f = newVelocity.z;
                     double g = Math.sqrt(d * d + f * f);
-                    this.setYRot((float)(net.minecraft.util.Mth.atan2(d, f) * 180.0 / Math.PI));
-                    this.setXRot((float)(net.minecraft.util.Mth.atan2(e, g) * 180.0 / Math.PI));
+                    this.setYRot((float) (net.minecraft.util.Mth.atan2(d, f) * 180.0 / Math.PI));
+                    this.setXRot((float) (net.minecraft.util.Mth.atan2(e, g) * 180.0 / Math.PI));
                     this.yRotO = this.getYRot();
                     this.xRotO = this.getXRot();
 
                     // 强行同步至客户端，更新视觉朝向
-                    ((net.minecraft.world.entity.projectile.Projectile)(Object)this).needsSync = true;
+                    ((net.minecraft.world.entity.projectile.Projectile) (Object) this).needsSync = true;
                 }
             }
         }
@@ -130,13 +129,13 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
 
         Vec3 movement = this.getDeltaMovement();
         if (movement.lengthSqr() > 1.0E-7) {
-            float yRot = (float)(net.minecraft.util.Mth.atan2(movement.x, movement.z) * 180.0F / (float)Math.PI);
-            float xRot = (float)(net.minecraft.util.Mth.atan2(movement.y, movement.horizontalDistance()) * 180.0F / (float)Math.PI);
-            
+            float yRot = (float) (net.minecraft.util.Mth.atan2(movement.x, movement.z) * 180.0F / (float) Math.PI);
+            float xRot = (float) (net.minecraft.util.Mth.atan2(movement.y, movement.horizontalDistance()) * 180.0F / (float) Math.PI);
+
             // 计算当前渲染旋转与根据速度算出的真实旋转之间的度数差异
             float deltaY = net.minecraft.util.Mth.wrapDegrees(yRot - this.getYRot());
             float deltaX = net.minecraft.util.Mth.wrapDegrees(xRot - this.getXRot());
-            
+
             // 如果度数偏差大于 10 度，说明发生了突兀的物理偏转（第 10 tick 修正或网络速度包延迟到达），此时直接绕过 lerpRotation 强制瞬间对齐
             if (Math.abs(deltaY) > 10.0F || Math.abs(deltaX) > 10.0F) {
                 this.setYRot(yRot);
@@ -172,16 +171,16 @@ public abstract class AbstractArrowMixin extends Entity implements SeekingArrowA
                     // 持续时间：3/5/7秒 -> (1 + 2 * level) * 20 ticks
                     int durationTicks = (1 + 2 * level) * 20;
                     livingTarget.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        me.tuanzi.init.ModStatusEffects.HONG_HEN,
-                        durationTicks,
-                        level - 1
+                            me.tuanzi.init.ModStatusEffects.HONG_HEN,
+                            durationTicks,
+                            level - 1
                     ), owner);
 
                     me.tuanzi.util.ModLog.debug(owner, livingTarget, "【归鸿】箭矢命中生物！施加【鸿痕】状态效果（持续 %d 秒，等级: %d，进入冷却 %d 秒）",
-                        1 + 2 * level, level, 10 - 2 * level);
+                            1 + 2 * level, level, 10 - 2 * level);
                 } else {
                     me.tuanzi.util.ModLog.debug(owner, livingTarget, "【归鸿】触发受限：处于冷却中（剩余 %d ticks）",
-                        nextAvailableTime - currentTime);
+                            nextAvailableTime - currentTime);
                 }
             }
         }

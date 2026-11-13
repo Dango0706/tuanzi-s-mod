@@ -17,7 +17,7 @@ public abstract class ImmortalTalismanMixin {
             boolean hadTalisman = oldPlayer.getInventory().contains(stack -> stack.is(ModItems.IMMORTAL_TALISMAN));
             if (hadTalisman) {
                 ServerPlayer newPlayer = (ServerPlayer) (Object) this;
-                
+
                 // 手动复制物品栏以避免共享引用，防止消耗最后一个圣符时导致 oldPlayer 的 check 失效
                 for (int i = 0; i < oldPlayer.getInventory().getContainerSize(); i++) {
                     newPlayer.getInventory().setItem(i, oldPlayer.getInventory().getItem(i).copy());

@@ -29,29 +29,25 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public final class ScavengerClientState {
 
+    private static final List<GridItemEntry> backpackEntries = new ArrayList<>();
+    private static final List<GridItemEntry> safeboxEntries = new ArrayList<>();
+    private static final Map<Integer, RedactedGridEntryView> containerEntries = new HashMap<>();
     // ==================== 个人档案状态 ====================
     private static ItemStack equippedBackpack = ItemStack.EMPTY;
     private static int backpackColumns = 0;
     private static int backpackRows = 0;
-    private static final List<GridItemEntry> backpackEntries = new ArrayList<>();
-
     private static ItemStack equippedSafebox = ItemStack.EMPTY;
     private static int safeboxColumns = 0;
     private static int safeboxRows = 0;
-    private static final List<GridItemEntry> safeboxEntries = new ArrayList<>();
-
     private static int weightLevel = 1;
     private static int stashLevel = 1;
     private static float totalWeightKg = 0.0f;
     private static boolean isOverloaded = false;
-
     // ==================== 活动容器状态 ====================
     private static @Nullable Identifier containerDefId = null;
     private static BlockPos containerPos = BlockPos.ZERO;
     private static int containerColumns = 0;
     private static int containerRows = 0;
-    private static final Map<Integer, RedactedGridEntryView> containerEntries = new HashMap<>();
-
     // ==================== 逐刻搜索状态 ====================
     private static int activeSearchEntryId = -1;
     private static int activeSearchProgressTicks = 0;
@@ -212,30 +208,91 @@ public final class ScavengerClientState {
 
     // ==================== Getters ====================
 
-    public static ItemStack getEquippedBackpack() { return equippedBackpack; }
-    public static int getBackpackColumns() { return backpackColumns; }
-    public static int getBackpackRows() { return backpackRows; }
-    public static List<GridItemEntry> getBackpackEntries() { return new ArrayList<>(backpackEntries); }
+    public static ItemStack getEquippedBackpack() {
+        return equippedBackpack;
+    }
 
-    public static ItemStack getEquippedSafebox() { return equippedSafebox; }
-    public static int getSafeboxColumns() { return safeboxColumns; }
-    public static int getSafeboxRows() { return safeboxRows; }
-    public static List<GridItemEntry> getSafeboxEntries() { return new ArrayList<>(safeboxEntries); }
+    public static int getBackpackColumns() {
+        return backpackColumns;
+    }
 
-    public static int getWeightLevel() { return weightLevel; }
-    public static int getStashLevel() { return stashLevel; }
-    public static float getTotalWeightKg() { return totalWeightKg; }
-    public static boolean isOverloaded() { return isOverloaded; }
+    public static int getBackpackRows() {
+        return backpackRows;
+    }
 
-    public static @Nullable Identifier getContainerDefId() { return containerDefId; }
-    public static BlockPos getContainerPos() { return containerPos; }
-    public static int getContainerColumns() { return containerColumns; }
-    public static int getContainerRows() { return containerRows; }
-    public static Map<Integer, RedactedGridEntryView> getContainerEntries() { return new HashMap<>(containerEntries); }
+    public static List<GridItemEntry> getBackpackEntries() {
+        return new ArrayList<>(backpackEntries);
+    }
 
-    public static int getActiveSearchEntryId() { return activeSearchEntryId; }
-    public static int getActiveSearchProgressTicks() { return activeSearchProgressTicks; }
-    public static int getActiveSearchTotalTicks() { return activeSearchTotalTicks; }
-    public static float getActivePulseThreshold() { return activePulseThreshold; }
-    public static ScavengerRarity getActivePulseRarity() { return activePulseRarity; }
+    public static ItemStack getEquippedSafebox() {
+        return equippedSafebox;
+    }
+
+    public static int getSafeboxColumns() {
+        return safeboxColumns;
+    }
+
+    public static int getSafeboxRows() {
+        return safeboxRows;
+    }
+
+    public static List<GridItemEntry> getSafeboxEntries() {
+        return new ArrayList<>(safeboxEntries);
+    }
+
+    public static int getWeightLevel() {
+        return weightLevel;
+    }
+
+    public static int getStashLevel() {
+        return stashLevel;
+    }
+
+    public static float getTotalWeightKg() {
+        return totalWeightKg;
+    }
+
+    public static boolean isOverloaded() {
+        return isOverloaded;
+    }
+
+    public static @Nullable Identifier getContainerDefId() {
+        return containerDefId;
+    }
+
+    public static BlockPos getContainerPos() {
+        return containerPos;
+    }
+
+    public static int getContainerColumns() {
+        return containerColumns;
+    }
+
+    public static int getContainerRows() {
+        return containerRows;
+    }
+
+    public static Map<Integer, RedactedGridEntryView> getContainerEntries() {
+        return new HashMap<>(containerEntries);
+    }
+
+    public static int getActiveSearchEntryId() {
+        return activeSearchEntryId;
+    }
+
+    public static int getActiveSearchProgressTicks() {
+        return activeSearchProgressTicks;
+    }
+
+    public static int getActiveSearchTotalTicks() {
+        return activeSearchTotalTicks;
+    }
+
+    public static float getActivePulseThreshold() {
+        return activePulseThreshold;
+    }
+
+    public static ScavengerRarity getActivePulseRarity() {
+        return activePulseRarity;
+    }
 }

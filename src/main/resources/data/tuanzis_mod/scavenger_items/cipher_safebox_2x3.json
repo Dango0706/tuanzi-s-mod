@@ -9,7 +9,9 @@
   "weight_kg": 1.50,
   "base_value": 88000,
   "base_search_seconds": 2.0,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "equipment_grid": {
     "slot_type": "SAFEBOX",
     "columns": 2,

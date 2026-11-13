@@ -1,37 +1,28 @@
 package me.tuanzi.datagen;
 
+import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.init.ModItems;
+import me.tuanzi.init.ModPotions;
+import me.tuanzi.world.item.crafting.AxeStripRecipe;
 import me.tuanzi.world.item.crafting.ColorBlockDyeRecipe;
+import me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
-import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.world.item.Items;
-import net.minecraft.tags.ItemTags;
-
-import me.tuanzi.Tuanzis_mod;
-import me.tuanzi.world.item.crafting.AxeStripRecipe;
-import me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.ItemLike;
-import net.minecraft.data.recipes.SpecialRecipeBuilder;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
-import net.minecraft.world.item.ItemStackTemplate;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-
-import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.data.recipes.BrewingRecipeBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.recipes.*;
+import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
-import me.tuanzi.init.ModPotions;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,212 +38,218 @@ public class ModRecipeProvider extends FabricRecipeProvider {
             public void buildRecipes() {
                 RecipeOutput exporter = this.output;
                 shaped(RecipeCategory.COMBAT, ModItems.ECHO_BREAKER)
-                    .pattern("EEE")
-                    .pattern(" H ")
-                    .pattern(" S ")
-                    .define('E', Items.ECHO_SHARD)
-                    .define('H', ModItems.WARDEN_HEART)
-                    .define('S', Items.STICK)
-                    .unlockedBy("has_echo_shard", has(Items.ECHO_SHARD))
-                    .unlockedBy("has_warden_heart", has(ModItems.WARDEN_HEART))
-                    .save(exporter);
+                        .pattern("EEE")
+                        .pattern(" H ")
+                        .pattern(" S ")
+                        .define('E', Items.ECHO_SHARD)
+                        .define('H', ModItems.WARDEN_HEART)
+                        .define('S', Items.STICK)
+                        .unlockedBy("has_echo_shard", has(Items.ECHO_SHARD))
+                        .unlockedBy("has_warden_heart", has(ModItems.WARDEN_HEART))
+                        .save(exporter);
 
                 // 稻草人无序合成：干草块 + 木棍 + 雕刻南瓜
                 shapeless(RecipeCategory.MISC, ModItems.SCARECROW, 1)
-                    .requires(Items.HAY_BLOCK)
-                    .requires(Items.STICK)
-                    .requires(Items.CARVED_PUMPKIN)
-                    .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
-                    .save(exporter);
+                        .requires(Items.HAY_BLOCK)
+                        .requires(Items.STICK)
+                        .requires(Items.CARVED_PUMPKIN)
+                        .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
+                        .save(exporter);
 
                 // 假目标有序合成：空,幽匿脉络,空, 幻翼膜,稻草人,幻翼膜, 萤石,红石,萤石
                 shaped(RecipeCategory.COMBAT, ModItems.DECOY_TOTEM, 1)
-                    .pattern(" C ")
-                    .pattern("MSM")
-                    .pattern("GRG")
-                    .define('C', Items.SCULK_VEIN)
-                    .define('M', Items.PHANTOM_MEMBRANE)
-                    .define('S', ModItems.SCARECROW)
-                    .define('G', Items.GLOWSTONE)
-                    .define('R', Items.REDSTONE)
-                    .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
-                    .save(exporter);
+                        .pattern(" C ")
+                        .pattern("MSM")
+                        .pattern("GRG")
+                        .define('C', Items.SCULK_VEIN)
+                        .define('M', Items.PHANTOM_MEMBRANE)
+                        .define('S', ModItems.SCARECROW)
+                        .define('G', Items.GLOWSTONE)
+                        .define('R', Items.REDSTONE)
+                        .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
+                        .save(exporter);
 
                 // 试炼假人有序合成
                 shaped(RecipeCategory.MISC, ModItems.TRIAL_DUMMY, 1)
-                    .pattern("HHH")
-                    .pattern("SAS")
-                    .pattern("HTH")
-                    .define('H', Items.HAY_BLOCK)
-                    .define('S', Items.STICK)
-                    .define('A', ModItems.SCARECROW)
-                    .define('T', Items.TARGET)
-                    .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
-                    .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
-                    .save(exporter);
+                        .pattern("HHH")
+                        .pattern("SAS")
+                        .pattern("HTH")
+                        .define('H', Items.HAY_BLOCK)
+                        .define('S', Items.STICK)
+                        .define('A', ModItems.SCARECROW)
+                        .define('T', Items.TARGET)
+                        .unlockedBy("has_hay_block", has(Items.HAY_BLOCK))
+                        .unlockedBy("has_scarecrow", has(ModItems.SCARECROW))
+                        .save(exporter);
                 // 缚灵笼有序合成：铁锭x7 + 绿宝石块 + 灵魂沙
                 shaped(RecipeCategory.MISC, ModItems.VILLAGER_CAGE, 1)
-                    .pattern("IEI")
-                    .pattern("ISI")
-                    .pattern("III")
-                    .define('I', Items.IRON_INGOT)
-                    .define('E', Items.EMERALD_BLOCK)
-                    .define('S', Items.SOUL_SAND)
-                    .unlockedBy("has_soul_sand", has(Items.SOUL_SAND))
-                    .unlockedBy("has_emerald_block", has(Items.EMERALD_BLOCK))
-                    .save(exporter);
+                        .pattern("IEI")
+                        .pattern("ISI")
+                        .pattern("III")
+                        .define('I', Items.IRON_INGOT)
+                        .define('E', Items.EMERALD_BLOCK)
+                        .define('S', Items.SOUL_SAND)
+                        .unlockedBy("has_soul_sand", has(Items.SOUL_SAND))
+                        .unlockedBy("has_emerald_block", has(Items.EMERALD_BLOCK))
+                        .save(exporter);
 
                 // 灵笼贸易站有序合成
                 shaped(RecipeCategory.MISC, me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION, 1)
-                    .pattern("QSQ")
-                    .pattern("CRC")
-                    .pattern("QSQ")
-                    .define('Q', Items.QUARTZ)
-                    .define('S', Items.SCULK)
-                    .define('C', Items.COMPARATOR)
-                    .define('R', ModItems.VILLAGER_CAGE)
-                    .unlockedBy("has_villager_cage", has(ModItems.VILLAGER_CAGE))
-                    .save(exporter);
+                        .pattern("QSQ")
+                        .pattern("CRC")
+                        .pattern("QSQ")
+                        .define('Q', Items.QUARTZ)
+                        .define('S', Items.SCULK)
+                        .define('C', Items.COMPARATOR)
+                        .define('R', ModItems.VILLAGER_CAGE)
+                        .unlockedBy("has_villager_cage", has(ModItems.VILLAGER_CAGE))
+                        .save(exporter);
 
                 // 逻辑核心有序合成
                 shaped(RecipeCategory.MISC, ModItems.LOGIC_CORE, 1)
-                    .pattern("RRR")
-                    .pattern(" I ")
-                    .pattern("RRR")
-                    .define('R', Items.REDSTONE)
-                    .define('I', Items.IRON_INGOT)
-                    .unlockedBy("has_redstone", has(Items.REDSTONE))
-                    .save(exporter);
+                        .pattern("RRR")
+                        .pattern(" I ")
+                        .pattern("RRR")
+                        .define('R', Items.REDSTONE)
+                        .define('I', Items.IRON_INGOT)
+                        .unlockedBy("has_redstone", has(Items.REDSTONE))
+                        .save(exporter);
 
                 // 玩家控制核心有序合成
                 shaped(RecipeCategory.MISC, ModItems.PLAYER_CONTROL_CORE, 1)
-                    .pattern(" R ")
-                    .pattern("BH ")
-                    .pattern(" R ")
-                    .define('R', Items.REDSTONE)
-                    .define('B', Items.REDSTONE_BLOCK)
-                    .define('H', Items.PLAYER_HEAD)
-                    .unlockedBy("has_player_head", has(Items.PLAYER_HEAD))
-                    .save(exporter);
+                        .pattern(" R ")
+                        .pattern("BH ")
+                        .pattern(" R ")
+                        .define('R', Items.REDSTONE)
+                        .define('B', Items.REDSTONE_BLOCK)
+                        .define('H', Items.PLAYER_HEAD)
+                        .unlockedBy("has_player_head", has(Items.PLAYER_HEAD))
+                        .save(exporter);
 
-                // 玩家模拟器有序合成配方修改
-                shaped(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, 1)
-                    .pattern("ROR")
-                    .pattern("PDC")
-                    .pattern("ROR")
-                    .define('R', Items.REDSTONE)
-                    .define('O', Items.OBSERVER)
-                    .define('P', ModItems.PLAYER_CONTROL_CORE)
-                    .define('D', Items.DISPENSER)
-                    .define('C', ModItems.LOGIC_CORE)
-                    .unlockedBy("has_player_control_core", has(ModItems.PLAYER_CONTROL_CORE))
-                    .unlockedBy("has_logic_core", has(ModItems.LOGIC_CORE))
-                    .save(exporter);
+                // 方块破坏器有序合成配方
+        shaped(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.BLOCK_BREAKER, 1)
+                .pattern("RDR")
+                .pattern("CPC")
+                .pattern("RDR")
+                .define('R', Items.REDSTONE_BLOCK)
+                .define('D', Items.DISPENSER)
+                .define('C', ModItems.LOGIC_CORE)
+                .define('P', ModItems.PLAYER_CONTROL_CORE)
+                .unlockedBy("has_logic_core", has(ModItems.LOGIC_CORE))
+                .unlockedBy("has_player_control_core", has(ModItems.PLAYER_CONTROL_CORE))
+                .save(exporter);
 
-                // 玩家模拟器无序净化合成：大炮自身 -> 清除标签大炮自身
-                shapeless(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR, 1)
-                    .requires(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR)
-                    .unlockedBy("has_player_simulator", has(me.tuanzi.init.ModBlocks.PLAYER_SIMULATOR))
-                    .save(exporter, "tuanzis_mod:player_simulator_clean");
+                // 方块放置器有序合成配方
+        shaped(RecipeCategory.REDSTONE, me.tuanzi.init.ModBlocks.BLOCK_PLACER, 1)
+                .pattern("RDR")
+                .pattern("CPC")
+                .pattern("RDR")
+                .define('R', Items.REDSTONE)
+                .define('D', Items.DROPPER)
+                .define('C', ModItems.LOGIC_CORE)
+                .define('P', ModItems.PLAYER_CONTROL_CORE)
+                .unlockedBy("has_logic_core", has(ModItems.LOGIC_CORE))
+                .unlockedBy("has_player_control_core", has(ModItems.PLAYER_CONTROL_CORE))
+                .save(exporter);
 
                 // 狂暴护符无序合成：铁锭 + 2个烈焰粉 + 红石
                 shapeless(RecipeCategory.MISC, ModItems.BERSERK_CHARM, 1)
-                    .requires(Items.IRON_INGOT)
-                    .requires(Items.BLAZE_POWDER, 2)
-                    .requires(Items.REDSTONE)
-                    .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
-                    .unlockedBy("has_blaze_powder", has(Items.BLAZE_POWDER))
-                    .save(exporter);
+                        .requires(Items.IRON_INGOT)
+                        .requires(Items.BLAZE_POWDER, 2)
+                        .requires(Items.REDSTONE)
+                        .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                        .unlockedBy("has_blaze_powder", has(Items.BLAZE_POWDER))
+                        .save(exporter);
 
                 // 工匠护符无序合成：1个工作台 + 2个黑曜石 + 1个紫水晶碎片 + 1个下界石英
                 shapeless(RecipeCategory.MISC, ModItems.CRAFTSMAN_CHARM, 1)
-                    .requires(Items.CRAFTING_TABLE)
-                    .requires(Items.OBSIDIAN, 2)
-                    .requires(Items.AMETHYST_SHARD)
-                    .requires(Items.QUARTZ)
-                    .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
-                    .save(exporter);
+                        .requires(Items.CRAFTING_TABLE)
+                        .requires(Items.OBSIDIAN, 2)
+                        .requires(Items.AMETHYST_SHARD)
+                        .requires(Items.QUARTZ)
+                        .unlockedBy("has_crafting_table", has(Items.CRAFTING_TABLE))
+                        .save(exporter);
 
                 // 战狼护符无序合成
                 shapeless(RecipeCategory.COMBAT, ModItems.WOLF_COMMAND, 1)
-                    .requires(Items.BONE_BLOCK)
-                    .requires(Items.IRON_INGOT, 2)
-                    .requires(Items.SCULK_VEIN)
-                    .unlockedBy("has_bone_block", has(Items.BONE_BLOCK))
-                    .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
-                    .unlockedBy("has_sculk_vein", has(Items.SCULK_VEIN))
-                    .save(exporter);
+                        .requires(Items.BONE_BLOCK)
+                        .requires(Items.IRON_INGOT, 2)
+                        .requires(Items.SCULK_VEIN)
+                        .unlockedBy("has_bone_block", has(Items.BONE_BLOCK))
+                        .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                        .unlockedBy("has_sculk_vein", has(Items.SCULK_VEIN))
+                        .save(exporter);
 
                 // 手里剑有序合成：铁粒在上下左右，石英在中间，产出4枚
                 shaped(RecipeCategory.COMBAT, ModItems.SHURIKEN, 4)
-                    .pattern(" N ")
-                    .pattern("NQN")
-                    .pattern(" N ")
-                    .define('N', Items.IRON_NUGGET)
-                    .define('Q', Items.QUARTZ)
-                    .unlockedBy("has_quartz", has(Items.QUARTZ))
-                    .save(exporter);
+                        .pattern(" N ")
+                        .pattern("NQN")
+                        .pattern(" N ")
+                        .define('N', Items.IRON_NUGGET)
+                        .define('Q', Items.QUARTZ)
+                        .unlockedBy("has_quartz", has(Items.QUARTZ))
+                        .save(exporter);
 
                 // 地狱炖菜无序合成：碗 + 绯红菌 + 诡异菌 + 烈焰粉 + 岩浆膏
                 shapeless(RecipeCategory.FOOD, ModItems.NETHER_STEW, 1)
-                    .requires(Items.BOWL)
-                    .requires(Items.CRIMSON_FUNGUS)
-                    .requires(Items.WARPED_FUNGUS)
-                    .requires(Items.BLAZE_POWDER)
-                    .requires(Items.MAGMA_CREAM)
-                    .unlockedBy("has_bowl", has(Items.BOWL))
-                    .unlockedBy("has_crimson_fungus", has(Items.CRIMSON_FUNGUS))
-                    .unlockedBy("has_warped_fungus", has(Items.WARPED_FUNGUS))
-                    .save(exporter);
+                        .requires(Items.BOWL)
+                        .requires(Items.CRIMSON_FUNGUS)
+                        .requires(Items.WARPED_FUNGUS)
+                        .requires(Items.BLAZE_POWDER)
+                        .requires(Items.MAGMA_CREAM)
+                        .unlockedBy("has_bowl", has(Items.BOWL))
+                        .unlockedBy("has_crimson_fungus", has(Items.CRIMSON_FUNGUS))
+                        .unlockedBy("has_warped_fungus", has(Items.WARPED_FUNGUS))
+                        .save(exporter);
 
                 // 潮汐织靴有序合成：
                 shaped(RecipeCategory.COMBAT, ModItems.TIDAL_WEAVE_BOOTS, 1)
-                    .pattern(" D ")
-                    .pattern("MHM")
-                    .pattern("P P")
-                    .define('D', Items.DIAMOND_BOOTS)
-                    .define('M', Items.NETHERITE_SCRAP)
-                    .define('H', Items.HEART_OF_THE_SEA)
-                    .define('P', Items.PRISMARINE_CRYSTALS)
-                    .unlockedBy("has_diamond_boots", has(Items.DIAMOND_BOOTS))
-                    .unlockedBy("has_netherite_scrap", has(Items.NETHERITE_SCRAP))
-                    .unlockedBy("has_heart_of_the_sea", has(Items.HEART_OF_THE_SEA))
-                    .unlockedBy("has_prismarine_crystals", has(Items.PRISMARINE_CRYSTALS))
-                    .save(exporter);
+                        .pattern(" D ")
+                        .pattern("MHM")
+                        .pattern("P P")
+                        .define('D', Items.DIAMOND_BOOTS)
+                        .define('M', Items.NETHERITE_SCRAP)
+                        .define('H', Items.HEART_OF_THE_SEA)
+                        .define('P', Items.PRISMARINE_CRYSTALS)
+                        .unlockedBy("has_diamond_boots", has(Items.DIAMOND_BOOTS))
+                        .unlockedBy("has_netherite_scrap", has(Items.NETHERITE_SCRAP))
+                        .unlockedBy("has_heart_of_the_sea", has(Items.HEART_OF_THE_SEA))
+                        .unlockedBy("has_prismarine_crystals", has(Items.PRISMARINE_CRYSTALS))
+                        .save(exporter);
 
                 // 特殊配方：油漆桶染色彩色方块/半砖/楼梯
                 SpecialRecipeBuilder.special(ColorBlockDyeRecipe::new).save(exporter, "tuanzis_mod:color_block_dye");
 
                 // 彩色楼梯有序合成继承颜色
                 ShapedRecipePattern stairsPattern = ShapedRecipePattern.of(
-                    java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
-                    "#  ",
-                    "## ",
-                    "###"
+                        java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
+                        "#  ",
+                        "## ",
+                        "###"
                 );
                 ItemStackTemplate stairsResult = new ItemStackTemplate(me.tuanzi.init.ModBlocks.COLOR_STAIRS.asItem(), 4);
                 Recipe.CommonInfo stairsInfo = new Recipe.CommonInfo(true);
                 CraftingRecipe.CraftingBookInfo stairsBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "");
                 ColorBlockShapedRecipe stairsRecipe = new ColorBlockShapedRecipe(stairsInfo, stairsBook, stairsPattern, stairsResult);
                 exporter.accept(
-                    ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_stairs")),
-                    stairsRecipe,
-                    null
+                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_stairs")),
+                        stairsRecipe,
+                        null
                 );
 
                 // 彩色半砖有序合成继承颜色
                 ShapedRecipePattern slabPattern = ShapedRecipePattern.of(
-                    java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
-                    "###"
+                        java.util.Map.of('#', Ingredient.of(me.tuanzi.init.ModBlocks.COLOR_BLOCK)),
+                        "###"
                 );
                 ItemStackTemplate slabResult = new ItemStackTemplate(me.tuanzi.init.ModBlocks.COLOR_SLAB.asItem(), 6);
                 Recipe.CommonInfo slabInfo = new Recipe.CommonInfo(true);
                 CraftingRecipe.CraftingBookInfo slabBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "");
                 ColorBlockShapedRecipe slabRecipe = new ColorBlockShapedRecipe(slabInfo, slabBook, slabPattern, slabResult);
                 exporter.accept(
-                    ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_slab")),
-                    slabRecipe,
-                    null
+                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "color_slab")),
+                        slabRecipe,
+                        null
                 );
 
                 var itemLookup = registryLookup.lookupOrThrow(net.minecraft.core.registries.Registries.ITEM);
@@ -260,109 +257,109 @@ public class ModRecipeProvider extends FabricRecipeProvider {
 
                 // 新增彩色方块合成配方（任意颜色混凝土粉末*6 + 水桶*1 + 粘土球*2 => 彩色方块*6，水桶返还）
                 shaped(RecipeCategory.BUILDING_BLOCKS, me.tuanzi.init.ModBlocks.COLOR_BLOCK, 6)
-                    .pattern("PPP")
-                    .pattern("WCW")
-                    .pattern("PPP")
-                    .define('P', Ingredient.of(concretePowderTag))
-                    .define('W', Items.CLAY_BALL)
-                    .define('C', Items.WATER_BUCKET)
-                    .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
-                    .save(exporter);
+                        .pattern("PPP")
+                        .pattern("WCW")
+                        .pattern("PPP")
+                        .define('P', Ingredient.of(concretePowderTag))
+                        .define('W', Items.CLAY_BALL)
+                        .define('C', Items.WATER_BUCKET)
+                        .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
+                        .save(exporter);
 
                 // 新增油漆桶合成配方
                 shaped(RecipeCategory.MISC, ModItems.PAINT_BUCKET, 1)
-                    .pattern("YYG")
-                    .pattern("KBG")
-                    .pattern("KUU")
-                    .define('Y', Items.DYE.red())
-                    .define('G', Items.DYE.green())
-                    .define('K', Items.DYE.black())
-                    .define('B', Items.WATER_BUCKET)
-                    .define('U', Items.DYE.blue())
-                    .unlockedBy("has_water_bucket", has(Items.WATER_BUCKET))
-                    .save(exporter);
+                        .pattern("YYG")
+                        .pattern("KBG")
+                        .pattern("KUU")
+                        .define('Y', Items.DYE.red())
+                        .define('G', Items.DYE.green())
+                        .define('K', Items.DYE.black())
+                        .define('B', Items.WATER_BUCKET)
+                        .define('U', Items.DYE.blue())
+                        .unlockedBy("has_water_bucket", has(Items.WATER_BUCKET))
+                        .save(exporter);
 
                 // 智慧法典合成配方
                 shaped(RecipeCategory.MISC, ModItems.CODEX_OF_ENCHANTING, 1)
-                    .pattern(" L ")
-                    .pattern("NSB")
-                    .pattern(" L ")
-                    .define('L', Items.LAPIS_BLOCK)
-                    .define('N', Items.NETHER_STAR)
-                    .define('S', Items.BOOK)
-                    .define('B', Items.DRAGON_BREATH)
-                    .unlockedBy("has_lapis_block", has(Items.LAPIS_BLOCK))
-                    .unlockedBy("has_nether_star", has(Items.NETHER_STAR))
-                    .save(exporter);
+                        .pattern(" L ")
+                        .pattern("NSB")
+                        .pattern(" L ")
+                        .define('L', Items.LAPIS_BLOCK)
+                        .define('N', Items.NETHER_STAR)
+                        .define('S', Items.BOOK)
+                        .define('B', Items.DRAGON_BREATH)
+                        .unlockedBy("has_lapis_block", has(Items.LAPIS_BLOCK))
+                        .unlockedBy("has_nether_star", has(Items.NETHER_STAR))
+                        .save(exporter);
 
                 // 玻璃展示框无序合成配方：4个展示框 + 1个玻璃 -> 4个玻璃展示框
                 shapeless(RecipeCategory.DECORATIONS, ModItems.GLASS_ITEM_FRAME, 4)
-                    .requires(Items.ITEM_FRAME, 4)
-                    .requires(Items.GLASS)
-                    .unlockedBy("has_item_frame", has(Items.ITEM_FRAME))
-                    .unlockedBy("has_glass", has(Items.GLASS))
-                    .save(exporter);
+                        .requires(Items.ITEM_FRAME, 4)
+                        .requires(Items.GLASS)
+                        .unlockedBy("has_item_frame", has(Items.ITEM_FRAME))
+                        .unlockedBy("has_glass", has(Items.GLASS))
+                        .save(exporter);
 
                 // 缠皮长握柄：铁粒(顶) + 烈焰棒(中) + 皮革(底)
                 shaped(RecipeCategory.MISC, ModItems.REINFORCED_LONG_HILT)
-                    .pattern("N")
-                    .pattern("B")
-                    .pattern("L")
-                    .define('N', Items.IRON_NUGGET)
-                    .define('B', Items.BLAZE_ROD)
-                    .define('L', Items.LEATHER)
-                    .unlockedBy("has_blaze_rod", has(Items.BLAZE_ROD))
-                    .save(exporter);
+                        .pattern("N")
+                        .pattern("B")
+                        .pattern("L")
+                        .define('N', Items.IRON_NUGGET)
+                        .define('B', Items.BLAZE_ROD)
+                        .define('L', Items.LEATHER)
+                        .unlockedBy("has_blaze_rod", has(Items.BLAZE_ROD))
+                        .save(exporter);
 
                 // 木质连击斩马刀
                 shaped(RecipeCategory.COMBAT, ModItems.WOODEN_NODACHI)
-                    .pattern(" MM")
-                    .pattern(" M ")
-                    .pattern("H  ")
-                    .define('M', ItemTags.PLANKS)
-                    .define('H', ModItems.REINFORCED_LONG_HILT)
-                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
-                    .save(exporter);
+                        .pattern(" MM")
+                        .pattern(" M ")
+                        .pattern("H  ")
+                        .define('M', ItemTags.PLANKS)
+                        .define('H', ModItems.REINFORCED_LONG_HILT)
+                        .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                        .save(exporter);
 
                 // 石质连击斩马刀
                 shaped(RecipeCategory.COMBAT, ModItems.STONE_NODACHI)
-                    .pattern(" MM")
-                    .pattern(" M ")
-                    .pattern("H  ")
-                    .define('M', ItemTags.STONE_TOOL_MATERIALS)
-                    .define('H', ModItems.REINFORCED_LONG_HILT)
-                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
-                    .save(exporter);
+                        .pattern(" MM")
+                        .pattern(" M ")
+                        .pattern("H  ")
+                        .define('M', ItemTags.STONE_TOOL_MATERIALS)
+                        .define('H', ModItems.REINFORCED_LONG_HILT)
+                        .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                        .save(exporter);
 
                 // 铁质连击斩马刀
                 shaped(RecipeCategory.COMBAT, ModItems.IRON_NODACHI)
-                    .pattern(" MM")
-                    .pattern(" M ")
-                    .pattern("H  ")
-                    .define('M', Items.IRON_INGOT)
-                    .define('H', ModItems.REINFORCED_LONG_HILT)
-                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
-                    .save(exporter);
+                        .pattern(" MM")
+                        .pattern(" M ")
+                        .pattern("H  ")
+                        .define('M', Items.IRON_INGOT)
+                        .define('H', ModItems.REINFORCED_LONG_HILT)
+                        .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                        .save(exporter);
 
                 // 金质连击斩马刀
                 shaped(RecipeCategory.COMBAT, ModItems.GOLDEN_NODACHI)
-                    .pattern(" MM")
-                    .pattern(" M ")
-                    .pattern("H  ")
-                    .define('M', Items.GOLD_INGOT)
-                    .define('H', ModItems.REINFORCED_LONG_HILT)
-                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
-                    .save(exporter);
+                        .pattern(" MM")
+                        .pattern(" M ")
+                        .pattern("H  ")
+                        .define('M', Items.GOLD_INGOT)
+                        .define('H', ModItems.REINFORCED_LONG_HILT)
+                        .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                        .save(exporter);
 
                 // 钻石连击斩马刀
                 shaped(RecipeCategory.COMBAT, ModItems.DIAMOND_NODACHI)
-                    .pattern(" MM")
-                    .pattern(" M ")
-                    .pattern("H  ")
-                    .define('M', Items.DIAMOND)
-                    .define('H', ModItems.REINFORCED_LONG_HILT)
-                    .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
-                    .save(exporter);
+                        .pattern(" MM")
+                        .pattern(" M ")
+                        .pattern("H  ")
+                        .define('M', Items.DIAMOND)
+                        .define('H', ModItems.REINFORCED_LONG_HILT)
+                        .unlockedBy("has_reinforced_long_hilt", has(ModItems.REINFORCED_LONG_HILT))
+                        .save(exporter);
 
                 // 下界合金连击斩马刀（锻造台升级）
                 this.netheriteSmithing(ModItems.DIAMOND_NODACHI, RecipeCategory.COMBAT, ModItems.NETHERITE_NODACHI);
@@ -381,31 +378,31 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 Ingredient axeIngredient = Ingredient.of(axeTag);
 
                 List<StripPair> stripPairs = List.of(
-                    new StripPair(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG, "oak_log"),
-                    new StripPair(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD, "oak_wood"),
-                    new StripPair(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG, "spruce_log"),
-                    new StripPair(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD, "spruce_wood"),
-                    new StripPair(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG, "birch_log"),
-                    new StripPair(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD, "birch_wood"),
-                    new StripPair(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG, "jungle_log"),
-                    new StripPair(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, "jungle_wood"),
-                    new StripPair(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG, "acacia_log"),
-                    new StripPair(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD, "acacia_wood"),
-                    new StripPair(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG, "dark_oak_log"),
-                    new StripPair(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD, "dark_oak_wood"),
-                    new StripPair(Blocks.MANGROVE_LOG, Blocks.STRIPPED_MANGROVE_LOG, "mangrove_log"),
-                    new StripPair(Blocks.MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD, "mangrove_wood"),
-                    new StripPair(Blocks.CHERRY_LOG, Blocks.STRIPPED_CHERRY_LOG, "cherry_log"),
-                    new StripPair(Blocks.CHERRY_WOOD, Blocks.STRIPPED_CHERRY_WOOD, "cherry_wood"),
-                    new StripPair(Blocks.PALE_OAK_LOG, Blocks.STRIPPED_PALE_OAK_LOG, "pale_oak_log"),
-                    new StripPair(Blocks.PALE_OAK_WOOD, Blocks.STRIPPED_PALE_OAK_WOOD, "pale_oak_wood"),
-                    new StripPair(Blocks.POPLAR_LOG, Blocks.STRIPPED_POPLAR_LOG, "poplar_log"),
-                    new StripPair(Blocks.POPLAR_WOOD, Blocks.STRIPPED_POPLAR_WOOD, "poplar_wood"),
-                    new StripPair(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, "crimson_stem"),
-                    new StripPair(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE, "crimson_hyphae"),
-                    new StripPair(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, "warped_stem"),
-                    new StripPair(Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE, "warped_hyphae"),
-                    new StripPair(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK, "bamboo_block")
+                        new StripPair(Blocks.OAK_LOG, Blocks.STRIPPED_OAK_LOG, "oak_log"),
+                        new StripPair(Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_WOOD, "oak_wood"),
+                        new StripPair(Blocks.SPRUCE_LOG, Blocks.STRIPPED_SPRUCE_LOG, "spruce_log"),
+                        new StripPair(Blocks.SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_WOOD, "spruce_wood"),
+                        new StripPair(Blocks.BIRCH_LOG, Blocks.STRIPPED_BIRCH_LOG, "birch_log"),
+                        new StripPair(Blocks.BIRCH_WOOD, Blocks.STRIPPED_BIRCH_WOOD, "birch_wood"),
+                        new StripPair(Blocks.JUNGLE_LOG, Blocks.STRIPPED_JUNGLE_LOG, "jungle_log"),
+                        new StripPair(Blocks.JUNGLE_WOOD, Blocks.STRIPPED_JUNGLE_WOOD, "jungle_wood"),
+                        new StripPair(Blocks.ACACIA_LOG, Blocks.STRIPPED_ACACIA_LOG, "acacia_log"),
+                        new StripPair(Blocks.ACACIA_WOOD, Blocks.STRIPPED_ACACIA_WOOD, "acacia_wood"),
+                        new StripPair(Blocks.DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_LOG, "dark_oak_log"),
+                        new StripPair(Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_WOOD, "dark_oak_wood"),
+                        new StripPair(Blocks.MANGROVE_LOG, Blocks.STRIPPED_MANGROVE_LOG, "mangrove_log"),
+                        new StripPair(Blocks.MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD, "mangrove_wood"),
+                        new StripPair(Blocks.CHERRY_LOG, Blocks.STRIPPED_CHERRY_LOG, "cherry_log"),
+                        new StripPair(Blocks.CHERRY_WOOD, Blocks.STRIPPED_CHERRY_WOOD, "cherry_wood"),
+                        new StripPair(Blocks.PALE_OAK_LOG, Blocks.STRIPPED_PALE_OAK_LOG, "pale_oak_log"),
+                        new StripPair(Blocks.PALE_OAK_WOOD, Blocks.STRIPPED_PALE_OAK_WOOD, "pale_oak_wood"),
+                        new StripPair(Blocks.POPLAR_LOG, Blocks.STRIPPED_POPLAR_LOG, "poplar_log"),
+                        new StripPair(Blocks.POPLAR_WOOD, Blocks.STRIPPED_POPLAR_WOOD, "poplar_wood"),
+                        new StripPair(Blocks.CRIMSON_STEM, Blocks.STRIPPED_CRIMSON_STEM, "crimson_stem"),
+                        new StripPair(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE, "crimson_hyphae"),
+                        new StripPair(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, "warped_stem"),
+                        new StripPair(Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE, "warped_hyphae"),
+                        new StripPair(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK, "bamboo_block")
                 );
 
                 for (StripPair pair : stripPairs) {
@@ -413,25 +410,26 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                     Recipe.CommonInfo stripInfo = new Recipe.CommonInfo(true);
                     CraftingRecipe.CraftingBookInfo stripBook = new CraftingRecipe.CraftingBookInfo(CraftingBookCategory.BUILDING, "stripped_wood");
                     AxeStripRecipe stripRecipe = new AxeStripRecipe(
-                        stripInfo,
-                        stripBook,
-                        stripResult,
-                        List.of(axeIngredient, Ingredient.of(pair.input()))
+                            stripInfo,
+                            stripBook,
+                            stripResult,
+                            List.of(axeIngredient, Ingredient.of(pair.input()))
                     );
                     exporter.accept(
-                        ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "axe_strip_" + pair.name())),
-                        stripRecipe,
-                        null
+                            ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "axe_strip_" + pair.name())),
+                            stripRecipe,
+                            null
                     );
                 }
             }
         };
     }
 
-    private record StripPair(ItemLike input, ItemLike output, String name) {}
-
     @Override
     public String getName() {
         return "ModRecipeProvider";
+    }
+
+    private record StripPair(ItemLike input, ItemLike output, String name) {
     }
 }

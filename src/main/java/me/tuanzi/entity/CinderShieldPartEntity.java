@@ -34,12 +34,10 @@ import java.util.UUID;
  * 受击与碎裂特效联动，全毁触发 Boss 过载眩晕
  */
 public class CinderShieldPartEntity extends Entity implements GeoEntity {
+    public static final float MAX_SHIELD_HEALTH = 35.0F;
     private static final EntityDataAccessor<Float> SHIELD_HEALTH = SynchedEntityData.defineId(CinderShieldPartEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> SHIELD_INDEX = SynchedEntityData.defineId(CinderShieldPartEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PARENT_BOSS_ID = SynchedEntityData.defineId(CinderShieldPartEntity.class, EntityDataSerializers.INT);
-
-    public static final float MAX_SHIELD_HEALTH = 35.0F;
-
     private static final RawAnimation ANIM_IDLE = RawAnimation.begin().thenLoop("animation.cinder_shield.idle");
     private static final RawAnimation ANIM_PHASE2 = RawAnimation.begin().thenLoop("animation.cinder_shield.phase2_unfold");
 

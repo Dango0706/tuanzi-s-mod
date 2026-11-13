@@ -15,8 +15,8 @@ public class ScavengerTeam {
     public static final int MAX_MEMBERS = 3;
 
     private final UUID teamId;
-    private UUID leaderId;
     private final Set<UUID> memberIds = new LinkedHashSet<>();
+    private UUID leaderId;
     private TeamColor color = TeamColor.GREEN;
     // 队伍配置：风弹与钓鱼竿对队友的影响（队长可配置是否受到影响，默认 true）
     private boolean windChargeAffectsTeammates = true;

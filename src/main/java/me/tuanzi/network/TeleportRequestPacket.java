@@ -8,15 +8,15 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 public record TeleportRequestPacket(int slotIdx, boolean isMainHand) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<TeleportRequestPacket> TYPE = 
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "teleport_request"));
+    public static final CustomPacketPayload.Type<TeleportRequestPacket> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "teleport_request"));
 
     public static final StreamCodec<FriendlyByteBuf, TeleportRequestPacket> CODEC = StreamCodec.composite(
-        ByteBufCodecs.VAR_INT,
-        TeleportRequestPacket::slotIdx,
-        ByteBufCodecs.BOOL,
-        TeleportRequestPacket::isMainHand,
-        TeleportRequestPacket::new
+            ByteBufCodecs.VAR_INT,
+            TeleportRequestPacket::slotIdx,
+            ByteBufCodecs.BOOL,
+            TeleportRequestPacket::isMainHand,
+            TeleportRequestPacket::new
     );
 
     @Override

@@ -18,17 +18,12 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.item.ProjectileWeaponItem;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.world.phys.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -52,67 +47,6 @@ public abstract class CrossbowItemMixin extends ProjectileWeaponItem {
             // 拉弦时间额外延长 (1 + 0.25 * level) 秒 (20 + 5 * level ticks)
             int extraTicks = 20 + 5 * chamberLevel;
             cir.setReturnValue(cir.getReturnValue() + extraTicks);
-        }
-    }
-
-    @Inject(method = "createProjectile", at = @At("RETURN"))
-    private void onCreateProjectile(Level level, LivingEntity shooter, ItemStack heldItem, ItemStack projectile, boolean isCrit, CallbackInfoReturnable<Projectile> cir) {
-        Projectile projectileEntity = cir.getReturnValue();
-
-        // 预备弹仓：副箭伤害衰减传递
-        CustomData customData = projectile.get(DataComponents.CUSTOM_DATA);
-        if (customData != null) {
-            net.minecraft.nbt.CompoundTag tag = customData.copyTag();
-            if (tag.contains("ReservedChamberSubsequent")) {
-                int chamberLvl = tag.getIntOr("ReservedChamberLevel", 1);
-                float penaltyRate = (60.0f - 10.0f * chamberLvl) / 100.0f;
-                if (projectileEntity instanceof ReservedChamberProjectileAccessor accessor) {
-                    accessor.tuanzis_mod$setReservedChamberDamagePenalty(penaltyRate);
-                    accessor.tuanzis_mod$setReservedChamberLevel(chamberLvl);
-                    me.tuanzi.util.ModLog.debug(shooter, null, "【预备弹仓】发射副发弹药！等级: " + chamberLvl + "，副箭伤害降低: " + String.format("%.0f%%", penaltyRate * 100));
-                }
-            }
-        }
-
-        // 寻踪箭附魔逻辑
-        if (projectileEntity instanceof SeekingArrowAccessor seekingArrow && shooter instanceof Player player) {
-            var lookup = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-            var seekingEnch = lookup.getOrThrow(ModEnchantments.SEEKING_ARROW);
-            if (EnchantmentHelper.getItemEnchantmentLevel(seekingEnch, heldItem) > 0) {
-                // 进行射线检测以在服务端确定目标
-                double maxDistance = 64.0;
-                Vec3 eyePos = player.getEyePosition(1.0f);
-                Vec3 viewVec = player.getViewVector(1.0f);
-                Vec3 endPos = eyePos.add(viewVec.scale(maxDistance));
-                
-                AABB searchArea = player.getBoundingBox().expandTowards(viewVec.scale(maxDistance)).inflate(1.0);
-                EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(
-                    player,
-                    eyePos,
-                    endPos,
-                    searchArea,
-                    entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable(),
-                    maxDistance * maxDistance
-                );
-                
-                if (entityHitResult != null) {
-                    seekingArrow.tuanzis_mod$setSeekingTargetEntity(entityHitResult.getEntity());
-                } else {
-                    // 方块射线检测
-                    BlockHitResult blockHitResult = level.clip(new net.minecraft.world.level.ClipContext(
-                        eyePos,
-                        endPos,
-                        net.minecraft.world.level.ClipContext.Block.COLLIDER,
-                        net.minecraft.world.level.ClipContext.Fluid.NONE,
-                        player
-                    ));
-                    if (blockHitResult.getType() != HitResult.Type.MISS) {
-                        seekingArrow.tuanzis_mod$setSeekingTargetPos(blockHitResult.getLocation());
-                    } else {
-                        seekingArrow.tuanzis_mod$setSeekingTargetPos(endPos);
-                    }
-                }
-            }
         }
     }
 
@@ -153,6 +87,67 @@ public abstract class CrossbowItemMixin extends ProjectileWeaponItem {
                     }
                     player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SPEED, 50, 1, false, false, true));
                     me.tuanzi.util.ModLog.debug(player, null, "【游侠速装】装填弩完成，获得 2.5 秒速度 II（+40% 移动速度）疾跑加速！");
+                }
+            }
+        }
+    }
+
+    @Inject(method = "createProjectile", at = @At("RETURN"))
+    private void onCreateProjectile(Level level, LivingEntity shooter, ItemStack heldItem, ItemStack projectile, boolean isCrit, CallbackInfoReturnable<Projectile> cir) {
+        Projectile projectileEntity = cir.getReturnValue();
+
+        // 预备弹仓：副箭伤害衰减传递
+        CustomData customData = projectile.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            net.minecraft.nbt.CompoundTag tag = customData.copyTag();
+            if (tag.contains("ReservedChamberSubsequent")) {
+                int chamberLvl = tag.getIntOr("ReservedChamberLevel", 1);
+                float penaltyRate = (60.0f - 10.0f * chamberLvl) / 100.0f;
+                if (projectileEntity instanceof ReservedChamberProjectileAccessor accessor) {
+                    accessor.tuanzis_mod$setReservedChamberDamagePenalty(penaltyRate);
+                    accessor.tuanzis_mod$setReservedChamberLevel(chamberLvl);
+                    me.tuanzi.util.ModLog.debug(shooter, null, "【预备弹仓】发射副发弹药！等级: " + chamberLvl + "，副箭伤害降低: " + String.format("%.0f%%", penaltyRate * 100));
+                }
+            }
+        }
+
+        // 寻踪箭附魔逻辑
+        if (projectileEntity instanceof SeekingArrowAccessor seekingArrow && shooter instanceof Player player) {
+            var lookup = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+            var seekingEnch = lookup.getOrThrow(ModEnchantments.SEEKING_ARROW);
+            if (EnchantmentHelper.getItemEnchantmentLevel(seekingEnch, heldItem) > 0) {
+                // 进行射线检测以在服务端确定目标
+                double maxDistance = 64.0;
+                Vec3 eyePos = player.getEyePosition(1.0f);
+                Vec3 viewVec = player.getViewVector(1.0f);
+                Vec3 endPos = eyePos.add(viewVec.scale(maxDistance));
+
+                AABB searchArea = player.getBoundingBox().expandTowards(viewVec.scale(maxDistance)).inflate(1.0);
+                EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(
+                        player,
+                        eyePos,
+                        endPos,
+                        searchArea,
+                        entity -> !entity.isSpectator() && entity.isAlive() && entity.isPickable(),
+                        maxDistance * maxDistance
+                );
+
+                if (entityHitResult != null) {
+                    seekingArrow.tuanzis_mod$setSeekingTargetEntity(entityHitResult.getEntity());
+                } else {
+                    // 方块射线检测
+                    BlockHitResult blockHitResult = level.clip(new net.minecraft.world.level.ClipContext(
+                            eyePos,
+                            endPos,
+                            net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                            net.minecraft.world.level.ClipContext.Fluid.NONE,
+                            player
+                    ));
+                    if (blockHitResult.getType() != HitResult.Type.MISS) {
+                        seekingArrow.tuanzis_mod$setSeekingTargetPos(blockHitResult.getLocation());
+                    } else {
+                        seekingArrow.tuanzis_mod$setSeekingTargetPos(endPos);
+                    }
                 }
             }
         }

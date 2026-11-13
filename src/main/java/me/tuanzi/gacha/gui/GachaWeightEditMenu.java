@@ -98,8 +98,8 @@ public class GachaWeightEditMenu extends ChestMenu {
             else if (slotIndex == 14) currentWeight = Math.min(10000, currentWeight + 1);
             else if (slotIndex == 15) currentWeight = Math.min(10000, currentWeight + 10);
             else if (slotIndex == 16) currentWeight = Math.min(10000, currentWeight + 100);
-            
-            // 功能按钮
+
+                // 功能按钮
             else if (slotIndex == 20) {
                 // 确认修改
                 if (parentMenu instanceof GachaImportMenu importMenu) {
@@ -111,7 +111,8 @@ public class GachaWeightEditMenu extends ChestMenu {
                             importMenu.setTempWeight(slotIdx, currentWeight);
                             // 将修改过临时权重的物品放回导入缓存中，保持状态
                             importMenu.getContainer().setItem(slotIdx, targetItem.getItem().copy());
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
                     }
                 } else {
                     targetItem.setWeight(currentWeight);

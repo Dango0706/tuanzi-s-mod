@@ -8,7 +8,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -58,8 +57,20 @@ public abstract class LaunchedItem {
         return (int) Math.max(10, Math.sqrt(Math.sqrt(target.distSqr(start))) * 4.0);
     }
 
+    public static LaunchedItem fromNBT(CompoundTag tag, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
+        LaunchedItem launched;
+        if (tag.contains("EntityId")) {
+            launched = new ForEntity();
+        } else {
+            launched = new ForBlockState();
+        }
+        launched.readNBT(tag, registries, holderGetter);
+        return launched;
+    }
+
     /**
      * 每 tick 更新飞行状态
+     *
      * @return true 若已到达目标并完成落地操作，可从飞行列表中移除
      */
     public boolean update(Level world) {
@@ -100,17 +111,6 @@ public abstract class LaunchedItem {
         } else {
             this.stack = ItemStack.EMPTY;
         }
-    }
-
-    public static LaunchedItem fromNBT(CompoundTag tag, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
-        LaunchedItem launched;
-        if (tag.contains("EntityId")) {
-            launched = new ForEntity();
-        } else {
-            launched = new ForBlockState();
-        }
-        launched.readNBT(tag, registries, holderGetter);
-        return launched;
     }
 
     public abstract void place(Level world);

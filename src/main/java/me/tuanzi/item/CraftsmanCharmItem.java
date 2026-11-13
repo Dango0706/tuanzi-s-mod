@@ -21,8 +21,8 @@ public class CraftsmanCharmItem extends Item {
         if (!level.isClientSide()) {
             me.tuanzi.util.ModLog.debug(player, null, "玩家右击使用工匠护符，手部: " + hand.name() + "，准备打开便携合成界面。");
             player.openMenu(new SimpleMenuProvider(
-                (containerId, playerInventory, p) -> new CraftsmanCharmMenu(containerId, playerInventory, hand),
-                Component.translatable("container.tuanzis_mod.craftsman_charm")
+                    (containerId, playerInventory, p) -> new CraftsmanCharmMenu(containerId, playerInventory, hand),
+                    Component.translatable("container.tuanzis_mod.craftsman_charm")
             ));
         }
         return InteractionResult.SUCCESS;

@@ -59,7 +59,7 @@ public class DormantRepairHelper {
                 stack.setDamageValue(stack.getDamageValue() - 1);
                 tag.remove(DORMANT_TIMER_KEY);
                 ModLog.debug(player, "【休眠修复】物品 %s 恢复 1 点耐久 (当前损耗: %d/%d, 等级: %d)",
-                    stack.getHoverName().getString(), stack.getDamageValue(), stack.getMaxDamage(), level);
+                        stack.getHoverName().getString(), stack.getDamageValue(), stack.getMaxDamage(), level);
             } else {
                 tag.putInt(DORMANT_TIMER_KEY, currentTimer);
             }

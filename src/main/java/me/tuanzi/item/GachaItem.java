@@ -1,5 +1,6 @@
 package me.tuanzi.item;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import me.tuanzi.gacha.GachaLogic;
 import me.tuanzi.gacha.GachaPool;
 import me.tuanzi.gacha.PoolManager;
@@ -15,7 +16,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,8 +24,6 @@ import net.minecraft.world.item.component.FireworkExplosion;
 import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-
 
 import java.util.List;
 
@@ -50,10 +48,10 @@ public class GachaItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        
+
         if (!level.isClientSide()) {
             ServerPlayer serverPlayer = (ServerPlayer) player;
-            
+
             // 1. 蹲下右键：打开可能出货的物品与实时保底概率展示只读 GUI
             if (player.isSecondaryUseActive()) {
                 GachaPool pool = PoolManager.getPool(poolId);
@@ -61,19 +59,19 @@ public class GachaItem extends Item {
                     player.sendSystemMessage(Component.literal("§c[!] 未找到指定的卡池: " + poolId));
                     return InteractionResult.SUCCESS;
                 }
-                
+
                 player.openMenu(new SimpleMenuProvider(
                         (id, playerInv, p) -> new GachaPreviewMenu(id, playerInv, pool),
                         Component.literal("卡池预览 - " + pool.getPoolName())
                 ));
-            } 
+            }
             // 2. 常规右键：开启抽卡
             else {
                 // 扣除抽卡道具
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }
-                
+
                 // 执行核心抽卡算法
                 List<GachaLogic.RollResult> results = GachaLogic.performRoll(serverPlayer, poolId, isTenFold);
                 if (results.isEmpty()) {
@@ -117,17 +115,17 @@ public class GachaItem extends Item {
 
                         // 动态生成对应品质爆炸色彩的烟花火箭
                         ItemStack customFwStack = createFireworkStack(res.getRarity());
-                        
+
                         net.minecraft.world.entity.projectile.FireworkRocketEntity firework = new net.minecraft.world.entity.projectile.FireworkRocketEntity(
                                 serverLevel,
                                 player,
                                 rx, ry, rz,
                                 customFwStack
                         );
-                        
+
                         // 将抽卡大奖绑定到烟花实体，在其空中真正炸开的瞬间生出专属发光的防火掉落物
                         ((me.tuanzi.util.IGachaFirework) firework).tuanzi$setGachaData(prize, player.getUUID(), res.getRarity());
-                        
+
                         serverLevel.addFreshEntity(firework);
                     }
                 } else {
@@ -143,18 +141,18 @@ public class GachaItem extends Item {
 
                         // 动态生成对应品质爆炸色彩的烟花火箭
                         ItemStack customFwStack = createFireworkStack(res.getRarity());
-                        
+
                         net.minecraft.world.entity.projectile.FireworkRocketEntity firework = new net.minecraft.world.entity.projectile.FireworkRocketEntity(
                                 serverLevel,
                                 player,
                                 fx, fy, fz,
                                 customFwStack
                         );
-                        
-                        
+
+
                         // 将抽卡大奖绑定到烟花实体，在其空中真正炸开的瞬间生出专属发光的防火掉落物
                         ((me.tuanzi.util.IGachaFirework) firework).tuanzi$setGachaData(prize, player.getUUID(), res.getRarity());
-                        
+
                         serverLevel.addFreshEntity(firework);
                     }
                 }
@@ -198,13 +196,13 @@ public class GachaItem extends Item {
 
     private ItemStack createFireworkStack(String rarity) {
         ItemStack fwStack = new ItemStack(Items.FIREWORK_ROCKET);
-        
+
         // 1. 根据品质决定形状和颜色
         FireworkExplosion.Shape shape = FireworkExplosion.Shape.SMALL_BALL;
         int color = 0xFFFFFF; // 默认白色
         boolean hasTrail = false;
         boolean hasTwinkle = false;
-        
+
         switch (rarity.toLowerCase()) {
             case "legendary" -> {
                 shape = FireworkExplosion.Shape.STAR; // 传说用星形！
@@ -232,7 +230,7 @@ public class GachaItem extends Item {
                 color = 0xF0F0F0; // 普通白色
             }
         }
-        
+
         // 2. 构造爆炸数据 (使用绝对安全的 IntArrayList)
         IntArrayList colorList = new IntArrayList(new int[]{color});
         FireworkExplosion explosion = new FireworkExplosion(
@@ -242,11 +240,11 @@ public class GachaItem extends Item {
                 hasTrail,
                 hasTwinkle
         );
-        
+
         // 3. 设置到 Fireworks 组件
         Fireworks fireworks = new Fireworks(1, List.of(explosion));
         fwStack.set(DataComponents.FIREWORKS, fireworks);
-        
+
         return fwStack;
     }
 }

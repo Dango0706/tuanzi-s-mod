@@ -1,10 +1,6 @@
 package me.tuanzi.gacha.gui;
 
-import me.tuanzi.gacha.GachaHistoryEntry;
-import me.tuanzi.gacha.PlayerGachaState;
-import me.tuanzi.gacha.PlayerGachaManager;
-import me.tuanzi.gacha.GachaPool;
-import me.tuanzi.gacha.PoolManager;
+import me.tuanzi.gacha.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GachaHistoryMenu extends ChestMenu {
+    private static final java.util.Map<String, net.minecraft.world.item.Item> ITEM_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
     private final ServerPlayer player;
     private final PlayerGachaState state;
     private final String targetPoolId;
@@ -32,7 +29,7 @@ public class GachaHistoryMenu extends ChestMenu {
         super(MenuType.GENERIC_9x6, containerId, playerInventory, new SimpleContainer(54), 6);
         this.player = (ServerPlayer) playerInventory.player;
         this.state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
-        
+
         // 判定手持物品以确定展示对应卡池的历史记录
         String detectedPoolId = "national_day"; // 默认展示最新国庆限定池
         net.minecraft.world.item.ItemStack mainHand = player.getMainHandItem();
@@ -43,7 +40,7 @@ public class GachaHistoryMenu extends ChestMenu {
             detectedPoolId = handPool;
         }
         this.targetPoolId = detectedPoolId;
-        
+
         refreshSlots();
     }
 
@@ -52,7 +49,7 @@ public class GachaHistoryMenu extends ChestMenu {
         this.player = (ServerPlayer) playerInventory.player;
         this.state = state;
         this.targetPoolId = targetPoolId;
-        
+
         refreshSlots();
     }
 
@@ -183,13 +180,11 @@ public class GachaHistoryMenu extends ChestMenu {
         this.broadcastFullState();
     }
 
-    private static final java.util.Map<String, net.minecraft.world.item.Item> ITEM_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
-
     private net.minecraft.world.item.Item findItemByName(String rawName) {
         if (rawName == null || rawName.trim().isEmpty()) {
             return null;
         }
-        
+
         // 1. 净化名字：去除颜色格式代码（如 §a, §b）
         String cleanName = rawName.replaceAll("§[0-9a-fk-orxX]", "").trim();
         if (cleanName.isEmpty()) {
@@ -203,7 +198,7 @@ public class GachaHistoryMenu extends ChestMenu {
 
         // 3. 遍历注册表精确匹配
         net.minecraft.world.item.Item matched = null;
-        
+
         // 先精确比对去除样式代码后的 HoverName
         for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
             ItemStack tempStack = new ItemStack(item);
@@ -313,7 +308,7 @@ public class GachaHistoryMenu extends ChestMenu {
                 "§7抽取时间: §7" + entry.getTimestamp(),
                 "§7===================="
         );
-        
+
         List<Component> compLore = new ArrayList<>();
         for (String s : lore) {
             compLore.add(Component.literal(s));

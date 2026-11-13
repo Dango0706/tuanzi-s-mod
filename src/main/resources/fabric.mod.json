@@ -1,51 +1,50 @@
 {
-	"schemaVersion": 1,
-	"id": "tuanzis_mod",
-	"version": "${version}",
-	"name": "tuanzi's_mod",
-	"description": "一个使用AI制作的我的世界模组,用于丰富我的服务器的内容.",
-	"authors": [
-		"Tuanzi"
-	],
-	"contact": {
-		"homepage": "https://modrinth.com/mod/tuanzismod",
-		"sources": "https://github.com/Dango0706/tuanzi-s-mod"
-	},
-	"license": "MIT",
-	"icon": "assets/tuanzis_mod/icon.png",
-
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"me.tuanzi.Tuanzis_mod"
-		],
-		"client": [
-			"me.tuanzi.client.TuanzisModClient"
-		],
-		"fabric-datagen": [
-			"me.tuanzi.Tuanzis_modDataGenerator"
-		],
-		"jei_mod_plugin": [
-			"me.tuanzi.jei.TuanzisJeiPlugin"
-		],
-		"modmenu": [
-			"me.tuanzi.integration.ModMenuIntegration"
-		]
-	},
-	"mixins": [
-		"tuanzis_mod.mixins.json",
-		{
-			"config": "tuanzis_mod.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.18.4",
-		"minecraft": "26.3",
-		"java": ">=25",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"jei": "*"
-	}
+  "schemaVersion": 1,
+  "id": "tuanzis_mod",
+  "version": "${version}",
+  "name": "tuanzi's_mod",
+  "description": "一个使用AI制作的我的世界模组,用于丰富我的服务器的内容.",
+  "authors": [
+    "Tuanzi"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/tuanzismod",
+    "sources": "https://github.com/Dango0706/tuanzi-s-mod"
+  },
+  "license": "MIT",
+  "icon": "assets/tuanzis_mod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "me.tuanzi.Tuanzis_mod"
+    ],
+    "client": [
+      "me.tuanzi.client.TuanzisModClient"
+    ],
+    "fabric-datagen": [
+      "me.tuanzi.Tuanzis_modDataGenerator"
+    ],
+    "jei_mod_plugin": [
+      "me.tuanzi.jei.TuanzisJeiPlugin"
+    ],
+    "modmenu": [
+      "me.tuanzi.integration.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "tuanzis_mod.mixins.json",
+    {
+      "config": "tuanzis_mod.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "jei": "*"
+  }
 }

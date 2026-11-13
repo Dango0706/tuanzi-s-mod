@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class BloodRageDamageMixin {
 
     @ModifyVariable(
-        method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
-        at = @At("HEAD"),
-        argsOnly = true
+            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            at = @At("HEAD"),
+            argsOnly = true
     )
     private float tuanzis_mod$modifyHurtAmount(float amount, ServerLevel level, DamageSource source) {
         LivingEntity target = (LivingEntity) (Object) this;

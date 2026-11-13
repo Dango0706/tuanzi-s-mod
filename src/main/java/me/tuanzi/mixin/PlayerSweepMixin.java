@@ -11,9 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public class PlayerSweepMixin {
     @Inject(
-        method = "isSweepAttack(ZZZ)Z",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "isSweepAttack(ZZZ)Z",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$disableBeeStingEchoSweep(boolean fullStrengthAttack, boolean criticalAttack, boolean knockbackAttack, CallbackInfoReturnable<Boolean> cir) {
         Player player = (Player) (Object) this;

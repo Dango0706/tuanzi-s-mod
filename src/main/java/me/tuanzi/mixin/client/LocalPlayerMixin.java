@@ -4,7 +4,6 @@ import me.tuanzi.util.ModLog;
 import me.tuanzi.util.RangerReloadHelper;
 import me.tuanzi.util.RangerReloadTracker;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

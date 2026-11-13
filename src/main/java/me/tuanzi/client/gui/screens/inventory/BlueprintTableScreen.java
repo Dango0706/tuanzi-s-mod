@@ -39,15 +39,13 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
     private static final int LIST_BOTTOM_OFFSET = 158;
     private static final int LIST_ROW_HEIGHT = 12;
     private static final int VISIBLE_ITEMS = 10;
-
+    // blueprints 文件夹文件浏览
+    private final List<String> fileList = new ArrayList<>();
+    private final List<String> filteredList = new ArrayList<>();
     private Button importButton;
     private Button exportButton;
     private Button previewButton;
     private Button refreshButton;
-
-    // blueprints 文件夹文件浏览
-    private final List<String> fileList = new ArrayList<>();
-    private final List<String> filteredList = new ArrayList<>();
     private String selectedFile = null;
     private int listOffset = 0;
     private EditBox searchBox;
@@ -366,9 +364,9 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
 
         // 屏蔽 dispenser 九宫格内非活动槽
         int[][] disabledSlots = {
-            {62, 17}, {80, 17}, {98, 17},
-            {80, 35},
-            {62, 53}, {80, 53}, {98, 53}
+                {62, 17}, {80, 17}, {98, 17},
+                {80, 35},
+                {62, 53}, {80, 53}, {98, 53}
         };
         for (int[] ds : disabledSlots) {
             graphics.fill(x + ds[0] - 1, y + ds[1] - 1, x + ds[0] + 17, y + ds[1] + 17, 0xAA2E2E2E);

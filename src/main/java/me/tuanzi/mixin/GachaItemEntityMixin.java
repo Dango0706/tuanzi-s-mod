@@ -1,17 +1,19 @@
 package me.tuanzi.mixin;
 
+import me.tuanzi.util.ModLog;
 import net.minecraft.world.entity.item.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import java.util.UUID;
-import me.tuanzi.util.ModLog;
 
 @Mixin(ItemEntity.class)
 public abstract class GachaItemEntityMixin {
-    @Shadow public abstract void setTarget(UUID uuid);
+    @Shadow
+    public abstract void setTarget(UUID uuid);
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tuanzis_mod$onGachaItemTick(CallbackInfo ci) {

@@ -16,8 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public class MinecraftMixin {
 
-    @Shadow public HitResult hitResult;
-    @Shadow private int missTime;
+    @Shadow
+    public HitResult hitResult;
+    @Shadow
+    private int missTime;
 
     @Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$onStartAttack(CallbackInfoReturnable<Boolean> cir) {
@@ -32,7 +34,7 @@ public class MinecraftMixin {
                 if (mc.player.isSecondaryUseActive()) { // Shift + 左键
                     // 向服务器发送网络包切换模式
                     ClientPlayNetworking.send(
-                        new me.tuanzi.network.WorldSculptorsPenModePacket()
+                            new me.tuanzi.network.WorldSculptorsPenModePacket()
                     );
                     cir.setReturnValue(true); // 拦截并返回 true
                     return;

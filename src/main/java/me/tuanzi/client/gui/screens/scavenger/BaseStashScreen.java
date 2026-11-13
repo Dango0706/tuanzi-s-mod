@@ -20,9 +20,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.player.Inventory;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,15 +38,13 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
     private static final int SCREEN_HEIGHT = 224;
     private static final int VISIBLE_ROWS = 8;
     private static final int STASH_COLUMNS = 9;
-
-    private EditBox filterBox;
-    private int scrollRowOffset = 0;
-    private boolean isScrolling = false;
-
     // 拖拽与手持交互控制器
     private final ScavengerDragController dragController = new ScavengerDragController();
     // 战术黑匣规格切换浮层
     private final SafeboxSelectorOverlay safeboxOverlay = new SafeboxSelectorOverlay();
+    private EditBox filterBox;
+    private int scrollRowOffset = 0;
+    private boolean isScrolling = false;
 
     public BaseStashScreen(BaseStashMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -116,13 +113,20 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
         renderSlotBox(graphics, x + 28, y + 56);
 
         // 槽位占位标识
-        if (this.menu.slots.get(0).getItem().isEmpty()) graphics.text(this.font, "⛑", x + 14, y + 24, 0x808899A6, false);
-        if (this.menu.slots.get(1).getItem().isEmpty()) graphics.text(this.font, "🦺", x + 14, y + 42, 0x808899A6, false);
-        if (this.menu.slots.get(2).getItem().isEmpty()) graphics.text(this.font, "👖", x + 14, y + 60, 0x808899A6, false);
-        if (this.menu.slots.get(3).getItem().isEmpty()) graphics.text(this.font, "👢", x + 14, y + 78, 0x808899A6, false);
-        if (this.menu.slots.get(4).getItem().isEmpty()) graphics.text(this.font, "🛡", x + 32, y + 60, 0x808899A6, false);
-        if (this.menu.slots.get(5).getItem().isEmpty()) graphics.text(this.font, "🎒", x + 32, y + 24, 0x808899A6, false);
-        if (this.menu.slots.get(6).getItem().isEmpty()) graphics.text(this.font, "🔒", x + 32, y + 42, 0x808899A6, false);
+        if (this.menu.slots.get(0).getItem().isEmpty())
+            graphics.text(this.font, "⛑", x + 14, y + 24, 0x808899A6, false);
+        if (this.menu.slots.get(1).getItem().isEmpty())
+            graphics.text(this.font, "🦺", x + 14, y + 42, 0x808899A6, false);
+        if (this.menu.slots.get(2).getItem().isEmpty())
+            graphics.text(this.font, "👖", x + 14, y + 60, 0x808899A6, false);
+        if (this.menu.slots.get(3).getItem().isEmpty())
+            graphics.text(this.font, "👢", x + 14, y + 78, 0x808899A6, false);
+        if (this.menu.slots.get(4).getItem().isEmpty())
+            graphics.text(this.font, "🛡", x + 32, y + 60, 0x808899A6, false);
+        if (this.menu.slots.get(5).getItem().isEmpty())
+            graphics.text(this.font, "🎒", x + 32, y + 24, 0x808899A6, false);
+        if (this.menu.slots.get(6).getItem().isEmpty())
+            graphics.text(this.font, "🔒", x + 32, y + 42, 0x808899A6, false);
 
         // 随身背包展开网格 (放置在装备区右侧 x+50, y+20)
         int bpCols = ScavengerClientState.getBackpackColumns();

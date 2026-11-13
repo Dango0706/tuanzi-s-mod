@@ -20,138 +20,138 @@ public class CorridorCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-            Commands.literal("corridor")
-                .then(Commands.literal("enter")
-                    // 普通玩家自用进入
-                    .executes(ctx -> enter(ctx, Collections.singleton(ctx.getSource().getPlayerOrException())))
-                    // 管理员指定目标玩家进入
-                    .then(Commands.argument("targets", EntityArgument.players())
-                        .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
-                        .executes(ctx -> enter(ctx, EntityArgument.getPlayers(ctx, "targets")))
-                    )
-                )
-                .then(Commands.literal("leave")
-                    // 普通玩家自用离开
-                    .executes(ctx -> leave(ctx, Collections.singleton(ctx.getSource().getPlayerOrException())))
-                    // 管理员指定目标玩家离开
-                    .then(Commands.argument("targets", EntityArgument.players())
-                        .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
-                        .executes(ctx -> leave(ctx, EntityArgument.getPlayers(ctx, "targets")))
-                    )
-                )
-                .then(Commands.literal("team")
-                    .executes(ctx -> {
-                        ServerPlayer player = ctx.getSource().getPlayerOrException();
-                        ScavengerTeamManager.showTeamInfo(player);
-                        return 1;
-                    })
-                    .then(Commands.literal("info")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            ScavengerTeamManager.showTeamInfo(player);
-                            return 1;
-                        })
-                    )
-                    .then(Commands.literal("create")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            return ScavengerTeamManager.createTeam(player) ? 1 : 0;
-                        })
-                    )
-                    .then(Commands.literal("invite")
-                        .then(Commands.argument("target", EntityArgument.player())
-                            .executes(ctx -> {
-                                ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                ServerPlayer target = EntityArgument.getPlayer(ctx, "target");
-                                return ScavengerTeamManager.invitePlayer(player, target) ? 1 : 0;
-                            })
+                Commands.literal("corridor")
+                        .then(Commands.literal("enter")
+                                // 普通玩家自用进入
+                                .executes(ctx -> enter(ctx, Collections.singleton(ctx.getSource().getPlayerOrException())))
+                                // 管理员指定目标玩家进入
+                                .then(Commands.argument("targets", EntityArgument.players())
+                                        .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
+                                        .executes(ctx -> enter(ctx, EntityArgument.getPlayers(ctx, "targets")))
+                                )
                         )
-                    )
-                    .then(Commands.literal("accept")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            return ScavengerTeamManager.acceptInvite(player) ? 1 : 0;
-                        })
-                    )
-                    .then(Commands.literal("deny")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            return ScavengerTeamManager.denyInvite(player) ? 1 : 0;
-                        })
-                    )
-                    .then(Commands.literal("leave")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            return ScavengerTeamManager.leaveTeam(player) ? 1 : 0;
-                        })
-                    )
-                    .then(Commands.literal("kick")
-                        .then(Commands.argument("target", EntityArgument.player())
-                            .executes(ctx -> {
-                                ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                ServerPlayer target = EntityArgument.getPlayer(ctx, "target");
-                                return ScavengerTeamManager.kickMember(player, target) ? 1 : 0;
-                            })
+                        .then(Commands.literal("leave")
+                                // 普通玩家自用离开
+                                .executes(ctx -> leave(ctx, Collections.singleton(ctx.getSource().getPlayerOrException())))
+                                // 管理员指定目标玩家离开
+                                .then(Commands.argument("targets", EntityArgument.players())
+                                        .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
+                                        .executes(ctx -> leave(ctx, EntityArgument.getPlayers(ctx, "targets")))
+                                )
                         )
-                    )
-                    .then(Commands.literal("disband")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            return ScavengerTeamManager.disbandTeam(player) ? 1 : 0;
-                        })
-                    )
-                    .then(Commands.literal("color")
-                        .then(Commands.argument("color", net.minecraft.commands.arguments.TeamColorArgument.teamColor())
-                            .executes(ctx -> {
-                                ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                net.minecraft.world.scores.TeamColor color = net.minecraft.commands.arguments.TeamColorArgument.getTeamColor(ctx, "color");
-                                return ScavengerTeamManager.setTeamColor(player, color) ? 1 : 0;
-                            })
-                        )
-                    )
-                    .then(Commands.literal("config")
-                        .executes(ctx -> {
-                            ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            ScavengerTeamManager.showTeamConfig(player);
-                            return 1;
-                        })
-                        .then(Commands.literal("wind_charge")
-                            .then(Commands.argument("enabled", BoolArgumentType.bool())
+                        .then(Commands.literal("team")
                                 .executes(ctx -> {
                                     ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                    boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
-                                    return ScavengerTeamManager.setWindChargeAffectsTeammates(player, enabled) ? 1 : 0;
+                                    ScavengerTeamManager.showTeamInfo(player);
+                                    return 1;
                                 })
-                            )
+                                .then(Commands.literal("info")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            ScavengerTeamManager.showTeamInfo(player);
+                                            return 1;
+                                        })
+                                )
+                                .then(Commands.literal("create")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            return ScavengerTeamManager.createTeam(player) ? 1 : 0;
+                                        })
+                                )
+                                .then(Commands.literal("invite")
+                                        .then(Commands.argument("target", EntityArgument.player())
+                                                .executes(ctx -> {
+                                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "target");
+                                                    return ScavengerTeamManager.invitePlayer(player, target) ? 1 : 0;
+                                                })
+                                        )
+                                )
+                                .then(Commands.literal("accept")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            return ScavengerTeamManager.acceptInvite(player) ? 1 : 0;
+                                        })
+                                )
+                                .then(Commands.literal("deny")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            return ScavengerTeamManager.denyInvite(player) ? 1 : 0;
+                                        })
+                                )
+                                .then(Commands.literal("leave")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            return ScavengerTeamManager.leaveTeam(player) ? 1 : 0;
+                                        })
+                                )
+                                .then(Commands.literal("kick")
+                                        .then(Commands.argument("target", EntityArgument.player())
+                                                .executes(ctx -> {
+                                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                    ServerPlayer target = EntityArgument.getPlayer(ctx, "target");
+                                                    return ScavengerTeamManager.kickMember(player, target) ? 1 : 0;
+                                                })
+                                        )
+                                )
+                                .then(Commands.literal("disband")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            return ScavengerTeamManager.disbandTeam(player) ? 1 : 0;
+                                        })
+                                )
+                                .then(Commands.literal("color")
+                                        .then(Commands.argument("color", net.minecraft.commands.arguments.TeamColorArgument.teamColor())
+                                                .executes(ctx -> {
+                                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                    net.minecraft.world.scores.TeamColor color = net.minecraft.commands.arguments.TeamColorArgument.getTeamColor(ctx, "color");
+                                                    return ScavengerTeamManager.setTeamColor(player, color) ? 1 : 0;
+                                                })
+                                        )
+                                )
+                                .then(Commands.literal("config")
+                                        .executes(ctx -> {
+                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                            ScavengerTeamManager.showTeamConfig(player);
+                                            return 1;
+                                        })
+                                        .then(Commands.literal("wind_charge")
+                                                .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                        .executes(ctx -> {
+                                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                            boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
+                                                            return ScavengerTeamManager.setWindChargeAffectsTeammates(player, enabled) ? 1 : 0;
+                                                        })
+                                                )
+                                        )
+                                        .then(Commands.literal("fishing_rod")
+                                                .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                        .executes(ctx -> {
+                                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                            boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
+                                                            return ScavengerTeamManager.setFishingHookAffectsTeammates(player, enabled) ? 1 : 0;
+                                                        })
+                                                )
+                                        )
+                                        .then(Commands.literal("friendly_physics")
+                                                .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                        .executes(ctx -> {
+                                                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                                            boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
+                                                            return ScavengerTeamManager.setFriendlyPhysics(player, enabled) ? 1 : 0;
+                                                        })
+                                                )
+                                        )
+                                )
                         )
-                        .then(Commands.literal("fishing_rod")
-                            .then(Commands.argument("enabled", BoolArgumentType.bool())
-                                .executes(ctx -> {
-                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                    boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
-                                    return ScavengerTeamManager.setFishingHookAffectsTeammates(player, enabled) ? 1 : 0;
-                                })
-                            )
+                        .then(Commands.literal("loot")
+                                .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
+                                .then(Commands.literal("reset")
+                                        .then(Commands.argument("pos", net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos())
+                                                .executes(ctx -> resetLootAt(ctx, net.minecraft.commands.arguments.coordinates.BlockPosArgument.getLoadedBlockPos(ctx, "pos")))
+                                        )
+                                )
                         )
-                        .then(Commands.literal("friendly_physics")
-                            .then(Commands.argument("enabled", BoolArgumentType.bool())
-                                .executes(ctx -> {
-                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                    boolean enabled = BoolArgumentType.getBool(ctx, "enabled");
-                                    return ScavengerTeamManager.setFriendlyPhysics(player, enabled) ? 1 : 0;
-                                })
-                            )
-                        )
-                    )
-                )
-                .then(Commands.literal("loot")
-                    .requires(source -> source.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.GAMEMASTERS)))
-                    .then(Commands.literal("reset")
-                        .then(Commands.argument("pos", net.minecraft.commands.arguments.coordinates.BlockPosArgument.blockPos())
-                            .executes(ctx -> resetLootAt(ctx, net.minecraft.commands.arguments.coordinates.BlockPosArgument.getLoadedBlockPos(ctx, "pos")))
-                        )
-                    )
-                )
         );
     }
 

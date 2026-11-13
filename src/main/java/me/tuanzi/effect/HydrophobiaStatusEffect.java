@@ -16,8 +16,8 @@ public class HydrophobiaStatusEffect extends MobEffect {
     public boolean applyEffectTick(final ServerLevel level, final LivingEntity mob, final int amplification) {
         if (mob.isInWater()) {
             var typeHolder = mob.registryAccess()
-                .lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                .getOrThrow(DamageTypes.GENERIC);
+                    .lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                    .getOrThrow(DamageTypes.GENERIC);
             HydrophobiaDamageSource src = new HydrophobiaDamageSource(typeHolder);
 
             // 绝对扣减生命值，以绝对无视护甲与任何效果减免

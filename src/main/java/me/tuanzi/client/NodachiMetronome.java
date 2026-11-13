@@ -3,7 +3,6 @@ package me.tuanzi.client;
 import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.item.NodachiItem;
 import me.tuanzi.util.NodachiPlayerTracker;
-import me.tuanzi.util.TideCleaverPlayerTracker;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -19,13 +18,10 @@ import java.util.Random;
 
 public class NodachiMetronome {
     private static final Random RANDOM = new Random();
-
-    // 记录最大脱力刻数以实现动态倒计时条渲染
-    private static int maxExhaustionObserved = 10;
-
     // 底轨半宽（像素），总跨度 [-14, 14]，共 28 像素宽
     private static final int RADIUS_X = 14;
-
+    // 记录最大脱力刻数以实现动态倒计时条渲染
+    private static int maxExhaustionObserved = 10;
     // 当前摆动周期的起始毫秒时间戳
     private static long cycleStartTimeMs = System.currentTimeMillis();
 

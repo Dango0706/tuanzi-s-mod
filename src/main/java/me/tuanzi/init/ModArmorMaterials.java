@@ -14,23 +14,23 @@ import net.minecraft.world.item.equipment.EquipmentAssets;
 
 public class ModArmorMaterials {
     public static final TagKey<Item> REPAIRS_TIDAL_WEAVE_BOOTS = TagKey.create(
-        Registries.ITEM, 
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "repairs_tidal_weave_boots")
+            Registries.ITEM,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "repairs_tidal_weave_boots")
     );
 
     public static final ResourceKey<EquipmentAsset> TIDAL_WEAVE_ASSET = ResourceKey.create(
-        EquipmentAssets.ROOT_ID,
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "tidal_weave")
+            EquipmentAssets.ROOT_ID,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "tidal_weave")
     );
 
     public static final ArmorMaterial TIDAL_WEAVE = new ArmorMaterial(
-        33, // durability multiplier. boots durability = 13 * 33 = 429
-        ArmorMaterials.makeDefense(3, 6, 8, 3, 11), // same defense as diamond
-        10, // enchantment value (same as diamond)
-        SoundEvents.ARMOR_EQUIP_DIAMOND, // equip sound
-        2.0F, // toughness (same as diamond)
-        0.0F, // knockback resistance (same as diamond)
-        REPAIRS_TIDAL_WEAVE_BOOTS, // repairs tag
-        TIDAL_WEAVE_ASSET // asset id
+            33, // durability multiplier. boots durability = 13 * 33 = 429
+            ArmorMaterials.makeDefense(3, 6, 8, 3, 11), // same defense as diamond
+            10, // enchantment value (same as diamond)
+            SoundEvents.ARMOR_EQUIP_DIAMOND, // equip sound
+            2.0F, // toughness (same as diamond)
+            0.0F, // knockback resistance (same as diamond)
+            REPAIRS_TIDAL_WEAVE_BOOTS, // repairs tag
+            TIDAL_WEAVE_ASSET // asset id
     );
 }

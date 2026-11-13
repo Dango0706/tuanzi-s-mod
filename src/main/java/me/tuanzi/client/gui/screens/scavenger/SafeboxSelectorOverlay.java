@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,20 +21,17 @@ import java.util.List;
  */
 public class SafeboxSelectorOverlay {
 
-    public record SafeboxTier(int tierIndex, String name, String spec, Item item, int colorRgb) {}
-
     public static final List<SafeboxTier> TIERS = List.of(
             new SafeboxTier(0, "原型黑匣保险舱", "1×2 规格", ModItems.PROTO_LOCKBOX_1X2, 0xFFAAAAAA),
             new SafeboxTier(1, "强化黑匣保险舱", "2×2 规格", ModItems.REINFORCED_SAFEBOX_2X2, 0xFF55FF55),
             new SafeboxTier(2, "保密黑匣保险舱", "2×3 规格", ModItems.CIPHER_SAFEBOX_2X3, 0xFF55FFFF),
             new SafeboxTier(3, "宙斯盾核心保险舱", "3×3 规格", ModItems.AEGIS_CORE_VAULT_3X3, 0xFFFF5555)
     );
-
+    private final int width = 190;
+    private final int height = 112;
     private boolean open = false;
     private int x;
     private int y;
-    private final int width = 190;
-    private final int height = 112;
 
     public boolean isOpen() {
         return this.open;
@@ -169,5 +165,8 @@ public class SafeboxSelectorOverlay {
             if (view.stack().is(targetItem)) return true;
         }
         return false;
+    }
+
+    public record SafeboxTier(int tierIndex, String name, String spec, Item item, int colorRgb) {
     }
 }

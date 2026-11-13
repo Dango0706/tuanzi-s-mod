@@ -9,7 +9,9 @@
   "weight_kg": 0.45,
   "base_value": 2400,
   "base_search_seconds": 1.6,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "sound_profile": "PLASTIC_SNAP",
   "lore_translation_key": "item.tuanzis_mod.stasis_gel_injector.lore"
 }

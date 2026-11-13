@@ -14,7 +14,7 @@ public abstract class InfinityMendingMixin {
     @Inject(method = "areCompatible", at = @At("HEAD"), cancellable = true)
     private static void tuanzis_mod$allowInfinityMending(Holder<Enchantment> first, Holder<Enchantment> second, CallbackInfoReturnable<Boolean> cir) {
         if ((first.is(Enchantments.INFINITY) && second.is(Enchantments.MENDING)) ||
-            (first.is(Enchantments.MENDING) && second.is(Enchantments.INFINITY))) {
+                (first.is(Enchantments.MENDING) && second.is(Enchantments.INFINITY))) {
             cir.setReturnValue(true);
         }
     }

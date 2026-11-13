@@ -22,13 +22,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
@@ -41,28 +35,10 @@ public final class ScavengerDataRegistry {
     public static final FileToIdConverter CONTAINER_CONVERTER = FileToIdConverter.json("scavenger_containers");
     public static final Identifier PROGRESSION_RESOURCE_ID =
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_system/progression.json");
-
-    public record RegistrySnapshot(
-            Map<Identifier, ScavengerItemMeta> items,
-            Map<Identifier, ScavengerContainerDef> containers,
-            ScavengerProgressionConfig progression
-    ) {
-        public RegistrySnapshot {
-            items = items == null ? Map.of() : Map.copyOf(items);
-            containers = containers == null ? Map.of() : Map.copyOf(containers);
-            progression = progression == null ? ScavengerProgressionConfig.createDefault() : progression;
-        }
-
-        public static RegistrySnapshot empty() {
-            return new RegistrySnapshot(Map.of(), Map.of(), ScavengerProgressionConfig.createDefault());
-        }
-    }
-
     private static final AtomicReference<RegistrySnapshot> SERVER_SNAPSHOT =
             new AtomicReference<>(RegistrySnapshot.empty());
     private static final AtomicReference<RegistrySnapshot> CLIENT_SNAPSHOT =
             new AtomicReference<>(null);
-
     private ScavengerDataRegistry() {
     }
 
@@ -383,5 +359,21 @@ public final class ScavengerDataRegistry {
                 probabilityPercent
         ));
         return Optional.of(chosen);
+    }
+
+    public record RegistrySnapshot(
+            Map<Identifier, ScavengerItemMeta> items,
+            Map<Identifier, ScavengerContainerDef> containers,
+            ScavengerProgressionConfig progression
+    ) {
+        public RegistrySnapshot {
+            items = items == null ? Map.of() : Map.copyOf(items);
+            containers = containers == null ? Map.of() : Map.copyOf(containers);
+            progression = progression == null ? ScavengerProgressionConfig.createDefault() : progression;
+        }
+
+        public static RegistrySnapshot empty() {
+            return new RegistrySnapshot(Map.of(), Map.of(), ScavengerProgressionConfig.createDefault());
+        }
     }
 }

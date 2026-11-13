@@ -22,7 +22,7 @@ public class EchoBreakerItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        
+
         // 仅在主手使用，且副手必须为空时才可以使用
         if (hand != InteractionHand.MAIN_HAND || !player.getOffhandItem().isEmpty()) {
             return InteractionResult.PASS;

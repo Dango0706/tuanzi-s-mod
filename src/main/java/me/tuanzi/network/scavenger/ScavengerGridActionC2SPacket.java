@@ -3,7 +3,6 @@ package me.tuanzi.network.scavenger;
 import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.world.scavenger.loot.meta.ScavengerSortOrder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -32,27 +31,6 @@ public record ScavengerGridActionC2SPacket(
 
     public static final Type<ScavengerGridActionC2SPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_grid_action_c2s"));
-
-    public enum ActionType {
-        MOVE_OR_ROTATE,
-        QUICK_TRANSFER,
-        AUTO_SORT,
-        EQUIP_BACKPACK,
-        UNEQUIP_BACKPACK,
-        EQUIP_SAFEBOX,
-        UNEQUIP_SAFEBOX,
-        EQUIP_FROM_GRID,
-        SWITCH_SAFEBOX
-    }
-
-    public enum GridSource {
-        CONTAINER,
-        BACKPACK,
-        SAFEBOX,
-        BASE_STASH,
-        HOTBAR
-    }
-
     public static final StreamCodec<RegistryFriendlyByteBuf, ScavengerGridActionC2SPacket> CODEC = StreamCodec.of(
             (buf, pkt) -> {
                 buf.writeEnum(pkt.actionType());
@@ -80,5 +58,25 @@ public record ScavengerGridActionC2SPacket(
     @Override
     public Type<? extends CustomPacketPayload> type() {
         return TYPE;
+    }
+
+    public enum ActionType {
+        MOVE_OR_ROTATE,
+        QUICK_TRANSFER,
+        AUTO_SORT,
+        EQUIP_BACKPACK,
+        UNEQUIP_BACKPACK,
+        EQUIP_SAFEBOX,
+        UNEQUIP_SAFEBOX,
+        EQUIP_FROM_GRID,
+        SWITCH_SAFEBOX
+    }
+
+    public enum GridSource {
+        CONTAINER,
+        BACKPACK,
+        SAFEBOX,
+        BASE_STASH,
+        HOTBAR
     }
 }

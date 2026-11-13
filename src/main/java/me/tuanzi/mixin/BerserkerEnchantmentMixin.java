@@ -25,7 +25,7 @@ public abstract class BerserkerEnchantmentMixin {
 
         var registry = entity.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         var berserkerEnch = registry.getOrThrow(ModEnchantments.BERSERKER);
-        
+
         int level = EnchantmentHelper.getItemEnchantmentLevel(berserkerEnch, chestStack);
         if (level > 0) {
             int originalArmor = cir.getReturnValue();
@@ -42,7 +42,7 @@ public abstract class BerserkerEnchantmentMixin {
                 // 计算扣减值：I级扣减35%，II级扣减30%
                 double reductionRate = level == 1 ? 0.35 : 0.30;
                 double reductionAmount = baseChestArmor * reductionRate;
-                
+
                 // 四舍五入，并做 clamp 以防过度扣减
                 int intReduction = (int) Math.round(reductionAmount);
                 int finalArmor = Math.max(0, originalArmor - intReduction);

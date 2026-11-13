@@ -7,19 +7,16 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import org.jspecify.annotations.Nullable;
 
-import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
-import java.util.List;
 
 public class StructureBlueprintItem extends Item {
 
@@ -142,7 +139,7 @@ public class StructureBlueprintItem extends Item {
                             net.minecraft.network.chat.Component entityName = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id))
                                     .map(net.minecraft.world.entity.EntityType::getDescription)
                                     .orElse(Component.literal(displayName));
-                            
+
                             net.minecraft.nbt.ListTag posList = entityNbt.getListOrEmpty("Pos");
                             if (posList.size() >= 3) {
                                 double rx = posList.getDoubleOr(0, 0.0);
@@ -154,7 +151,7 @@ public class StructureBlueprintItem extends Item {
                     }
                 }
                 if (tag.getBooleanOr("GhostPlaced", false)) {
-                    builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.ghost_active", 
+                    builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.ghost_active",
                             tag.getIntOr("GhostX", 0) + tag.getIntOr("OffsetX", 0),
                             tag.getIntOr("GhostY", 0) + tag.getIntOr("OffsetY", 0),
                             tag.getIntOr("GhostZ", 0) + tag.getIntOr("OffsetZ", 0)

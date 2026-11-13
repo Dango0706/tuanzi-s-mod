@@ -22,9 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlueprintCannonBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(
-        box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),    // 稳固底座
-        box(2.0, 4.0, 2.0, 14.0, 12.0, 14.0),  // 机械主体
-        box(4.0, 12.0, 4.0, 12.0, 16.0, 12.0)  // 大炮炮口与蓝图录入端
+            box(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),    // 稳固底座
+            box(2.0, 4.0, 2.0, 14.0, 12.0, 14.0),  // 机械主体
+            box(4.0, 12.0, 4.0, 12.0, 16.0, 12.0)  // 大炮炮口与蓝图录入端
     );
 
     public BlueprintCannonBlock(BlockBehaviour.Properties properties) {

@@ -16,13 +16,12 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class BeeStingEchoTintSource implements ItemTintSource {
-    private final boolean isNext;
-
     public static final MapCodec<BeeStingEchoTintSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-            Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
-        ).apply(i, BeeStingEchoTintSource::new)
+            i -> i.group(
+                    Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
+            ).apply(i, BeeStingEchoTintSource::new)
     );
+    private final boolean isNext;
 
     public BeeStingEchoTintSource(boolean isNext) {
         this.isNext = isNext;

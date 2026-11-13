@@ -9,7 +9,9 @@
   "weight_kg": 3.80,
   "base_value": 19500,
   "base_search_seconds": 3.0,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "sound_profile": "HEAVY_METAL",
   "lore_translation_key": "item.tuanzis_mod.hydraulic_servo_arm.lore"
 }

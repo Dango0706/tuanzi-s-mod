@@ -3,9 +3,7 @@ package me.tuanzi.block.entity;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.world.inventory.BlueprintTableMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
@@ -21,6 +19,26 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvider, net.minecraft.world.Container {
 
+    public final net.minecraft.world.inventory.ContainerData dataAccess = new net.minecraft.world.inventory.ContainerData() {
+        @Override
+        public int get(int index) {
+            return switch (index) {
+                case 0 -> worldPosition.getX();
+                case 1 -> worldPosition.getY();
+                case 2 -> worldPosition.getZ();
+                default -> 0;
+            };
+        }
+
+        @Override
+        public void set(int index, int value) {
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    };
     // Slot 0: 要导出的结构蓝图; Slot 1: 准备记录导入的空白蓝图
     private final NonNullList<ItemStack> items = NonNullList.withSize(2, ItemStack.EMPTY);
 
@@ -89,26 +107,6 @@ public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvid
     public Component getDisplayName() {
         return Component.translatable("container.tuanzis_mod.blueprint_table");
     }
-
-    public final net.minecraft.world.inventory.ContainerData dataAccess = new net.minecraft.world.inventory.ContainerData() {
-        @Override
-        public int get(int index) {
-            return switch (index) {
-                case 0 -> worldPosition.getX();
-                case 1 -> worldPosition.getY();
-                case 2 -> worldPosition.getZ();
-                default -> 0;
-            };
-        }
-
-        @Override
-        public void set(int index, int value) {}
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-    };
 
     @Nullable
     @Override

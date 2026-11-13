@@ -1,5 +1,6 @@
 package me.tuanzi.client.entity;
 
+import me.tuanzi.entity.DecoyEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.entity.ClientAvatarEntity;
@@ -10,8 +11,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.level.Level;
-import org.jspecify.annotations.Nullable;
-import me.tuanzi.entity.DecoyEntity;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -33,7 +32,7 @@ public class ClientDecoyEntity extends DecoyEntity implements ClientAvatarEntity
     public void tick() {
         super.tick();
         this.avatarState.tick(this.position(), this.getDeltaMovement());
-        
+
         if (this.skinLookup != null && this.skinLookup.isDone()) {
             try {
                 this.skinLookup.get().ifPresent(info -> this.skin = info.playerSkin());

@@ -7,19 +7,14 @@ import me.tuanzi.util.DamageCalculator;
 import me.tuanzi.util.ModLog;
 import me.tuanzi.util.NodachiPlayerTracker;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -33,19 +28,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemUseAnimation;
-import net.minecraft.world.item.ToolMaterial;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.AttackRange;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.Tool;
-import net.minecraft.world.item.component.Weapon;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -60,14 +47,6 @@ public class NodachiItem extends Item {
         this.baseAttackDamage = baseAttackDamage;
     }
 
-    public ToolMaterial getMaterial() {
-        return this.material;
-    }
-
-    public float getBaseAttackDamage() {
-        return this.baseAttackDamage;
-    }
-
     private static Properties applyNodachiProperties(Properties properties, ToolMaterial material, float baseAttackDamage) {
         // 先应用标准剑属性（包含蜘蛛网挖掘规则、耐久、修复物、附魔度、Weapon等）
         material.applySwordProperties(properties, baseAttackDamage - material.attackDamageBonus() - 1.0F, -2.7F);
@@ -77,22 +56,22 @@ public class NodachiItem extends Item {
 
         // 基础面板属性：攻击速度 1.3 (modifier = 1.3 - 4.0 = -2.7)，基础攻击距离加成 +0.6 (3.0 + 0.6 = 3.6)
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-            .add(
-                Attributes.ATTACK_DAMAGE,
-                new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, baseAttackDamage - 1.0, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.MAINHAND
-            )
-            .add(
-                Attributes.ATTACK_SPEED,
-                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.7, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.MAINHAND
-            )
-            .add(
-                Attributes.ENTITY_INTERACTION_RANGE,
-                new AttributeModifier(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "nodachi_reach"), 0.6, AttributeModifier.Operation.ADD_VALUE),
-                EquipmentSlotGroup.MAINHAND
-            )
-            .build();
+                .add(
+                        Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID, baseAttackDamage - 1.0, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
+                )
+                .add(
+                        Attributes.ATTACK_SPEED,
+                        new AttributeModifier(Item.BASE_ATTACK_SPEED_ID, -2.7, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
+                )
+                .add(
+                        Attributes.ENTITY_INTERACTION_RANGE,
+                        new AttributeModifier(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "nodachi_reach"), 0.6, AttributeModifier.Operation.ADD_VALUE),
+                        EquipmentSlotGroup.MAINHAND
+                )
+                .build();
 
         properties.attributes(modifiers);
         return properties;
@@ -208,9 +187,9 @@ public class NodachiItem extends Item {
 
         double maxAngleRad = Math.toRadians(halfAngleDeg);
         List<LivingEntity> nearbyEntities = serverLevel.getEntitiesOfClass(
-            LivingEntity.class,
-            player.getBoundingBox().inflate(radius, 1.5, radius),
-            e -> e.isAlive() && e != player && e != mainTarget && !player.isAlliedTo(e) && !(e instanceof ArmorStand stand && stand.isMarker())
+                LivingEntity.class,
+                player.getBoundingBox().inflate(radius, 1.5, radius),
+                e -> e.isAlive() && e != player && e != mainTarget && !player.isAlliedTo(e) && !(e instanceof ArmorStand stand && stand.isMarker())
         );
 
         int affectedCount = 0;
@@ -266,6 +245,100 @@ public class NodachiItem extends Item {
         }
     }
 
+    public static boolean hasFinalityEnchantment(Level level, ItemStack stack) {
+        var registry = level.registryAccess().lookup(Registries.ENCHANTMENT);
+        if (registry.isEmpty()) return false;
+        var ench = registry.get().get(ModEnchantments.FINALITY);
+        if (ench.isEmpty()) return false;
+        return EnchantmentHelper.getItemEnchantmentLevel(ench.get(), stack) > 0;
+    }
+
+    private static void performFinalitySpinAttack(Player player, ItemStack weapon, ServerLevel serverLevel, NodachiPlayerTracker tracker) {
+        float baseDmg = weapon.getItem() instanceof NodachiItem nodachi ? nodachi.getBaseAttackDamage() : 7.0f;
+        float rawDamage = baseDmg * 1.80f; // 180% 基础攻击力毁灭打击
+
+        DamageSource source = serverLevel.damageSources().playerAttack(player);
+
+        // 360° 全方位大回旋斩粒子特效 (双环粒子，展现大回旋气浪)
+        double px = player.getX();
+        double py = player.getY() + 0.5;
+        double pz = player.getZ();
+
+        for (int deg = 0; deg < 360; deg += 15) {
+            double rad = Math.toRadians(deg);
+            double cos = Math.cos(rad);
+            double sin = Math.sin(rad);
+
+            serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, px + cos * 2.2, py, pz + sin * 2.2, 1, 0, 0, 0, 0);
+            serverLevel.sendParticles(ParticleTypes.CRIT, px + cos * 3.5, py + 0.2, pz + sin * 3.5, 2, 0.05, 0.05, 0.05, 0.1);
+            serverLevel.sendParticles(ParticleTypes.ENCHANTED_HIT, px + cos * 2.8, py + 0.1, pz + sin * 2.8, 1, 0.05, 0.05, 0.05, 0.1);
+        }
+
+        // 震撼音效
+        serverLevel.playSound(null, px, py, pz, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.5f, 0.6f);
+        serverLevel.playSound(null, px, py, pz, SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.2f, 0.7f);
+        serverLevel.playSound(null, px, py, pz, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 0.5f, 1.8f);
+
+        // 4 格内所有敌对目标
+        double radius = 4.0;
+        List<LivingEntity> nearbyEntities = serverLevel.getEntitiesOfClass(
+                LivingEntity.class,
+                player.getBoundingBox().inflate(radius, 2.0, radius),
+                e -> e.isAlive() && e != player && !player.isAlliedTo(e) && !(e instanceof ArmorStand stand && stand.isMarker())
+        );
+
+        int hitCount = 0;
+        for (LivingEntity target : nearbyEntities) {
+            double dist = player.distanceTo(target);
+            if (dist > radius) {
+                continue;
+            }
+
+            // 判断敌对目标：怪物/敌人、主动锁定玩家的生物、或敌对玩家
+            boolean isHostile = (target instanceof Enemy)
+                    || (target instanceof Mob mob && mob.getTarget() == player)
+                    || (target instanceof Player otherPlayer && !player.isAlliedTo(otherPlayer) && player.canHarmPlayer(otherPlayer));
+
+            if (!isHostile) {
+                continue;
+            }
+
+            // 伤害计算：必须严格使用 DamageCalculator 结算
+            float finalDamage = DamageCalculator.calculateDamage(rawDamage, source, target);
+            target.hurtServer(serverLevel, source, finalDamage);
+
+            // 强行击退 3 格 (结合标准击退与直接速度向量，确保击退 3 格)
+            Vec3 diff = new Vec3(target.getX() - player.getX(), 0, target.getZ() - player.getZ());
+            Vec3 knockDir = diff.lengthSqr() > 1e-4 ? diff.normalize() : player.getLookAngle();
+            target.knockback(1.5, -knockDir.x, -knockDir.z, source, finalDamage);
+            target.setDeltaMovement(target.getDeltaMovement().add(knockDir.x * 1.2, 0.2, knockDir.z * 1.2));
+
+            serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), 5, 0.2, 0.2, 0.2, 0.1);
+            hitCount++;
+
+            ModLog.debug(player, target, "【野太刀·绝式】360° 大回旋斩命中敌对目标！基础攻击力: " + baseDmg
+                    + "，180% 原始伤害: " + String.format("%.2f", rawDamage) + " 点，DamageCalculator 结算伤害: "
+                    + String.format("%.2f", finalDamage) + " 点，强行击退 3 格！");
+        }
+
+        // 扣除耐久
+        weapon.hurtAndBreak(2, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+
+        // 释放后进入 1 秒 (20 ticks) 脱力状态
+        tracker.tuanzis_mod$triggerNodachiExhaustion("释放绝式·大回旋斩", 20);
+
+        ModLog.debug(player, null, "【野太刀·绝式】大回旋斩释放完毕！消耗全部“势”，波及敌对目标数: "
+                + hitCount + "，进入 1.0 秒脱力软僵直状态。");
+    }
+
+    public ToolMaterial getMaterial() {
+        return this.material;
+    }
+
+    public float getBaseAttackDamage() {
+        return this.baseAttackDamage;
+    }
+
     @Override
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
         return ItemUseAnimation.BLOCK;
@@ -274,14 +347,6 @@ public class NodachiItem extends Item {
     @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 72000;
-    }
-
-    public static boolean hasFinalityEnchantment(Level level, ItemStack stack) {
-        var registry = level.registryAccess().lookup(Registries.ENCHANTMENT);
-        if (registry.isEmpty()) return false;
-        var ench = registry.get().get(ModEnchantments.FINALITY);
-        if (ench.isEmpty()) return false;
-        return EnchantmentHelper.getItemEnchantmentLevel(ench.get(), stack) > 0;
     }
 
     @Override
@@ -355,84 +420,6 @@ public class NodachiItem extends Item {
         }
 
         return true;
-    }
-
-    private static void performFinalitySpinAttack(Player player, ItemStack weapon, ServerLevel serverLevel, NodachiPlayerTracker tracker) {
-        float baseDmg = weapon.getItem() instanceof NodachiItem nodachi ? nodachi.getBaseAttackDamage() : 7.0f;
-        float rawDamage = baseDmg * 1.80f; // 180% 基础攻击力毁灭打击
-
-        DamageSource source = serverLevel.damageSources().playerAttack(player);
-
-        // 360° 全方位大回旋斩粒子特效 (双环粒子，展现大回旋气浪)
-        double px = player.getX();
-        double py = player.getY() + 0.5;
-        double pz = player.getZ();
-
-        for (int deg = 0; deg < 360; deg += 15) {
-            double rad = Math.toRadians(deg);
-            double cos = Math.cos(rad);
-            double sin = Math.sin(rad);
-
-            serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, px + cos * 2.2, py, pz + sin * 2.2, 1, 0, 0, 0, 0);
-            serverLevel.sendParticles(ParticleTypes.CRIT, px + cos * 3.5, py + 0.2, pz + sin * 3.5, 2, 0.05, 0.05, 0.05, 0.1);
-            serverLevel.sendParticles(ParticleTypes.ENCHANTED_HIT, px + cos * 2.8, py + 0.1, pz + sin * 2.8, 1, 0.05, 0.05, 0.05, 0.1);
-        }
-
-        // 震撼音效
-        serverLevel.playSound(null, px, py, pz, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.5f, 0.6f);
-        serverLevel.playSound(null, px, py, pz, SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.2f, 0.7f);
-        serverLevel.playSound(null, px, py, pz, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.PLAYERS, 0.5f, 1.8f);
-
-        // 4 格内所有敌对目标
-        double radius = 4.0;
-        List<LivingEntity> nearbyEntities = serverLevel.getEntitiesOfClass(
-            LivingEntity.class,
-            player.getBoundingBox().inflate(radius, 2.0, radius),
-            e -> e.isAlive() && e != player && !player.isAlliedTo(e) && !(e instanceof ArmorStand stand && stand.isMarker())
-        );
-
-        int hitCount = 0;
-        for (LivingEntity target : nearbyEntities) {
-            double dist = player.distanceTo(target);
-            if (dist > radius) {
-                continue;
-            }
-
-            // 判断敌对目标：怪物/敌人、主动锁定玩家的生物、或敌对玩家
-            boolean isHostile = (target instanceof Enemy)
-                    || (target instanceof Mob mob && mob.getTarget() == player)
-                    || (target instanceof Player otherPlayer && !player.isAlliedTo(otherPlayer) && player.canHarmPlayer(otherPlayer));
-
-            if (!isHostile) {
-                continue;
-            }
-
-            // 伤害计算：必须严格使用 DamageCalculator 结算
-            float finalDamage = DamageCalculator.calculateDamage(rawDamage, source, target);
-            target.hurtServer(serverLevel, source, finalDamage);
-
-            // 强行击退 3 格 (结合标准击退与直接速度向量，确保击退 3 格)
-            Vec3 diff = new Vec3(target.getX() - player.getX(), 0, target.getZ() - player.getZ());
-            Vec3 knockDir = diff.lengthSqr() > 1e-4 ? diff.normalize() : player.getLookAngle();
-            target.knockback(1.5, -knockDir.x, -knockDir.z, source, finalDamage);
-            target.setDeltaMovement(target.getDeltaMovement().add(knockDir.x * 1.2, 0.2, knockDir.z * 1.2));
-
-            serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), 5, 0.2, 0.2, 0.2, 0.1);
-            hitCount++;
-
-            ModLog.debug(player, target, "【野太刀·绝式】360° 大回旋斩命中敌对目标！基础攻击力: " + baseDmg
-                    + "，180% 原始伤害: " + String.format("%.2f", rawDamage) + " 点，DamageCalculator 结算伤害: "
-                    + String.format("%.2f", finalDamage) + " 点，强行击退 3 格！");
-        }
-
-        // 扣除耐久
-        weapon.hurtAndBreak(2, player, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
-
-        // 释放后进入 1 秒 (20 ticks) 脱力状态
-        tracker.tuanzis_mod$triggerNodachiExhaustion("释放绝式·大回旋斩", 20);
-
-        ModLog.debug(player, null, "【野太刀·绝式】大回旋斩释放完毕！消耗全部“势”，波及敌对目标数: "
-                + hitCount + "，进入 1.0 秒脱力软僵直状态。");
     }
 
     @Override

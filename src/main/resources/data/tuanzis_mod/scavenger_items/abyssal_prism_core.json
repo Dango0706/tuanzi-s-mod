@@ -9,7 +9,9 @@
   "weight_kg": 6.50,
   "base_value": 320000,
   "base_search_seconds": 4.5,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "sound_profile": "ABYSSAL_RESONANCE",
   "lore_translation_key": "item.tuanzis_mod.abyssal_prism_core.lore"
 }

@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class PlayerHungerMixin {
 
     @ModifyVariable(
-        method = "causeFoodExhaustion(F)V",
-        at = @At("HEAD"),
-        argsOnly = true
+            method = "causeFoodExhaustion(F)V",
+            at = @At("HEAD"),
+            argsOnly = true
     )
     private float tuanzis_mod$modifyExhaustion(float exhaustion) {
         Player player = (Player) (Object) this;

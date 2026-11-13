@@ -1,6 +1,8 @@
 package me.tuanzi.item;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -10,20 +12,17 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 
 import java.util.List;
 
@@ -31,6 +30,15 @@ public class VillagerCageItem extends Item {
 
     public VillagerCageItem(Item.Properties properties) {
         super(properties);
+    }
+
+    // ──────────────────────────────────────────────
+    // 工具方法
+    // ──────────────────────────────────────────────
+    public static boolean isVillagerStored(ItemStack stack) {
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return false;
+        return customData.copyTag().contains("StoredVillager");
     }
 
     // ──────────────────────────────────────────────
@@ -87,7 +95,8 @@ public class VillagerCageItem extends Item {
                 // 使用 Brain 的 AngryAt 记忆让傀儡持续追击
                 try {
                     golem.getBrain().setMemory(MemoryModuleType.ANGRY_AT, player.getUUID());
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             player.sendSystemMessage(Component.translatable("message.tuanzis_mod.villager_cage.golem_aggro"));
             me.tuanzi.util.ModLog.debug(player, null, "缚灵笼捕捉村民触发守护仇恨：附近 " + protectingGolems.size() + " 只守护中的铁傀儡对捕捉者产生仇恨。");
@@ -95,7 +104,7 @@ public class VillagerCageItem extends Item {
 
         // 使用 26.1 的 TagValueOutput 来序列化村民
         net.minecraft.util.ProblemReporter reporter = net.minecraft.util.ProblemReporter.DISCARDING;
-        net.minecraft.world.level.storage.TagValueOutput tagValueOutput = 
+        net.minecraft.world.level.storage.TagValueOutput tagValueOutput =
                 net.minecraft.world.level.storage.TagValueOutput.createWithContext(reporter, serverLevel.registryAccess());
         villager.save(tagValueOutput);
         CompoundTag villagerTag = tagValueOutput.buildResult();
@@ -189,7 +198,7 @@ public class VillagerCageItem extends Item {
 
         // 使用 26.1 的 TagValueInput 加载 NBT
         net.minecraft.util.ProblemReporter reporter = net.minecraft.util.ProblemReporter.DISCARDING;
-        net.minecraft.world.level.storage.ValueInput tagValueInput = 
+        net.minecraft.world.level.storage.ValueInput tagValueInput =
                 net.minecraft.world.level.storage.TagValueInput.create(reporter, serverLevel.registryAccess(), villagerTag);
         villager.load(tagValueInput);
 
@@ -237,10 +246,10 @@ public class VillagerCageItem extends Item {
         if (villagerTag.contains("CustomName")) {
             try {
                 String jsonString = villagerTag.getStringOr("CustomName", "");
-                com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> registryOps = 
+                com.mojang.serialization.DynamicOps<com.google.gson.JsonElement> registryOps =
                         context.registries().createSerializationContext(com.mojang.serialization.JsonOps.INSTANCE);
                 Component nameComp = ComponentSerialization.CODEC.parse(
-                        registryOps, 
+                        registryOps,
                         com.google.gson.JsonParser.parseString(jsonString)
                 ).result().orElse(null);
                 displayName = nameComp != null ? nameComp.getString() : "村民";
@@ -265,14 +274,5 @@ public class VillagerCageItem extends Item {
                 displayName,
                 Component.translatable(profKey),
                 level));
-    }
-
-    // ──────────────────────────────────────────────
-    // 工具方法
-    // ──────────────────────────────────────────────
-    public static boolean isVillagerStored(ItemStack stack) {
-        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
-        if (customData == null) return false;
-        return customData.copyTag().contains("StoredVillager");
     }
 }

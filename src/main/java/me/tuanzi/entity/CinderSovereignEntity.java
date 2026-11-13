@@ -6,7 +6,6 @@ import com.geckolib.animatable.manager.AnimatableManager;
 import com.geckolib.animation.AnimationController;
 import com.geckolib.animation.RawAnimation;
 import com.geckolib.util.GeckoLibUtil;
-import me.tuanzi.init.ModEntities;
 import me.tuanzi.init.ModSounds;
 import me.tuanzi.network.CinderHeatSyncPacket;
 import me.tuanzi.util.DamageCalculator;
@@ -28,22 +27,14 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
-import org.jetbrains.annotations.Nullable;
-import java.util.function.Predicate;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -61,8 +52,10 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * 日冕核心 · 烈焰统领 (The Cinder Sovereign)
@@ -70,12 +63,6 @@ import java.util.*;
  * 包含完整 AI 状态机、防作弊机制、五大主动技能、二阶段切削利刃与日冕过热环境领域
  */
 public class CinderSovereignEntity extends Monster implements GeoEntity {
-    // 同步数据与状态定义
-    private static final EntityDataAccessor<Integer> SHIELD_BITMASK = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> ROD_BITMASK = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> BOSS_STATE = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> IS_PHASE_2 = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.BOOLEAN);
-
     public static final int STATE_IDLE = 0;
     public static final int STATE_BARRAGE = 1;
     public static final int STATE_BEAM_CHARGE = 2;
@@ -84,7 +71,11 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
     public static final int STATE_STUNNED = 5;
     public static final int STATE_SHOCKWAVE = 6;
     public static final int STATE_CRUCIBLE_PILEDRIVER = 7;
-
+    // 同步数据与状态定义
+    private static final EntityDataAccessor<Integer> SHIELD_BITMASK = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ROD_BITMASK = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> BOSS_STATE = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> IS_PHASE_2 = SynchedEntityData.defineId(CinderSovereignEntity.class, EntityDataSerializers.BOOLEAN);
     // GeckoLib 动画定义
     private static final RawAnimation ANIM_IDLE = RawAnimation.begin().thenLoop("animation.cinder_sovereign.idle");
     private static final RawAnimation ANIM_PHASE2_IDLE = RawAnimation.begin().thenLoop("animation.cinder_sovereign.phase2_idle");
@@ -104,10 +95,14 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
     private final CinderShieldPartEntity[] shields = new CinderShieldPartEntity[4];
     private final CinderBlazeRodPartEntity[] blazeRods = new CinderBlazeRodPartEntity[12];
     private final int[] rodRebuildTimers = new int[12]; // 单根烈焰棒 9.0s (180 ticks) 独立重铸倒计时
-
+    // 48 格领域内冰块融化计时映射表 (BlockPos -> 剩余 ticks)
+    private final Map<BlockPos, Integer> meltingIceTimers = new HashMap<>();
+    // 二阶段利刃切削命中冷却映射表 (每实体 12 ticks)
+    private final Map<UUID, Long> bladeHitCooldowns = new HashMap<>();
+    // 玩家日冕过热度映射表 (0 ~ 100)
+    private final Map<UUID, Integer> playerHeatMap = new HashMap<>();
     // 旋转与公转物理角度
     private float orbitAngle = 0.0F;
-
     // 技能冷却与计时器
     private int barrageCooldown = 100;
     private int beamCooldown = 240;
@@ -120,20 +115,9 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
     private double piledriverTargetGroundY = 0.0; // 目标下砸触地 Y 坐标
     private int piledriverStunExtraTicks = 0; // Mace 破韧打断后额外延长的眩晕时间 (30 ticks = 1.5s)
     private int stateTicks = 0; // 当前状态持续刻数
-
     // 全损应急脉冲冷却 (25s) 与 10s 全损窗口监测
     private int emergencyPulseCooldown = 0;
     private int allRodsBrokenWindowTimer = 0;
-
-    // 48 格领域内冰块融化计时映射表 (BlockPos -> 剩余 ticks)
-    private final Map<BlockPos, Integer> meltingIceTimers = new HashMap<>();
-
-    // 二阶段利刃切削命中冷却映射表 (每实体 12 ticks)
-    private final Map<UUID, Long> bladeHitCooldowns = new HashMap<>();
-
-    // 玩家日冕过热度映射表 (0 ~ 100)
-    private final Map<UUID, Integer> playerHeatMap = new HashMap<>();
-
     // 环境反应计时器
     private int waterDamageTickTimer = 0;
 
@@ -145,29 +129,6 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
     private boolean hadTarget = false;
     private int dashSoundCooldown = 0;
     private int altitudeSoundCooldown = 0;
-
-    /**
-     * 受到攻击通知（本体、4面悬浮黑石重盾或外环12根日冕烈焰棒被攻击时触发）
-     */
-    public void notifyAttacked() {
-        if (this.outOfCombatTimer >= 200) {
-            ModLog.debug(null, this, "【日冕核心·烈焰统领】受到攻击（本体或复合子部位受损），脱战疾速自愈被打断！脱战计时器重置为 0。");
-        }
-        this.outOfCombatTimer = 0;
-    }
-
-    /**
-     * 技能结束回调：设置技能间公共间隔（2.0 秒 / 40 ticks）
-     * 保证每个技能结束后必须留出 2 秒空档期巡航游走，严禁连续无缝倾泻技能。
-     */
-    private void onSkillFinished() {
-        this.skillIntervalCooldown = 40; // 2.0s (40 ticks)
-        ModLog.debug(null, this, "【日冕核心·烈焰统领】技能释放完毕，进入 2.0 秒公共技能间隔期（巡航游走，禁止连续释放下一个技能）。");
-    }
-
-    public int getSkillIntervalCooldown() {
-        return this.skillIntervalCooldown;
-    }
 
     public CinderSovereignEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
@@ -198,6 +159,41 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
         }
     }
 
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, 400.0)
+                .add(Attributes.ARMOR, 24.0) // 基础 12.0 + 4 面黑石重盾各 +3.0 = 24.0
+                .add(Attributes.ARMOR_TOUGHNESS, 8.0)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.75)
+                .add(Attributes.FLYING_SPEED, 0.256) // 巡航速度全时期降至 80% (0.32 -> 0.256)
+                .add(Attributes.MOVEMENT_SPEED, 0.256)
+                .add(Attributes.FOLLOW_RANGE, 64.0)
+                .add(Attributes.ATTACK_DAMAGE, 10.0);
+    }
+
+    /**
+     * 受到攻击通知（本体、4面悬浮黑石重盾或外环12根日冕烈焰棒被攻击时触发）
+     */
+    public void notifyAttacked() {
+        if (this.outOfCombatTimer >= 200) {
+            ModLog.debug(null, this, "【日冕核心·烈焰统领】受到攻击（本体或复合子部位受损），脱战疾速自愈被打断！脱战计时器重置为 0。");
+        }
+        this.outOfCombatTimer = 0;
+    }
+
+    /**
+     * 技能结束回调：设置技能间公共间隔（2.0 秒 / 40 ticks）
+     * 保证每个技能结束后必须留出 2 秒空档期巡航游走，严禁连续无缝倾泻技能。
+     */
+    private void onSkillFinished() {
+        this.skillIntervalCooldown = 40; // 2.0s (40 ticks)
+        ModLog.debug(null, this, "【日冕核心·烈焰统领】技能释放完毕，进入 2.0 秒公共技能间隔期（巡航游走，禁止连续释放下一个技能）。");
+    }
+
+    public int getSkillIntervalCooldown() {
+        return this.skillIntervalCooldown;
+    }
+
     @Override
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
@@ -221,18 +217,6 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
                 position.x - halfWidth, position.y + bottomOffset, position.z - halfWidth,
                 position.x + halfWidth, position.y + topHeight, position.z + halfWidth
         );
-    }
-
-    public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 400.0)
-                .add(Attributes.ARMOR, 24.0) // 基础 12.0 + 4 面黑石重盾各 +3.0 = 24.0
-                .add(Attributes.ARMOR_TOUGHNESS, 8.0)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 0.75)
-                .add(Attributes.FLYING_SPEED, 0.256) // 巡航速度全时期降至 80% (0.32 -> 0.256)
-                .add(Attributes.MOVEMENT_SPEED, 0.256)
-                .add(Attributes.FOLLOW_RANGE, 64.0)
-                .add(Attributes.ATTACK_DAMAGE, 10.0);
     }
 
     @Override
@@ -264,6 +248,12 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
         return this.entityData.get(BOSS_STATE);
     }
 
+    public void setBossState(int state) {
+        this.entityData.set(BOSS_STATE, state);
+        this.stateTicks = 0;
+        ModLog.debug(null, this, "【日冕核心·烈焰统领】状态切换为: " + stateName(state));
+    }
+
     public boolean isPhase2() {
         return this.entityData.get(IS_PHASE_2);
     }
@@ -274,12 +264,6 @@ public class CinderSovereignEntity extends Monster implements GeoEntity {
 
     public int getAliveRodCount() {
         return Integer.bitCount(this.getRodBitmask() & 0b111111111111);
-    }
-
-    public void setBossState(int state) {
-        this.entityData.set(BOSS_STATE, state);
-        this.stateTicks = 0;
-        ModLog.debug(null, this, "【日冕核心·烈焰统领】状态切换为: " + stateName(state));
     }
 
     private String stateName(int state) {

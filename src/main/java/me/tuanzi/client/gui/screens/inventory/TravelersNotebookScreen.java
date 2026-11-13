@@ -21,7 +21,7 @@ public class TravelersNotebookScreen extends AbstractContainerScreen<TravelersNo
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, 256, 256);
-        
+
         // 突出燃料格 (Slot 0)
         // Slot 0 位置是 8, 18。我们加上淡橙色高亮。
         graphics.fill(x + 7, y + 17, x + 7 + 18, y + 17 + 18, 0x55FFAA00);

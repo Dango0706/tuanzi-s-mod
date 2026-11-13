@@ -33,13 +33,6 @@ public final class BaseFacilityService {
 
     public static final int BASE_PROTECTION_RADIUS = 32;
 
-    public enum UpgradeResult {
-        SUCCESS,
-        MAX_LEVEL_REACHED,
-        INSUFFICIENT_MATERIALS,
-        NO_COST_CONFIGURED
-    }
-
     private BaseFacilityService() {
     }
 
@@ -278,5 +271,12 @@ public final class BaseFacilityService {
         }
         Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return itemId.equals(targetItemId);
+    }
+
+    public enum UpgradeResult {
+        SUCCESS,
+        MAX_LEVEL_REACHED,
+        INSUFFICIENT_MATERIALS,
+        NO_COST_CONFIGURED
     }
 }

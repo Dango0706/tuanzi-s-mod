@@ -29,15 +29,15 @@ public class HusbandryHelper {
      */
     public static boolean isApplicableAnimal(Animal animal) {
         return animal instanceof Cow
-            || animal instanceof Sheep
-            || animal instanceof Pig
-            || animal instanceof Chicken
-            || animal instanceof Rabbit
-            || animal instanceof Horse
-            || animal instanceof Donkey
-            || animal instanceof Mule
-            || animal instanceof Llama
-            || animal instanceof Goat;
+                || animal instanceof Sheep
+                || animal instanceof Pig
+                || animal instanceof Chicken
+                || animal instanceof Rabbit
+                || animal instanceof Horse
+                || animal instanceof Donkey
+                || animal instanceof Mule
+                || animal instanceof Llama
+                || animal instanceof Goat;
     }
 
     /**
@@ -68,7 +68,7 @@ public class HusbandryHelper {
                 int newAge = currentAge + level; // 额外增加 1/2/3 ticks
                 baby.setAge(newAge);
                 ModLog.debug(player, "【牧养】加速幼崽 %s 成长（年龄进度: %d -> %d, 等级: %d）",
-                    baby.getType().getDescription().getString(), currentAge, newAge, level);
+                        baby.getType().getDescription().getString(), currentAge, newAge, level);
             }
         }
     }

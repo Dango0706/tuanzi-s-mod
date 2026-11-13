@@ -1,26 +1,26 @@
 package me.tuanzi.entity;
 
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.decoration.ArmorStand;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.entity.player.Player;
+import me.tuanzi.init.ModItems;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LightBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import me.tuanzi.init.ModItems;
 
 public class ScarecrowEntity extends ArmorStand {
     private float hitDamage = 0.0F;
-    
+
     public ScarecrowEntity(EntityType<? extends ArmorStand> type, Level level) {
         super(type, level);
         // 稻草人天生有手臂，且不显示底座
@@ -28,7 +28,7 @@ public class ScarecrowEntity extends ArmorStand {
         this.setNoBasePlate(true);
         // 默认佩戴雕刻南瓜
         this.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
-        
+
         // 设置真正的向两侧水平平行于地面展开手臂 (侧平举 T-Pose)
         this.setLeftArmPose(new net.minecraft.core.Rotations(0.0F, 0.0F, -90.0F));
         this.setRightArmPose(new net.minecraft.core.Rotations(0.0F, 0.0F, 90.0F));
@@ -47,7 +47,7 @@ public class ScarecrowEntity extends ArmorStand {
             if (this.tickCount % 20 == 0) {
                 this.setLeftArmPose(new net.minecraft.core.Rotations(0.0F, 0.0F, -90.0F));
                 this.setRightArmPose(new net.minecraft.core.Rotations(0.0F, 0.0F, 90.0F));
-                
+
                 ItemStack headStack = this.getItemBySlot(EquipmentSlot.HEAD);
                 if (this.level().isDarkOutside()) {
                     if (headStack.isEmpty() || headStack.is(Items.CARVED_PUMPKIN)) {
@@ -192,7 +192,7 @@ public class ScarecrowEntity extends ArmorStand {
         }
 
         // 广播受击事件，使客户端显示来回晃动的物理动作
-        level.broadcastEntityEvent(this, (byte)32);
+        level.broadcastEntityEvent(this, (byte) 32);
         this.gameEvent(net.minecraft.world.level.gameevent.GameEvent.ENTITY_DAMAGE, source.getEntity());
         this.lastHit = level.getGameTime();
 

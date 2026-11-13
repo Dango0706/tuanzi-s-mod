@@ -50,7 +50,7 @@ public abstract class SoulboundMixin {
     @Inject(method = "die", at = @At("TAIL"))
     private void tuanzis_mod$putBackSoulboundItems(DamageSource source, CallbackInfo ci) {
         if (tuanzis_mod$soulboundItems.isEmpty()) return;
-        
+
         ServerPlayer player = (ServerPlayer) (Object) this;
         Inventory inventory = player.getInventory();
         tuanzis_mod$soulboundItems.forEach(inventory::setItem);
@@ -64,7 +64,7 @@ public abstract class SoulboundMixin {
             if (!newPlayer.level().getGameRules().get(GameRules.KEEP_INVENTORY)) {
                 Inventory oldInventory = oldPlayer.getInventory();
                 Inventory newInventory = newPlayer.getInventory();
-                
+
                 var enchantmentRegistry = newPlayer.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                 var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
 

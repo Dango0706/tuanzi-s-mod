@@ -1,23 +1,23 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModStatusEffects;
+import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
 import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TraceableEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.TraceableEntity;
-import net.minecraft.world.entity.projectile.Projectile;
-import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -29,11 +29,51 @@ import java.util.Map;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker, me.tuanzi.util.RangerReloadTracker {
 
-    @Shadow
-    protected abstract void onEffectsRemoved(Collection<MobEffectInstance> effects);
-
     @org.spongepowered.asm.mixin.Unique
     private java.util.UUID tuanzis_mod$lastRhythmTargetUuid = null;
+    @org.spongepowered.asm.mixin.Unique
+    private int tuanzis_mod$rangerReloadWindowTicks = 0;
+    @org.spongepowered.asm.mixin.Unique
+    private int tuanzis_mod$tearingTicks = 0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$tearingDistance = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$persistentX = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$persistentY = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private double tuanzis_mod$persistentZ = 0.0;
+    @org.spongepowered.asm.mixin.Unique
+    private boolean tuanzis_mod$hasPersistentPos = false;
+
+    @org.spongepowered.asm.mixin.Unique
+    private static ServerPlayer tuanzis_mod$resolveSourcePlayer(Entity source) {
+        if (source == null) {
+            return null;
+        }
+        if (source instanceof ServerPlayer player) {
+            return player;
+        }
+        if (source instanceof TraceableEntity traceable) {
+            Entity owner = traceable.getOwner();
+            if (owner instanceof ServerPlayer player) {
+                return player;
+            }
+            if (owner instanceof TraceableEntity nestedTraceable && nestedTraceable.getOwner() instanceof ServerPlayer player) {
+                return player;
+            }
+        }
+        if (source instanceof Projectile projectile) {
+            Entity owner = projectile.getOwner();
+            if (owner instanceof ServerPlayer player) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    @Shadow
+    protected abstract void onEffectsRemoved(Collection<MobEffectInstance> effects);
 
     @Override
     public java.util.UUID tuanzis_mod$getLastRhythmTarget() {
@@ -44,9 +84,6 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     public void tuanzis_mod$setLastRhythmTarget(java.util.UUID uuid) {
         this.tuanzis_mod$lastRhythmTargetUuid = uuid;
     }
-
-    @org.spongepowered.asm.mixin.Unique
-    private int tuanzis_mod$rangerReloadWindowTicks = 0;
 
     @Override
     public int tuanzis_mod$getRangerReloadWindowTicks() {
@@ -69,19 +106,6 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
             this.tuanzis_mod$rangerReloadWindowTicks--;
         }
     }
-
-    @org.spongepowered.asm.mixin.Unique
-    private int tuanzis_mod$tearingTicks = 0;
-    @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$tearingDistance = 0.0;
-    @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$persistentX = 0.0;
-    @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$persistentY = 0.0;
-    @org.spongepowered.asm.mixin.Unique
-    private double tuanzis_mod$persistentZ = 0.0;
-    @org.spongepowered.asm.mixin.Unique
-    private boolean tuanzis_mod$hasPersistentPos = false;
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tuanzis_mod$tickTearingDamage(CallbackInfo ci) {
@@ -125,9 +149,9 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
         if (entity.hasEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK)) {
             if (entity.tickCount % 4 == 0) {
                 if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, 
-                        entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5), 
-                        1, 0.0, 0.0, 0.0, 0.0);
+                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT,
+                            entity.getRandomX(0.5), entity.getRandomY(), entity.getRandomZ(0.5),
+                            1, 0.0, 0.0, 0.0, 0.0);
                 }
             }
         }
@@ -140,17 +164,17 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
 
         // 潮汐织靴水面足迹粒子效果
         if (!entity.level().isClientSide() && entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
-            if (entity.level().getFluidState(entity.blockPosition()).is(net.minecraft.tags.FluidTags.WATER) 
+            if (entity.level().getFluidState(entity.blockPosition()).is(net.minecraft.tags.FluidTags.WATER)
                     || entity.level().getFluidState(entity.blockPosition().below()).is(net.minecraft.tags.FluidTags.WATER)) {
                 double horizontalSpeed = entity.getDeltaMovement().horizontalDistanceSqr();
                 if (horizontalSpeed > 0.001 && entity.tickCount % 3 == 0) {
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, 
-                            entity.getX(), entity.getY(), entity.getZ(), 
-                            2, 0.1, 0.0, 0.1, 0.02);
-                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE, 
-                            entity.getX(), entity.getY(), entity.getZ(), 
-                            3, 0.1, 0.0, 0.1, 0.01);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH,
+                                entity.getX(), entity.getY(), entity.getZ(),
+                                2, 0.1, 0.0, 0.1, 0.02);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE,
+                                entity.getX(), entity.getY(), entity.getZ(),
+                                3, 0.1, 0.0, 0.1, 0.01);
                     }
                 }
             }
@@ -173,8 +197,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                     int count = effect.getAmplifier() + 1;
                     if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                         net.minecraft.world.entity.item.ItemEntity itemEntity = new net.minecraft.world.entity.item.ItemEntity(
-                            serverLevel, entity.getX(), entity.getY(), entity.getZ(), 
-                            new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, count)
+                                serverLevel, entity.getX(), entity.getY(), entity.getZ(),
+                                new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, count)
                         );
                         itemEntity.setDefaultPickUpDelay();
                         serverLevel.addFreshEntity(itemEntity);
@@ -197,8 +221,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                     entity.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, sideEffectTicks, 0));
 
                     // 播放虚脱副作用音效
-                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), 
-                        SoundEvents.AMBIENT_UNDERWATER_ENTER, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.5f);
+                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                            SoundEvents.AMBIENT_UNDERWATER_ENTER, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.5f);
 
                     me.tuanzi.util.ModLog.debug(entity, null, "肾上腺素药水效果结束：透支副作用触发！已获得 " + (level * 30) + " 秒的虚弱 I 与挖掘疲劳 I（透支等级: " + level + " 级）。");
 
@@ -238,19 +262,19 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     private void tuanzis_mod$shakeOffShuriken() {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.level().isClientSide()) return;
-        
+
         MobEffectInstance currentEffect = entity.getEffect(me.tuanzi.init.ModStatusEffects.SHURIKEN_STUCK);
         if (currentEffect != null) {
             // 1. 在脚下生成 1 枚手里剑物品
             if (entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
                 net.minecraft.world.entity.item.ItemEntity itemEntity = new net.minecraft.world.entity.item.ItemEntity(
-                    serverLevel, entity.getX(), entity.getY(), entity.getZ(), 
-                    new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, 1)
+                        serverLevel, entity.getX(), entity.getY(), entity.getZ(),
+                        new net.minecraft.world.item.ItemStack(me.tuanzi.init.ModItems.SHURIKEN, 1)
                 );
                 itemEntity.setDefaultPickUpDelay();
                 serverLevel.addFreshEntity(itemEntity);
             }
-            
+
             // 2. 扣除 1 级效果或者直接移除
             if (currentEffect.getAmplifier() > 0) {
                 int newAmplifier = currentEffect.getAmplifier() - 1;
@@ -263,8 +287,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-        method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
-        at = @org.spongepowered.asm.mixin.injection.At("HEAD")
+            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            at = @org.spongepowered.asm.mixin.injection.At("HEAD")
     )
     private void tuanzis_mod$onHurtServer(net.minecraft.server.level.ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -291,9 +315,9 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-        method = "canStandOnFluid(Lnet/minecraft/world/level/material/FluidState;)Z",
-        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
-        cancellable = true
+            method = "canStandOnFluid(Lnet/minecraft/world/level/material/FluidState;)Z",
+            at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$canStandOnWater(net.minecraft.world.level.material.FluidState fluid, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -309,9 +333,9 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-        method = "getLiquidCollisionShape()Lnet/minecraft/world/phys/shapes/VoxelShape;",
-        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
-        cancellable = true
+            method = "getLiquidCollisionShape()Lnet/minecraft/world/phys/shapes/VoxelShape;",
+            at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$getLiquidCollisionShape(org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<net.minecraft.world.phys.shapes.VoxelShape> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -322,33 +346,32 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
         }
     }
 
-
     @org.spongepowered.asm.mixin.injection.Inject(
-        method = "causeFallDamage(DFLnet/minecraft/world/damagesource/DamageSource;)Z",
-        at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
-        cancellable = true
+            method = "causeFallDamage(DFLnet/minecraft/world/damagesource/DamageSource;)Z",
+            at = @org.spongepowered.asm.mixin.injection.At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$onCauseFallDamage(double fallDistance, float damageModifier, net.minecraft.world.damagesource.DamageSource damageSource, org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.FEET).is(me.tuanzi.init.ModItems.TIDAL_WEAVE_BOOTS)) {
             if (entity.level().getFluidState(entity.blockPosition()).is(net.minecraft.tags.FluidTags.WATER)
                     || entity.level().getFluidState(entity.blockPosition().below()).is(net.minecraft.tags.FluidTags.WATER)) {
-                
+
                 if (fallDistance > 0.5) {
                     double bounceSpeed = Math.min(0.45, Math.max(0.18, Math.sqrt(fallDistance) * 0.12));
                     entity.setDeltaMovement(entity.getDeltaMovement().x, bounceSpeed, entity.getDeltaMovement().z);
-                    
+
                     if (!entity.level().isClientSide() && entity.level() instanceof net.minecraft.server.level.ServerLevel serverLevel) {
-                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, 
-                            entity.getX(), entity.getY(), entity.getZ(), 
-                            18, 0.35, 0.1, 0.35, 0.1);
-                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE, 
-                            entity.getX(), entity.getY(), entity.getZ(), 
-                            12, 0.25, 0.1, 0.25, 0.05);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH,
+                                entity.getX(), entity.getY(), entity.getZ(),
+                                18, 0.35, 0.1, 0.35, 0.1);
+                        serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE,
+                                entity.getX(), entity.getY(), entity.getZ(),
+                                12, 0.25, 0.1, 0.25, 0.05);
                         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                            net.minecraft.sounds.SoundEvents.PLAYER_SPLASH, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.2f);
+                                net.minecraft.sounds.SoundEvents.PLAYER_SPLASH, net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.2f);
                     }
-                    
+
                     me.tuanzi.util.ModLog.debug(null, entity, "【潮汐织靴】落水判定！已从高度 " + String.format("%.2f", fallDistance) + " 弹起（弹起初速度: " + String.format("%.2f", bounceSpeed) + "）。");
                 }
                 cir.setReturnValue(false);
@@ -357,8 +380,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     }
 
     @org.spongepowered.asm.mixin.injection.Inject(
-        method = "completeUsingItem",
-        at = @org.spongepowered.asm.mixin.injection.At("HEAD")
+            method = "completeUsingItem",
+            at = @org.spongepowered.asm.mixin.injection.At("HEAD")
     )
     private void tuanzis_mod$onCompleteUsingItem(org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
@@ -380,14 +403,14 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     }
 
     @Inject(
-        method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$cancelTeamHarmfulEffect(
-        MobEffectInstance newEffect,
-        Entity source,
-        CallbackInfoReturnable<Boolean> cir
+            MobEffectInstance newEffect,
+            Entity source,
+            CallbackInfoReturnable<Boolean> cir
     ) {
         if ((Object) this instanceof ServerPlayer targetPlayer && source != null && newEffect != null) {
             boolean isHarmful = newEffect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL
@@ -400,32 +423,6 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                 }
             }
         }
-    }
-
-    @org.spongepowered.asm.mixin.Unique
-    private static ServerPlayer tuanzis_mod$resolveSourcePlayer(Entity source) {
-        if (source == null) {
-            return null;
-        }
-        if (source instanceof ServerPlayer player) {
-            return player;
-        }
-        if (source instanceof TraceableEntity traceable) {
-            Entity owner = traceable.getOwner();
-            if (owner instanceof ServerPlayer player) {
-                return player;
-            }
-            if (owner instanceof TraceableEntity nestedTraceable && nestedTraceable.getOwner() instanceof ServerPlayer player) {
-                return player;
-            }
-        }
-        if (source instanceof Projectile projectile) {
-            Entity owner = projectile.getOwner();
-            if (owner instanceof ServerPlayer player) {
-                return player;
-            }
-        }
-        return null;
     }
 
     @Inject(method = "doPush", at = @At("HEAD"), cancellable = true)

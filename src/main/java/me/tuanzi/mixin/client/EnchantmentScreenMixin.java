@@ -54,17 +54,17 @@ public abstract class EnchantmentScreenMixin extends AbstractContainerScreen<Enc
                 this.extractDefaultSprite(graphics);
                 int iconColor = this.isActive() ? 0xFFFFFFFF : 0x77AAAAAA;
                 graphics.blit(
-                    RenderPipelines.GUI_TEXTURED,
-                    TUANZIS_REFRESH_ICON,
-                    this.getX() + (this.width - 16) / 2,
-                    this.getY() + (this.height - 16) / 2,
-                    0.0F,
-                    0.0F,
-                    16,
-                    16,
-                    16,
-                    16,
-                    iconColor
+                        RenderPipelines.GUI_TEXTURED,
+                        TUANZIS_REFRESH_ICON,
+                        this.getX() + (this.width - 16) / 2,
+                        this.getY() + (this.height - 16) / 2,
+                        0.0F,
+                        0.0F,
+                        16,
+                        16,
+                        16,
+                        16,
+                        iconColor
                 );
             }
         };

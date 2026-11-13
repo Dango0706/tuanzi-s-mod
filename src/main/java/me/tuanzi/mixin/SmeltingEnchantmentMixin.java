@@ -3,7 +3,6 @@ package me.tuanzi.mixin;
 import me.tuanzi.init.ModEnchantments;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +45,7 @@ public abstract class SmeltingEnchantmentMixin {
                 var recipeManager = level.getServer().getRecipeManager();
                 // 1.21.2+ 使用 getRecipeFor 代替 getFirstMatch，输入为 RecipeInput
                 var recipe = recipeManager.getRecipeFor(RecipeType.SMELTING, new SingleRecipeInput(stack), level);
-                
+
                 if (recipe.isPresent()) {
                     // 1.21.2+ 使用 assemble 获取结果
                     ItemStack result = recipe.get().value().assemble(new SingleRecipeInput(stack)).copy();
@@ -66,7 +65,7 @@ public abstract class SmeltingEnchantmentMixin {
 
             if (smeltedAny) {
                 cir.setReturnValue(newDrops);
-                
+
                 // 惩罚机制: 额外消耗 1 点耐久 (加上原本的 1 点共计 2 点)
                 // 尝试使用 1.21.2 常见的 hurtAndBreak
                 if (livingEntity != null) {

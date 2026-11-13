@@ -1,8 +1,8 @@
 package me.tuanzi.client.gui.screens;
 
 import me.tuanzi.init.ModItems;
-import me.tuanzi.item.TravelersNotebookItem;
 import me.tuanzi.item.SignpostRuneItem;
+import me.tuanzi.item.TravelersNotebookItem;
 import me.tuanzi.network.TeleportRequestPacket;
 import me.tuanzi.util.ItemStackNbtHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -22,23 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TravelersNotebookBookScreen extends Screen {
-    
+
+    private static final int ITEMS_PER_PAGE = 5;
     private final InteractionHand hand;
     private final boolean isMainHand;
+    private final List<RuneInfo> runes = new ArrayList<>();
+    private final RuneEntryButton[] runeButtons = new RuneEntryButton[5];
     private ItemStack notebook = ItemStack.EMPTY;
     private int energy = 0;
-    
-    private final List<RuneInfo> runes = new ArrayList<>();
     private int currentPage = 0;
-    private static final int ITEMS_PER_PAGE = 5;
-    
     private RuneInfo selectedRune = null;
-    
     // UI components
     private ArcaneButton teleportButton;
     private ArcaneButton prevPageButton;
     private ArcaneButton nextPageButton;
-    private final RuneEntryButton[] runeButtons = new RuneEntryButton[5];
 
     public TravelersNotebookBookScreen(InteractionHand hand) {
         super(Component.translatable("item.tuanzis_mod.travelers_notebook"));
@@ -49,7 +46,7 @@ public class TravelersNotebookBookScreen extends Screen {
     @Override
     protected void init() {
         super.init();
-        
+
         // 加载最新物品与能量数据
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -103,7 +100,7 @@ public class TravelersNotebookBookScreen extends Screen {
                 this.onClose();
             }
         }));
-        
+
         this.teleportButton.active = false;
 
         updateNavigationButtons();
@@ -115,7 +112,7 @@ public class TravelersNotebookBookScreen extends Screen {
         this.runes.clear();
         CustomData customData = this.notebook.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return;
-        
+
         CompoundTag notebookTag = customData.copyTag();
         ListTag listTag = notebookTag.getListOrEmpty("Items");
         for (int i = 0; i < listTag.size(); i++) {
@@ -129,7 +126,7 @@ public class TravelersNotebookBookScreen extends Screen {
                     if (runeStack.has(DataComponents.CUSTOM_NAME)) {
                         name = runeStack.get(DataComponents.CUSTOM_NAME).getString();
                     }
-                    
+
                     runes.add(new RuneInfo(
                             slot,
                             name,
@@ -182,7 +179,7 @@ public class TravelersNotebookBookScreen extends Screen {
     @Override
     public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
-        
+
         int x = (this.width - 320) / 2;
         int y = (this.height - 170) / 2;
 
@@ -235,7 +232,7 @@ public class TravelersNotebookBookScreen extends Screen {
                 nameDraw = this.font.plainSubstrByWidth(nameDraw, 130) + "...";
             }
             graphics.text(this.font, nameDraw, x + 168, y + 28, 0xFFFF55FF, false);
-            
+
             // 维度名 - 补全不透明度前缀 0xFF
             String dimNameKey = "dimension." + this.selectedRune.dimension.replace(":", ".");
             Component dimLabel = Component.translatable("gui.tuanzis_mod.travelers_notebook.dim_label", Component.translatable(dimNameKey));
@@ -256,7 +253,7 @@ public class TravelersNotebookBookScreen extends Screen {
             int needed = crossDim ? 2 : 1;
 
             Component energyCost = Component.translatable("gui.tuanzis_mod.travelers_notebook.energy_cost", needed);
-            
+
             // 如果能量不足，显示红字提示，否则显示嫩绿色 - 补全不透明度前缀 0xFF
             if (this.energy < needed) {
                 graphics.text(this.font, energyCost, x + 168, y + 104, 0xFFFF5555, false);
@@ -271,6 +268,25 @@ public class TravelersNotebookBookScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    // ──────────────────────────────────────────────
+    // 3. 符石数据承载类
+    // ──────────────────────────────────────────────
+    private static class RuneInfo {
+        final int slotIdx;
+        final String name;
+        final String dimension;
+        final double x, y, z;
+
+        RuneInfo(int slotIdx, String name, String dimension, double x, double y, double z) {
+            this.slotIdx = slotIdx;
+            this.name = name;
+            this.dimension = dimension;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 
     // ──────────────────────────────────────────────
@@ -356,25 +372,6 @@ public class TravelersNotebookBookScreen extends Screen {
             int textX = this.getX() + (this.getWidth() - font.width(msg)) / 2;
             int textY = this.getY() + (this.getHeight() - 8) / 2;
             graphics.text(font, msg, textX, textY, textColor, false);
-        }
-    }
-
-    // ──────────────────────────────────────────────
-    // 3. 符石数据承载类
-    // ──────────────────────────────────────────────
-    private static class RuneInfo {
-        final int slotIdx;
-        final String name;
-        final String dimension;
-        final double x, y, z;
-
-        RuneInfo(int slotIdx, String name, String dimension, double x, double y, double z) {
-            this.slotIdx = slotIdx;
-            this.name = name;
-            this.dimension = dimension;
-            this.x = x;
-            this.y = y;
-            this.z = z;
         }
     }
 }

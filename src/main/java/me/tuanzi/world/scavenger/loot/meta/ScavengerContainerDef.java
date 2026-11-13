@@ -31,78 +31,6 @@ public record ScavengerContainerDef(
         String soundTheme
 ) {
 
-    /**
-     * 容器战利品生成规则
-     */
-    public record LootGenerationRule(
-            int minRolls,
-            int maxRolls,
-            float maxFillRatio,
-            Map<ScavengerRarity, Float> rarityWeightModifiers,
-            List<String> poolFilterTags
-    ) {
-        public static final Codec<LootGenerationRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ExtraCodecs.intRange(0, 64).optionalFieldOf("min_rolls", 1).forGetter(LootGenerationRule::minRolls),
-                ExtraCodecs.intRange(0, 64).optionalFieldOf("max_rolls", 4).forGetter(LootGenerationRule::maxRolls),
-                Codec.floatRange(0.0f, 1.0f).optionalFieldOf("max_fill_ratio", 0.70f).forGetter(LootGenerationRule::maxFillRatio),
-                Codec.unboundedMap(ScavengerRarity.CODEC, Codec.FLOAT)
-                        .optionalFieldOf("rarity_weight_modifiers", defaultRarityModifiers())
-                        .forGetter(LootGenerationRule::rarityWeightModifiers),
-                Codec.STRING.listOf().optionalFieldOf("pool_filter_tags", List.of("*")).forGetter(LootGenerationRule::poolFilterTags)
-        ).apply(instance, LootGenerationRule::new));
-
-        private static final StreamCodec<ByteBuf, Map<ScavengerRarity, Float>> RARITY_MOD_STREAM_CODEC =
-                ByteBufCodecs.map(HashMap::new, ScavengerRarity.STREAM_CODEC, ByteBufCodecs.FLOAT);
-        private static final StreamCodec<ByteBuf, List<String>> TAG_LIST_STREAM_CODEC =
-                ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list());
-
-        public static final StreamCodec<FriendlyByteBuf, LootGenerationRule> STREAM_CODEC = StreamCodec.of(
-                (buf, rule) -> {
-                    buf.writeVarInt(rule.minRolls());
-                    buf.writeVarInt(rule.maxRolls());
-                    buf.writeFloat(rule.maxFillRatio());
-                    RARITY_MOD_STREAM_CODEC.encode(buf, rule.rarityWeightModifiers());
-                    TAG_LIST_STREAM_CODEC.encode(buf, rule.poolFilterTags());
-                },
-                buf -> new LootGenerationRule(
-                        buf.readVarInt(),
-                        buf.readVarInt(),
-                        buf.readFloat(),
-                        RARITY_MOD_STREAM_CODEC.decode(buf),
-                        TAG_LIST_STREAM_CODEC.decode(buf)
-                )
-        );
-
-        public LootGenerationRule {
-            minRolls = Mth.clamp(minRolls, 0, 64);
-            maxRolls = Math.max(minRolls, Mth.clamp(maxRolls, 0, 64));
-            maxFillRatio = Mth.clamp(maxFillRatio, 0.0f, 1.0f);
-            EnumMap<ScavengerRarity, Float> normalized = new EnumMap<>(ScavengerRarity.class);
-            for (ScavengerRarity rarity : ScavengerRarity.values()) {
-                float mod = rarityWeightModifiers != null && rarityWeightModifiers.containsKey(rarity)
-                        ? Math.max(0.0f, rarityWeightModifiers.get(rarity))
-                        : 1.0f;
-                normalized.put(rarity, mod);
-            }
-            rarityWeightModifiers = Map.copyOf(normalized);
-            poolFilterTags = (poolFilterTags == null || poolFilterTags.isEmpty())
-                    ? List.of("*")
-                    : List.copyOf(poolFilterTags);
-        }
-
-        public static LootGenerationRule createDefault() {
-            return new LootGenerationRule(1, 4, 0.70f, defaultRarityModifiers(), List.of("*"));
-        }
-
-        public static Map<ScavengerRarity, Float> defaultRarityModifiers() {
-            EnumMap<ScavengerRarity, Float> map = new EnumMap<>(ScavengerRarity.class);
-            for (ScavengerRarity rarity : ScavengerRarity.values()) {
-                map.put(rarity, 1.0f);
-            }
-            return Map.copyOf(map);
-        }
-    }
-
     public static final Codec<ScavengerContainerDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("container_id").forGetter(ScavengerContainerDef::containerId),
             Codec.STRING.fieldOf("title_key").forGetter(ScavengerContainerDef::titleKey),
@@ -114,10 +42,8 @@ public record ScavengerContainerDef(
             LootGenerationRule.CODEC.optionalFieldOf("loot_generation", LootGenerationRule.createDefault()).forGetter(ScavengerContainerDef::lootGeneration),
             Codec.STRING.optionalFieldOf("sound_theme", "metal_case").forGetter(ScavengerContainerDef::soundTheme)
     ).apply(instance, ScavengerContainerDef::new));
-
     private static final StreamCodec<ByteBuf, List<String>> STRING_LIST_STREAM_CODEC =
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list());
-
     public static final StreamCodec<FriendlyByteBuf, ScavengerContainerDef> STREAM_CODEC = StreamCodec.of(
             (buf, def) -> {
                 Identifier.STREAM_CODEC.encode(buf, def.containerId());
@@ -206,5 +132,75 @@ public record ScavengerContainerDef(
             return true;
         }
         return meta.matchesContainerTags(filterTags);
+    }
+
+    /**
+     * 容器战利品生成规则
+     */
+    public record LootGenerationRule(
+            int minRolls,
+            int maxRolls,
+            float maxFillRatio,
+            Map<ScavengerRarity, Float> rarityWeightModifiers,
+            List<String> poolFilterTags
+    ) {
+        public static final Codec<LootGenerationRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ExtraCodecs.intRange(0, 64).optionalFieldOf("min_rolls", 1).forGetter(LootGenerationRule::minRolls),
+                ExtraCodecs.intRange(0, 64).optionalFieldOf("max_rolls", 4).forGetter(LootGenerationRule::maxRolls),
+                Codec.floatRange(0.0f, 1.0f).optionalFieldOf("max_fill_ratio", 0.70f).forGetter(LootGenerationRule::maxFillRatio),
+                Codec.unboundedMap(ScavengerRarity.CODEC, Codec.FLOAT)
+                        .optionalFieldOf("rarity_weight_modifiers", defaultRarityModifiers())
+                        .forGetter(LootGenerationRule::rarityWeightModifiers),
+                Codec.STRING.listOf().optionalFieldOf("pool_filter_tags", List.of("*")).forGetter(LootGenerationRule::poolFilterTags)
+        ).apply(instance, LootGenerationRule::new));
+        private static final StreamCodec<ByteBuf, Map<ScavengerRarity, Float>> RARITY_MOD_STREAM_CODEC =
+                ByteBufCodecs.map(HashMap::new, ScavengerRarity.STREAM_CODEC, ByteBufCodecs.FLOAT);
+        private static final StreamCodec<ByteBuf, List<String>> TAG_LIST_STREAM_CODEC =
+                ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list());
+        public static final StreamCodec<FriendlyByteBuf, LootGenerationRule> STREAM_CODEC = StreamCodec.of(
+                (buf, rule) -> {
+                    buf.writeVarInt(rule.minRolls());
+                    buf.writeVarInt(rule.maxRolls());
+                    buf.writeFloat(rule.maxFillRatio());
+                    RARITY_MOD_STREAM_CODEC.encode(buf, rule.rarityWeightModifiers());
+                    TAG_LIST_STREAM_CODEC.encode(buf, rule.poolFilterTags());
+                },
+                buf -> new LootGenerationRule(
+                        buf.readVarInt(),
+                        buf.readVarInt(),
+                        buf.readFloat(),
+                        RARITY_MOD_STREAM_CODEC.decode(buf),
+                        TAG_LIST_STREAM_CODEC.decode(buf)
+                )
+        );
+
+        public LootGenerationRule {
+            minRolls = Mth.clamp(minRolls, 0, 64);
+            maxRolls = Math.max(minRolls, Mth.clamp(maxRolls, 0, 64));
+            maxFillRatio = Mth.clamp(maxFillRatio, 0.0f, 1.0f);
+            EnumMap<ScavengerRarity, Float> normalized = new EnumMap<>(ScavengerRarity.class);
+            for (ScavengerRarity rarity : ScavengerRarity.values()) {
+                float mod = rarityWeightModifiers != null && rarityWeightModifiers.containsKey(rarity)
+                        ? Math.max(0.0f, rarityWeightModifiers.get(rarity))
+                        : 1.0f;
+                normalized.put(rarity, mod);
+            }
+            rarityWeightModifiers = Map.copyOf(normalized);
+            poolFilterTags = (poolFilterTags == null || poolFilterTags.isEmpty())
+                    ? List.of("*")
+                    : List.copyOf(poolFilterTags);
+        }
+
+        public static LootGenerationRule createDefault() {
+            return new LootGenerationRule(1, 4, 0.70f, defaultRarityModifiers(), List.of("*"));
+        }
+
+        public static Map<ScavengerRarity, Float> defaultRarityModifiers() {
+            EnumMap<ScavengerRarity, Float> map = new EnumMap<>(ScavengerRarity.class);
+            for (ScavengerRarity rarity : ScavengerRarity.values()) {
+                map.put(rarity, 1.0f);
+            }
+            return Map.copyOf(map);
+        }
     }
 }

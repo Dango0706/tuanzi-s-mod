@@ -27,15 +27,12 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 /**
  * 拾荒回廊 - 黑匣子数据核心箱 方块实体
@@ -67,55 +64,6 @@ public class BlackboxCoreCaseBlockEntity extends BlockEntity implements MenuProv
 
     // ==================== IScavengerLootContainer 实现 ====================
 
-    @Override
-    public Identifier scavengerContainerDefId() {
-        return CONTAINER_DEF_ID;
-    }
-
-    @Override
-    public ScavengerLootContainerState scavengerLootState() {
-        return this.scavengerLootState;
-    }
-
-    @Override
-    public BlockPos containerWorldPos() {
-        return this.worldPosition;
-    }
-
-    @Override
-    public void markContainerChanged() {
-        this.setChanged();
-        if (this.level != null && !this.level.isClientSide()) {
-            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
-        }
-    }
-
-    @Override
-    public boolean isContainerRemoved() {
-        return this.isRemoved();
-    }
-
-    // ==================== 开箱动画与状态 ====================
-
-    public boolean isOpened() {
-        return this.opened;
-    }
-
-    public void openCase() {
-        if (!this.opened) {
-            this.opened = true;
-            this.openingParticleTicks = 30; // 持续 1.5 秒 (30 ticks) 喷涌数据流与泄压冷气
-            if (this.level != null && !this.level.isClientSide()) {
-                this.scavengerLootState.ensureGeneratedOnce(this.level.getRandom());
-            }
-            this.markContainerChanged();
-            ModLog.debug("[BlackboxCoreCaseBlockEntity] Box at " + this.worldPosition + " triggered openCase. Opening animation sent.");
-            if (this.level != null && !this.level.isClientSide()) {
-                this.triggerAnim("main_controller", "open");
-            }
-        }
-    }
-
     public static void tick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, BlackboxCoreCaseBlockEntity blockEntity) {
         if (blockEntity.openingParticleTicks > 0) {
             blockEntity.openingParticleTicks--;
@@ -145,6 +93,55 @@ public class BlackboxCoreCaseBlockEntity extends BlockEntity implements MenuProv
                     serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, px, py, pz, 1, cos * speed, 0.01, sin * speed, 0.01);
                     serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SNOWFLAKE, px, py, pz, 1, cos * speed * 0.8, 0.01, sin * speed * 0.8, 0.01);
                 }
+            }
+        }
+    }
+
+    @Override
+    public Identifier scavengerContainerDefId() {
+        return CONTAINER_DEF_ID;
+    }
+
+    @Override
+    public ScavengerLootContainerState scavengerLootState() {
+        return this.scavengerLootState;
+    }
+
+    @Override
+    public BlockPos containerWorldPos() {
+        return this.worldPosition;
+    }
+
+    @Override
+    public void markContainerChanged() {
+        this.setChanged();
+        if (this.level != null && !this.level.isClientSide()) {
+            this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        }
+    }
+
+    // ==================== 开箱动画与状态 ====================
+
+    @Override
+    public boolean isContainerRemoved() {
+        return this.isRemoved();
+    }
+
+    public boolean isOpened() {
+        return this.opened;
+    }
+
+    public void openCase() {
+        if (!this.opened) {
+            this.opened = true;
+            this.openingParticleTicks = 30; // 持续 1.5 秒 (30 ticks) 喷涌数据流与泄压冷气
+            if (this.level != null && !this.level.isClientSide()) {
+                this.scavengerLootState.ensureGeneratedOnce(this.level.getRandom());
+            }
+            this.markContainerChanged();
+            ModLog.debug("[BlackboxCoreCaseBlockEntity] Box at " + this.worldPosition + " triggered openCase. Opening animation sent.");
+            if (this.level != null && !this.level.isClientSide()) {
+                this.triggerAnim("main_controller", "open");
             }
         }
     }

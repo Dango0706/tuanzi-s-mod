@@ -3,12 +3,9 @@ package me.tuanzi.mixin;
 import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.util.ModLog;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
-import org.spongepowered.asm.mixin.Unique;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -18,10 +15,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -49,6 +49,10 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
     @Unique
     private ItemStack tuanzis_mod$leftRemainder = ItemStack.EMPTY;
 
+    public AnvilMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
+        super(type, syncId, playerInventory, access, slotDefinition);
+    }
+
     @Unique
     private static boolean tuanzis_mod$hasTonghuiEnchantment(ItemStack stack) {
         if (stack.isEmpty()) return false;
@@ -59,9 +63,6 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
             }
         }
         return false;
-    }
-    public AnvilMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
-        super(type, syncId, playerInventory, access, slotDefinition);
     }
 
     /**
@@ -127,7 +128,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         if (!left.isEmpty() && !left.is(ModItems.WORLD_SCULPTORS_PEN) && !right.isEmpty() && right.is(ModItems.VOID_INK_INGOT)) {
             ItemStack incompatibleTip = new ItemStack(net.minecraft.world.item.Items.REDSTONE);
             incompatibleTip.set(DataComponents.CUSTOM_NAME, Component.translatable("tooltip.tuanzis_mod.void_ink_ingot.incompatible").withStyle(ChatFormatting.RED));
-            
+
             net.minecraft.world.item.component.CustomData customData = net.minecraft.world.item.component.CustomData.of(new net.minecraft.nbt.CompoundTag());
             net.minecraft.nbt.CompoundTag tag = customData.copyTag();
             tag.putBoolean("ink_incompatible", true);

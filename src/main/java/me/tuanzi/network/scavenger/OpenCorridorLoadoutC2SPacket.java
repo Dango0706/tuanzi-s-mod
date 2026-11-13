@@ -15,7 +15,8 @@ public record OpenCorridorLoadoutC2SPacket() implements CustomPacketPayload {
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "open_corridor_loadout_c2s"));
 
     public static final StreamCodec<ByteBuf, OpenCorridorLoadoutC2SPacket> CODEC = StreamCodec.of(
-            (buf, pkt) -> {},
+            (buf, pkt) -> {
+            },
             buf -> new OpenCorridorLoadoutC2SPacket()
     );
 

@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -66,7 +65,7 @@ public class PlayerGachaManager {
                     ModLog.debug("解析玩家保底数据异常: " + uuid + "，错误: " + e.getMessage());
                 }
             }
-            
+
             // 磁盘不存在或损坏，则创建新的并落盘
             PlayerGachaState newState = new PlayerGachaState(uuid);
             saveStateSafe(newState);
@@ -112,7 +111,8 @@ public class PlayerGachaManager {
             ModLog.debug("安全原子保存玩家 " + state.getUuid() + " 数据失败: " + e.getMessage());
             try {
                 Files.deleteIfExists(tempPath);
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
     }
 

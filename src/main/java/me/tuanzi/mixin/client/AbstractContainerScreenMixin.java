@@ -12,14 +12,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemLore;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(AbstractContainerScreen.class)
 public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMenu> extends Screen {
-    
+
     protected AbstractContainerScreenMixin(Component title) {
         super(title);
     }
@@ -31,7 +31,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
             // 只渲染 Slot 0-44 的抽卡历史物品格子 (排除下排功能翻页栏以及玩家背包)
             if (slot.index < 45 && slot.hasItem()) {
                 ItemStack stack = slot.getItem();
-                
+
                 // 100% 稳定可靠的稀有度检测方法：优先遍历 Lore，再降级检查 CustomName
                 String rarity = null;
                 boolean isFateTarget = false;
@@ -50,7 +50,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
                         } else if (plainText.contains("Common")) {
                             rarity = "common";
                         }
-                        
+
                         if (plainText.contains("当前定轨目标")) {
                             isFateTarget = true;
                         }
@@ -108,7 +108,7 @@ public abstract class AbstractContainerScreenMixin<T extends AbstractContainerMe
 
                     // 1. 绘制半透明背景填充
                     graphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, bgColor);
-                    
+
                     // 2. 绘制槽位外边缘 1 像素高亮描边
                     graphics.outline(slot.x - 1, slot.y - 1, 18, 18, borderColor);
 

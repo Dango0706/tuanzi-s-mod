@@ -131,6 +131,10 @@
     {
       "id": "tuanzis_mod:husbandry",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:pervading_vibration",
+      "required": false
     }
   ]
 }

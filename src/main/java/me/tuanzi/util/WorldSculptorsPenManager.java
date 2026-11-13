@@ -13,6 +13,59 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class WorldSculptorsPenManager {
 
+    private static final Map<UUID, FillRecord> RECORDS = new ConcurrentHashMap<>();
+
+    /**
+     * 新增一次填充记录
+     */
+    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count) {
+        addRecord(id, dimension, records, blockId, count, null);
+    }
+
+    /**
+     * 新增一次带色彩数据与物品单耗的填充记录
+     */
+    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color, int itemsPerBlock) {
+        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color, itemsPerBlock));
+        cleanExpiredRecords();
+    }
+
+    /**
+     * 新增一次带色彩数据的填充记录
+     */
+    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color) {
+        addRecord(id, dimension, records, blockId, count, color, 1);
+    }
+
+    /**
+     * 获取一次填充记录，如果过期则移除并返回null
+     */
+    public static FillRecord getRecord(UUID id) {
+        if (id == null) return null;
+        FillRecord record = RECORDS.get(id);
+        if (record == null) return null;
+        if (record.isExpired()) {
+            RECORDS.remove(id);
+            return null;
+        }
+        return record;
+    }
+
+    /**
+     * 显式移除填充记录
+     */
+    public static void removeRecord(UUID id) {
+        RECORDS.remove(id);
+    }
+
+    /**
+     * 清理所有过期记录
+     */
+    public static void cleanExpiredRecords() {
+        long now = System.currentTimeMillis();
+        RECORDS.entrySet().removeIf(entry -> now - entry.getValue().timestamp > 60000);
+    }
+
     public static class FillRecord {
         public final UUID recordId;
         public final ResourceKey<Level> dimension;
@@ -61,58 +114,5 @@ public class WorldSculptorsPenManager {
         public BlockStateRecord(BlockPos pos, BlockState oldState) {
             this(pos, oldState, null);
         }
-    }
-
-    private static final Map<UUID, FillRecord> RECORDS = new ConcurrentHashMap<>();
-
-    /**
-     * 新增一次填充记录
-     */
-     public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count) {
-         addRecord(id, dimension, records, blockId, count, null);
-     }
-
-    /**
-     * 新增一次带色彩数据与物品单耗的填充记录
-     */
-    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color, int itemsPerBlock) {
-        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color, itemsPerBlock));
-        cleanExpiredRecords();
-    }
-
-    /**
-     * 新增一次带色彩数据的填充记录
-     */
-    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color) {
-        addRecord(id, dimension, records, blockId, count, color, 1);
-    }
-
-    /**
-     * 获取一次填充记录，如果过期则移除并返回null
-     */
-    public static FillRecord getRecord(UUID id) {
-        if (id == null) return null;
-        FillRecord record = RECORDS.get(id);
-        if (record == null) return null;
-        if (record.isExpired()) {
-            RECORDS.remove(id);
-            return null;
-        }
-        return record;
-    }
-
-    /**
-     * 显式移除填充记录
-     */
-    public static void removeRecord(UUID id) {
-        RECORDS.remove(id);
-    }
-
-    /**
-     * 清理所有过期记录
-     */
-    public static void cleanExpiredRecords() {
-        long now = System.currentTimeMillis();
-        RECORDS.entrySet().removeIf(entry -> now - entry.getValue().timestamp > 60000);
     }
 }

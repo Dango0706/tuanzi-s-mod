@@ -14,11 +14,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class SteelShieldStatusEffect extends MobEffect {
     public SteelShieldStatusEffect() {
         super(MobEffectCategory.BENEFICIAL, 0x708090); // 钢灰色/冷钢蓝
-        
+
         // 注册属性修改器：每级 +2 护甲，使用加法加成
         this.addAttributeModifier(Attributes.ARMOR,
-            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.steel_shield.armor"),
-            2.0, AttributeModifier.Operation.ADD_VALUE);
+                Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.steel_shield.armor"),
+                2.0, AttributeModifier.Operation.ADD_VALUE);
     }
 
     @Override

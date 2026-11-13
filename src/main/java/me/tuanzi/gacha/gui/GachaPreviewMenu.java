@@ -1,10 +1,6 @@
 package me.tuanzi.gacha.gui;
 
-import me.tuanzi.gacha.GachaPool;
-import me.tuanzi.gacha.GachaPoolItem;
-import me.tuanzi.gacha.PlayerGachaState;
-import me.tuanzi.gacha.PlayerGachaManager;
-import me.tuanzi.gacha.GachaLogic;
+import me.tuanzi.gacha.*;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +30,7 @@ public class GachaPreviewMenu extends ChestMenu {
         this.pool = pool;
         this.player = (ServerPlayer) playerInventory.player;
         this.state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
-        
+
         refreshSlots();
     }
 
@@ -151,7 +147,7 @@ public class GachaPreviewMenu extends ChestMenu {
                     GachaPoolItem clickedItem = activeItems.get(itemIdx);
                     PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), currentRarity);
                     boolean isCancel = anchor != null && clickedItem.getId().equals(anchor.getTargetItemId());
-                    
+
                     // 打开确认菜单
                     this.player.openMenu(new net.minecraft.world.SimpleMenuProvider(
                             (id, playerInv, p) -> new GachaFateConfirmMenu(id, playerInv, pool, clickedItem, currentRarity, isCancel),
@@ -215,10 +211,10 @@ public class GachaPreviewMenu extends ChestMenu {
 
     private List<String> getPlayerStatsLore() {
         boolean isLimited = GachaLogic.isLimitedPool(pool.getPoolId());
-        
+
         int legendaryCounter = isLimited ? state.getSakuraLegendaryCounter() : state.getNormalLegendaryCounter();
         int epicCounter = isLimited ? state.getSakuraEpicCounter() : state.getNormalEpicCounter();
-        
+
         double pLegendary = 0.02;
         int hardLegendaryLimit = isLimited ? 90 : 80;
         int softLegendaryStart = isLimited ? 70 : 60;
@@ -242,7 +238,7 @@ public class GachaPreviewMenu extends ChestMenu {
         lore.add(Component.literal("").getString());
         lore.add(String.format("§7▶ 下一抽传说级(金)概率: §6%.1f%%", pLegendary * 100.0));
         lore.add(String.format("§7▶ 下一抽史诗级(假饰)概率: §d%.1f%%", pEpic * 100.0));
-        
+
         if (isLimited) {
             lore.add("§8* 限定池若中金，直接 100% 获得当期限定传说大奖！");
         }

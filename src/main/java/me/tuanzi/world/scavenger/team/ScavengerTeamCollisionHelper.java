@@ -30,7 +30,7 @@ public class ScavengerTeamCollisionHelper {
 
         // 必须处于拾荒回廊维度
         if (!playerA.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL) ||
-            !playerB.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
+                !playerB.level().dimension().equals(ModDimensions.SCAVENGER_CORRIDOR_LEVEL)) {
             return false;
         }
 
@@ -50,7 +50,7 @@ public class ScavengerTeamCollisionHelper {
     private static class ClientCollisionHelper {
         private static boolean isClientTeammate(Player a, Player b) {
             return me.tuanzi.client.ScavengerTeamClient.isTeammate(a) &&
-                   me.tuanzi.client.ScavengerTeamClient.isTeammate(b);
+                    me.tuanzi.client.ScavengerTeamClient.isTeammate(b);
         }
     }
 }

@@ -16,13 +16,12 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class SteelBarrierTintSource implements ItemTintSource {
-    private final boolean isNext;
-
     public static final MapCodec<SteelBarrierTintSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-            Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
-        ).apply(i, SteelBarrierTintSource::new)
+            i -> i.group(
+                    Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
+            ).apply(i, SteelBarrierTintSource::new)
     );
+    private final boolean isNext;
 
     public SteelBarrierTintSource(boolean isNext) {
         this.isNext = isNext;

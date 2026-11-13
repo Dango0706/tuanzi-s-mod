@@ -34,12 +34,6 @@ public class HallReturnBeaconItem extends Item {
         super(properties);
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        return executeBeaconTeleport(player, stack);
-    }
-
     /**
      * 执行归厅传送逻辑（支持手持或独立饰品快捷键调用）
      */
@@ -71,12 +65,12 @@ public class HallReturnBeaconItem extends Item {
 
         Vec3 targetPos = new Vec3(0.5, 65.0, 0.5);
         TeleportTransition transition = new TeleportTransition(
-            corridorLevel,
-            targetPos,
-            Vec3.ZERO,
-            serverPlayer.getYRot(),
-            serverPlayer.getXRot(),
-            TeleportTransition.DO_NOTHING
+                corridorLevel,
+                targetPos,
+                Vec3.ZERO,
+                serverPlayer.getYRot(),
+                serverPlayer.getXRot(),
+                TeleportTransition.DO_NOTHING
         );
         serverPlayer.teleport(transition);
 
@@ -89,6 +83,12 @@ public class HallReturnBeaconItem extends Item {
 
         ModLog.debug(serverPlayer, null, "【拾荒回廊】玩家触发归厅信标，已瞬发传送至中央大厅 (0.5, 65.0, 0.5)。");
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        return executeBeaconTeleport(player, stack);
     }
 
     @Override

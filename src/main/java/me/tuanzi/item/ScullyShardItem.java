@@ -35,7 +35,7 @@ public class ScullyShardItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 CustomModelData cmd = new CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
 
@@ -64,23 +64,23 @@ public class ScullyShardItem extends Item {
         if (wearValue < 0.2) {
             // 等级 I：深空回响，监守者低鸣清澈悠远
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.WARDEN_LISTENING, SoundSource.PLAYERS, 0.4f, 1.4f);
+                    SoundEvents.WARDEN_LISTENING, SoundSource.PLAYERS, 0.4f, 1.4f);
         } else if (wearValue < 0.4) {
             // 等级 II：微纹共鸣，不稳定的闪烁与杂乱的颤音
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.WARDEN_LISTENING_ANGRY, SoundSource.PLAYERS, 0.4f, 1.0f);
+                    SoundEvents.WARDEN_LISTENING_ANGRY, SoundSource.PLAYERS, 0.4f, 1.0f);
         } else if (wearValue < 0.6) {
             // 等级 III：脉动裂痕，撕裂为断续的混响
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.WARDEN_NEARBY_CLOSE, SoundSource.PLAYERS, 0.5f, 0.8f);
+                    SoundEvents.WARDEN_NEARBY_CLOSE, SoundSource.PLAYERS, 0.5f, 0.8f);
         } else if (wearValue < 0.8) {
             // 等级 IV：衰变尖啸，刺耳的、类似监守者受创时的破碎尖啸
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.WARDEN_HURT, SoundSource.PLAYERS, 0.6f, 1.2f);
+                    SoundEvents.WARDEN_HURT, SoundSource.PLAYERS, 0.6f, 1.2f);
         } else {
             // 等级 V：静默残片，沉闷的钝响
             level.playSound(null, target.getX(), target.getY(), target.getZ(),
-                SoundEvents.WOOD_HIT, SoundSource.PLAYERS, 0.5f, 0.9f);
+                    SoundEvents.WOOD_HIT, SoundSource.PLAYERS, 0.5f, 0.9f);
         }
     }
 

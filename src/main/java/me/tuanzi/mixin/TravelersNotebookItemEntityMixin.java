@@ -20,25 +20,25 @@ public class TravelersNotebookItemEntityMixin {
     private void tuanzis_mod$onRemove(Entity.RemovalReason reason, CallbackInfo ci) {
         if ((Object) this instanceof ItemEntity entity) {
 
-        if (reason == Entity.RemovalReason.KILLED && !entity.level().isClientSide()) {
-            ItemStack notebook = entity.getItem();
-            if (notebook.is(ModItems.TRAVELERS_NOTEBOOK)) {
-                CustomData customData = notebook.get(DataComponents.CUSTOM_DATA);
-                if (customData != null) {
-                    CompoundTag tag = customData.copyTag();
-                    ListTag listTag = tag.getListOrEmpty("Items");
-                    for (int i = 0; i < listTag.size(); i++) {
-                        CompoundTag itemTag = listTag.getCompoundOrEmpty(i);
-                        ItemStack insideStack = me.tuanzi.util.ItemStackNbtHelper.read(entity.level().registryAccess(), itemTag.getCompoundOrEmpty("Item"));
-                        if (!insideStack.isEmpty()) {
-                            ItemEntity drop = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), insideStack);
-                            drop.setDefaultPickUpDelay();
-                            entity.level().addFreshEntity(drop);
+            if (reason == Entity.RemovalReason.KILLED && !entity.level().isClientSide()) {
+                ItemStack notebook = entity.getItem();
+                if (notebook.is(ModItems.TRAVELERS_NOTEBOOK)) {
+                    CustomData customData = notebook.get(DataComponents.CUSTOM_DATA);
+                    if (customData != null) {
+                        CompoundTag tag = customData.copyTag();
+                        ListTag listTag = tag.getListOrEmpty("Items");
+                        for (int i = 0; i < listTag.size(); i++) {
+                            CompoundTag itemTag = listTag.getCompoundOrEmpty(i);
+                            ItemStack insideStack = me.tuanzi.util.ItemStackNbtHelper.read(entity.level().registryAccess(), itemTag.getCompoundOrEmpty("Item"));
+                            if (!insideStack.isEmpty()) {
+                                ItemEntity drop = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), insideStack);
+                                drop.setDefaultPickUpDelay();
+                                entity.level().addFreshEntity(drop);
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 }

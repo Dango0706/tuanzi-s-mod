@@ -26,7 +26,7 @@ public abstract class ExperienceEnchantmentMixin {
 
             var registry = serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
             var enchantmentHolder = registry.getOrThrow(ModEnchantments.EXPERIENCE);
-            
+
             int level = EnchantmentHelper.getItemEnchantmentLevel(enchantmentHolder, mainHand);
             if (level > 0) {
                 int currentAmount = cir.getReturnValue();

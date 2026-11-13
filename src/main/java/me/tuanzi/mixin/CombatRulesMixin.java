@@ -12,18 +12,18 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public abstract class CombatRulesMixin {
 
     @ModifyVariable(
-        method = "getDamageAfterAbsorb(Lnet/minecraft/world/entity/LivingEntity;FLnet/minecraft/world/damagesource/DamageSource;FF)F",
-        at = @At("HEAD"),
-        argsOnly = true,
-        ordinal = 1
+            method = "getDamageAfterAbsorb(Lnet/minecraft/world/entity/LivingEntity;FLnet/minecraft/world/damagesource/DamageSource;FF)F",
+            at = @At("HEAD"),
+            argsOnly = true,
+            ordinal = 1
     )
     private static float tuanzis_mod$modifyArmorValue(
-        float totalArmor,
-        LivingEntity victim,
-        float damage,
-        DamageSource source,
-        float totalArmorArg,
-        float armorToughness
+            float totalArmor,
+            LivingEntity victim,
+            float damage,
+            DamageSource source,
+            float totalArmorArg,
+            float armorToughness
     ) {
         return DamageCalculator.calculateArmorIgnored(totalArmor, source, victim);
     }

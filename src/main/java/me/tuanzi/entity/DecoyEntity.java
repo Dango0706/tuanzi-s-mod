@@ -1,11 +1,9 @@
 package me.tuanzi.entity;
 
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,33 +18,34 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
 public class DecoyEntity extends Avatar {
-    public static EntityType.EntityFactory<DecoyEntity> constructor = DecoyEntity::new;
-
     protected static final EntityDataAccessor<ResolvableProfile> DATA_PROFILE = SynchedEntityData.defineId(
             DecoyEntity.class, EntityDataSerializers.RESOLVABLE_PROFILE
     );
-
-    public enum DecoyAction {
-        IDLE, WALK, RUN
-    }
-
+    public static EntityType.EntityFactory<DecoyEntity> constructor = DecoyEntity::new;
     private DecoyAction currentAction = DecoyAction.IDLE;
     private int actionTicks = 0;
     private float moveAngle = 0.0f;
-
     // 头部自主随机运动状态，使假目标头部可以随意自然地转动
     private float relativeTargetHeadYaw = 0.0f;
     private float targetHeadPitch = 0.0f;
     private int lookTimer = 0;
-
     public DecoyEntity(EntityType<? extends Avatar> type, Level level) {
         super(type, level);
+    }
+
+    public static DecoyEntity create(EntityType<DecoyEntity> type, Level level) {
+        return constructor.create(type, level);
+    }
+
+    public static AttributeSupplier.Builder createAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0)
+                .add(Attributes.ARMOR, 0.0);
     }
 
     @Override
@@ -57,10 +56,6 @@ public class DecoyEntity extends Avatar {
     @Override
     public boolean shouldDropExperience() {
         return false;
-    }
-
-    public static DecoyEntity create(EntityType<DecoyEntity> type, Level level) {
-        return constructor.create(type, level);
     }
 
     @Override
@@ -78,12 +73,6 @@ public class DecoyEntity extends Avatar {
         this.entityData.set(DATA_PROFILE, profile);
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 20.0)
-                .add(Attributes.ARMOR, 0.0);
-    }
-
     @Override
     public void tick() {
         super.tick();
@@ -97,9 +86,9 @@ public class DecoyEntity extends Avatar {
 
                 // 发送烟雾和Poof粒子效果
                 if (this.level() instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, 
+                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF,
                             this.getX(), this.getY() + 1.0, this.getZ(), 20, 0.3, 0.5, 0.3, 0.05);
-                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, 
+                    serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE,
                             this.getX(), this.getY() + 1.0, this.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
                 }
 
@@ -145,7 +134,7 @@ public class DecoyEntity extends Avatar {
             // 根据状态控制物理移动和朝向
             if (this.currentAction != DecoyAction.IDLE) {
                 float speed = this.currentAction == DecoyAction.RUN ? 0.18F : 0.10F;
-                
+
                 // 疾跑时跳跃增加移动速度
                 if (this.currentAction == DecoyAction.RUN) {
                     if (this.onGround() && this.random.nextFloat() < 0.05F) {
@@ -250,9 +239,9 @@ public class DecoyEntity extends Avatar {
                     SoundEvents.DECORATED_POT_SHATTER, SoundSource.NEUTRAL, 1.0F, 1.0F);
 
             // 发送烟雾和Poof粒子效果
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, 
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF,
                     this.getX(), this.getY() + 1.0, this.getZ(), 20, 0.3, 0.5, 0.3, 0.05);
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, 
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE,
                     this.getX(), this.getY() + 1.0, this.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
 
             // 激怒 10 格内所有怪物：获得速度 II 持续 10 秒
@@ -267,5 +256,9 @@ public class DecoyEntity extends Avatar {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean hitByPlayer) {
         // 重写确保绝对不会掉落任何物品
+    }
+
+    public enum DecoyAction {
+        IDLE, WALK, RUN
     }
 }

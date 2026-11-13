@@ -19,53 +19,69 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
     protected void addTags(HolderLookup.Provider registries) {
         // 将回响破障者和蜂刺余响归入"剑 (swords)"这一类 Item 标签中
         builder(ItemTags.SWORDS)
-            .add(ModItems.ECHO_BREAKER.builtInRegistryHolder().key())
-            .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key())
-            .add(ModItems.RIFT_SCAR.builtInRegistryHolder().key())
-            .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
-            .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
-            .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key())
-            .add(ModItems.PULSE_RESONANCE_SWORD.builtInRegistryHolder().key())
-            .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
+                .add(ModItems.ECHO_BREAKER.builtInRegistryHolder().key())
+                .add(ModItems.BEE_STING_ECHO.builtInRegistryHolder().key())
+                .add(ModItems.RIFT_SCAR.builtInRegistryHolder().key())
+                .add(ModItems.SCULLY_SHARD.builtInRegistryHolder().key())
+                .add(ModItems.TIDE_CLEAVER.builtInRegistryHolder().key())
+                .add(ModItems.STEEL_BARRIER.builtInRegistryHolder().key())
+                .add(ModItems.PULSE_RESONANCE_SWORD.builtInRegistryHolder().key())
+                .add(ModItems.STAR_RIFT_BLADE.builtInRegistryHolder().key())
+                .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.EARTH_PILE_HAMMER.builtInRegistryHolder().key());
+
+        builder(ItemTags.WEAPON_ENCHANTABLE)
+                .add(ModItems.EARTH_PILE_HAMMER.builtInRegistryHolder().key());
+
+        builder(ItemTags.SHARP_WEAPON_ENCHANTABLE)
+                .add(ModItems.EARTH_PILE_HAMMER.builtInRegistryHolder().key());
 
         // 将潮汐织靴加入原版 boots 标签
         builder(ItemTags.FOOT_ARMOR)
-            .add(ModItems.TIDAL_WEAVE_BOOTS.builtInRegistryHolder().key());
+                .add(ModItems.TIDAL_WEAVE_BOOTS.builtInRegistryHolder().key());
 
         // 注册潮汐织靴的修补材料标签
         builder(me.tuanzi.init.ModArmorMaterials.REPAIRS_TIDAL_WEAVE_BOOTS)
-            .add(net.minecraft.world.item.Items.PHANTOM_MEMBRANE.builtInRegistryHolder().key())
-            .add(net.minecraft.world.item.Items.PRISMARINE_CRYSTALS.builtInRegistryHolder().key());
+                .add(net.minecraft.world.item.Items.PHANTOM_MEMBRANE.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.PRISMARINE_CRYSTALS.builtInRegistryHolder().key());
 
         // 注册贯革适用的弓与弩标签
         builder(me.tuanzi.init.ModItemTags.BOW_AND_CROSSBOW_ENCHANTABLE)
-            .add(net.minecraft.world.item.Items.BOW.builtInRegistryHolder().key())
-            .add(net.minecraft.world.item.Items.CROSSBOW.builtInRegistryHolder().key())
-            .addOptionalTag(ItemTags.BOW_ENCHANTABLE)
-            .addOptionalTag(ItemTags.CROSSBOW_ENCHANTABLE);
+                .add(net.minecraft.world.item.Items.BOW.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.CROSSBOW.builtInRegistryHolder().key())
+                .addOptionalTag(ItemTags.BOW_ENCHANTABLE)
+                .addOptionalTag(ItemTags.CROSSBOW_ENCHANTABLE);
 
         // 注册野太刀附魔适用的武器标签
         builder(me.tuanzi.init.ModItemTags.NODACHI_ENCHANTABLE)
-            .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
-            .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
+                .add(ModItems.WOODEN_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.STONE_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.IRON_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.GOLDEN_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.DIAMOND_NODACHI.builtInRegistryHolder().key())
+                .add(ModItems.NETHERITE_NODACHI.builtInRegistryHolder().key());
 
         // 注册经验亲和适用的斧、镐、锄标签
         builder(me.tuanzi.init.ModItemTags.AXE_PICKAXE_HOE_ENCHANTABLE)
-            .addOptionalTag(ItemTags.AXES)
-            .addOptionalTag(ItemTags.PICKAXES)
-            .addOptionalTag(ItemTags.HOES);
+                .addOptionalTag(ItemTags.AXES)
+                .addOptionalTag(ItemTags.PICKAXES)
+                .addOptionalTag(ItemTags.HOES);
 
         // 注册鞘翅专属附魔标签
         builder(me.tuanzi.init.ModItemTags.ELYTRA_ENCHANTABLE)
-            .add(net.minecraft.world.item.Items.ELYTRA.builtInRegistryHolder().key());
+                .add(net.minecraft.world.item.Items.ELYTRA.builtInRegistryHolder().key());
+
+        // 注册方块破坏器工具槽允许的工具标签
+        builder(me.tuanzi.init.ModItemTags.BLOCK_BREAKER_TOOLS)
+                .addOptionalTag(ItemTags.PICKAXES)
+                .addOptionalTag(ItemTags.AXES)
+                .addOptionalTag(ItemTags.SHOVELS)
+                .addOptionalTag(ItemTags.HOES)
+                .add(net.minecraft.world.item.Items.SHEARS.builtInRegistryHolder().key());
     }
 }

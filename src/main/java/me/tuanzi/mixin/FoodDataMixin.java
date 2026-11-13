@@ -19,12 +19,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
-    @Shadow private int foodLevel;
-    @Shadow private float saturationLevel;
-    @Shadow private float exhaustionLevel;
-    @Shadow private int tickTimer;
+    @Shadow
+    private int foodLevel;
+    @Shadow
+    private float saturationLevel;
+    @Shadow
+    private float exhaustionLevel;
+    @Shadow
+    private int tickTimer;
 
-    @Shadow public abstract void addExhaustion(float amount);
+    @Shadow
+    public abstract void addExhaustion(float amount);
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$applyMetabolismRegen(ServerPlayer player, CallbackInfo ci) {
@@ -69,7 +74,7 @@ public abstract class FoodDataMixin {
                 this.addExhaustion(6.0F);
                 this.tickTimer = 0;
                 ModLog.debug(player, "【代谢】触发自然生命恢复 1 点 (生命: %.1f/%.1f, 饥饿值: %d, 等级: %d, 间隔: %d ticks)",
-                    player.getHealth(), player.getMaxHealth(), this.foodLevel, levelEnch, threshold);
+                        player.getHealth(), player.getMaxHealth(), this.foodLevel, levelEnch, threshold);
             }
         } else if (this.foodLevel <= 0) {
             // 原版饥饿扣血

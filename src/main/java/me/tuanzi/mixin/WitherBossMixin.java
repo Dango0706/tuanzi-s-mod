@@ -3,7 +3,6 @@ package me.tuanzi.mixin;
 import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.init.ModStatusEffects;
 import me.tuanzi.util.ModLog;
-import me.tuanzi.util.WitherKillTracker;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -51,10 +50,10 @@ public abstract class WitherBossMixin extends Monster {
     private void tuanzis_mod$allowModStatusEffects(MobEffectInstance newEffect, Entity source, CallbackInfoReturnable<Boolean> cir) {
         Holder<MobEffect> effect = newEffect.getEffect();
         if (effect.is(ModStatusEffects.TEARING)
-            || effect.is(ModStatusEffects.BEE_POISON)
-            || effect.is(ModStatusEffects.BEE_POISON_COOLDOWN)
-            || effect.is(ModStatusEffects.RESONANCE)
-            || effect.is(ModStatusEffects.TIDE_EROSION)) {
+                || effect.is(ModStatusEffects.BEE_POISON)
+                || effect.is(ModStatusEffects.BEE_POISON_COOLDOWN)
+                || effect.is(ModStatusEffects.RESONANCE)
+                || effect.is(ModStatusEffects.TIDE_EROSION)) {
             me.tuanzi.util.ModLog.debug(source, this, "【凋零效果免疫解除】允许对凋零施加效果: " + effect.getRegisteredName());
             cir.setReturnValue(super.addEffect(newEffect, source));
         }
@@ -69,7 +68,7 @@ public abstract class WitherBossMixin extends Monster {
                 tuanzis_mod$totalPlayerDamage += damage;
                 float ratio = tuanzis_mod$totalDamageTaken > 0 ? (tuanzis_mod$totalPlayerDamage / tuanzis_mod$totalDamageTaken) : 0f;
                 ModLog.debug(player, this, String.format("玩家 %s 对凋灵造成 %.2f 伤害 (玩家总伤害: %.2f, 凋灵总承伤: %.2f, 玩家总体占比: %.2f%%)",
-                    player.getScoreboardName(), damage, tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
+                        player.getScoreboardName(), damage, tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
 
                 if (ratio >= 0.90f) {
                     if (!tuanzis_mod$isMarkedGlowing) {
@@ -81,7 +80,7 @@ public abstract class WitherBossMixin extends Monster {
             } else {
                 float ratio = tuanzis_mod$totalDamageTaken > 0 ? (tuanzis_mod$totalPlayerDamage / tuanzis_mod$totalDamageTaken) : 0f;
                 ModLog.debug(null, this, String.format("凋灵受到非玩家伤害 %.2f (来源: %s, 玩家总伤害: %.2f, 凋灵总承伤: %.2f, 玩家总体占比: %.2f%%)",
-                    damage, source.getMsgId(), tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
+                        damage, source.getMsgId(), tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
 
                 // 若非玩家伤害导致玩家总体占比跌破 90%，解除发光
                 if (ratio < 0.90f && tuanzis_mod$isMarkedGlowing) {
@@ -98,38 +97,38 @@ public abstract class WitherBossMixin extends Monster {
         if (killedByPlayer && source.getEntity() instanceof ServerPlayer killer) {
             float ratio = tuanzis_mod$totalDamageTaken > 0 ? (tuanzis_mod$totalPlayerDamage / tuanzis_mod$totalDamageTaken) : 0f;
             ModLog.debug(killer, this, String.format("【凋灵被击杀】最后一击杀死凋灵的玩家: %s, 玩家总体伤害: %.2f, 凋灵总承伤: %.2f, 玩家总体占比: %.2f%%",
-                killer.getScoreboardName(), tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
+                    killer.getScoreboardName(), tuanzis_mod$totalPlayerDamage, tuanzis_mod$totalDamageTaken, ratio * 100));
 
             // 只需玩家总体伤害 >= 90%，积分奖励给将凋灵杀死的玩家
             if (ratio >= 0.90f) {
                 int newKills = me.tuanzi.util.WitherKillManager.addKills(killer, 1);
-                    int currentProgress = newKills % 1000;
-                    if (currentProgress == 0 && newKills > 0) {
-                        currentProgress = 1000;
-                    }
-                    ModLog.debug(killer, this, "【凋灵有效击杀】最后一击杀死凋灵的玩家 " + killer.getScoreboardName() + " 获得击杀计数！当前累计击杀数: " + newKills);
+                int currentProgress = newKills % 1000;
+                if (currentProgress == 0 && newKills > 0) {
+                    currentProgress = 1000;
+                }
+                ModLog.debug(killer, this, "【凋灵有效击杀】最后一击杀死凋灵的玩家 " + killer.getScoreboardName() + " 获得击杀计数！当前累计击杀数: " + newKills);
 
-                    // 动作栏（ActionBar）简短提示当前进度
-                    killer.sendSystemMessage(Component.translatable("chat.tuanzis_mod.witherkills.actionbar", currentProgress, 1000), true);
+                // 动作栏（ActionBar）简短提示当前进度
+                killer.sendSystemMessage(Component.translatable("chat.tuanzis_mod.witherkills.actionbar", currentProgress, 1000), true);
 
-                    // 每达到 1000 次掉落 1 本灵魂绑定附魔书
-                    if (newKills % 1000 == 0) {
-                        var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                        var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
+                // 每达到 1000 次掉落 1 本灵魂绑定附魔书
+                if (newKills % 1000 == 0) {
+                    var enchantmentRegistry = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                    var soulboundHolder = enchantmentRegistry.getOrThrow(ModEnchantments.SOULBOUND);
 
-                        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-                        EnchantmentHelper.updateEnchantments(book, mutable -> mutable.set(soulboundHolder, 1));
+                    ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+                    EnchantmentHelper.updateEnchantments(book, mutable -> mutable.set(soulboundHolder, 1));
 
-                        killer.spawnAtLocation(level, book);
-                        ModLog.debug(killer, this, "【灵魂绑定掉落】玩家 " + killer.getScoreboardName() + " 累计击杀达到 " + newKills + " 次！已在玩家身旁掉落 1 本灵魂绑定附魔书！");
+                    killer.spawnAtLocation(level, book);
+                    ModLog.debug(killer, this, "【灵魂绑定掉落】玩家 " + killer.getScoreboardName() + " 累计击杀达到 " + newKills + " 次！已在玩家身旁掉落 1 本灵魂绑定附魔书！");
 
-                        // 播放特殊音效
-                        level.playSound(null, killer.getX(), killer.getY(), killer.getZ(),
+                    // 播放特殊音效
+                    level.playSound(null, killer.getX(), killer.getY(), killer.getZ(),
                             SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-                        // 聊天栏高亮祝贺
-                        killer.sendSystemMessage(Component.translatable("chat.tuanzis_mod.witherkills.reward", newKills));
-                    }
+                    // 聊天栏高亮祝贺
+                    killer.sendSystemMessage(Component.translatable("chat.tuanzis_mod.witherkills.reward", newKills));
+                }
             } else {
                 ModLog.debug(killer, this, "【凋灵击杀无效】玩家总体伤害占比不足 90% (当前: " + String.format("%.2f%%", ratio * 100) + ")，不计入凋灵击杀数。");
             }

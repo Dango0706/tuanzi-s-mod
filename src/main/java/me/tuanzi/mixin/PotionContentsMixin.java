@@ -46,16 +46,16 @@ public class PotionContentsMixin {
                             if (effect.getEffect().value().getCategory() == MobEffectCategory.BENEFICIAL) {
                                 int newDuration = Math.round(effect.getDuration() * multiplier);
                                 MobEffectInstance scaledEffect = new MobEffectInstance(
-                                    effect.getEffect(),
-                                    newDuration,
-                                    effect.getAmplifier(),
-                                    effect.isAmbient(),
-                                    effect.isVisible(),
-                                    effect.showIcon()
+                                        effect.getEffect(),
+                                        newDuration,
+                                        effect.getAmplifier(),
+                                        effect.isAmbient(),
+                                        effect.isVisible(),
+                                        effect.showIcon()
                                 );
                                 user.addEffect(scaledEffect);
                                 ModLog.debug(player, "【药理】正面药水效果 %s 持续时间由 %d 提升至 %d ticks (倍率: %.2f, 等级: %d)",
-                                    effect.getEffect().value().getDescriptionId(), effect.getDuration(), newDuration, multiplier, levelEnch);
+                                        effect.getEffect().value().getDescriptionId(), effect.getDuration(), newDuration, multiplier, levelEnch);
                             } else {
                                 user.addEffect(effect);
                             }

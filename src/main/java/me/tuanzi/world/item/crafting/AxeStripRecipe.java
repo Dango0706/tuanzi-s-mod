@@ -11,13 +11,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.PlacementInfo;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
 import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
 import net.minecraft.world.item.crafting.display.SlotDisplay;
@@ -26,38 +20,35 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class AxeStripRecipe extends ShapelessRecipe {
+    public static final MapCodec<AxeStripRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(
+            i -> i.group(
+                            Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
+                            CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
+                            ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.myResult),
+                            Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(o -> o.myIngredients)
+                    )
+                    .apply(i, AxeStripRecipe::new)
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, AxeStripRecipe> STREAM_CODEC = StreamCodec.composite(
+            Recipe.CommonInfo.STREAM_CODEC,
+            o -> o.commonInfo,
+            CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
+            o -> o.bookInfo,
+            ItemStackTemplate.STREAM_CODEC,
+            o -> o.myResult,
+            Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()),
+            o -> o.myIngredients,
+            AxeStripRecipe::new
+    );
+    public static final RecipeSerializer<AxeStripRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
     private final ItemStackTemplate myResult;
     private final List<Ingredient> myIngredients;
 
-    public static final MapCodec<AxeStripRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-                Recipe.CommonInfo.MAP_CODEC.forGetter(o -> o.commonInfo),
-                CraftingRecipe.CraftingBookInfo.MAP_CODEC.forGetter(o -> o.bookInfo),
-                ItemStackTemplate.CODEC.fieldOf("result").forGetter(o -> o.myResult),
-                Ingredient.CODEC.listOf(1, 9).fieldOf("ingredients").forGetter(o -> o.myIngredients)
-            )
-            .apply(i, AxeStripRecipe::new)
-    );
-
-    public static final StreamCodec<RegistryFriendlyByteBuf, AxeStripRecipe> STREAM_CODEC = StreamCodec.composite(
-        Recipe.CommonInfo.STREAM_CODEC,
-        o -> o.commonInfo,
-        CraftingRecipe.CraftingBookInfo.STREAM_CODEC,
-        o -> o.bookInfo,
-        ItemStackTemplate.STREAM_CODEC,
-        o -> o.myResult,
-        Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()),
-        o -> o.myIngredients,
-        AxeStripRecipe::new
-    );
-
-    public static final RecipeSerializer<AxeStripRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
-
     public AxeStripRecipe(
-        Recipe.CommonInfo commonInfo,
-        CraftingRecipe.CraftingBookInfo bookInfo,
-        ItemStackTemplate result,
-        List<Ingredient> ingredients
+            Recipe.CommonInfo commonInfo,
+            CraftingRecipe.CraftingBookInfo bookInfo,
+            ItemStackTemplate result,
+            List<Ingredient> ingredients
     ) {
         super(commonInfo, bookInfo, result, ingredients);
         this.myResult = result;
@@ -89,8 +80,8 @@ public class AxeStripRecipe extends ShapelessRecipe {
             return false;
         } else {
             return input.size() == 1 && this.myIngredients.size() == 1
-                ? this.myIngredients.getFirst().test(input.getItem(0))
-                : input.stackedContents().canCraft(this, null);
+                    ? this.myIngredients.getFirst().test(input.getItem(0))
+                    : input.stackedContents().canCraft(this, null);
         }
     }
 
@@ -102,11 +93,11 @@ public class AxeStripRecipe extends ShapelessRecipe {
     @Override
     public List<RecipeDisplay> display() {
         return List.of(
-            new ShapelessCraftingRecipeDisplay(
-                this.myIngredients.stream().map(Ingredient::display).toList(),
-                new SlotDisplay.ItemStackSlotDisplay(this.myResult),
-                new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
-            )
+                new ShapelessCraftingRecipeDisplay(
+                        this.myIngredients.stream().map(Ingredient::display).toList(),
+                        new SlotDisplay.ItemStackSlotDisplay(this.myResult),
+                        new SlotDisplay.ItemSlotDisplay(Items.CRAFTING_TABLE)
+                )
         );
     }
 
@@ -124,13 +115,13 @@ public class AxeStripRecipe extends ShapelessRecipe {
                         int maxDamage = axeCopy.getMaxDamage();
                         int newDamage = currentDamage + 1;
                         ModLog.debug(String.format("去皮合成配方：斧头 [%s] 消耗 1 点耐久，消耗前耐久: %d/%d，消耗后耐久: %d/%d",
-                            axeCopy.getHoverName().getString(), maxDamage - currentDamage, maxDamage, maxDamage - newDamage, maxDamage));
+                                axeCopy.getHoverName().getString(), maxDamage - currentDamage, maxDamage, maxDamage - newDamage, maxDamage));
                         if (newDamage < maxDamage) {
                             axeCopy.setDamageValue(newDamage);
                             remaining.set(i, axeCopy);
                         } else {
                             ModLog.debug(String.format("去皮合成配方：斧头 [%s] 耐久耗尽，已损坏消失！",
-                                axeCopy.getHoverName().getString()));
+                                    axeCopy.getHoverName().getString()));
                             remaining.set(i, ItemStack.EMPTY);
                         }
                     } else {

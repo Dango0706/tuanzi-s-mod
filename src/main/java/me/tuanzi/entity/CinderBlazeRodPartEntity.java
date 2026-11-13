@@ -35,12 +35,10 @@ import java.util.UUID;
  * 物理拦截与偏折机制：反弹常规投射物，受穿透附魔穿透，损毁后通知 Boss 独立重铸
  */
 public class CinderBlazeRodPartEntity extends Entity implements GeoEntity {
+    public static final float MAX_ROD_HEALTH = 15.0F;
     private static final EntityDataAccessor<Float> ROD_HEALTH = SynchedEntityData.defineId(CinderBlazeRodPartEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> ROD_INDEX = SynchedEntityData.defineId(CinderBlazeRodPartEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PARENT_BOSS_ID = SynchedEntityData.defineId(CinderBlazeRodPartEntity.class, EntityDataSerializers.INT);
-
-    public static final float MAX_ROD_HEALTH = 15.0F;
-
     private static final RawAnimation ANIM_IDLE = RawAnimation.begin().thenLoop("animation.cinder_blaze_rod.idle");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);

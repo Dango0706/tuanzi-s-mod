@@ -3,26 +3,45 @@ package me.tuanzi.gacha;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.item.ItemStack;
-import com.mojang.serialization.JsonOps;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GachaPoolItem {
     private final String id;
-    private int weight;
     private final List<String> onObtainCommands;
     private final ItemStack item;
+    private int weight;
 
     public GachaPoolItem(String id, int weight, List<String> onObtainCommands, ItemStack item) {
         this.id = id;
         this.weight = weight;
         this.onObtainCommands = onObtainCommands != null ? onObtainCommands : new ArrayList<>();
         this.item = item != null ? item : ItemStack.EMPTY;
+    }
+
+    public static GachaPoolItem fromJson(JsonObject json, HolderLookup.Provider registries) {
+        String id = json.get("id").getAsString();
+        int weight = json.has("weight") ? json.get("weight").getAsInt() : 10;
+
+        List<String> onObtainCommands = new ArrayList<>();
+        if (json.has("on_obtain_commands")) {
+            JsonArray array = json.getAsJsonArray("on_obtain_commands");
+            for (JsonElement el : array) {
+                onObtainCommands.add(el.getAsString());
+            }
+        }
+
+        // 利用 OPTIONAL_CODEC 原生解码
+        ItemStack item = ItemStack.OPTIONAL_CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registries), json.get("item"))
+                .result()
+                .orElse(ItemStack.EMPTY);
+
+        return new GachaPoolItem(id, weight, onObtainCommands, item);
     }
 
     public String getId() {
@@ -41,19 +60,19 @@ public class GachaPoolItem {
         return onObtainCommands;
     }
 
-    public ItemStack getItem() {
-        return item;
-    }
-
     // ──────────────────────────────────────────────
     // 原生 1.21+ Component / Registry 兼容编解码
     // ──────────────────────────────────────────────
+
+    public ItemStack getItem() {
+        return item;
+    }
 
     public JsonObject toJson(HolderLookup.Provider registries) {
         JsonObject json = new JsonObject();
         json.addProperty("id", id);
         json.addProperty("weight", weight);
-        
+
         if (!onObtainCommands.isEmpty()) {
             JsonArray cmdArray = new JsonArray();
             for (String cmd : onObtainCommands) {
@@ -68,25 +87,5 @@ public class GachaPoolItem {
         json.add("item", itemJson);
 
         return json;
-    }
-
-    public static GachaPoolItem fromJson(JsonObject json, HolderLookup.Provider registries) {
-        String id = json.get("id").getAsString();
-        int weight = json.has("weight") ? json.get("weight").getAsInt() : 10;
-        
-        List<String> onObtainCommands = new ArrayList<>();
-        if (json.has("on_obtain_commands")) {
-            JsonArray array = json.getAsJsonArray("on_obtain_commands");
-            for (JsonElement el : array) {
-                onObtainCommands.add(el.getAsString());
-            }
-        }
-
-        // 利用 OPTIONAL_CODEC 原生解码
-        ItemStack item = ItemStack.OPTIONAL_CODEC.parse(RegistryOps.create(JsonOps.INSTANCE, registries), json.get("item"))
-                .result()
-                .orElse(ItemStack.EMPTY);
-
-        return new GachaPoolItem(id, weight, onObtainCommands, item);
     }
 }

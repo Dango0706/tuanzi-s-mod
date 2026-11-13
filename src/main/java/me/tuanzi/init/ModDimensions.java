@@ -1,11 +1,7 @@
 package me.tuanzi.init;
 
 import me.tuanzi.Tuanzis_mod;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
@@ -41,18 +37,18 @@ import java.util.Optional;
 
 public class ModDimensions {
     public static final ResourceKey<Level> SCAVENGER_CORRIDOR_LEVEL = ResourceKey.create(
-        Registries.DIMENSION,
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
+            Registries.DIMENSION,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
     );
 
     public static final ResourceKey<DimensionType> SCAVENGER_CORRIDOR_TYPE = ResourceKey.create(
-        Registries.DIMENSION_TYPE,
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor_type")
+            Registries.DIMENSION_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor_type")
     );
 
     public static final ResourceKey<LevelStem> SCAVENGER_CORRIDOR_STEM = ResourceKey.create(
-        Registries.LEVEL_STEM,
-        Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
+            Registries.LEVEL_STEM,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
     );
 
     public static void bootstrapDimensionType(BootstrapContext<DimensionType> context) {
@@ -61,41 +57,41 @@ public class ModDimensions {
         HolderGetter<WorldClock> clocks = context.lookup(Registries.WORLD_CLOCK);
 
         EnvironmentAttributeMap attributes = EnvironmentAttributeMap.builder()
-            .set(EnvironmentAttributes.FOG_COLOR, ARGB.vector3fFromRGB24(-15199464)) // 深暗迷雾
-            .set(EnvironmentAttributes.SKY_LIGHT_COLOR, ARGB.vector3fFromRGB24(-5480243))
-            .set(EnvironmentAttributes.SKY_COLOR, ARGB.vector3fFromRGB24(-16777216))
-            .set(EnvironmentAttributes.SKY_LIGHT_FACTOR, 0.0F)
-            .set(EnvironmentAttributes.AMBIENT_LIGHT_COLOR, ARGB.vector3fFromRGB24(-12630209))
-            .set(EnvironmentAttributes.BED_RULE, new BedRule(
-                BedRule.Rule.NEVER,
-                BedRule.Rule.NEVER,
-                false,
-                false,
-                Optional.of(Component.translatable("message.tuanzis_mod.scavenger_corridor.no_sleep"))
-            ))
-            .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
-            .build();
+                .set(EnvironmentAttributes.FOG_COLOR, ARGB.vector3fFromRGB24(-15199464)) // 深暗迷雾
+                .set(EnvironmentAttributes.SKY_LIGHT_COLOR, ARGB.vector3fFromRGB24(-5480243))
+                .set(EnvironmentAttributes.SKY_COLOR, ARGB.vector3fFromRGB24(-16777216))
+                .set(EnvironmentAttributes.SKY_LIGHT_FACTOR, 0.0F)
+                .set(EnvironmentAttributes.AMBIENT_LIGHT_COLOR, ARGB.vector3fFromRGB24(-12630209))
+                .set(EnvironmentAttributes.BED_RULE, new BedRule(
+                        BedRule.Rule.NEVER,
+                        BedRule.Rule.NEVER,
+                        false,
+                        false,
+                        Optional.of(Component.translatable("message.tuanzis_mod.scavenger_corridor.no_sleep"))
+                ))
+                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
+                .build();
 
         context.register(
-            SCAVENGER_CORRIDOR_TYPE,
-            new DimensionType(
-                true,
-                false,
-                false,
-                false,
-                1.0,
-                -64,
-                384,
-                384,
-                blocks.getOrThrow(BlockTags.INFINIBURN_END),
-                0.1F,
-                new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
-                DimensionType.Skybox.END,
-                CardinalLighting.Type.DEFAULT,
-                attributes,
-                timelines.getOrThrow(TimelineTags.IN_END),
-                Optional.of(clocks.getOrThrow(WorldClocks.THE_END))
-            )
+                SCAVENGER_CORRIDOR_TYPE,
+                new DimensionType(
+                        true,
+                        false,
+                        false,
+                        false,
+                        1.0,
+                        -64,
+                        384,
+                        384,
+                        blocks.getOrThrow(BlockTags.INFINIBURN_END),
+                        0.1F,
+                        new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                        DimensionType.Skybox.END,
+                        CardinalLighting.Type.DEFAULT,
+                        attributes,
+                        timelines.getOrThrow(TimelineTags.IN_END),
+                        Optional.of(clocks.getOrThrow(WorldClocks.THE_END))
+                )
         );
     }
 
@@ -107,18 +103,18 @@ public class ModDimensions {
         Holder<Biome> voidBiome = biomes.getOrThrow(Biomes.THE_VOID);
 
         FlatLevelGeneratorSettings flatSettings = new FlatLevelGeneratorSettings(
-            Optional.empty(),
-            voidBiome,
-            List.of()
+                Optional.empty(),
+                voidBiome,
+                List.of()
         ).withBiomeAndLayers(
-            List.of(new FlatLayerInfo(1, Blocks.AIR)),
-            Optional.of(HolderSet.direct()),
-            voidBiome
+                List.of(new FlatLayerInfo(1, Blocks.AIR)),
+                Optional.of(HolderSet.direct()),
+                voidBiome
         );
 
         context.register(
-            SCAVENGER_CORRIDOR_STEM,
-            new LevelStem(type, new FlatLevelSource(flatSettings))
+                SCAVENGER_CORRIDOR_STEM,
+                new LevelStem(type, new FlatLevelSource(flatSettings))
         );
     }
 
@@ -164,7 +160,7 @@ public class ModDimensions {
         // 在边缘放置专属末影箱，面朝玩家出生点（南）
         BlockPos chestPos = new BlockPos(cx, cy + 1, cz - 2);
         level.setBlock(chestPos, Blocks.ENDER_CHEST.defaultBlockState().setValue(EnderChestBlock.FACING, Direction.SOUTH), Block.UPDATE_ALL);
-        
+
         me.tuanzi.util.ModLog.debug("【拾荒回廊】已在 (" + cx + ", " + cy + ", " + cz + ") 成功构建 5x5 安全防爆基台并部署专属末影箱。");
     }
 }

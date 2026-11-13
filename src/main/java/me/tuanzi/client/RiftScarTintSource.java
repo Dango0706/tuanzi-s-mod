@@ -16,13 +16,12 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class RiftScarTintSource implements ItemTintSource {
-    private final boolean isNext;
-
     public static final MapCodec<RiftScarTintSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-            Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
-        ).apply(i, RiftScarTintSource::new)
+            i -> i.group(
+                    Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
+            ).apply(i, RiftScarTintSource::new)
     );
+    private final boolean isNext;
 
     public RiftScarTintSource(boolean isNext) {
         this.isNext = isNext;

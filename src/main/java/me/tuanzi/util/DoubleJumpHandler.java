@@ -5,7 +5,6 @@ import me.tuanzi.network.DoubleJumpC2SPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.phys.Vec3;
 
 public class DoubleJumpHandler {
@@ -77,25 +75,25 @@ public class DoubleJumpHandler {
 
         // 客户端本地音效与云朵粒子
         player.level().playLocalSound(
-            player.getX(), player.getY(), player.getZ(),
-            SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS,
-            0.8F, 1.25F, false
+                player.getX(), player.getY(), player.getZ(),
+                SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS,
+                0.8F, 1.25F, false
         );
 
         for (int i = 0; i < 8; i++) {
             double ox = (player.getRandom().nextDouble() - 0.5) * 0.4;
             double oz = (player.getRandom().nextDouble() - 0.5) * 0.4;
             player.level().addParticle(
-                ParticleTypes.CLOUD,
-                player.getX() + ox, player.getY(), player.getZ() + oz,
-                -currentMovement.x * 0.15, 0.05, -currentMovement.z * 0.15
+                    ParticleTypes.CLOUD,
+                    player.getX() + ox, player.getY(), player.getZ() + oz,
+                    -currentMovement.x * 0.15, 0.05, -currentMovement.z * 0.15
             );
         }
 
         // 发送数据包通知服务端
         ClientPlayNetworking.send(new DoubleJumpC2SPacket());
         ModLog.debug(String.format("客户端玩家 %s 触发二段跳，计算跳跃力度: %s, 当前位置: (%.2f, %.2f, %.2f)",
-            player.getName().getString(), jumpPower, player.getX(), player.getY(), player.getZ()));
+                player.getName().getString(), jumpPower, player.getX(), player.getY(), player.getZ()));
     }
 
     /**
@@ -115,7 +113,7 @@ public class DoubleJumpHandler {
         // 校验玩家是否处于空中且没有处于非法状态（如鞘翅滑翔、创造飞行等）
         if (player.onGround() || player.isFallFlying() || player.getAbilities().flying || player.getVehicle() != null) {
             ModLog.debug(String.format("服务端拒绝二段跳: 玩家 %s 状态不符 (onGround=%b, isFallFlying=%b, flying=%b)",
-                player.getName().getString(), player.onGround(), player.isFallFlying(), player.getAbilities().flying));
+                    player.getName().getString(), player.onGround(), player.isFallFlying(), player.getAbilities().flying));
             return;
         }
 
@@ -125,19 +123,19 @@ public class DoubleJumpHandler {
         // 广播粒子与音效给周围其他玩家
         if (player.level() instanceof ServerLevel level) {
             level.sendParticles(
-                ParticleTypes.CLOUD,
-                player.getX(), player.getY(), player.getZ(),
-                8, 0.2, 0.05, 0.2, 0.05
+                    ParticleTypes.CLOUD,
+                    player.getX(), player.getY(), player.getZ(),
+                    8, 0.2, 0.05, 0.2, 0.05
             );
             level.playSound(
-                null,
-                player.getX(), player.getY(), player.getZ(),
-                SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS,
-                0.8F, 1.25F
+                    null,
+                    player.getX(), player.getY(), player.getZ(),
+                    SoundEvents.WIND_CHARGE_THROW, SoundSource.PLAYERS,
+                    0.8F, 1.25F
             );
         }
 
         ModLog.debug(String.format("服务端确认玩家 %s 二段跳成功，重置摔落高度，当前位置: (%.2f, %.2f, %.2f)",
-            player.getName().getString(), player.getX(), player.getY(), player.getZ()));
+                player.getName().getString(), player.getX(), player.getY(), player.getZ()));
     }
 }

@@ -7,7 +7,6 @@ import me.tuanzi.item.VillagerCageItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
@@ -17,6 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.NameTagItem;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -27,32 +27,29 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class SoulMerchantStationBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(
-        Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),      // 阶梯大底座
-        Block.box(1.0, 2.0, 1.0, 15.0, 3.0, 15.0),      // 阶梯小底座
-        Block.box(1.0, 13.0, 1.0, 15.0, 14.0, 15.0),    // 顶盖底层
-        Block.box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0),    // 顶盖顶层
-        Block.box(1.0, 3.0, 1.0, 4.0, 6.0, 4.0),        // 西北柱下部基座
-        Block.box(12.0, 3.0, 1.0, 15.0, 6.0, 4.0),      // 东北柱下部基座
-        Block.box(1.0, 3.0, 12.0, 4.0, 6.0, 15.0),      // 西南柱下部基座
-        Block.box(12.0, 3.0, 12.0, 15.0, 6.0, 15.0),    // 东南柱下部基座
-        Block.box(1.5, 6.0, 1.5, 3.5, 13.0, 3.5),        // 西北柱柱身
-        Block.box(12.5, 6.0, 1.5, 14.5, 13.0, 3.5),      // 东北柱柱身
-        Block.box(1.5, 6.0, 12.5, 3.5, 13.0, 14.5),      // 西南柱柱身
-        Block.box(12.5, 6.0, 12.5, 14.5, 13.0, 14.5),    // 东南柱柱身
-        Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0)      // 中央悬浮能量核（已移回地面，与贴图一致）
+            Block.box(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),      // 阶梯大底座
+            Block.box(1.0, 2.0, 1.0, 15.0, 3.0, 15.0),      // 阶梯小底座
+            Block.box(1.0, 13.0, 1.0, 15.0, 14.0, 15.0),    // 顶盖底层
+            Block.box(0.0, 14.0, 0.0, 16.0, 16.0, 16.0),    // 顶盖顶层
+            Block.box(1.0, 3.0, 1.0, 4.0, 6.0, 4.0),        // 西北柱下部基座
+            Block.box(12.0, 3.0, 1.0, 15.0, 6.0, 4.0),      // 东北柱下部基座
+            Block.box(1.0, 3.0, 12.0, 4.0, 6.0, 15.0),      // 西南柱下部基座
+            Block.box(12.0, 3.0, 12.0, 15.0, 6.0, 15.0),    // 东南柱下部基座
+            Block.box(1.5, 6.0, 1.5, 3.5, 13.0, 3.5),        // 西北柱柱身
+            Block.box(12.5, 6.0, 1.5, 14.5, 13.0, 3.5),      // 东北柱柱身
+            Block.box(1.5, 6.0, 12.5, 3.5, 13.0, 14.5),      // 西南柱柱身
+            Block.box(12.5, 6.0, 12.5, 14.5, 13.0, 14.5),    // 东南柱柱身
+            Block.box(5.0, 1.0, 5.0, 11.0, 5.0, 11.0)      // 中央悬浮能量核（已移回地面，与贴图一致）
     );
 
     public SoulMerchantStationBlock(BlockBehaviour.Properties properties) {
@@ -162,7 +159,7 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
                     if (customData != null) {
                         net.minecraft.nbt.CompoundTag cageData = customData.copyTag();
                         net.minecraft.nbt.CompoundTag villagerTag = cageData.getCompoundOrEmpty("StoredVillager");
-                        
+
                         stationBe.importVillager(villagerTag);
 
                         net.minecraft.nbt.CompoundTag vData = villagerTag.getCompoundOrEmpty("VillagerData");
@@ -198,7 +195,7 @@ public class SoulMerchantStationBlock extends BaseEntityBlock {
                         net.minecraft.nbt.CompoundTag cageData = new net.minecraft.nbt.CompoundTag();
                         cageData.put("StoredVillager", villagerTag);
                         filledCage.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(cageData));
-                        
+
                         filledCage.set(net.minecraft.core.component.DataComponents.CUSTOM_MODEL_DATA,
                                 new net.minecraft.world.item.component.CustomModelData(List.of(1.0f), List.of(), List.of(), List.of()));
 

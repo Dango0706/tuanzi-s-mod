@@ -33,10 +33,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public class CrescentAuraEntity extends Entity {
+    private final Set<UUID> hitEntities = new HashSet<>();
     private LivingEntity owner;
     private float baseWeaponDamage = 7.0f;
     private Vec3 startPos;
-    private final Set<UUID> hitEntities = new HashSet<>();
 
     public CrescentAuraEntity(EntityType<?> type, Level level) {
         super(type, level);

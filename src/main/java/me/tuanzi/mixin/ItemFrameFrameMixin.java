@@ -10,11 +10,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemFrame.class)
 public class ItemFrameFrameMixin {
-    
+
     @Inject(
-        method = "setItem(Lnet/minecraft/world/item/ItemStack;Z)V",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "setItem(Lnet/minecraft/world/item/ItemStack;Z)V",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$preventDummyInFrame(ItemStack stack, boolean update, CallbackInfo ci) {
         if (stack.is(ModItems.TRIAL_DUMMY)) {
@@ -23,9 +23,9 @@ public class ItemFrameFrameMixin {
     }
 
     @Inject(
-        method = "setItem(Lnet/minecraft/world/item/ItemStack;)V",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "setItem(Lnet/minecraft/world/item/ItemStack;)V",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$preventDummyInFrameSimple(ItemStack stack, CallbackInfo ci) {
         if (stack.is(ModItems.TRIAL_DUMMY)) {

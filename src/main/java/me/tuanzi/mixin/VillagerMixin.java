@@ -40,19 +40,19 @@ public class VillagerMixin {
 
     @Unique
     private void tuanzis_mod$tryAddMasterEnchantmentOffer(
-        Villager villager,
-        net.minecraft.server.level.ServerLevel level,
-        net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> enchKey,
-        String enchName,
-        int baseEmeraldCost
+            Villager villager,
+            net.minecraft.server.level.ServerLevel level,
+            net.minecraft.resources.ResourceKey<net.minecraft.world.item.enchantment.Enchantment> enchKey,
+            String enchName,
+            int baseEmeraldCost
     ) {
         boolean alreadyHas = false;
         for (net.minecraft.world.item.trading.MerchantOffer offer : villager.getOffers()) {
             ItemStack result = offer.getResult();
             if (result.is(net.minecraft.world.item.Items.ENCHANTED_BOOK)) {
                 net.minecraft.world.item.enchantment.ItemEnchantments enchantments = result.getOrDefault(
-                    net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS,
-                    net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY
+                        net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS,
+                        net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY
                 );
                 for (var holder : enchantments.keySet()) {
                     if (holder.is(enchKey)) {
@@ -70,19 +70,19 @@ public class VillagerMixin {
             int randomLevel = villager.getRandom().nextInt(3) + 1; // 1 to 3
             ItemStack book = new ItemStack(net.minecraft.world.item.Items.ENCHANTED_BOOK);
             net.minecraft.world.item.enchantment.ItemEnchantments.Mutable mutable = new net.minecraft.world.item.enchantment.ItemEnchantments.Mutable(
-                net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY
+                    net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY
             );
             mutable.set(holder, randomLevel);
             book.set(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable());
 
             int emeraldCost = baseEmeraldCost + randomLevel * 10 + villager.getRandom().nextInt(5);
             net.minecraft.world.item.trading.MerchantOffer offer = new net.minecraft.world.item.trading.MerchantOffer(
-                new net.minecraft.world.item.trading.ItemCost(net.minecraft.world.item.Items.EMERALD, emeraldCost),
-                java.util.Optional.of(new net.minecraft.world.item.trading.ItemCost(net.minecraft.world.item.Items.BOOK, 1)),
-                book,
-                12, // maxUses
-                30, // xp
-                0.05f // priceMultiplier
+                    new net.minecraft.world.item.trading.ItemCost(net.minecraft.world.item.Items.EMERALD, emeraldCost),
+                    java.util.Optional.of(new net.minecraft.world.item.trading.ItemCost(net.minecraft.world.item.Items.BOOK, 1)),
+                    book,
+                    12, // maxUses
+                    30, // xp
+                    0.05f // priceMultiplier
             );
             villager.getOffers().add(offer);
             me.tuanzi.util.ModLog.debug(villager, null, "【" + enchName + "】大师级图书管理员已生成专属附魔书交易（等级: " + randomLevel + "，价格: " + emeraldCost + " 绿宝石 + 1 书）！");
@@ -113,9 +113,9 @@ public class VillagerMixin {
     }
 
     @org.spongepowered.asm.mixin.injection.ModifyArg(
-        method = "rewardTradeXp",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;<init>(Lnet/minecraft/world/level/Level;DDDI)V"),
-        index = 4
+            method = "rewardTradeXp",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;<init>(Lnet/minecraft/world/level/Level;DDDI)V"),
+            index = 4
     )
     private int tuanzis_mod$boostTradeXp(int originalXp) {
         Villager villager = (Villager) (Object) this;

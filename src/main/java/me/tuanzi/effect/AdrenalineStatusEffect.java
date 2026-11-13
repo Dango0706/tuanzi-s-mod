@@ -13,12 +13,12 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class AdrenalineStatusEffect extends MobEffect {
     public AdrenalineStatusEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xE25822); // 橙红色
-        this.addAttributeModifier(Attributes.ATTACK_SPEED, 
-            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.adrenaline.attack_speed"), 
-            0.15, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-        this.addAttributeModifier(Attributes.MOVEMENT_SPEED, 
-            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.adrenaline.movement_speed"), 
-            0.075, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        this.addAttributeModifier(Attributes.ATTACK_SPEED,
+                Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.adrenaline.attack_speed"),
+                0.15, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        this.addAttributeModifier(Attributes.MOVEMENT_SPEED,
+                Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "effect.adrenaline.movement_speed"),
+                0.075, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     }
 
     @Override

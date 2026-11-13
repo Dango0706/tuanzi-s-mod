@@ -16,9 +16,9 @@ import java.util.UUID;
  */
 @Environment(EnvType.CLIENT)
 public class ScavengerTeamClient {
+    private static final Set<UUID> teammateUuids = new HashSet<>();
     private static boolean inTeam = false;
     private static int teamColorRgb = 0x55FF55;
-    private static final Set<UUID> teammateUuids = new HashSet<>();
 
     public static void updateTeam(boolean active, int colorRgb, List<UUID> members) {
         inTeam = active;

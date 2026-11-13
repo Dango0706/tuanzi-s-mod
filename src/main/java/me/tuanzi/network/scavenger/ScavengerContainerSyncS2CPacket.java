@@ -24,10 +24,8 @@ public record ScavengerContainerSyncS2CPacket(
 
     public static final Type<ScavengerContainerSyncS2CPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_container_sync_s2c"));
-
     private static final StreamCodec<RegistryFriendlyByteBuf, List<RedactedGridEntryView>> ENTRIES_STREAM_CODEC =
             RedactedGridEntryView.STREAM_CODEC.apply(ByteBufCodecs.list());
-
     public static final StreamCodec<RegistryFriendlyByteBuf, ScavengerContainerSyncS2CPacket> CODEC = StreamCodec.of(
             (buf, pkt) -> {
                 Identifier.STREAM_CODEC.encode(buf, pkt.containerDefId());

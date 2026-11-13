@@ -1,26 +1,25 @@
 package me.tuanzi.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.tuanzi.client.update.UpdateChecker;
 import me.tuanzi.network.ChainMiningKeyPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.Identifier;
-import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.gizmos.Gizmos;
-import net.minecraft.gizmos.GizmoStyle;
-import net.minecraft.util.ARGB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.gizmos.GizmoStyle;
+import net.minecraft.gizmos.Gizmos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.phys.Vec3;
 
 public class TuanzisModClient implements ClientModInitializer {
     private static KeyMapping chainMiningKey;
@@ -52,270 +51,315 @@ public class TuanzisModClient implements ClientModInitializer {
     private static boolean lastPgUpState = false;
     private static boolean lastPgDnState = false;
 
+    /**
+     * 判断当前客户端玩家是否正在按住连锁采掘激活键
+     */
+    public static boolean isHoldingChainMiningKey() {
+        return chainMiningKey != null && chainMiningKey.isDown();
+    }
+
+    public static boolean isOpenControllerKey(net.minecraft.client.input.KeyEvent event) {
+        return openControllerKey != null && openControllerKey.matches(event);
+    }
+
+    private static boolean consumeKeyTrigger(KeyMapping keyMapping, boolean prevDown) {
+        if (keyMapping == null) return false;
+        boolean clicked = false;
+        while (keyMapping.consumeClick()) {
+            clicked = true;
+        }
+        return clicked || (keyMapping.isDown() && !prevDown);
+    }
+
+    private static void drainClicks(KeyMapping keyMapping) {
+        if (keyMapping == null) return;
+        while (keyMapping.consumeClick()) {
+            // 清空屏幕开启期间残留的点击计数
+        }
+    }
+
     @Override
     public void onInitializeClient() {
         // 启动异步更新检查
         UpdateChecker.checkUpdate();
 
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
-            me.tuanzi.client.renderer.ScarecrowModel.SCARECROW_LAYER,
-            me.tuanzi.client.renderer.ScarecrowModel::createBodyLayer
+                me.tuanzi.client.renderer.ScarecrowModel.SCARECROW_LAYER,
+                me.tuanzi.client.renderer.ScarecrowModel::createBodyLayer
         );
 
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
-            me.tuanzi.client.renderer.TrialDummyModel.TRIAL_DUMMY_LAYER,
-            me.tuanzi.client.renderer.TrialDummyModel::createBodyLayer
+                me.tuanzi.client.renderer.TrialDummyModel.TRIAL_DUMMY_LAYER,
+                me.tuanzi.client.renderer.TrialDummyModel::createBodyLayer
         );
 
         net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry.registerModelLayer(
-            me.tuanzi.client.renderer.model.BlueprintCannonModel.LAYER_LOCATION,
-            me.tuanzi.client.renderer.model.BlueprintCannonModel::createBodyLayer
+                me.tuanzi.client.renderer.model.BlueprintCannonModel.LAYER_LOCATION,
+                me.tuanzi.client.renderer.model.BlueprintCannonModel::createBodyLayer
         );
 
         tuanzisModCategory = KeyMapping.Category.register(Identifier.withDefaultNamespace("tuanzis_mod"));
 
         chainMiningKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.chain_mining",
-            InputConstants.KEY_GRAVE,
-            tuanzisModCategory
+                "key.tuanzis_mod.chain_mining",
+                InputConstants.KEY_GRAVE,
+                tuanzisModCategory
         ));
 
         toggleGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_toggle_ghost",
-            InputConstants.KEY_V,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_toggle_ghost",
+                InputConstants.KEY_V,
+                tuanzisModCategory
         ));
 
         openControllerKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_open_controller",
-            InputConstants.KEY_G,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_open_controller",
+                InputConstants.KEY_G,
+                tuanzisModCategory
         ));
 
         rotateGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_rotate",
-            InputConstants.KEY_R,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_rotate",
+                InputConstants.KEY_R,
+                tuanzisModCategory
         ));
 
         mirrorGhostKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_mirror",
-            InputConstants.KEY_F,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_mirror",
+                InputConstants.KEY_F,
+                tuanzisModCategory
         ));
 
         moveNorthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_north",
-            InputConstants.KEY_UP,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_north",
+                InputConstants.KEY_UP,
+                tuanzisModCategory
         ));
 
         moveSouthKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_south",
-            InputConstants.KEY_DOWN,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_south",
+                InputConstants.KEY_DOWN,
+                tuanzisModCategory
         ));
 
         moveWestKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_west",
-            InputConstants.KEY_LEFT,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_west",
+                InputConstants.KEY_LEFT,
+                tuanzisModCategory
         ));
 
         moveEastKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_east",
-            InputConstants.KEY_RIGHT,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_east",
+                InputConstants.KEY_RIGHT,
+                tuanzisModCategory
         ));
 
         moveUpKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_up",
-            InputConstants.KEY_PAGEUP,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_up",
+                InputConstants.KEY_PAGEUP,
+                tuanzisModCategory
         ));
 
         moveDownKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.blueprint_move_down",
-            InputConstants.KEY_PAGEDOWN,
-            tuanzisModCategory
+                "key.tuanzis_mod.blueprint_move_down",
+                InputConstants.KEY_PAGEDOWN,
+                tuanzisModCategory
         ));
 
         useHallBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.use_hall_beacon",
-            InputConstants.KEY_H,
-            tuanzisModCategory
+                "key.tuanzis_mod.use_hall_beacon",
+                InputConstants.KEY_H,
+                tuanzisModCategory
         ));
 
         useRoomBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.use_room_beacon",
-            InputConstants.KEY_R,
-            tuanzisModCategory
+                "key.tuanzis_mod.use_room_beacon",
+                InputConstants.KEY_R,
+                tuanzisModCategory
         ));
 
         useMarketBeaconKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
-            "key.tuanzis_mod.use_market_beacon",
-            InputConstants.KEY_M,
-            tuanzisModCategory
+                "key.tuanzis_mod.use_market_beacon",
+                InputConstants.KEY_M,
+                tuanzisModCategory
         ));
 
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.DECOY,
-            context -> (net.minecraft.client.renderer.entity.EntityRenderer) new me.tuanzi.client.renderer.DecoyRenderer(context)
+                me.tuanzi.init.ModEntities.DECOY,
+                context -> (net.minecraft.client.renderer.entity.EntityRenderer) new me.tuanzi.client.renderer.DecoyRenderer(context)
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.SCARECROW,
-            context -> new me.tuanzi.client.renderer.ScarecrowRenderer(context)
+                me.tuanzi.init.ModEntities.SCARECROW,
+                context -> new me.tuanzi.client.renderer.ScarecrowRenderer(context)
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.TRIAL_DUMMY,
-            context -> new me.tuanzi.client.renderer.TrialDummyRenderer(context)
+                me.tuanzi.init.ModEntities.TRIAL_DUMMY,
+                context -> new me.tuanzi.client.renderer.TrialDummyRenderer(context)
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.SEAT,
-            net.minecraft.client.renderer.entity.NoopRenderer::new
+                me.tuanzi.init.ModEntities.SEAT,
+                net.minecraft.client.renderer.entity.NoopRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.SHURIKEN,
-            context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context)
+                me.tuanzi.init.ModEntities.SHURIKEN,
+                context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context)
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.GLASS_ITEM_FRAME,
-            net.minecraft.client.renderer.entity.ItemFrameRenderer::new
+                me.tuanzi.init.ModEntities.GLASS_ITEM_FRAME,
+                net.minecraft.client.renderer.entity.ItemFrameRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CRESCENT_AURA,
-            net.minecraft.client.renderer.entity.NoopRenderer::new
+                me.tuanzi.init.ModEntities.CRESCENT_AURA,
+                net.minecraft.client.renderer.entity.NoopRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CINDER_SHIELD_PART,
-            me.tuanzi.client.renderer.CinderShieldRenderer::new
+                me.tuanzi.init.ModEntities.CINDER_SHIELD_PART,
+                me.tuanzi.client.renderer.CinderShieldRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CINDER_BLAZE_ROD_PART,
-            me.tuanzi.client.renderer.CinderBlazeRodRenderer::new
+                me.tuanzi.init.ModEntities.CINDER_BLAZE_ROD_PART,
+                me.tuanzi.client.renderer.CinderBlazeRodRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CINDER_FIREBALL,
-            me.tuanzi.client.renderer.CinderFireballRenderer::new
+                me.tuanzi.init.ModEntities.CINDER_FIREBALL,
+                me.tuanzi.client.renderer.CinderFireballRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CINDER_METEOR,
-            me.tuanzi.client.renderer.CinderMeteorRenderer::new
+                me.tuanzi.init.ModEntities.CINDER_METEOR,
+                me.tuanzi.client.renderer.CinderMeteorRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
-            me.tuanzi.init.ModEntities.CINDER_SOVEREIGN,
-            me.tuanzi.client.renderer.CinderSovereignRenderer::new
+                me.tuanzi.init.ModEntities.CINDER_SOVEREIGN,
+                me.tuanzi.client.renderer.CinderSovereignRenderer::new
         );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
-            me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION_BLOCK_ENTITY,
-            me.tuanzi.client.renderer.SoulMerchantStationBlockEntityRenderer::new
+                me.tuanzi.init.ModBlocks.SOUL_MERCHANT_STATION_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.SoulMerchantStationBlockEntityRenderer::new
         );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
-            me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE_BLOCK_ENTITY,
-            me.tuanzi.client.renderer.BlackboxCoreCaseRenderer::new
+                me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.BlackboxCoreCaseRenderer::new
         );
 
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
-            me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY,
-            me.tuanzi.client.renderer.BlueprintCannonRenderer::new
+                me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.BlueprintCannonRenderer::new
         );
 
         // 注册旅者手札存储界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.TRAVELERS_NOTEBOOK,
-            me.tuanzi.client.gui.screens.inventory.TravelersNotebookScreen::new
+                me.tuanzi.init.ModMenuTypes.TRAVELERS_NOTEBOOK,
+                me.tuanzi.client.gui.screens.inventory.TravelersNotebookScreen::new
         );
 
         // 注册工匠护符界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.CRAFTSMAN_CHARM,
-            me.tuanzi.client.gui.screens.inventory.CraftsmanCharmScreen::new
+                me.tuanzi.init.ModMenuTypes.CRAFTSMAN_CHARM,
+                me.tuanzi.client.gui.screens.inventory.CraftsmanCharmScreen::new
         );
 
         // 注册蓝图大炮界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.BLUEPRINT_CANNON,
-            me.tuanzi.client.gui.screens.inventory.BlueprintCannonScreen::new
+                me.tuanzi.init.ModMenuTypes.BLUEPRINT_CANNON,
+                me.tuanzi.client.gui.screens.inventory.BlueprintCannonScreen::new
         );
 
         // 注册蓝图桌界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.BLUEPRINT_TABLE,
-            me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen::new
+                me.tuanzi.init.ModMenuTypes.BLUEPRINT_TABLE,
+                me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen::new
         );
 
         // 注册玩家模拟器界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.PLAYER_SIMULATOR,
-            me.tuanzi.client.gui.screens.inventory.PlayerSimulatorScreen::new
+                me.tuanzi.init.ModMenuTypes.PLAYER_SIMULATOR,
+                me.tuanzi.client.gui.screens.inventory.PlayerSimulatorScreen::new
+        );
+
+        // 注册方块破坏器界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.BLOCK_BREAKER,
+                me.tuanzi.client.gui.screens.inventory.BlockBreakerScreen::new
+        );
+
+        // 注册方块放置器界面 Screen
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.BLOCK_PLACER,
+                me.tuanzi.client.gui.screens.inventory.BlockPlacerScreen::new
         );
 
         // 注册黄金口袋界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.GOLDEN_POCKET,
-            me.tuanzi.client.gui.screens.inventory.GoldenPocketScreen::new
+                me.tuanzi.init.ModMenuTypes.GOLDEN_POCKET,
+                me.tuanzi.client.gui.screens.inventory.GoldenPocketScreen::new
         );
 
         // 注册拾荒回廊战术界面 Screens
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.CORRIDOR_TACTICAL_LOADOUT,
-            me.tuanzi.client.gui.screens.scavenger.CorridorTacticalLoadoutScreen::new
+                me.tuanzi.init.ModMenuTypes.CORRIDOR_TACTICAL_LOADOUT,
+                me.tuanzi.client.gui.screens.scavenger.CorridorTacticalLoadoutScreen::new
         );
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.SCAVENGER_TACTICAL,
-            me.tuanzi.client.gui.screens.scavenger.ScavengerTacticalScreen::new
+                me.tuanzi.init.ModMenuTypes.SCAVENGER_TACTICAL,
+                me.tuanzi.client.gui.screens.scavenger.ScavengerTacticalScreen::new
         );
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.BASE_STASH,
-            me.tuanzi.client.gui.screens.scavenger.BaseStashScreen::new
+                me.tuanzi.init.ModMenuTypes.BASE_STASH,
+                me.tuanzi.client.gui.screens.scavenger.BaseStashScreen::new
         );
         net.minecraft.client.gui.screens.MenuScreens.register(
-            me.tuanzi.init.ModMenuTypes.BASE_UPGRADE_STATION,
-            me.tuanzi.client.gui.screens.scavenger.BaseUpgradeStationScreen::new
+                me.tuanzi.init.ModMenuTypes.BASE_UPGRADE_STATION,
+                me.tuanzi.client.gui.screens.scavenger.BaseUpgradeStationScreen::new
         );
 
         // 注册蜂刺余响自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "bee_sting_echo"),
-            me.tuanzi.client.BeeStingEchoTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "bee_sting_echo"),
+                me.tuanzi.client.BeeStingEchoTintSource.MAP_CODEC
         );
 
         // 注册裂虚之痕自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "rift_scar"),
-            me.tuanzi.client.RiftScarTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "rift_scar"),
+                me.tuanzi.client.RiftScarTintSource.MAP_CODEC
         );
 
         // 注册幽匿裂片自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "scully_shard"),
-            me.tuanzi.client.ScullyShardTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "scully_shard"),
+                me.tuanzi.client.ScullyShardTintSource.MAP_CODEC
         );
 
         // 注册钢御壁垒自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "steel_barrier"),
-            me.tuanzi.client.SteelBarrierTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "steel_barrier"),
+                me.tuanzi.client.SteelBarrierTintSource.MAP_CODEC
         );
 
         // 注册潮汐切割者自定义 Wear TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_wear"),
-            me.tuanzi.client.TideCleaverWearTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_wear"),
+                me.tuanzi.client.TideCleaverWearTintSource.MAP_CODEC
         );
 
         // 注册潮汐切割者自定义 Energy TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_energy"),
-            me.tuanzi.client.TideCleaverEnergyTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "tide_cleaver_energy"),
+                me.tuanzi.client.TideCleaverEnergyTintSource.MAP_CODEC
         );
 
         // 注册脉冲谐振剑自定义 TintSource
         net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
-            net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "pulse_resonance_sword"),
-            me.tuanzi.client.PulseResonanceSwordTintSource.MAP_CODEC
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "pulse_resonance_sword"),
+                me.tuanzi.client.PulseResonanceSwordTintSource.MAP_CODEC
+        );
+
+        // 注册星隙裁刃自定义 TintSource
+        net.minecraft.client.color.item.ItemTintSources.ID_MAPPER.put(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "star_rift_blade"),
+                me.tuanzi.client.StarRiftBladeTintSource.MAP_CODEC
         );
 
         // 为附魔了“过载协议”的普通武器添加脉冲层数 Tooltip 显示
@@ -425,8 +469,6 @@ public class TuanzisModClient implements ClientModInitializer {
         // 注册 S2C 伤害数字同步接收器
 
 
-
-
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TrialDummyDamagePacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {
                 if (context.client().level != null) {
@@ -513,7 +555,7 @@ public class TuanzisModClient implements ClientModInitializer {
                     cannonBe.currentTarget = payload.targetPos();
                     net.minecraft.world.level.block.state.BlockState state = net.minecraft.world.level.block.Block.stateById(payload.blockStateId());
                     cannonBe.flyingBlocks.add(new me.tuanzi.block.cannon.LaunchedItem.ForBlockState(
-                        payload.cannonPos(), payload.targetPos(), net.minecraft.world.item.ItemStack.EMPTY, state, null, payload.isDestroy()
+                            payload.cannonPos(), payload.targetPos(), net.minecraft.world.item.ItemStack.EMPTY, state, null, payload.isDestroy()
                     ));
 
                     // 精准从模型炮口出膛截面喷涌推进浓烟与火花粒子
@@ -544,8 +586,8 @@ public class TuanzisModClient implements ClientModInitializer {
         });
 
         // 重写客户端的 DecoyEntity 构造器，实例化 ClientDecoyEntity
-        me.tuanzi.entity.DecoyEntity.constructor = (type, level) -> 
-            new me.tuanzi.client.entity.ClientDecoyEntity(level, me.tuanzi.client.renderer.DecoyRenderer.skinRenderCache);
+        me.tuanzi.entity.DecoyEntity.constructor = (type, level) ->
+                new me.tuanzi.client.entity.ClientDecoyEntity(level, me.tuanzi.client.renderer.DecoyRenderer.skinRenderCache);
 
         // 注册彩色方块、半砖、楼梯的 BLOCK 颜色处理器
         // 注册方块和楼梯的第 0 层颜色
@@ -571,9 +613,9 @@ public class TuanzisModClient implements ClientModInitializer {
             }
         };
         net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry.register(
-            java.util.List.of(defaultColorSource), 
-            me.tuanzi.init.ModBlocks.COLOR_BLOCK, 
-            me.tuanzi.init.ModBlocks.COLOR_STAIRS
+                java.util.List.of(defaultColorSource),
+                me.tuanzi.init.ModBlocks.COLOR_BLOCK,
+                me.tuanzi.init.ModBlocks.COLOR_STAIRS
         );
 
         // 注册半砖的第 0 层和第 1 层颜色
@@ -622,8 +664,8 @@ public class TuanzisModClient implements ClientModInitializer {
         };
 
         net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry.register(
-            java.util.List.of(slabBottomSource, slabTopSource), 
-            me.tuanzi.init.ModBlocks.COLOR_SLAB
+                java.util.List.of(slabBottomSource, slabTopSource),
+                me.tuanzi.init.ModBlocks.COLOR_SLAB
         );
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) {
@@ -676,7 +718,7 @@ public class TuanzisModClient implements ClientModInitializer {
                 boolean pgUpTriggered = consumeKeyTrigger(moveUpKey, lastPgUpState);
                 boolean pgDnTriggered = consumeKeyTrigger(moveDownKey, lastPgDnState);
                 boolean ctrlPressed = InputConstants.isKeyDown(InputConstants.KEY_LCONTROL) ||
-                                      InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
+                        InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
 
                 boolean handledByHeldBlueprint = false;
                 if (!targetStack.isEmpty()) {
@@ -869,9 +911,9 @@ public class TuanzisModClient implements ClientModInitializer {
             // 直接使用 Mojang 官方 Gizmos API 提交外框线，支持 setAlwaysOnTop 完美实现透视高亮线框
             try {
                 Gizmos.cuboid(
-                    pos1, 
-                    0.002F, 
-                    GizmoStyle.stroke(ARGB.colorFromFloat(1.0F, 1.0F, 0.0F, 0.0F))
+                        pos1,
+                        0.002F,
+                        GizmoStyle.stroke(ARGB.colorFromFloat(1.0F, 1.0F, 0.0F, 0.0F))
                 ).setAlwaysOnTop();
             } catch (IllegalStateException e) {
                 // 回退以防极端情况下没有 GizmoCollector
@@ -917,32 +959,5 @@ public class TuanzisModClient implements ClientModInitializer {
                 });
             }
         });
-    }
-
-    /**
-     * 判断当前客户端玩家是否正在按住连锁采掘激活键
-     */
-    public static boolean isHoldingChainMiningKey() {
-        return chainMiningKey != null && chainMiningKey.isDown();
-    }
-
-    public static boolean isOpenControllerKey(net.minecraft.client.input.KeyEvent event) {
-        return openControllerKey != null && openControllerKey.matches(event);
-    }
-
-    private static boolean consumeKeyTrigger(KeyMapping keyMapping, boolean prevDown) {
-        if (keyMapping == null) return false;
-        boolean clicked = false;
-        while (keyMapping.consumeClick()) {
-            clicked = true;
-        }
-        return clicked || (keyMapping.isDown() && !prevDown);
-    }
-
-    private static void drainClicks(KeyMapping keyMapping) {
-        if (keyMapping == null) return;
-        while (keyMapping.consumeClick()) {
-            // 清空屏幕开启期间残留的点击计数
-        }
     }
 }

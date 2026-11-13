@@ -1,19 +1,27 @@
 package me.tuanzi.util;
 
 import me.tuanzi.entity.TrialDummyEntity;
-import me.tuanzi.init.ModStatusEffects;
 import me.tuanzi.init.ModEnchantments;
-import net.minecraft.sounds.SoundEvents;
+import me.tuanzi.init.ModStatusEffects;
+import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.server.level.ServerPlayer;
-import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import me.tuanzi.item.EarthPileHammerItem;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.CustomData;
 
 /**
  * 伤害计算专用工具类，统一管理和计算模组中所有的伤害加成与调整逻辑。
@@ -21,7 +29,9 @@ import net.minecraft.nbt.CompoundTag;
  */
 public class DamageCalculator {
 
-    /**
+        public static final ThreadLocal<Boolean> IS_SHOCKWAVE_ATTACK = ThreadLocal.withInitial(() -> false);
+
+/**
      * 计算弩附魔力量时的箭矢基础伤害加成。
      * 原版弓力量增伤公式：0.5 + 0.5 * level（等价于 1.0 + 0.5 * (level - 1)）。
      * 附魔在弩上的增加伤害效果为弓上的一半：0.25 + 0.25 * level。
@@ -89,12 +99,12 @@ public class DamageCalculator {
                 int waveLevel = EnchantmentHelper.getItemEnchantmentLevel(waveHolder, tridentWeapon);
                 if (waveLevel > 0) {
                     boolean inWaterOrRain = trident.isInWaterOrRain()
-                        || (source.getEntity() != null && source.getEntity().isInWaterOrRain());
+                            || (source.getEntity() != null && source.getEntity().isInWaterOrRain());
                     if (inWaterOrRain) {
                         float waveBonus = 0.10f * waveLevel; // 10%, 20%, 30%
                         attackerMultiplier += waveBonus;
                         me.tuanzi.util.ModLog.debug(source.getEntity(), target, "【听涛】水/雨中投掷三叉戟增伤生效（等级: " + waveLevel + "）！伤害提升 "
-                            + String.format(java.util.Locale.ROOT, "%.0f%%", waveBonus * 100.0f) + " (当前攻击乘数: " + String.format(java.util.Locale.ROOT, "%.2f", attackerMultiplier) + ")");
+                                + String.format(java.util.Locale.ROOT, "%.0f%%", waveBonus * 100.0f) + " (当前攻击乘数: " + String.format(java.util.Locale.ROOT, "%.2f", attackerMultiplier) + ")");
                     }
                 }
             }
@@ -107,9 +117,10 @@ public class DamageCalculator {
             }
 
             // 攻击者穿戴狂战士附魔胸甲，近战伤害随已损失生命值比例获得提升 (I级每损失10%增伤5%，II级增伤8%)
-            boolean isMelee = source.is(DamageTypes.PLAYER_ATTACK)
+            boolean isMelee = (source.is(DamageTypes.PLAYER_ATTACK)
                     || source.is(DamageTypes.MOB_ATTACK)
-                    || source.is(DamageTypes.MACE_SMASH);
+                    || source.is(DamageTypes.MACE_SMASH))
+                    && !IS_SHOCKWAVE_ATTACK.get();
             if (isMelee) {
                 // 天气附魔逻辑：玄冥雨刃 (Rain Blade)、青女霜刃 (Frost Blade)、雷公霆刃 (Thunder Blade)、金乌炽刃 (Sun Blade)
                 ItemStack mainHandWeapon = attacker.getMainHandItem();
@@ -501,6 +512,200 @@ public class DamageCalculator {
                     }
                 }
 
+                // 星隙裁刃 (Star Rift Blade) 与 隙间裁决 (Gap Verdict) 机制
+                ItemStack currentHeldWeapon = attacker.getMainHandItem();
+                boolean isStarRiftBlade = currentHeldWeapon.getItem() instanceof me.tuanzi.item.StarRiftBladeItem;
+                boolean targetHadStarRift = target.hasEffect(me.tuanzi.init.ModStatusEffects.STAR_RIFT);
+                int initialRiftAmp = targetHadStarRift ? target.getEffect(me.tuanzi.init.ModStatusEffects.STAR_RIFT).getAmplifier() : -1;
+
+                if (isStarRiftBlade) {
+                    if (targetHadStarRift) {
+                        // 命中已带有“星隙”的目标：额外造成基础攻击力 20% 的物理伤害 (7.0 * 0.20 = 1.4) 并刷新星隙持续时间至 4 秒
+                        float starRiftBonus = 7.0f * 0.20f;
+                        amount += starRiftBonus;
+                        if (!attacker.level().isClientSide()) {
+                            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                    me.tuanzi.init.ModStatusEffects.STAR_RIFT, 80, 0, false, false, true
+                            ));
+                        }
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【星隙裁刃】命中已带有星隙的目标！额外造成基础攻击力 20% 物理伤害 (" + String.format("%.2f", starRiftBonus) + " 点)，并刷新本武器来源星隙持续时间 (当前伤害: " + String.format("%.2f", amount) + ")。");
+                    } else {
+                        // 第一击：只负责留下星隙，不享受额外伤害
+                        if (!attacker.level().isClientSide()) {
+                            target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                    me.tuanzi.init.ModStatusEffects.STAR_RIFT, 80, 0, false, false, true
+                            ));
+                        }
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【星隙裁刃】第一击命中无星隙目标！施加本武器来源星隙 4 秒 (不享受额外伤害)。");
+                    }
+                }
+
+                // 隙间裁决 (Gap Verdict) 附魔结算
+                var enchLookup = attacker.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+                var gapVerdictHolder = enchLookup.get(me.tuanzi.init.ModEnchantments.GAP_VERDICT);
+                int gapVerdictLevel = 0;
+                if (gapVerdictHolder.isPresent()) {
+                    gapVerdictLevel = EnchantmentHelper.getItemEnchantmentLevel(gapVerdictHolder.get(), currentHeldWeapon);
+                }
+
+                if (gapVerdictLevel > 0) {
+                    if (!targetHadStarRift && !isStarRiftBlade) {
+                        // 目标没有“星隙”，且非星隙裁刃已由武器施加：检查附魔 4 秒冷却
+                        if (!attacker.hasEffect(me.tuanzi.init.ModStatusEffects.GAP_VERDICT_COOLDOWN)) {
+                            if (!attacker.level().isClientSide()) {
+                                target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                        me.tuanzi.init.ModStatusEffects.STAR_RIFT, 80, 1, false, false, true
+                                ));
+                                attacker.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                                        me.tuanzi.init.ModStatusEffects.GAP_VERDICT_COOLDOWN, 80, 0, false, false, false
+                                ));
+                            }
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】附魔命中无星隙目标！施加其他来源星隙 4 秒，攻击者进入 4 秒施加冷却。");
+                        } else {
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】附魔处于 4 秒施加冷却中，未能对无星隙目标施加星隙。");
+                        }
+                    } else if (targetHadStarRift) {
+                        // 攻击带有“星隙”的目标
+                        boolean isFromThisWeapon = (initialRiftAmp == 0) && isStarRiftBlade;
+                        float speedBonusRate;
+                        float damageBonusRate;
+
+                        if (isFromThisWeapon) {
+                            speedBonusRate = 0.05f * gapVerdictLevel;
+                            damageBonusRate = 0.02f * gapVerdictLevel;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】星隙由本武器本身施加！基准加成: 攻速 +" + String.format("%.2f%%", speedBonusRate * 100) + "，伤害 +" + String.format("%.2f%%", damageBonusRate * 100));
+                        } else {
+                            speedBonusRate = 0.0075f * gapVerdictLevel;
+                            damageBonusRate = 0.0075f * gapVerdictLevel;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】星隙由其他来源施加！基准加成: 攻速 +" + String.format("%.2f%%", speedBonusRate * 100) + "，伤害 +" + String.format("%.2f%%", damageBonusRate * 100));
+                        }
+
+                        final float[] weaponDmgBox = {1.0f};
+                        final float[] weaponSpdBox = {4.0f};
+                        currentHeldWeapon.forEachModifier(net.minecraft.world.entity.EquipmentSlot.MAINHAND, (attribute, modifier) -> {
+                            if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) && modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                                weaponDmgBox[0] += (float) modifier.amount();
+                            } else if (attribute.is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED) && modifier.operation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE) {
+                                weaponSpdBox[0] += (float) modifier.amount();
+                            }
+                        });
+
+                        GapVerdictBonus gvBonus = calcGapVerdictBonus(gapVerdictLevel, isFromThisWeapon, weaponSpdBox[0], weaponDmgBox[0]);
+                        speedBonusRate = gvBonus.speedBonusRate();
+                        damageBonusRate = gvBonus.damageBonusRate();
+
+                        if (weaponSpdBox[0] > 1.6001f) {
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】武器攻击速度 (" + String.format("%.2f", weaponSpdBox[0]) + ") 高于 1.6，攻速加成减半至 " + String.format("%.4f%%", speedBonusRate * 100));
+                        }
+                        if (weaponDmgBox[0] > 7.0001f) {
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】武器基础攻击力 (" + String.format("%.2f", weaponDmgBox[0]) + ") 高于 7.0，伤害加成减半至 " + String.format("%.4f%%", damageBonusRate * 100));
+                        }
+
+                        // 加法累加伤害乘数
+                        attackerMultiplier += damageBonusRate;
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】伤害提高加成生效: +" + String.format("%.4f%%", damageBonusRate * 100) + " (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+
+                        // 攻击速度提升 (持续 4 秒)
+                        me.tuanzi.item.StarRiftBladeItem.applyGapVerdictSpeedBuff(attacker, speedBonusRate, 80);
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【隙间裁决】攻速提高加成生效: +" + String.format("%.4f%%", speedBonusRate * 100) + "，持续 80 刻 (4秒)。");
+                    }
+                }
+
+                // 贯震铭刻 (Pervading Vibration) 附魔结算
+                var pervadingHolder = enchLookup.get(ModEnchantments.PERVADING_VIBRATION);
+                int pervadingLevel = 0;
+                if (pervadingHolder.isPresent()) {
+                    pervadingLevel = EnchantmentHelper.getItemEnchantmentLevel(pervadingHolder.get(), currentHeldWeapon);
+                }
+                if (pervadingLevel > 0) {
+                    final float[] atkSpeedBox = {4.0f};
+                    currentHeldWeapon.forEachModifier(EquipmentSlot.MAINHAND, (attr, mod) -> {
+                        if (attr.is(Attributes.ATTACK_SPEED) && mod.operation() == AttributeModifier.Operation.ADD_VALUE) {
+                            atkSpeedBox[0] += (float) mod.amount();
+                        }
+                    });
+                    float weaponSpeed = atkSpeedBox[0];
+                    float speedEfficiency = weaponSpeed > 1.0f ? 0.175f : 1.0f;
+
+                    float cooldownScale = 1.0f;
+                    if (attacker instanceof TideCleaverPlayerTracker tracker) {
+                        cooldownScale = tracker.tuanzis_mod$getLastAttackStrength();
+                    }
+
+                    if (cooldownScale >= 0.8f) {
+                        // 冷却 >= 80%：在伤害结算前，将“贯震”层数直接设为 5 层 (amplifier = 4)，刷新 4 秒 (80 ticks)
+                        if (!attacker.level().isClientSide()) {
+                            attacker.addEffect(new MobEffectInstance(ModStatusEffects.PERVADING_VIBRATION, 80, 4, false, true, true));
+                        }
+                        // 本次攻击直接按 5 层结算加成
+                        float bonusDmg = 5 * (0.24f * pervadingLevel) * speedEfficiency;
+                        amount += bonusDmg;
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【贯震铭刻】冷却 >= 80% (当前蓄力: " + String.format("%.2f", cooldownScale)
+                                + ")！直接设为5层贯震并刷新4秒，武器攻速: " + String.format("%.2f", weaponSpeed)
+                                + " (降效系数: " + String.format("%.3f", speedEfficiency) + ")，造成额外伤害: +"
+                                + String.format("%.2f", bonusDmg) + " 点 (当前伤害: " + String.format("%.2f", amount) + ")。");
+                    } else {
+                        // 冷却 < 80%：本次攻击不享受“命中后获得 1 层”，只读取命中前已有层数
+                        int existingStacks = 0;
+                        if (attacker.hasEffect(ModStatusEffects.PERVADING_VIBRATION)) {
+                            MobEffectInstance effect = attacker.getEffect(ModStatusEffects.PERVADING_VIBRATION);
+                            if (effect != null) {
+                                existingStacks = effect.getAmplifier() + 1;
+                            }
+                        }
+                        if (existingStacks > 0) {
+                            float bonusDmg = existingStacks * (0.24f * pervadingLevel) * speedEfficiency;
+                            amount += bonusDmg;
+                            me.tuanzi.util.ModLog.debug(attacker, target, "【贯震铭刻】冷却 < 80% (当前蓄力: " + String.format("%.2f", cooldownScale)
+                                    + ")！按命中前已有层数 (" + existingStacks + " 层) 结算，额外伤害: +"
+                                    + String.format("%.2f", bonusDmg) + " 点 (当前伤害: " + String.format("%.2f", amount) + ")。");
+                        }
+                        // 命中后获得 1 层 (最多 5 层)，刷新 4 秒
+                        int newStacks = Math.min(5, existingStacks + 1);
+                        if (!attacker.level().isClientSide()) {
+                            attacker.addEffect(new MobEffectInstance(ModStatusEffects.PERVADING_VIBRATION, 80, newStacks - 1, false, true, true));
+                        }
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【贯震铭刻】命中后获得 1 层贯震 (现为 " + newStacks + " 层)，持续时间刷新为 4 秒。");
+                    }
+                }
+
+                // 地脉定桩锤 (Earth Pile Hammer) 专属机制结算
+                if (currentHeldWeapon.getItem() instanceof EarthPileHammerItem) {
+                    float cooldownScale = 1.0f;
+                    if (attacker instanceof TideCleaverPlayerTracker tracker) {
+                        cooldownScale = tracker.tuanzis_mod$getLastAttackStrength();
+                    }
+
+                    CustomData customData = currentHeldWeapon.get(DataComponents.CUSTOM_DATA);
+                    CompoundTag tag = customData != null ? customData.copyTag() : new CompoundTag();
+                    double wearValue = tag.getDoubleOr("WearValue", 0.0);
+
+                    if (cooldownScale >= 0.8f) {
+                        // 定桩重击：造成 100% 攻击力 (amount 保持 100%)
+                        // 触发命中点半径 2.5 格震荡波
+                        EarthPileHammerItem.triggerEarthShockwave(attacker, target, amount, wearValue);
+
+                        // 启动“地脉回响”静止判定窗口 (2 秒内未移动，下一次攻击冷却恢复速度 +10%)
+                        if (attacker instanceof Player player) {
+                            EarthEchoTracker.startWindow(player);
+                        }
+
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【地脉定桩锤】定桩重击触发 (冷却: " + String.format("%.2f", cooldownScale)
+                                + " >= 80%)！造成 100% 完整伤害: " + String.format("%.2f", amount)
+                                + " 点，已释放震荡波并启动地脉回响 2 秒静止判定窗口。");
+                    } else {
+                        // 冷却 < 80%：本次攻击仅造成 65% 攻击力，且自身获得 0.5 秒 (10 ticks) 缓慢 I
+                        float fullDmg = amount;
+                        amount *= 0.65f;
+                        if (!attacker.level().isClientSide()) {
+                            attacker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, 0, false, true, true));
+                        }
+                        me.tuanzi.util.ModLog.debug(attacker, target, "【地脉定桩锤】攻击冷却不足 (冷却: " + String.format("%.2f", cooldownScale)
+                                + " < 80%)！伤害折减为 65% (" + String.format("%.2f", fullDmg) + " -> " + String.format("%.2f", amount)
+                                + ")，自身获得 0.5 秒缓慢I惩罚。");
+                    }
+                }
+
                 // 野太刀 (Nodachi) 刀锋甜点区与势连击伤害加成
                 if (attacker.getMainHandItem().getItem() instanceof me.tuanzi.item.NodachiItem) {
                     if (attacker instanceof me.tuanzi.util.NodachiPlayerTracker tracker) {
@@ -828,7 +1033,7 @@ public class DamageCalculator {
             float markBonus = 0.03f * markLevel; // 3%, 6%, 9%
             victimMultiplier += markBonus;
             me.tuanzi.util.ModLog.debug(source.getEntity(), target, "伤害更改触发：受击者拥有【鸿痕】标记（等级: " + markLevel + "），受到玩家伤害提升 "
-                + String.format(java.util.Locale.ROOT, "%.0f%%", markBonus * 100.0f) + " (当前受伤乘数累加值: " + String.format(java.util.Locale.ROOT, "%.2f", victimMultiplier) + ")。");
+                    + String.format(java.util.Locale.ROOT, "%.0f%%", markBonus * 100.0f) + " (当前受伤乘数累加值: " + String.format(java.util.Locale.ROOT, "%.2f", victimMultiplier) + ")。");
         }
 
         // 日冕核心 · 烈焰统领 黑石重盾防御联动减伤 (一阶段每存活 1 面盾提供 8.75% 伤害减免，4 面满额 35%；二阶段盾牌转化为切削利刃不再具有免伤)
@@ -992,8 +1197,8 @@ public class DamageCalculator {
      * 计算受击者被古卷附魔（切金断玉、贯革）无视后的有效护甲值。
      *
      * @param totalArmor 受击者受击前的原始护甲值
-     * @param source 伤害来源
-     * @param victim 受击者
+     * @param source     伤害来源
+     * @param victim     受击者
      * @return 削减后的实际有效护甲值
      */
     public static float calculateArmorIgnored(float totalArmor, DamageSource source, LivingEntity victim) {
@@ -1090,7 +1295,7 @@ public class DamageCalculator {
      * (使得 E(x, y) < totalExp)
      *
      * @param totalExp 玩家当前总经验点数
-     * @param level 附魔等级 (1 - 5)
+     * @param level    附魔等级 (1 - 5)
      * @return 最多可抵挡的致死超出伤害量
      */
     public static float calcMaxBlockableDamage(int totalExp, int level) {
@@ -1150,7 +1355,7 @@ public class DamageCalculator {
      * 若玩家当前持有的总经验点数 > E(x, y)，则消耗 E 点经验，免疫超额致死伤害，使玩家保留 1.0F 生命值。
      * 判定早于不死药水/不死图腾。
      *
-     * @param dmg 即将从生命值中扣除的伤害
+     * @param dmg    即将从生命值中扣除的伤害
      * @param source 伤害来源
      * @param player 受击玩家
      * @return 调整后的伤害（若触发则返回 player.getHealth() - 1.0F）
@@ -1213,9 +1418,9 @@ public class DamageCalculator {
         player.giveExperiencePoints((int) -requiredExp);
         if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetExperiencePacket(
-                serverPlayer.experienceProgress,
-                serverPlayer.totalExperience,
-                serverPlayer.experienceLevel
+                    serverPlayer.experienceProgress,
+                    serverPlayer.totalExperience,
+                    serverPlayer.experienceLevel
             ));
         }
 
@@ -1234,23 +1439,23 @@ public class DamageCalculator {
         var level = player.level();
         // 播放专属音效（沉重格挡 + 魔法共鸣 + 铁砧落地音，绝不触发图腾特效）
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.SHIELD_BLOCK,
-            net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.8F);
+                SoundEvents.SHIELD_BLOCK,
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.8F);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.ENCHANTMENT_TABLE_USE,
-            net.minecraft.sounds.SoundSource.PLAYERS, 1.2F, 1.0F);
+                SoundEvents.ENCHANTMENT_TABLE_USE,
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.2F, 1.0F);
         level.playSound(null, player.getX(), player.getY(), player.getZ(),
-            SoundEvents.ANVIL_LAND,
-            net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.6F);
+                SoundEvents.ANVIL_LAND,
+                net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.6F);
 
         // 服务端生成专属粒子（古卷附魔紫色/传送门符文与光辉）
         if (level instanceof net.minecraft.server.level.ServerLevel serverLevel) {
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.ENCHANT,
-                player.getX(), player.getY() + 1.0, player.getZ(), 45, 0.6, 0.8, 0.6, 0.5);
+                    player.getX(), player.getY() + 1.0, player.getZ(), 45, 0.6, 0.8, 0.6, 0.5);
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.PORTAL,
-                player.getX(), player.getY() + 1.0, player.getZ(), 35, 0.6, 0.8, 0.6, 0.2);
+                    player.getX(), player.getY() + 1.0, player.getZ(), 35, 0.6, 0.8, 0.6, 0.2);
             serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.GLOW,
-                player.getX(), player.getY() + 1.0, player.getZ(), 25, 0.5, 0.6, 0.5, 0.1);
+                    player.getX(), player.getY() + 1.0, player.getZ(), 25, 0.5, 0.6, 0.5, 0.1);
         }
     }
 
@@ -1297,5 +1502,77 @@ public class DamageCalculator {
     public static float getWayfarerFallReduction(int level) {
         if (level <= 0) return 0.0f;
         return 1.5f * (level + 1);
+    }
+
+    /**
+     * 计算【星隙裁刃】命中已带有星隙的目标时造成的额外物理伤害。
+     * 基础攻击力的 20%
+     */
+    public static float calcStarRiftBladeBonusDamage(float baseAttackDamage) {
+        return baseAttackDamage * 0.20f;
+    }
+
+    public record GapVerdictBonus(float speedBonusRate, float damageBonusRate) {}
+
+    /**
+     * 计算【隙间裁决】附魔攻击带有星隙的目标时的加成数值。
+     */
+    public static GapVerdictBonus calcGapVerdictBonus(int level, boolean isFromWeaponSelf, float weaponSpeed, float weaponDamage) {
+        if (level <= 0) {
+            return new GapVerdictBonus(0.0f, 0.0f);
+        }
+        float speedBonus = isFromWeaponSelf ? (0.05f * level) : (0.0075f * level);
+        float damageBonus = isFromWeaponSelf ? (0.02f * level) : (0.0075f * level);
+
+        if (weaponSpeed > 1.6001f) {
+            speedBonus /= 2.0f;
+        }
+        if (weaponDamage > 7.0001f) {
+            damageBonus /= 2.0f;
+        }
+        return new GapVerdictBonus(speedBonus, damageBonus);
+    }
+
+
+    /**
+     * 计算【贯震铭刻】附魔提供的额外攻击伤害加成。
+     *
+     * @param level 附魔等级 (1~5)
+     * @param stacks 贯震层数 (1~5)
+     * @param weaponSpeed 武器基础攻击速度
+     * @return 增加的物理伤害值
+     */
+    public static float calcPervadingVibrationBonus(int level, int stacks, float weaponSpeed) {
+        if (level <= 0 || stacks <= 0) return 0.0f;
+        int clampedStacks = Math.min(5, stacks);
+        float efficiency = weaponSpeed > 1.0f ? 0.175f : 1.0f;
+        return clampedStacks * (0.24f * level) * efficiency;
+    }
+
+    /**
+     * 计算【地脉定桩锤】直击主目标的伤害。
+     * 冷却 >= 80%：造成 100% 攻击力。
+     * 冷却 < 80%：造成 65% 攻击力。
+     *
+     * @param attackDamage 本次攻击力快照 (含基础攻击力与贯震加成)
+     * @param cooldownScale 攻击冷却蓄力比例 (0.0 ~ 1.0)
+     * @return 实际主目标直接伤害
+     */
+    public static float calcEarthPileHammerDirectDamage(float attackDamage, float cooldownScale) {
+        if (cooldownScale >= 0.8f) {
+            return attackDamage;
+        } else {
+            return attackDamage * 0.65f;
+        }
+    }
+
+    /**
+     * 计算【地脉定桩锤】定桩重击震荡波单体物理伤害。
+     *
+     * @param attackDamageSnapshot 定桩重击攻击力快照 (100% 攻击力)
+     * @return 震荡波造成的物理伤害 (35%)
+     */
+    public static float calcEarthPileShockwaveDamage(float attackDamageSnapshot) {
+        return attackDamageSnapshot * 0.35f;
     }
 }

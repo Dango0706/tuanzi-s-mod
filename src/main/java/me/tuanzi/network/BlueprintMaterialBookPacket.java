@@ -12,13 +12,13 @@ import net.minecraft.resources.Identifier;
  */
 public record BlueprintMaterialBookPacket(BlockPos pos) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<BlueprintMaterialBookPacket> TYPE =
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_material_book"));
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_material_book"));
 
     public static final StreamCodec<FriendlyByteBuf, BlueprintMaterialBookPacket> CODEC =
-        StreamCodec.composite(
-            BlockPos.STREAM_CODEC, BlueprintMaterialBookPacket::pos,
-            BlueprintMaterialBookPacket::new
-        );
+            StreamCodec.composite(
+                    BlockPos.STREAM_CODEC, BlueprintMaterialBookPacket::pos,
+                    BlueprintMaterialBookPacket::new
+            );
 
     @Override
     public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {

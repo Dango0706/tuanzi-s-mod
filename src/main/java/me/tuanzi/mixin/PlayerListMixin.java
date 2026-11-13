@@ -27,14 +27,14 @@ public abstract class PlayerListMixin {
             if (corridorLevel != null) {
                 net.minecraft.core.BlockPos spawnPos = me.tuanzi.world.scavenger.CorridorSpawnManager.get(corridorLevel).getOrCreateSpawnPos(serverPlayer, corridorLevel);
                 ModLog.debug(serverPlayer, null, "【拾荒回廊】拦截玩家复活：强制定位至专属出生点 (" +
-                    (spawnPos.getX() + 0.5) + ", " + (spawnPos.getY() + 1.0) + ", " + (spawnPos.getZ() + 0.5) + ") 安全基台。");
+                        (spawnPos.getX() + 0.5) + ", " + (spawnPos.getY() + 1.0) + ", " + (spawnPos.getZ() + 0.5) + ") 安全基台。");
                 return new TeleportTransition(
-                    corridorLevel,
-                    new Vec3(spawnPos.getX() + 0.5, spawnPos.getY() + 1.0, spawnPos.getZ() + 0.5),
-                    Vec3.ZERO,
-                    0.0f,
-                    0.0f,
-                    TeleportTransition.DO_NOTHING
+                        corridorLevel,
+                        new Vec3(spawnPos.getX() + 0.5, spawnPos.getY() + 1.0, spawnPos.getZ() + 0.5),
+                        Vec3.ZERO,
+                        0.0f,
+                        0.0f,
+                        TeleportTransition.DO_NOTHING
                 );
             }
         }

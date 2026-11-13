@@ -18,16 +18,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Locale;
 import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public class ItemStackDurabilityMixin {
-    
+
     @Inject(
-        method = "hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;)V",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "hurtAndBreak(ILnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/entity/EquipmentSlot;)V",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$preventDummyAttackDamage(int amount, LivingEntity entity, EquipmentSlot slot, CallbackInfo ci) {
         if (entity instanceof net.minecraft.world.entity.player.Player player) {
@@ -38,9 +37,9 @@ public class ItemStackDurabilityMixin {
     }
 
     @Inject(
-        method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V",
-        at = @At("HEAD"),
-        cancellable = true
+            method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V",
+            at = @At("HEAD"),
+            cancellable = true
     )
     private void tuanzis_mod$preventDummyAttackDamageServer(int amount, ServerLevel level, ServerPlayer player, Consumer<?> onBreak, CallbackInfo ci) {
         if (player != null) {
@@ -74,7 +73,7 @@ public class ItemStackDurabilityMixin {
                     cir.setReturnValue(reduced);
                     if (!user.level().isClientSide()) {
                         ModLog.debug(user, "【抱朴】进食时间缩短: 原始耗时 %d ticks -> 现耗时 %d ticks (等级: %d, -%.0f%%)",
-                            original, reduced, level, reduction * 100f);
+                                original, reduced, level, reduction * 100f);
                     }
                 }
             }

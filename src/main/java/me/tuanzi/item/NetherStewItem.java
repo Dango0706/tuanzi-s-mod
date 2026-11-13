@@ -18,7 +18,7 @@ public class NetherStewItem extends Item {
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity user) {
         ItemStack result = super.finishUsingItem(stack, level, user);
-        
+
         if (!level.isClientSide()) {
             // 赋予三个状态效果，持续时间 1分30秒 (90秒 = 1800 ticks)
             user.addEffect(new MobEffectInstance(ModStatusEffects.HELL_FIRE, 1800, 0));

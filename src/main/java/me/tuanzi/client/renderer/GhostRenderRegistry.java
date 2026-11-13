@@ -15,16 +15,6 @@ import java.util.WeakHashMap;
 public class GhostRenderRegistry {
     private static final Map<RenderType, GhostRenderInfo> registry = new WeakHashMap<>();
 
-    public static class GhostRenderInfo {
-        public final RenderType original;
-        public final float alpha;
-
-        public GhostRenderInfo(RenderType original, float alpha) {
-            this.original = original;
-            this.alpha = alpha;
-        }
-    }
-
     public static RenderType getOrCreateGhostType(RenderType original, float alpha) {
         if (original == null) {
             return Sheets.translucentBlockItemSheet();
@@ -129,6 +119,16 @@ public class GhostRenderRegistry {
     public static GhostRenderInfo getInfo(RenderType renderType) {
         synchronized (registry) {
             return registry.get(renderType);
+        }
+    }
+
+    public static class GhostRenderInfo {
+        public final RenderType original;
+        public final float alpha;
+
+        public GhostRenderInfo(RenderType original, float alpha) {
+            this.original = original;
+            this.alpha = alpha;
         }
     }
 }

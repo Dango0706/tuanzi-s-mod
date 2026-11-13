@@ -177,7 +177,7 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
             };
             if (bonus > 0.0) {
                 speedAttr.addTransientModifier(new AttributeModifier(
-                    NODACHI_SPEED_MODIFIER_ID, bonus, AttributeModifier.Operation.ADD_VALUE
+                        NODACHI_SPEED_MODIFIER_ID, bonus, AttributeModifier.Operation.ADD_VALUE
                 ));
             }
         }
@@ -242,6 +242,8 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
                 }
             }
         }
+
+        me.tuanzi.util.EarthEchoTracker.tickPlayer(player);
     }
 
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
@@ -261,15 +263,15 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
         this.tuanzis_mod$lastAttackFullyChargedTicks = this.tuanzis_mod$ticksSinceFullyCharged;
 
         if (!player.level().isClientSide()) {
-            ModLog.debug(player, entity, "【玩家攻击】攻击强度: " 
-                + String.format("%.4f", this.tuanzis_mod$lastAttackStrength) 
-                + ", 冷却已满刻数: " + this.tuanzis_mod$lastAttackFullyChargedTicks);
+            ModLog.debug(player, entity, "【玩家攻击】攻击强度: "
+                    + String.format("%.4f", this.tuanzis_mod$lastAttackStrength)
+                    + ", 冷却已满刻数: " + this.tuanzis_mod$lastAttackFullyChargedTicks);
         }
     }
 
     @Inject(
-        method = "attack",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;itemAttackInteraction(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/damagesource/DamageSource;Z)V")
+            method = "attack",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;itemAttackInteraction(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/damagesource/DamageSource;Z)V")
     )
     private void tuanzis_mod$onNodachiHitEntity(Entity entity, CallbackInfo ci) {
         Player player = (Player) (Object) this;
@@ -280,10 +282,10 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
     }
 
     @ModifyVariable(
-        method = "causeExtraKnockback",
-        at = @At("HEAD"),
-        ordinal = 0,
-        argsOnly = true
+            method = "causeExtraKnockback",
+            at = @At("HEAD"),
+            ordinal = 0,
+            argsOnly = true
     )
     private float tuanzis_mod$modifyNodachiKnockback(float knockbackAmount, Entity entity) {
         Player player = (Player) (Object) this;
@@ -296,5 +298,11 @@ public class PlayerCooldownMixin implements TideCleaverPlayerTracker, NodachiPla
             }
         }
         return knockbackAmount;
+    }
+
+    @Inject(method = "resetAttackStrengthTicker", at = @At("HEAD"))
+    private void tuanzis_mod$onResetAttackStrengthTicker(CallbackInfo ci) {
+        Player player = (Player) (Object) this;
+        me.tuanzi.util.EarthEchoTracker.onAttackStart(player);
     }
 }

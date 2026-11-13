@@ -9,10 +9,10 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.DyedItemColor;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
 public class ColorBlockDyeRecipe extends CustomRecipe {
     public static final MapCodec<ColorBlockDyeRecipe> MAP_CODEC = MapCodec.unit(ColorBlockDyeRecipe::new);
@@ -31,9 +31,9 @@ public class ColorBlockDyeRecipe extends CustomRecipe {
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
-                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) || 
-                    stack.is(ModBlocks.COLOR_SLAB.asItem()) || 
-                    stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
+                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) ||
+                        stack.is(ModBlocks.COLOR_SLAB.asItem()) ||
+                        stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
                     targetCount++;
                 } else if (stack.is(ModItems.PAINT_BUCKET)) {
                     if (stack.getDamageValue() >= 256) {
@@ -56,9 +56,9 @@ public class ColorBlockDyeRecipe extends CustomRecipe {
         for (int i = 0; i < input.size(); i++) {
             ItemStack stack = input.getItem(i);
             if (!stack.isEmpty()) {
-                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) || 
-                    stack.is(ModBlocks.COLOR_SLAB.asItem()) || 
-                    stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
+                if (stack.is(ModBlocks.COLOR_BLOCK.asItem()) ||
+                        stack.is(ModBlocks.COLOR_SLAB.asItem()) ||
+                        stack.is(ModBlocks.COLOR_STAIRS.asItem())) {
                     target = stack;
                 } else if (stack.is(ModItems.PAINT_BUCKET)) {
                     bucket = stack;

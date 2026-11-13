@@ -1,11 +1,12 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModItems;
-import me.tuanzi.init.ModStatusEffects;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -20,8 +21,6 @@ import net.minecraft.world.entity.animal.wolf.WolfSoundVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -34,15 +33,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Wolf.class)
 public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.WolfAccessor {
 
-    protected WolfMixin(net.minecraft.world.entity.EntityType<? extends LivingEntity> entityType, net.minecraft.world.level.Level level) {
-        super(entityType, level);
-    }
-
-    @Shadow
-    private WolfSoundVariant.WolfSoundSet getSoundSet() {
-        throw new AssertionError();
-    }
-
     @Unique
     private int tuanzis_mod$invulnerableTicks = 0;
     @Unique
@@ -51,6 +41,14 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
     private boolean tuanzis_mod$downed = false;
     @Unique
     private int tuanzis_mod$rottenFleshFedCount = 0;
+    protected WolfMixin(net.minecraft.world.entity.EntityType<? extends LivingEntity> entityType, net.minecraft.world.level.Level level) {
+        super(entityType, level);
+    }
+
+    @Shadow
+    private WolfSoundVariant.WolfSoundSet getSoundSet() {
+        throw new AssertionError();
+    }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tuanzis_mod$tickWolfCharm(CallbackInfo ci) {
@@ -108,16 +106,16 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
             LivingEntity target = wolf.getTarget();
             if (target != null && target.isAlive() && wolf.distanceToSqr(target) <= 9.0D) {
                 if (wolf.tickCount % 10 == 0) {
-                    wolf.doHurtTarget((ServerLevel)wolf.level(), target);
+                    wolf.doHurtTarget((ServerLevel) wolf.level(), target);
                 }
             }
 
             // 产生火花与激怒红石粒子
             if (wolf.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.ANGRY_VILLAGER,
-                    wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
+                        wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 2, 0.2, 0.2, 0.2, 0.0);
                 serverLevel.sendParticles(ParticleTypes.FLAME,
-                    wolf.getX(), wolf.getY() + 0.3, wolf.getZ(), 1, 0.2, 0.2, 0.2, 0.02);
+                        wolf.getX(), wolf.getY() + 0.3, wolf.getZ(), 1, 0.2, 0.2, 0.2, 0.02);
             }
 
             if (tuanzis_mod$rageTicks == 0) {
@@ -137,10 +135,10 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
 
                 // 播放力竭倒地声音（使用变种狼死亡声音）和烟雾粒子
                 wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
-                    this.getSoundSet().deathSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 0.8F);
+                        this.getSoundSet().deathSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 0.8F);
                 if (wolf.level() instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(ParticleTypes.SMOKE,
-                        wolf.getX(), wolf.getY() + 0.3, wolf.getZ(), 15, 0.3, 0.3, 0.3, 0.0);
+                            wolf.getX(), wolf.getY() + 0.3, wolf.getZ(), 15, 0.3, 0.3, 0.3, 0.0);
                 }
             }
         }
@@ -155,7 +153,7 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
             // 每隔 20 tick 产生微小休眠粒子
             if (wolf.tickCount % 20 == 0 && wolf.level() instanceof ServerLevel serverLevel) {
                 serverLevel.sendParticles(ParticleTypes.DAMAGE_INDICATOR,
-                    wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 1, 0.1, 0.1, 0.1, 0.0);
+                        wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 1, 0.1, 0.1, 0.1, 0.0);
             }
         }
     }
@@ -170,7 +168,7 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
     public void tuanzis_mod$playGrowlSound(LivingEntity target) {
         Wolf wolf = (Wolf) (Object) this;
         wolf.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-            this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.2F);
+                this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.2F);
     }
 
     // 6. 受到致命伤害拦截、无敌及倒地免伤
@@ -191,7 +189,6 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
             cir.setReturnValue(false);
             return;
         }
-
 
 
         // 致命伤害防护
@@ -215,10 +212,10 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
 
                     // 播放变种激怒吼叫和怒火粒子
                     wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
-                        this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.5F, 1.5F);
+                            this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.5F, 1.5F);
 
                     level.sendParticles(ParticleTypes.ANGRY_VILLAGER,
-                        wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 15, 0.3, 0.3, 0.3, 0.0);
+                            wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 15, 0.3, 0.3, 0.3, 0.0);
 
                     cir.setReturnValue(true);
                 }
@@ -252,11 +249,11 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
 
                     // 播放吃东西声音与快乐骨粉粒子
                     wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
-                        SoundEvents.GENERIC_EAT.value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.0F);
+                            SoundEvents.GENERIC_EAT.value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.0F, 1.0F);
 
                     if (wolf.level() instanceof ServerLevel serverLevel) {
                         serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                            wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 5, 0.2, 0.2, 0.2, 0.0);
+                                wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 5, 0.2, 0.2, 0.2, 0.0);
                     }
 
                     // 用 Action bar 发送提示
@@ -274,11 +271,11 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
 
                         // 播放变种复活吼叫与爱心粒子
                         wolf.level().playSound(null, wolf.getX(), wolf.getY(), wolf.getZ(),
-                            this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.2F, 1.0F);
+                                this.getSoundSet().growlSound().value(), net.minecraft.sounds.SoundSource.NEUTRAL, 1.2F, 1.0F);
 
                         if (wolf.level() instanceof ServerLevel serverLevel) {
                             serverLevel.sendParticles(ParticleTypes.HEART,
-                                wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 10, 0.3, 0.3, 0.3, 0.0);
+                                    wolf.getX(), wolf.getY() + 0.5, wolf.getZ(), 10, 0.3, 0.3, 0.3, 0.0);
                         }
 
                         player.sendSystemMessage(Component.literal("§a你的战狼已满血复活！"));

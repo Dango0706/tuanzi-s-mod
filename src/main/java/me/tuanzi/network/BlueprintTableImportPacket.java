@@ -10,13 +10,13 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 
 public record BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprintData) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<BlueprintTableImportPacket> TYPE = 
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table_import"));
+    public static final CustomPacketPayload.Type<BlueprintTableImportPacket> TYPE =
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table_import"));
 
     public static final StreamCodec<FriendlyByteBuf, BlueprintTableImportPacket> CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC, BlueprintTableImportPacket::tablePos,
-        ByteBufCodecs.COMPOUND_TAG, BlueprintTableImportPacket::blueprintData,
-        BlueprintTableImportPacket::new
+            BlockPos.STREAM_CODEC, BlueprintTableImportPacket::tablePos,
+            ByteBufCodecs.COMPOUND_TAG, BlueprintTableImportPacket::blueprintData,
+            BlueprintTableImportPacket::new
     );
 
     @Override

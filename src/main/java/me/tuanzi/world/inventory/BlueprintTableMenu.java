@@ -18,10 +18,6 @@ public class BlueprintTableMenu extends AbstractContainerMenu {
         this(containerId, playerInventory, new SimpleContainer(2), new net.minecraft.world.inventory.SimpleContainerData(3));
     }
 
-    public net.minecraft.core.BlockPos getTablePos() {
-        return new net.minecraft.core.BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
-    }
-
     public BlueprintTableMenu(int containerId, Inventory playerInventory, Container container, net.minecraft.world.inventory.ContainerData data) {
         super(ModMenuTypes.BLUEPRINT_TABLE, containerId);
         this.container = container;
@@ -54,6 +50,10 @@ public class BlueprintTableMenu extends AbstractContainerMenu {
         for (int i = 0; i < 9; i++) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
+    }
+
+    public net.minecraft.core.BlockPos getTablePos() {
+        return new net.minecraft.core.BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
     }
 
     public ItemStack getExportBlueprint() {

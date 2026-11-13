@@ -17,11 +17,11 @@ public abstract class ExperienceOrbMixin {
     }
 
     @Redirect(
-        method = "playerTouch",
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/ExperienceOrb;repairPlayerItems(Lnet/minecraft/server/level/ServerPlayer;I)I"
-        )
+            method = "playerTouch",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/ExperienceOrb;repairPlayerItems(Lnet/minecraft/server/level/ServerPlayer;I)I"
+            )
     )
     private int tuanzis_mod$boostExperienceOnTouch(ExperienceOrb instance, ServerPlayer player, int amount) {
         int boostedAmount = ExperiencedEnchantmentHelper.calculateExperience(player, amount);

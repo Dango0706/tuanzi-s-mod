@@ -17,18 +17,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class GachaImportMenu extends ChestMenu {
     private final GachaPool pool;
     private final String rarity;
     private final GachaPoolEditMenu parentMenu;
     private final ServerPlayer player;
-    
+
     // 跟踪顶部 27 个待导入物品槽位的临时自定义权重值 (默认为 10)
     private final Map<Integer, Integer> tempWeights = new HashMap<>();
 
@@ -38,19 +34,19 @@ public class GachaImportMenu extends ChestMenu {
         this.rarity = rarity;
         this.parentMenu = parentMenu;
         this.player = (ServerPlayer) playerInventory.player;
-        
+
         // 初始化功能控制按钮
         refreshSlots();
     }
 
     public void refreshSlots() {
         Container container = this.getContainer();
-        
+
         // 我们只在非 0-26 的格子填充装饰与控制项。因为 0-26 是由玩家放置的物品。
         // 第 4 行 (Slot 27-35)：分隔与功能
         ItemStack grayPane = new ItemStack(Items.STAINED_GLASS_PANE.gray());
         grayPane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
-        
+
         for (int i = 27; i < 36; i++) {
             if (i == 35) {
                 container.setItem(i, createNamedItem(Items.HOPPER, "§6§l一键装载生存背包的所有物品"));
@@ -93,7 +89,7 @@ public class GachaImportMenu extends ChestMenu {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 int weight = tempWeights.computeIfAbsent(i, k -> 10);
-                
+
                 // 为了显示而不破坏原有的物品，我们要向客户端展示一个带有定制 Lore 的 ItemStack
                 ItemStack displayStack = stack.copy();
                 ItemLore originalLore = displayStack.get(DataComponents.LORE);
@@ -143,12 +139,12 @@ public class GachaImportMenu extends ChestMenu {
                 putItem.setCount(carried.getCount()); // 保留手中原本的正确数量
                 container.setItem(slotIndex, putItem);
                 tempWeights.put(slotIndex, 10); // 重置为此格子默认权重
-                
+
                 // 核心修复：成功拖入后清空手持物品，完成完美、自然的“拖入放下”操作，彻底解决 JEI 拖入和手持粘连卡死问题
                 this.setCarried(ItemStack.EMPTY);
-                
+
                 refreshSlots();
-            } 
+            }
             // 1.2 手中没有拿着物品 -> 进行微调、删除或复制
             else if (!current.isEmpty()) {
                 if (containerInput == ContainerInput.QUICK_MOVE || buttonNum == 2) {
@@ -165,10 +161,10 @@ public class GachaImportMenu extends ChestMenu {
                     int currentWeight = tempWeights.getOrDefault(slotIndex, 10);
                     // 提取纯净的原物品
                     ItemStack cleanStack = current.copy();
-                    cleanStack.set(DataComponents.LORE, null); 
-                    
+                    cleanStack.set(DataComponents.LORE, null);
+
                     GachaPoolItem tempItem = new GachaPoolItem("temp_" + slotIndex, currentWeight, new ArrayList<>(), cleanStack);
-                    
+
                     net.minecraft.world.SimpleMenuProvider provider = new net.minecraft.world.SimpleMenuProvider(
                             (id, playerInv, p) -> new GachaWeightEditMenu(id, playerInv, pool, rarity, tempItem, this),
                             Component.literal("修改待导入物品权重")
@@ -183,7 +179,7 @@ public class GachaImportMenu extends ChestMenu {
                 }
             }
             this.broadcastFullState();
-        } 
+        }
         // 2. 点击了下层控制与功能区 (Slot 27-53)
         else if (slotIndex < 54) {
             // 2.1 漏斗一键装载 (Slot 35)
@@ -237,9 +233,9 @@ public class GachaImportMenu extends ChestMenu {
                         // 清除我们额外追加的 Lore 提示，保持物品纯净
                         ItemStack cleanStack = stack.copy();
                         cleanStack.set(DataComponents.LORE, null);
-                        
+
                         int weight = tempWeights.getOrDefault(i, 10);
-                        
+
                         GachaPoolItem newItem = new GachaPoolItem(
                                 UUID.randomUUID().toString(),
                                 weight,
@@ -250,16 +246,16 @@ public class GachaImportMenu extends ChestMenu {
                         importedCount++;
                     }
                 }
-                
+
                 player.sendSystemMessage(Component.literal("§a[!] 成功批量导入了 " + importedCount + " 件物品至 " + getRarityName(rarity) + " 卡池！"));
-                
+
                 // 自动保存并备份到本地
                 if (importedCount > 0) {
                     me.tuanzi.gacha.PoolManager.savePoolSafe(pool, this.player.level().getServer().registryAccess());
                     me.tuanzi.gacha.PoolManager.backupPoolSafe(pool, this.player.level().getServer().registryAccess());
                     player.sendSystemMessage(Component.literal("§a[!] 卡池配置已自动保存并备份到本地！"));
                 }
-                
+
                 // 返回主卡池编辑器
                 net.minecraft.world.SimpleMenuProvider provider = new net.minecraft.world.SimpleMenuProvider(
                         (id, playerInv, p) -> {
@@ -271,9 +267,9 @@ public class GachaImportMenu extends ChestMenu {
                 player.openMenu(provider);
                 return;
             }
-            
+
             this.broadcastFullState();
-        } 
+        }
         // 3. 点击了生存背包 (Slot >= 54)
         else {
             // 支持 Shift 点击快速拷贝到顶部的导入缓存区

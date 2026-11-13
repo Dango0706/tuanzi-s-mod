@@ -21,7 +21,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import org.jspecify.annotations.Nullable;
 
 /**
  * 拾荒回廊角色整备界面（视图 A）。
@@ -114,13 +113,20 @@ public class CorridorTacticalLoadoutScreen extends AbstractContainerScreen<Corri
         renderSlotBox(graphics, x + 34, y + 74);
 
         // 槽位占位标识
-        if (this.menu.slots.get(0).getItem().isEmpty()) graphics.text(this.font, "⛑", x + 16, y + 24, 0x808899A6, false);
-        if (this.menu.slots.get(1).getItem().isEmpty()) graphics.text(this.font, "🦺", x + 16, y + 42, 0x808899A6, false);
-        if (this.menu.slots.get(2).getItem().isEmpty()) graphics.text(this.font, "👖", x + 16, y + 60, 0x808899A6, false);
-        if (this.menu.slots.get(3).getItem().isEmpty()) graphics.text(this.font, "👢", x + 16, y + 78, 0x808899A6, false);
-        if (this.menu.slots.get(4).getItem().isEmpty()) graphics.text(this.font, "🛡", x + 38, y + 78, 0x808899A6, false);
-        if (this.menu.slots.get(5).getItem().isEmpty()) graphics.text(this.font, "🎒", x + 38, y + 24, 0x808899A6, false);
-        if (this.menu.slots.get(6).getItem().isEmpty()) graphics.text(this.font, "🔒", x + 38, y + 42, 0x808899A6, false);
+        if (this.menu.slots.get(0).getItem().isEmpty())
+            graphics.text(this.font, "⛑", x + 16, y + 24, 0x808899A6, false);
+        if (this.menu.slots.get(1).getItem().isEmpty())
+            graphics.text(this.font, "🦺", x + 16, y + 42, 0x808899A6, false);
+        if (this.menu.slots.get(2).getItem().isEmpty())
+            graphics.text(this.font, "👖", x + 16, y + 60, 0x808899A6, false);
+        if (this.menu.slots.get(3).getItem().isEmpty())
+            graphics.text(this.font, "👢", x + 16, y + 78, 0x808899A6, false);
+        if (this.menu.slots.get(4).getItem().isEmpty())
+            graphics.text(this.font, "🛡", x + 38, y + 78, 0x808899A6, false);
+        if (this.menu.slots.get(5).getItem().isEmpty())
+            graphics.text(this.font, "🎒", x + 38, y + 24, 0x808899A6, false);
+        if (this.menu.slots.get(6).getItem().isEmpty())
+            graphics.text(this.font, "🔒", x + 38, y + 42, 0x808899A6, false);
 
         // 传送信标快捷键指南提示（取代原有界面饰品槽，清爽直达）
         graphics.text(this.font, "空间接引快捷键:", x + 58, y + 24, 0xFF8899A6, false);

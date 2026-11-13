@@ -79,9 +79,9 @@ public class ModSeating {
             seatEntity.setPos(seatX, seatY, seatZ);
             seatEntity.setYRot(player.getYRot());
             seatEntity.setXRot(0.0F);
-            
+
             level.addFreshEntity(seatEntity);
-            
+
             // 让玩家骑乘该实体
             player.startRiding(seatEntity);
 

@@ -1,10 +1,9 @@
 package me.tuanzi.world.teleport;
 
 import me.tuanzi.init.ModItems;
-import me.tuanzi.item.TravelersNotebookItem;
 import me.tuanzi.item.SignpostRuneItem;
+import me.tuanzi.item.TravelersNotebookItem;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -20,10 +19,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TeleportManager {
@@ -82,7 +83,7 @@ public class TeleportManager {
         // 获取对应的道标符石数据
         CustomData customData = notebook.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return;
-        
+
         CompoundTag notebookTag = customData.copyTag();
         ListTag listTag = notebookTag.getListOrEmpty("Items");
         ItemStack runeStack = ItemStack.EMPTY;
@@ -117,7 +118,7 @@ public class TeleportManager {
         double tz = SignpostRuneItem.getRuneZ(runeStack);
         float yaw = SignpostRuneItem.getRuneYaw(runeStack);
         float pitch = SignpostRuneItem.getRunePitch(runeStack);
-        
+
         ResourceKey<Level> targetDimKey = ResourceKey.create(Registries.DIMENSION, Identifier.parse(targetDimStr));
 
         TeleportTask task = new TeleportTask(
@@ -131,7 +132,7 @@ public class TeleportManager {
         );
 
         activeTasks.put(player.getUUID(), task);
-        
+
         // 提示传送引导开始
         player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.starting"));
         me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送引导开始！目标维度: " + targetDimStr + "，目标坐标: (" + tx + ", " + ty + ", " + tz + ")，消耗能量: " + neededEnergy);
@@ -197,9 +198,9 @@ public class TeleportManager {
         final ResourceKey<Level> targetDim;
         final double tx, ty, tz;
         final float yaw, pitch;
-        int remainingTicks;
         final int energyCost;
         final boolean isMainHand;
+        int remainingTicks;
 
         TeleportTask(ServerPlayer player, Vec3 startVec, ResourceKey<Level> targetDim,
                      double tx, double ty, double tz, float yaw, float pitch,

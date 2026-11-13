@@ -16,13 +16,12 @@ import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class PulseResonanceSwordTintSource implements ItemTintSource {
-    private final boolean isNext;
-
     public static final MapCodec<PulseResonanceSwordTintSource> MAP_CODEC = RecordCodecBuilder.mapCodec(
-        i -> i.group(
-            Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
-        ).apply(i, PulseResonanceSwordTintSource::new)
+            i -> i.group(
+                    Codec.BOOL.optionalFieldOf("is_next", false).forGetter(source -> source.isNext)
+            ).apply(i, PulseResonanceSwordTintSource::new)
     );
+    private final boolean isNext;
 
     public PulseResonanceSwordTintSource(boolean isNext) {
         this.isNext = isNext;

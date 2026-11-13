@@ -1,13 +1,11 @@
 package me.tuanzi.block.cannon;
 
 import me.tuanzi.block.entity.BlueprintCannonBlockEntity.ContainerSource;
-import me.tuanzi.init.ModEntities;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.util.ItemStackNbtHelper;
 import me.tuanzi.util.ModLog;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,11 +15,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.painting.PaintingVariant;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Mirror;
@@ -112,12 +107,18 @@ public class BlueprintEntityHelper {
         String cleanId = entityId.contains(":") ? entityId : "minecraft:" + entityId;
 
         switch (cleanId) {
-            case "minecraft:item_frame": return new ItemStack(Items.ITEM_FRAME);
-            case "minecraft:glow_item_frame": return new ItemStack(Items.GLOW_ITEM_FRAME);
-            case "tuanzis_mod:glass_item_frame": return new ItemStack(ModItems.GLASS_ITEM_FRAME);
-            case "minecraft:painting": return new ItemStack(Items.PAINTING);
-            case "minecraft:armor_stand": return new ItemStack(Items.ARMOR_STAND);
-            case "tuanzis_mod:scarecrow": return new ItemStack(ModItems.SCARECROW);
+            case "minecraft:item_frame":
+                return new ItemStack(Items.ITEM_FRAME);
+            case "minecraft:glow_item_frame":
+                return new ItemStack(Items.GLOW_ITEM_FRAME);
+            case "tuanzis_mod:glass_item_frame":
+                return new ItemStack(ModItems.GLASS_ITEM_FRAME);
+            case "minecraft:painting":
+                return new ItemStack(Items.PAINTING);
+            case "minecraft:armor_stand":
+                return new ItemStack(Items.ARMOR_STAND);
+            case "tuanzis_mod:scarecrow":
+                return new ItemStack(ModItems.SCARECROW);
             case "tuanzis_mod:trial_dummy": {
                 ItemStack stack = new ItemStack(ModItems.TRIAL_DUMMY);
                 int dur = nbt.getIntOr("TrialDummyDurability", 32);
@@ -125,7 +126,8 @@ public class BlueprintEntityHelper {
                 stack.setDamageValue(damage);
                 return stack;
             }
-            case "minecraft:end_crystal": return new ItemStack(Items.END_CRYSTAL);
+            case "minecraft:end_crystal":
+                return new ItemStack(Items.END_CRYSTAL);
             case "minecraft:cushion": {
                 DyeColor color = DyeColor.WHITE;
                 if (nbt.contains("color")) {
@@ -134,36 +136,63 @@ public class BlueprintEntityHelper {
                 }
                 return new ItemStack(Items.CUSHION.pick(color));
             }
-            case "minecraft:minecart": return new ItemStack(Items.MINECART);
-            case "minecraft:chest_minecart": return new ItemStack(Items.CHEST_MINECART);
-            case "minecraft:furnace_minecart": return new ItemStack(Items.FURNACE_MINECART);
-            case "minecraft:tnt_minecart": return new ItemStack(Items.TNT_MINECART);
-            case "minecraft:hopper_minecart": return new ItemStack(Items.HOPPER_MINECART);
+            case "minecraft:minecart":
+                return new ItemStack(Items.MINECART);
+            case "minecraft:chest_minecart":
+                return new ItemStack(Items.CHEST_MINECART);
+            case "minecraft:furnace_minecart":
+                return new ItemStack(Items.FURNACE_MINECART);
+            case "minecraft:tnt_minecart":
+                return new ItemStack(Items.TNT_MINECART);
+            case "minecraft:hopper_minecart":
+                return new ItemStack(Items.HOPPER_MINECART);
 
             // 船系列
-            case "minecraft:oak_boat": return new ItemStack(Items.OAK_BOAT);
-            case "minecraft:spruce_boat": return new ItemStack(Items.SPRUCE_BOAT);
-            case "minecraft:birch_boat": return new ItemStack(Items.BIRCH_BOAT);
-            case "minecraft:jungle_boat": return new ItemStack(Items.JUNGLE_BOAT);
-            case "minecraft:acacia_boat": return new ItemStack(Items.ACACIA_BOAT);
-            case "minecraft:cherry_boat": return new ItemStack(Items.CHERRY_BOAT);
-            case "minecraft:dark_oak_boat": return new ItemStack(Items.DARK_OAK_BOAT);
-            case "minecraft:pale_oak_boat": return new ItemStack(Items.PALE_OAK_BOAT);
-            case "minecraft:mangrove_boat": return new ItemStack(Items.MANGROVE_BOAT);
-            case "minecraft:poplar_boat": return new ItemStack(Items.POPLAR_BOAT);
-            case "minecraft:bamboo_raft": return new ItemStack(Items.BAMBOO_RAFT);
+            case "minecraft:oak_boat":
+                return new ItemStack(Items.OAK_BOAT);
+            case "minecraft:spruce_boat":
+                return new ItemStack(Items.SPRUCE_BOAT);
+            case "minecraft:birch_boat":
+                return new ItemStack(Items.BIRCH_BOAT);
+            case "minecraft:jungle_boat":
+                return new ItemStack(Items.JUNGLE_BOAT);
+            case "minecraft:acacia_boat":
+                return new ItemStack(Items.ACACIA_BOAT);
+            case "minecraft:cherry_boat":
+                return new ItemStack(Items.CHERRY_BOAT);
+            case "minecraft:dark_oak_boat":
+                return new ItemStack(Items.DARK_OAK_BOAT);
+            case "minecraft:pale_oak_boat":
+                return new ItemStack(Items.PALE_OAK_BOAT);
+            case "minecraft:mangrove_boat":
+                return new ItemStack(Items.MANGROVE_BOAT);
+            case "minecraft:poplar_boat":
+                return new ItemStack(Items.POPLAR_BOAT);
+            case "minecraft:bamboo_raft":
+                return new ItemStack(Items.BAMBOO_RAFT);
 
-            case "minecraft:oak_chest_boat": return new ItemStack(Items.OAK_CHEST_BOAT);
-            case "minecraft:spruce_chest_boat": return new ItemStack(Items.SPRUCE_CHEST_BOAT);
-            case "minecraft:birch_chest_boat": return new ItemStack(Items.BIRCH_CHEST_BOAT);
-            case "minecraft:jungle_chest_boat": return new ItemStack(Items.JUNGLE_CHEST_BOAT);
-            case "minecraft:acacia_chest_boat": return new ItemStack(Items.ACACIA_CHEST_BOAT);
-            case "minecraft:cherry_chest_boat": return new ItemStack(Items.CHERRY_CHEST_BOAT);
-            case "minecraft:dark_oak_chest_boat": return new ItemStack(Items.DARK_OAK_CHEST_BOAT);
-            case "minecraft:pale_oak_chest_boat": return new ItemStack(Items.PALE_OAK_CHEST_BOAT);
-            case "minecraft:mangrove_chest_boat": return new ItemStack(Items.MANGROVE_CHEST_BOAT);
-            case "minecraft:poplar_chest_boat": return new ItemStack(Items.POPLAR_CHEST_BOAT);
-            case "minecraft:bamboo_chest_raft": return new ItemStack(Items.BAMBOO_CHEST_RAFT);
+            case "minecraft:oak_chest_boat":
+                return new ItemStack(Items.OAK_CHEST_BOAT);
+            case "minecraft:spruce_chest_boat":
+                return new ItemStack(Items.SPRUCE_CHEST_BOAT);
+            case "minecraft:birch_chest_boat":
+                return new ItemStack(Items.BIRCH_CHEST_BOAT);
+            case "minecraft:jungle_chest_boat":
+                return new ItemStack(Items.JUNGLE_CHEST_BOAT);
+            case "minecraft:acacia_chest_boat":
+                return new ItemStack(Items.ACACIA_CHEST_BOAT);
+            case "minecraft:cherry_chest_boat":
+                return new ItemStack(Items.CHERRY_CHEST_BOAT);
+            case "minecraft:dark_oak_chest_boat":
+                return new ItemStack(Items.DARK_OAK_CHEST_BOAT);
+            case "minecraft:pale_oak_chest_boat":
+                return new ItemStack(Items.PALE_OAK_CHEST_BOAT);
+            case "minecraft:mangrove_chest_boat":
+                return new ItemStack(Items.MANGROVE_CHEST_BOAT);
+            case "minecraft:poplar_chest_boat":
+                return new ItemStack(Items.POPLAR_CHEST_BOAT);
+            case "minecraft:bamboo_chest_raft":
+                return new ItemStack(Items.BAMBOO_CHEST_RAFT);
 
             // 兼容旧格式 Type 字段
             case "minecraft:boat": {
@@ -201,11 +230,6 @@ public class BlueprintEntityHelper {
         }
         return ItemStack.EMPTY;
     }
-
-    /**
-     * 实体所需材料项记录（包含目标槽位/类型与模板 ItemStack）
-     */
-    public record EntityRequirement(String slotKey, ItemStack template) {}
 
     /**
      * 从实体 NBT 中提取所有所需材料（包括本体物品、展示框内物品、盔甲架装备等）
@@ -279,9 +303,9 @@ public class BlueprintEntityHelper {
      * 原子化检查并扣除所需材料：
      * 只有当所有材料在 cachedSources 中全部满足且不互相冲突时，才一次性全部扣除并持久化写回容器。
      *
-     * @param cachedSources 容器物品源
-     * @param requirements 需求清单
-     * @param exactMatch 是否开启精准组件匹配
+     * @param cachedSources       容器物品源
+     * @param requirements        需求清单
+     * @param exactMatch          是否开启精准组件匹配
      * @param consumedItemsOutput 输出实际扣除的真实物品栈（供实体生成装填）
      * @return true 若全部满足且扣除成功；false 若任一材料不足（不发生任何扣除）
      */
@@ -348,16 +372,6 @@ public class BlueprintEntityHelper {
         ModLog.debug("BlueprintEntityHelper: 原子化扣料成功, 共扣除 " + requirements.size() + " 件物品");
         return true;
     }
-
-    /**
-     * 实体空间变换结果对象
-     */
-    public record TransformedEntity(
-            Vec3 exactPos,
-            BlockPos targetBlockPos,
-            Direction facing,
-            CompoundTag transformedNbt
-    ) {}
 
     /**
      * 对实体进行亚像素空间几何变换（旋转、镜像、朝向、挂饰附着锚点计算）
@@ -605,5 +619,22 @@ public class BlueprintEntityHelper {
         sanitized.remove("Marker");
 
         return sanitized;
+    }
+
+    /**
+     * 实体所需材料项记录（包含目标槽位/类型与模板 ItemStack）
+     */
+    public record EntityRequirement(String slotKey, ItemStack template) {
+    }
+
+    /**
+     * 实体空间变换结果对象
+     */
+    public record TransformedEntity(
+            Vec3 exactPos,
+            BlockPos targetBlockPos,
+            Direction facing,
+            CompoundTag transformedNbt
+    ) {
     }
 }

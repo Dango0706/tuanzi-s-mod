@@ -1,49 +1,201 @@
 {
-	"parent": "minecraft:block/block",
-	"textures": {
-		"particle": "tuanzis_mod:block/base_upgrade_station_front",
-		"bottom": "tuanzis_mod:block/base_upgrade_station_bottom",
-		"top": "tuanzis_mod:block/base_upgrade_station_top",
-		"side": "tuanzis_mod:block/base_upgrade_station_side",
-		"front": "tuanzis_mod:block/base_upgrade_station_front"
-	},
-	"elements": [
-		{
-			"name": "base_pedestal",
-			"from": [ 0, 0, 0 ],
-			"to": [ 16, 12, 16 ],
-			"faces": {
-				"north": { "uv": [ 0, 4, 16, 16 ], "texture": "#front" },
-				"east": { "uv": [ 0, 4, 16, 16 ], "texture": "#side" },
-				"south": { "uv": [ 0, 4, 16, 16 ], "texture": "#side" },
-				"west": { "uv": [ 0, 4, 16, 16 ], "texture": "#side" },
-				"up": { "uv": [ 0, 0, 16, 16 ], "texture": "#top" },
-				"down": { "uv": [ 0, 0, 16, 16 ], "texture": "#bottom" }
-			}
-		},
-		{
-			"name": "console_top",
-			"from": [ 1, 12, 1 ],
-			"to": [ 15, 14, 15 ],
-			"faces": {
-				"north": { "uv": [ 1, 12, 15, 14 ], "texture": "#front" },
-				"east": { "uv": [ 1, 12, 15, 14 ], "texture": "#side" },
-				"south": { "uv": [ 1, 12, 15, 14 ], "texture": "#side" },
-				"west": { "uv": [ 1, 12, 15, 14 ], "texture": "#side" },
-				"up": { "uv": [ 1, 1, 15, 15 ], "texture": "#top" }
-			}
-		},
-		{
-			"name": "back_panel",
-			"from": [ 1, 14, 1 ],
-			"to": [ 15, 16, 5 ],
-			"faces": {
-				"north": { "uv": [ 1, 0, 15, 2 ], "texture": "#front" },
-				"east": { "uv": [ 1, 0, 5, 2 ], "texture": "#side" },
-				"south": { "uv": [ 1, 0, 15, 2 ], "texture": "#front" },
-				"west": { "uv": [ 1, 0, 5, 2 ], "texture": "#side" },
-				"up": { "uv": [ 1, 1, 15, 5 ], "texture": "#top" }
-			}
-		}
-	]
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "tuanzis_mod:block/base_upgrade_station_front",
+    "bottom": "tuanzis_mod:block/base_upgrade_station_bottom",
+    "top": "tuanzis_mod:block/base_upgrade_station_top",
+    "side": "tuanzis_mod:block/base_upgrade_station_side",
+    "front": "tuanzis_mod:block/base_upgrade_station_front"
+  },
+  "elements": [
+    {
+      "name": "base_pedestal",
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            4,
+            16,
+            16
+          ],
+          "texture": "#front"
+        },
+        "east": {
+          "uv": [
+            0,
+            4,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            0,
+            4,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            0,
+            4,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bottom"
+        }
+      }
+    },
+    {
+      "name": "console_top",
+      "from": [
+        1,
+        12,
+        1
+      ],
+      "to": [
+        15,
+        14,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            12,
+            15,
+            14
+          ],
+          "texture": "#front"
+        },
+        "east": {
+          "uv": [
+            1,
+            12,
+            15,
+            14
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            1,
+            12,
+            15,
+            14
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            1,
+            12,
+            15,
+            14
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "back_panel",
+      "from": [
+        1,
+        14,
+        1
+      ],
+      "to": [
+        15,
+        16,
+        5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            1,
+            0,
+            15,
+            2
+          ],
+          "texture": "#front"
+        },
+        "east": {
+          "uv": [
+            1,
+            0,
+            5,
+            2
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            1,
+            0,
+            15,
+            2
+          ],
+          "texture": "#front"
+        },
+        "west": {
+          "uv": [
+            1,
+            0,
+            5,
+            2
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            1,
+            1,
+            15,
+            5
+          ],
+          "texture": "#top"
+        }
+      }
+    }
+  ]
 }

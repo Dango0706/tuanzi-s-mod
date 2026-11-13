@@ -39,9 +39,12 @@
 - **禁止删除文件**: 禁止你使用任何方式（包括工具、所有命令、各种脚本等）删除任何文件。需要删除文件时，将其重命名为原来的名字后缀加上 `.bak`，如 `xxx.png` -> `xxx.png.bak`。
 - **逻辑与伤害计算调试日志**: 将所有逻辑性的计算/获得效果/伤害计算/概率计算等全部使用 `me.tuanzi.util.ModLog` 的 `debug` 方法进行输出，便于调试和寻找问题。
 - **分层自动化测试与交付规范 (Testing & Delivery Conventions)**: 代码编写完毕后，必须遵循**由浅入深、先代码后真机**的分层测试流程，直至全部测试通过后方可向用户交付，严禁带错交付：
-  - **1. Fabric Loader JUnit 单元/逻辑测试**: 统一置于 `src/test/java` 下，优先针对纯算法、数学公式、数据结构、NBT 解析、伤害计算公式（如 `DamageCalculator`）等编写并运行单元测试（`./gradlew test`），极速验证底层核心计算与基础逻辑是否有误。
-  - **2. Minecraft GameTest 机制/结构测试**: 针对方块状态转变、红石信号、掉落物机制、实体基础 AI、结构生成等原版交互机制，使用 GameTest 框架编写并运行批处理测试（`./gradlew runGametest`），快速排查基础游戏机制是否有误。
-  - **3. MCTest MCP 最终端到端动态交互测试**: 在基础逻辑与机制测试通过后，最后全面采用 `mctest` MCP 工具链（如 `mc_launch`、`mc_world_create`/`mc_world_join`、`mc_teleport`、`mc_click_widget`、`mc_interact_entity`、`mc_screenshot` 等）在真实游戏环境中模拟玩家操作、GUI 交互、技能释放与视觉渲染核验。测试执行完毕或发生异常时，**必须调用 `mc_close_all` 及时清理释放游戏进程**。
+  - **1. 测试方案与计划** 编写完整的测试方案与测试计划,先写好完整的测试方案,计划,验收标准等后,在按照写好的测试方案进行测试,而不是凭空测试,使用mctest-mcp完整测试实装在游戏内的方案.
+  - **2. Fabric Loader JUnit 单元/逻辑测试**: 统一置于 `src/test/java` 下，优先针对纯算法、数学公式、数据结构、NBT 解析、伤害计算公式（如 `DamageCalculator`）等编写并运行单元测试（`./gradlew test`），极速验证底层核心计算与基础逻辑是否有误。
+  - **3. Minecraft GameTest 机制/结构测试**: 针对方块状态转变、红石信号、掉落物机制、实体基础 AI、结构生成等原版交互机制，使用 GameTest 框架编写并运行批处理测试（`./gradlew runGametest`），快速排查基础游戏机制是否有误。
+  - **4. MCTest MCP 最终端到端动态交互测试**: 在基础逻辑与机制测试通过后，最后全面采用 `mctest` MCP 工具链（如 `mc_launch`、`mc_world_create`/`mc_world_join`、`mc_teleport`、`mc_click_widget`、`mc_interact_entity`、`mc_screenshot` 等）在真实游戏环境中模拟玩家操作、GUI 交互、技能释放与视觉渲染核验。测试执行完毕或发生异常时，**必须调用 `mc_close_all` 及时清理释放游戏进程**。
+  - **和平模式规范 (测试环境控制)**: 使用 MCTest MCP 进行测试时，**除特定需要测试敌对生物生成、攻击或 AI 机制的场景外，游戏难度一律设为和平模式（Peaceful）**（可通过创建和平世界或通过指令 `/difficulty peaceful`），避免野生敌对生物干扰测试过程或伤害玩家。
+  - **Tick 暂停与步进观测 (Tick 控制规范)**: 在测试动态效果、方块状态转变、技能释放或动画表现时，**必须使用 `tick` 指令（如 `/tick freeze` 或 `mc_time_freeze`）将游戏主动暂停，并通过精确控制游戏的 Tick 推进与步进变化（如 `/tick step <ticks>` 或 `mc_time_step`）来逐帧查看与核验效果**，以便定格瞬时状态、消除动态干扰并获得稳定的测试观察与截图。
   - **测试截图前置调整**: 在使用 MCTest MCP 截取测试结果图片前，**必须先调整好玩家位置（Position/Coordinates）、视角朝向与角度（Pitch/Yaw 或 Look At）以及飞行状态（Flying）**，确保被测目标（方块、实体、界面、粒子等）处于最佳可视观察范围，杜绝视线遮挡、距离过远或视角偏离。
   - **交付标准**: 底层测试（JUnit/GameTest）无失败断言，且最终在 MCTest MCP 真实游戏环境中端到端验证通过、功能完全符合预期、截图核对无误且客户端无未捕获异常或崩溃后，方可向用户交付。
 
@@ -86,7 +89,7 @@ The project uses the Gradle wrapper (`./gradlew`) for all tasks.
   ./gradlew runGametest
   ```
 - **Run MCTest MCP (Dynamic E2E Testing):**
-  全面使用 MCTest MCP 工具链（如 `mc_launch`, `mc_wait_ready`, `mc_world_create`, `mc_teleport`, `mc_screenshot`, `mc_close_all` 等）进行游戏内端到端自动化与动态测试。
+  全面使用 MCTest MCP 工具链（如 `mc_launch`, `mc_wait_ready`, `mc_world_create`, `mc_teleport`, `mc_screenshot`, `mc_close_all` 等）进行游戏内端到端自动化与动态测试。测试环境默认保持和平模式（除非涉及敌对生物测试），并配合 `/tick freeze` 与步进（`/tick step`）精确控制游戏时间推进来查看效果。
 
 ## Development Conventions
 - **Naming:** Mod ID `tuanzis_mod` should be used for assets and registration.

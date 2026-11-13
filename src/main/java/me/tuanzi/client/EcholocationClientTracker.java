@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,9 +63,9 @@ public class EcholocationClientTracker {
 
             final float finalRadius = radius;
             List<LivingEntity> targets = client.level.getEntitiesOfClass(
-                LivingEntity.class,
-                client.player.getBoundingBox().inflate(finalRadius),
-                e -> e != client.player && e.isAlive() && e.distanceTo(client.player) <= finalRadius
+                    LivingEntity.class,
+                    client.player.getBoundingBox().inflate(finalRadius),
+                    e -> e != client.player && e.isAlive() && e.distanceTo(client.player) <= finalRadius
             );
 
             long expireTime = currentTime + 100L; // 发光 5 秒 (100 ticks)
@@ -76,12 +75,12 @@ public class EcholocationClientTracker {
 
             // 播放专属回声声效并输出调试日志
             client.level.playSound(
-                client.player,
-                client.player.getX(), client.player.getY(), client.player.getZ(),
-                SoundEvents.SCULK_CLICKING,
-                SoundSource.PLAYERS,
-                0.8F,
-                1.4F
+                    client.player,
+                    client.player.getX(), client.player.getY(), client.player.getZ(),
+                    SoundEvents.SCULK_CLICKING,
+                    SoundSource.PLAYERS,
+                    0.8F,
+                    1.4F
             );
 
             // 播放回声脉冲环状粒子
@@ -96,7 +95,7 @@ public class EcholocationClientTracker {
             }
 
             ModLog.debug(client.player, "【回声定位】脉冲触发（等级: %d，范围: %.1f 格）！已探测并标记 %d 个生物发光 5 秒",
-                level, finalRadius, targets.size());
+                    level, finalRadius, targets.size());
         }
     }
 

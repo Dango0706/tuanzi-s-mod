@@ -11,7 +11,8 @@ import net.minecraft.world.item.ItemStack;
  * 拾荒回廊专属饰品槽 S2C 同步数据包
  * 向客户端同步槽位 0 (归厅信标)、槽位 1 (归室信标) 与槽位 2 (归市信标) 的物品数据。
  */
-public record CorridorAccessorySyncPacket(ItemStack hallStack, ItemStack roomStack, ItemStack marketStack) implements CustomPacketPayload {
+public record CorridorAccessorySyncPacket(ItemStack hallStack, ItemStack roomStack,
+                                          ItemStack marketStack) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<CorridorAccessorySyncPacket> TYPE =
             new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "corridor_accessory_sync"));

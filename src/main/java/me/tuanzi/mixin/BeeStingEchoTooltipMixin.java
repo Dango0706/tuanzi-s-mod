@@ -19,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ItemStack.class)
 public class BeeStingEchoTooltipMixin {
     @ModifyVariable(
-        method = "forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V",
-        at = @At("HEAD"),
-        argsOnly = true
+            method = "forEachModifier(Lnet/minecraft/world/entity/EquipmentSlotGroup;Lorg/apache/commons/lang3/function/TriConsumer;)V",
+            at = @At("HEAD"),
+            argsOnly = true
     )
     private TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> tuanzis_mod$wrapConsumer(
-        TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> originalConsumer,
-        EquipmentSlotGroup slot
+            TriConsumer<Holder<Attribute>, AttributeModifier, ItemAttributeModifiers.Display> originalConsumer,
+            EquipmentSlotGroup slot
     ) {
         ItemStack stack = (ItemStack) (Object) this;
         if (stack.is(ModItems.BEE_STING_ECHO) && slot == EquipmentSlotGroup.MAINHAND) {
@@ -45,9 +45,9 @@ public class BeeStingEchoTooltipMixin {
                     return (attribute, modifier, display) -> {
                         if (attribute.is(Attributes.ATTACK_DAMAGE) && modifier.id().equals(Item.BASE_ATTACK_DAMAGE_ID)) {
                             AttributeModifier newModifier = new AttributeModifier(
-                                modifier.id(),
-                                modifier.amount() + extra,
-                                modifier.operation()
+                                    modifier.id(),
+                                    modifier.amount() + extra,
+                                    modifier.operation()
                             );
                             originalConsumer.accept(attribute, newModifier, display);
                         } else {

@@ -239,7 +239,7 @@ public abstract class ScavengerPlayerMixin implements ScavengerPlayerTracker {
     @Inject(method = "canHarmPlayer", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$cancelTeamFriendlyFire(Player target, CallbackInfoReturnable<Boolean> cir) {
         if (target instanceof ServerPlayer targetPlayer) {
-            if (ScavengerTeamManager.areTeammates((ServerPlayer)(Object)this, targetPlayer)) {
+            if (ScavengerTeamManager.areTeammates((ServerPlayer) (Object) this, targetPlayer)) {
                 cir.setReturnValue(false);
             }
         }

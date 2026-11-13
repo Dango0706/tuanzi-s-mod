@@ -25,28 +25,6 @@ public class GoldenPocketItem extends Item {
         super(properties);
     }
 
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            ItemStack stack = player.getItemInHand(hand);
-            int slotIndex = (hand == InteractionHand.MAIN_HAND) ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
-
-            SimpleContainer container = new SimpleContainer(GoldenPocketMenu.CONTAINER_SIZE);
-            ItemContainerContents contents = stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
-            contents.copyInto(container.getItems());
-
-            Component title = stack.has(DataComponents.CUSTOM_NAME) ? stack.getHoverName() : Component.translatable("container.tuanzis_mod.golden_pocket");
-
-            serverPlayer.openMenu(new SimpleMenuProvider(
-                (containerId, playerInv, p) -> new GoldenPocketMenu(containerId, playerInv, container, stack, slotIndex),
-                title
-            ));
-
-            ModLog.debug(player, null, "玩家打开了黄金口袋，手持槽位: " + slotIndex);
-        }
-        return InteractionResult.SUCCESS;
-    }
-
     /**
      * 判断物品是否禁止放入黄金口袋（防套娃与防潜影盒）
      */
@@ -71,5 +49,27 @@ public class GoldenPocketItem extends Item {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+            ItemStack stack = player.getItemInHand(hand);
+            int slotIndex = (hand == InteractionHand.MAIN_HAND) ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
+
+            SimpleContainer container = new SimpleContainer(GoldenPocketMenu.CONTAINER_SIZE);
+            ItemContainerContents contents = stack.getOrDefault(DataComponents.CONTAINER, ItemContainerContents.EMPTY);
+            contents.copyInto(container.getItems());
+
+            Component title = stack.has(DataComponents.CUSTOM_NAME) ? stack.getHoverName() : Component.translatable("container.tuanzis_mod.golden_pocket");
+
+            serverPlayer.openMenu(new SimpleMenuProvider(
+                    (containerId, playerInv, p) -> new GoldenPocketMenu(containerId, playerInv, container, stack, slotIndex),
+                    title
+            ));
+
+            ModLog.debug(player, null, "玩家打开了黄金口袋，手持槽位: " + slotIndex);
+        }
+        return InteractionResult.SUCCESS;
     }
 }

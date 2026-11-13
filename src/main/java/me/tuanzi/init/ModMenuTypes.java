@@ -4,11 +4,11 @@ import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.world.inventory.TravelersNotebookMenu;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 
 public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> TRAVELERS_NOTEBOOK_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "travelers_notebook"));
@@ -16,6 +16,8 @@ public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> BLUEPRINT_CANNON_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon"));
     public static final ResourceKey<MenuType<?>> BLUEPRINT_TABLE_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table"));
     public static final ResourceKey<MenuType<?>> PLAYER_SIMULATOR_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "player_simulator"));
+    public static final ResourceKey<MenuType<?>> BLOCK_BREAKER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "block_breaker"));
+    public static final ResourceKey<MenuType<?>> BLOCK_PLACER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "block_placer"));
     public static final ResourceKey<MenuType<?>> GOLDEN_POCKET_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "golden_pocket"));
     public static final ResourceKey<MenuType<?>> CORRIDOR_TACTICAL_LOADOUT_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "corridor_tactical_loadout"));
     public static final ResourceKey<MenuType<?>> SCAVENGER_TACTICAL_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_tactical"));
@@ -50,6 +52,18 @@ public class ModMenuTypes {
             BuiltInRegistries.MENU,
             PLAYER_SIMULATOR_KEY,
             new MenuType<>(me.tuanzi.world.inventory.PlayerSimulatorMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.BlockBreakerMenu> BLOCK_BREAKER = Registry.register(
+            BuiltInRegistries.MENU,
+            BLOCK_BREAKER_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.BlockBreakerMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.BlockPlacerMenu> BLOCK_PLACER = Registry.register(
+            BuiltInRegistries.MENU,
+            BLOCK_PLACER_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.BlockPlacerMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static final MenuType<me.tuanzi.world.inventory.GoldenPocketMenu> GOLDEN_POCKET = Registry.register(

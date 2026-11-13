@@ -1,7 +1,6 @@
 package me.tuanzi.client.renderer;
 
 import com.geckolib.renderer.GeoEntityRenderer;
-import com.geckolib.renderer.layer.builtin.AutoGlowingGeoLayer;
 import me.tuanzi.client.renderer.model.CinderFireballModel;
 import me.tuanzi.client.renderer.state.CinderFireballRenderState;
 import me.tuanzi.entity.CinderFireballEntity;

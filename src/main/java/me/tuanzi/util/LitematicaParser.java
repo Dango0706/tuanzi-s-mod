@@ -9,7 +9,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class LitematicaParser {
 
@@ -103,12 +106,12 @@ public class LitematicaParser {
      * 将 Litematica / Schematic NBT 格式统一解析为模组自定义的结构蓝图 NBT 格式。
      * 自定义蓝图 NBT 结构：
      * {
-     *   Width: int,
-     *   Height: int,
-     *   Length: int,
-     *   Palette: [BlockState NBTs],
-     *   Blocks: int[] (大小为 Width * Height * Length),
-     *   BlockEntities: [ {pos: [x,y,z], nbt: CompoundTag} ]
+     * Width: int,
+     * Height: int,
+     * Length: int,
+     * Palette: [BlockState NBTs],
+     * Blocks: int[] (大小为 Width * Height * Length),
+     * BlockEntities: [ {pos: [x,y,z], nbt: CompoundTag} ]
      * }
      */
     public static CompoundTag parseLitematic(CompoundTag rootTag) {
@@ -372,7 +375,7 @@ public class LitematicaParser {
     public static CompoundTag packLitematic(CompoundTag blueprintTag, String name) {
         CompoundTag root = new CompoundTag();
         root.putInt("Version", 5);
-        
+
         CompoundTag metadata = new CompoundTag();
         metadata.putString("Name", name);
         metadata.putLong("TimeCreated", System.currentTimeMillis());

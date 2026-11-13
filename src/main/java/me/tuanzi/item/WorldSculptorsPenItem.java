@@ -47,20 +47,10 @@ import java.util.UUID;
 
 public class WorldSculptorsPenItem extends Item {
 
-    public enum FillMode {
-        FULL_REPLACE("tuanzis_mod.mode.full_replace"),
-        AIR_ONLY("tuanzis_mod.mode.air_only"),
-        SEMI_REPLACE("tuanzis_mod.mode.semi_replace"),
-        REPLACE_AIR_ONLY("tuanzis_mod.mode.replace_air_only");
+    public static final java.util.Set<String> TRACKED_PROPERTIES = java.util.Set.of("face", "facing", "type", "half", "shape");
 
-        public final String translationKey;
-        FillMode(String translationKey) {
-            this.translationKey = translationKey;
-        }
-
-        public Component getDisplayName() {
-            return Component.translatable(translationKey);
-        }
+    public WorldSculptorsPenItem(Properties properties) {
+        super(properties);
     }
 
     public static FillMode getMode(ItemStack stack) {
@@ -88,10 +78,10 @@ public class WorldSculptorsPenItem extends Item {
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
 
         player.sendSystemMessage(Component.literal("§6")
-            .append(Component.translatable("message.tuanzis_mod.world_sculptors_pen.mode_toggled", next.getDisplayName())));
+                .append(Component.translatable("message.tuanzis_mod.world_sculptors_pen.mode_toggled", next.getDisplayName())));
 
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-            net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.3F);
+                net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.3F);
     }
 
     public static boolean isColorBlockSeries(Block block) {
@@ -134,8 +124,6 @@ public class WorldSculptorsPenItem extends Item {
             }
         }
     }
-
-    public static final java.util.Set<String> TRACKED_PROPERTIES = java.util.Set.of("face", "facing", "type", "half", "shape");
 
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<T>> String getPropertyValueString(BlockState state, net.minecraft.world.level.block.state.properties.Property<T> prop) {
@@ -201,420 +189,6 @@ public class WorldSculptorsPenItem extends Item {
             return currentColor == selectedColor;
         }
         return true;
-    }
-
-    public WorldSculptorsPenItem(Properties properties) {
-        super(properties);
-    }
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        Player player = context.getPlayer();
-        if (player == null) return InteractionResult.PASS;
-        Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-        ItemStack stack = context.getItemInHand();
-
-        if (player.isSecondaryUseActive()) { // Shift + 右键对准方块：优先选定/更换填充方块
-            if (!level.isClientSide()) {
-                BlockState state = level.getBlockState(pos);
-                Item blockItem = state.getBlock().asItem();
-                if (blockItem != net.minecraft.world.item.Items.AIR && state.getDestroySpeed(level, pos) >= 0.0F) {
-                    CompoundTag tag = new CompoundTag();
-                    CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
-                    if (customData != null) {
-                        tag = customData.copyTag();
-                    }
-                    String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
-                    tag.putString("SelectedBlock", blockId);
-
-                    // 重新选择填充类型时，清除已记录的第一个点坐标
-                    tag.remove("pos1_x");
-                    tag.remove("pos1_y");
-                    tag.remove("pos1_z");
-                    tag.remove("pos1_dim");
-
-                    // 记录方块状态属性 (face, facing, type, half, shape)
-                    CompoundTag propsTag = new CompoundTag();
-                    for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
-                        String propName = prop.getName();
-                        if (TRACKED_PROPERTIES.contains(propName)) {
-                            propsTag.putString(propName, getPropertyValueString(state, prop));
-                        }
-                    }
-                    if (!propsTag.isEmpty()) {
-                        tag.put("SelectedProperties", propsTag);
-                    } else {
-                        tag.remove("SelectedProperties");
-                    }
-
-                    StringBuilder stateDesc = new StringBuilder();
-                    if (!propsTag.isEmpty()) {
-                        stateDesc.append(" §e[");
-                        List<String> entries = new ArrayList<>();
-                        for (String key : propsTag.keySet()) {
-                            entries.add(key + "=" + propsTag.getStringOr(key, ""));
-                        }
-                        stateDesc.append(String.join(", ", entries)).append("]§r");
-                    }
-
-                    if (isColorBlockSeries(state.getBlock())) {
-                        int color = getBlockColor(level, pos, state, context.getClickLocation());
-                        tag.putInt("SelectedColor", color);
-                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-                        String colorHex = String.format("#%06X", color);
-                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
-                            .append(Component.literal(stateDesc.toString()))
-                            .append(Component.literal(" (色彩: " + colorHex + ")")));
-                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc + ", 颜色: " + colorHex);
-                    } else {
-                        tag.remove("SelectedColor");
-                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
-                            .append(Component.literal(stateDesc.toString())));
-                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc);
-                    }
-                } else {
-                    player.sendSystemMessage(Component.literal("§c此方块无法被选定为填充方块！"));
-                }
-            }
-            return InteractionResult.SUCCESS;
-        } else {
-            // 普通右键点击方块（两点框选放置）
-            if (level.isClientSide()) {
-                return InteractionResult.SUCCESS;
-            }
-
-            // 读取已选定的方块ID
-            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
-            FillMode mode = getMode(stack);
-            Block targetBlock = Blocks.AIR;
-            String selectedBlockId = "minecraft:air";
-
-            if (mode != FillMode.AIR_ONLY) {
-                if (customData == null || !customData.copyTag().getString("SelectedBlock").isPresent()) {
-                    player.sendSystemMessage(Component.literal("§c请先按住 Shift + 右键点击方块以选定填充类型！"));
-                    return InteractionResult.SUCCESS;
-                }
-                CompoundTag tag = customData.copyTag();
-                selectedBlockId = tag.getStringOr("SelectedBlock", "");
-                targetBlock = BuiltInRegistries.BLOCK.getValue(Identifier.tryParse(selectedBlockId));
-                if (targetBlock == null || targetBlock == Blocks.AIR) {
-                    player.sendSystemMessage(Component.literal("§c选定的填充方块无效，请重新选定！"));
-                    return InteractionResult.SUCCESS;
-                }
-                if (targetBlock.defaultBlockState().getDestroySpeed(level, pos) < 0.0F) {
-                    player.sendSystemMessage(Component.literal("§c禁止填充硬度为-1的不可破坏方块！"));
-                    me.tuanzi.util.ModLog.debug(player, null, "塑世之笔尝试填充硬度小于0的方块: " + selectedBlockId);
-                    return InteractionResult.SUCCESS;
-                }
-            }
-
-            Integer selectedColor = null;
-            if (mode != FillMode.AIR_ONLY && isColorBlockSeries(targetBlock) && customData != null) {
-                CompoundTag checkTag = customData.copyTag();
-                if (checkTag.getInt("SelectedColor").isPresent()) {
-                    selectedColor = checkTag.getIntOr("SelectedColor", 0xFFFFFF);
-                }
-            }
-
-            CompoundTag tag = (customData != null) ? customData.copyTag() : new CompoundTag();
-
-            // 检查是否已经记录第一个点
-            if (!tag.getInt("pos1_x").isPresent()) {
-                // 记录第一个点
-                tag.putInt("pos1_x", pos.getX());
-                tag.putInt("pos1_y", pos.getY());
-                tag.putInt("pos1_z", pos.getZ());
-                tag.putString("pos1_dim", level.dimension().identifier().toString());
-                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-                player.sendSystemMessage(Component.literal("§e已记录起点: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]"));
-                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔记录起点: " + pos);
-                return InteractionResult.SUCCESS;
-            } else {
-                // 已有第一个点，进行第二次点击
-                int x1 = tag.getIntOr("pos1_x", 0);
-                int y1 = tag.getIntOr("pos1_y", 0);
-                int z1 = tag.getIntOr("pos1_z", 0);
-                String dimStr = tag.getStringOr("pos1_dim", "");
-                BlockPos pos1 = new BlockPos(x1, y1, z1);
-
-                // 检查维度匹配
-                if (!dimStr.equals(level.dimension().identifier().toString())) {
-                    // 维度不同，重置为第一个点
-                    tag.putInt("pos1_x", pos.getX());
-                    tag.putInt("pos1_y", pos.getY());
-                    tag.putInt("pos1_z", pos.getZ());
-                    tag.putString("pos1_dim", level.dimension().identifier().toString());
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-                    player.sendSystemMessage(Component.literal("§e维度不匹配，已重新记录起点: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]"));
-                    return InteractionResult.SUCCESS;
-                }
-
-                BlockPos pos2 = pos;
-
-                // 距离计算与限制（欧氏距离 <= 64）
-                double distSqr = pos1.distSqr(pos2);
-                if (distSqr > 64.0 * 64.0) {
-                    player.sendSystemMessage(Component.literal("§c单次填充最大直线距离限制为 64 格！已重置。"));
-                    // 清空第一个点以便重新开始
-                    tag.remove("pos1_x");
-                    tag.remove("pos1_y");
-                    tag.remove("pos1_z");
-                    tag.remove("pos1_dim");
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                    return InteractionResult.SUCCESS;
-                }
-
-                // 计算体积
-                int minX = Math.min(pos1.getX(), pos2.getX());
-                int maxX = Math.max(pos1.getX(), pos2.getX());
-                int minY = Math.min(pos1.getY(), pos2.getY());
-                int maxY = Math.max(pos1.getY(), pos2.getY());
-                int minZ = Math.min(pos1.getZ(), pos2.getZ());
-                int maxZ = Math.max(pos1.getZ(), pos2.getZ());
-
-                int sizeX = maxX - minX + 1;
-                int sizeY = maxY - minY + 1;
-                int sizeZ = maxZ - minZ + 1;
-                int volume = sizeX * sizeY * sizeZ;
-
-                if (volume > 2048) {
-                    player.sendSystemMessage(Component.literal("§c单次填充最大体积限制为 2048 个方块（当前区域为 " + volume + " 格）！已重置。"));
-                    // 清空第一个点
-                    tag.remove("pos1_x");
-                    tag.remove("pos1_y");
-                    tag.remove("pos1_z");
-                    tag.remove("pos1_dim");
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                    return InteractionResult.SUCCESS;
-                }
-
-                // 扫描长方体区域，统计真正需要更改的格子并记录原状态
-                List<WorldSculptorsPenManager.BlockStateRecord> records = new ArrayList<>();
-                Item targetItem = (targetBlock != null) ? targetBlock.asItem() : net.minecraft.world.item.Items.AIR;
-                BlockState targetState = (targetBlock != null && targetBlock != Blocks.AIR)
-                    ? getTargetBlockState(targetBlock, tag)
-                    : Blocks.AIR.defaultBlockState();
-                int itemsPerBlock = (mode != FillMode.AIR_ONLY) ? getItemsPerBlock(targetBlock, tag) : 1;
-
-                for (int x = minX; x <= maxX; x++) {
-                    for (int y = minY; y <= maxY; y++) {
-                        for (int z = minZ; z <= maxZ; z++) {
-                            BlockPos targetPos = new BlockPos(x, y, z);
-                            BlockState state = level.getBlockState(targetPos);
-
-                            // 当硬度大于等于 0 (排除基岩、传送门等不可破坏方块) 时，才可记录填充
-                            if (state.getDestroySpeed(level, targetPos) < 0.0F) {
-                                continue;
-                            }
-
-                            boolean matches = false;
-                            if (mode == FillMode.AIR_ONLY) {
-                                matches = !state.isAir();
-                            } else if (mode == FillMode.REPLACE_AIR_ONLY) {
-                                matches = state.isAir();
-                            } else if (mode == FillMode.SEMI_REPLACE) {
-                                if ((state.isAir() || state.getCollisionShape(level, targetPos).isEmpty())
-                                    && !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor)) {
-                                    matches = true;
-                                }
-                            } else {
-                                matches = !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor);
-                            }
-
-                            if (matches) {
-                                CompoundTag oldNbt = null;
-                                BlockEntity oldBe = level.getBlockEntity(targetPos);
-                                if (oldBe != null) {
-                                    oldNbt = oldBe.saveWithFullMetadata(level.registryAccess());
-                                }
-                                records.add(new WorldSculptorsPenManager.BlockStateRecord(targetPos, state, oldNbt));
-                            }
-                        }
-                    }
-                }
-
-                int N = records.size();
-                if (N == 0) {
-                    player.sendSystemMessage(Component.literal("§e该区域内无可被填充的方块！已重置起点。"));
-                    tag.remove("pos1_x");
-                    tag.remove("pos1_y");
-                    tag.remove("pos1_z");
-                    tag.remove("pos1_dim");
-                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                    return InteractionResult.SUCCESS;
-                }
-
-                int totalItemsNeeded = N * itemsPerBlock;
-
-                // 校验玩家背包及潜影盒内选中方块的存量是否足够 (填充空气模式不消耗背包物品)
-                if (mode != FillMode.AIR_ONLY) {
-                    int available = getTargetItemCount(player, targetItem, selectedColor);
-                    if (available < totalItemsNeeded) {
-                        player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + totalItemsNeeded + " 个，缺少 " + (totalItemsNeeded - available) + " 个。"));
-                        return InteractionResult.SUCCESS;
-                    }
-                }
-
-                // 校验笔的耐久度是否足够
-                int remainingDurability = stack.getMaxDamage() - stack.getDamageValue();
-                int durabilityCost = Math.max(1, N);
-                if (remainingDurability < durabilityCost) {
-                    player.sendSystemMessage(Component.literal("§c塑世之笔耐久度不足！需要 " + durabilityCost + " 点，剩余 " + remainingDurability + " 点。"));
-                    return InteractionResult.SUCCESS;
-                }
-
-                // 执行扣除 (填充空气模式不扣除背包物品)
-                if (mode != FillMode.AIR_ONLY) {
-                    deductTargetItems(player, targetItem, selectedColor, totalItemsNeeded);
-                }
-                stack.setDamageValue(stack.getDamageValue() + durabilityCost);
-
-                // 填充方块并应用颜色
-                for (WorldSculptorsPenManager.BlockStateRecord r : records) {
-                    BlockEntity existingBe = level.getBlockEntity(r.pos);
-                    if (existingBe instanceof Clearable clearable) {
-                        clearable.clearContent();
-                    }
-                    level.setBlock(r.pos, targetState, Block.UPDATE_ALL);
-                    applyBlockColor(level, r.pos, targetBlock, selectedColor);
-                    if (level instanceof ServerLevel serverLevel) {
-                        serverLevel.sendParticles(ParticleTypes.GLOW, 
-                            r.pos.getX() + 0.5, r.pos.getY() + 0.5, r.pos.getZ() + 0.5, 2, 0.2, 0.2, 0.2, 0.05);
-                    }
-                }
-
-                // 注册撤销记录
-                UUID recordId = UUID.randomUUID();
-                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor, itemsPerBlock);
-
-                // 保存最后填充 ID
-                tag.putString("LastFillId", recordId.toString());
-
-                // 清理点 1 数据，让玩家能直接进行下一次填充
-                tag.remove("pos1_x");
-                tag.remove("pos1_y");
-                tag.remove("pos1_z");
-                tag.remove("pos1_dim");
-                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-                // 播放华丽奢华的紫水晶与信标音效
-                level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(), 
-                    net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
-                level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(), 
-                    net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
-
-                String countInfo = (itemsPerBlock > 1)
-                    ? "填充了 " + N + " 个方块（消耗物品 " + totalItemsNeeded + " 个），消耗耐久 " + durabilityCost + " 点。"
-                    : "填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。";
-                player.sendSystemMessage(Component.literal("§a填充成功！" + countInfo));
-                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N + "，单格消耗 " + itemsPerBlock + "，总物品消耗 " + totalItemsNeeded);
-            }
-            return InteractionResult.SUCCESS;
-        }
-    }
-
-    @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (player.isSecondaryUseActive()) { // Shift + 右键空气
-            // 1. 如果在60秒内有可撤销记录，优先执行撤销
-            if (hasActiveUndoRecord(stack)) {
-                if (tryUndo(stack, player, level)) {
-                    return InteractionResult.SUCCESS;
-                }
-            }
-            // 2. 否则，清除已经记录的第一个起点
-            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
-            if (customData != null) {
-                CompoundTag tag = customData.copyTag();
-                if (tag.getInt("pos1_x").isPresent()) {
-                    if (!level.isClientSide()) {
-                        tag.remove("pos1_x");
-                        tag.remove("pos1_y");
-                        tag.remove("pos1_z");
-                        tag.remove("pos1_dim");
-                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-                        player.sendSystemMessage(Component.literal("§e已取消记录的第一个位置。"));
-                    }
-                    level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                        net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.8F);
-                    return InteractionResult.SUCCESS;
-                }
-            }
-        }
-        return InteractionResult.PASS;
-    }
-
-    @Override
-    public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
-        // 当手持该笔移动或静止时，在笔尖位置喷射淡蓝色发光粒子（用 GLOW 代替 GLOW_SQUID_INK，降低几率并偏离视线中心以防遮挡第一人称）
-        if (slot != null && (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) && owner instanceof Player player) {
-            if (level.getRandom().nextFloat() < 0.2f) {
-                Vec3 pos = player.getEyePosition(1.0F).add(player.getLookAngle().scale(1.2)).add(0, -0.35, 0);
-                level.sendParticles(ParticleTypes.GLOW, pos.x, pos.y, pos.z, 1, 0.02, 0.02, 0.02, 0.01);
-            }
-        }
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, java.util.function.Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, display, tooltipComponents, tooltipFlag);
-
-        FillMode mode = getMode(stack);
-        tooltipComponents.accept(Component.literal("§b当前填充模式: ").append(mode.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)));
-
-        ItemStack selected = getSelectedBlockStack(stack);
-        if (mode != FillMode.AIR_ONLY) {
-            if (!selected.isEmpty()) {
-                net.minecraft.network.chat.MutableComponent nameComp = Component.empty().withStyle(ChatFormatting.GOLD).append(selected.getHoverName());
-                CustomData cd = stack.get(DataComponents.CUSTOM_DATA);
-                if (cd != null) {
-                    CompoundTag tag = cd.copyTag();
-                    if (tag.getInt("SelectedColor").isPresent()) {
-                        int col = tag.getIntOr("SelectedColor", 0xFFFFFF);
-                        nameComp.append(Component.literal(String.format(" §7(#%06X)", col)));
-                    }
-                    if (tag.getCompound("SelectedProperties").isPresent()) {
-                        CompoundTag propsTag = tag.getCompoundOrEmpty("SelectedProperties");
-                        if (!propsTag.isEmpty()) {
-                            List<String> list = new ArrayList<>();
-                            for (String k : propsTag.keySet()) {
-                                list.add(k + "=" + propsTag.getStringOr(k, ""));
-                            }
-                            nameComp.append(Component.literal(" §e[" + String.join(", ", list) + "]"));
-                        }
-                    }
-                }
-                tooltipComponents.accept(Component.literal("§a选定填充方块: ").append(nameComp));
-            } else {
-                tooltipComponents.accept(Component.literal("§7选定填充方块: 未选定"));
-            }
-        }
-
-        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
-        if (customData != null) {
-            CompoundTag tag = customData.copyTag();
-            if (tag.getInt("pos1_x").isPresent()) {
-                int x = tag.getIntOr("pos1_x", 0);
-                int y = tag.getIntOr("pos1_y", 0);
-                int z = tag.getIntOr("pos1_z", 0);
-                tooltipComponents.accept(Component.literal("§e已记录起点: [" + x + ", " + y + ", " + z + "]"));
-            }
-        }
-
-        if (hasActiveUndoRecord(stack)) {
-            tooltipComponents.accept(Component.literal("§d[可撤销] 面对空气 潜行 + 右键撤销本次填充"));
-        }
-
-        tooltipComponents.accept(Component.literal("§8限制: 最大填充直线距离 64 格，最大填充体积 2048"));
-        tooltipComponents.accept(Component.literal("§8按住 Shift + 右键点击方块重新选定方块类型"));
-        tooltipComponents.accept(Component.literal("§8按住 Shift + 左键循环切换填充模式"));
     }
 
     // ──────────────────────────────────────────────
@@ -695,7 +269,7 @@ public class WorldSculptorsPenItem extends Item {
                             nbtCopy.putInt("y", bRecord.pos.getY());
                             nbtCopy.putInt("z", bRecord.pos.getZ());
                             restoredBe.loadWithComponents(TagValueInput.create(
-                                ProblemReporter.DISCARDING, level.registryAccess(), nbtCopy));
+                                    ProblemReporter.DISCARDING, level.registryAccess(), nbtCopy));
                             restoredBe.setChanged();
                             level.sendBlockUpdated(bRecord.pos, bRecord.oldState, bRecord.oldState, 3);
                             me.tuanzi.util.ModLog.debug(player, null, "塑世之笔撤销恢复方块实体NBT: pos=" + bRecord.pos);
@@ -727,8 +301,8 @@ public class WorldSculptorsPenItem extends Item {
         WorldSculptorsPenManager.removeRecord(fillId);
 
         // 播放信标关闭的音效
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), 
-            net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
 
         return true;
     }
@@ -737,8 +311,8 @@ public class WorldSculptorsPenItem extends Item {
     // 容器组件 (潜影盒及黄金口袋) 及背包智能存取逻辑
     // ──────────────────────────────────────────────
     private static boolean isShulkerBox(ItemStack stack) {
-        return stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem 
-            && blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock;
+        return stack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem
+                && blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock;
     }
 
     private static boolean isGoldenPocket(ItemStack stack) {
@@ -984,5 +558,432 @@ public class WorldSculptorsPenItem extends Item {
             itemStack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
         }
         return itemStack;
+    }
+
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player == null) return InteractionResult.PASS;
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        ItemStack stack = context.getItemInHand();
+
+        if (player.isSecondaryUseActive()) { // Shift + 右键对准方块：优先选定/更换填充方块
+            if (!level.isClientSide()) {
+                BlockState state = level.getBlockState(pos);
+                Item blockItem = state.getBlock().asItem();
+                if (blockItem != net.minecraft.world.item.Items.AIR && state.getDestroySpeed(level, pos) >= 0.0F) {
+                    CompoundTag tag = new CompoundTag();
+                    CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+                    if (customData != null) {
+                        tag = customData.copyTag();
+                    }
+                    String blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString();
+                    tag.putString("SelectedBlock", blockId);
+
+                    // 重新选择填充类型时，清除已记录的第一个点坐标
+                    tag.remove("pos1_x");
+                    tag.remove("pos1_y");
+                    tag.remove("pos1_z");
+                    tag.remove("pos1_dim");
+
+                    // 记录方块状态属性 (face, facing, type, half, shape)
+                    CompoundTag propsTag = new CompoundTag();
+                    for (net.minecraft.world.level.block.state.properties.Property<?> prop : state.getProperties()) {
+                        String propName = prop.getName();
+                        if (TRACKED_PROPERTIES.contains(propName)) {
+                            propsTag.putString(propName, getPropertyValueString(state, prop));
+                        }
+                    }
+                    if (!propsTag.isEmpty()) {
+                        tag.put("SelectedProperties", propsTag);
+                    } else {
+                        tag.remove("SelectedProperties");
+                    }
+
+                    StringBuilder stateDesc = new StringBuilder();
+                    if (!propsTag.isEmpty()) {
+                        stateDesc.append(" §e[");
+                        List<String> entries = new ArrayList<>();
+                        for (String key : propsTag.keySet()) {
+                            entries.add(key + "=" + propsTag.getStringOr(key, ""));
+                        }
+                        stateDesc.append(String.join(", ", entries)).append("]§r");
+                    }
+
+                    if (isColorBlockSeries(state.getBlock())) {
+                        int color = getBlockColor(level, pos, state, context.getClickLocation());
+                        tag.putInt("SelectedColor", color);
+                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+                        String colorHex = String.format("#%06X", color);
+                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
+                                .append(Component.literal(stateDesc.toString()))
+                                .append(Component.literal(" (色彩: " + colorHex + ")")));
+                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc + ", 颜色: " + colorHex);
+                    } else {
+                        tag.remove("SelectedColor");
+                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+                        player.sendSystemMessage(Component.literal("§a塑世之笔已选定填充方块: " + state.getBlock().getName().getString())
+                                .append(Component.literal(stateDesc.toString())));
+                        me.tuanzi.util.ModLog.debug(player, null, "塑世之笔选定方块类型: " + blockId + stateDesc);
+                    }
+                } else {
+                    player.sendSystemMessage(Component.literal("§c此方块无法被选定为填充方块！"));
+                }
+            }
+            return InteractionResult.SUCCESS;
+        } else {
+            // 普通右键点击方块（两点框选放置）
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
+
+            // 读取已选定的方块ID
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            FillMode mode = getMode(stack);
+            Block targetBlock = Blocks.AIR;
+            String selectedBlockId = "minecraft:air";
+
+            if (mode != FillMode.AIR_ONLY) {
+                if (customData == null || !customData.copyTag().getString("SelectedBlock").isPresent()) {
+                    player.sendSystemMessage(Component.literal("§c请先按住 Shift + 右键点击方块以选定填充类型！"));
+                    return InteractionResult.SUCCESS;
+                }
+                CompoundTag tag = customData.copyTag();
+                selectedBlockId = tag.getStringOr("SelectedBlock", "");
+                targetBlock = BuiltInRegistries.BLOCK.getValue(Identifier.tryParse(selectedBlockId));
+                if (targetBlock == null || targetBlock == Blocks.AIR) {
+                    player.sendSystemMessage(Component.literal("§c选定的填充方块无效，请重新选定！"));
+                    return InteractionResult.SUCCESS;
+                }
+                if (targetBlock.defaultBlockState().getDestroySpeed(level, pos) < 0.0F) {
+                    player.sendSystemMessage(Component.literal("§c禁止填充硬度为-1的不可破坏方块！"));
+                    me.tuanzi.util.ModLog.debug(player, null, "塑世之笔尝试填充硬度小于0的方块: " + selectedBlockId);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+
+            Integer selectedColor = null;
+            if (mode != FillMode.AIR_ONLY && isColorBlockSeries(targetBlock) && customData != null) {
+                CompoundTag checkTag = customData.copyTag();
+                if (checkTag.getInt("SelectedColor").isPresent()) {
+                    selectedColor = checkTag.getIntOr("SelectedColor", 0xFFFFFF);
+                }
+            }
+
+            CompoundTag tag = (customData != null) ? customData.copyTag() : new CompoundTag();
+
+            // 检查是否已经记录第一个点
+            if (!tag.getInt("pos1_x").isPresent()) {
+                // 记录第一个点
+                tag.putInt("pos1_x", pos.getX());
+                tag.putInt("pos1_y", pos.getY());
+                tag.putInt("pos1_z", pos.getZ());
+                tag.putString("pos1_dim", level.dimension().identifier().toString());
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+                player.sendSystemMessage(Component.literal("§e已记录起点: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]"));
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔记录起点: " + pos);
+                return InteractionResult.SUCCESS;
+            } else {
+                // 已有第一个点，进行第二次点击
+                int x1 = tag.getIntOr("pos1_x", 0);
+                int y1 = tag.getIntOr("pos1_y", 0);
+                int z1 = tag.getIntOr("pos1_z", 0);
+                String dimStr = tag.getStringOr("pos1_dim", "");
+                BlockPos pos1 = new BlockPos(x1, y1, z1);
+
+                // 检查维度匹配
+                if (!dimStr.equals(level.dimension().identifier().toString())) {
+                    // 维度不同，重置为第一个点
+                    tag.putInt("pos1_x", pos.getX());
+                    tag.putInt("pos1_y", pos.getY());
+                    tag.putInt("pos1_z", pos.getZ());
+                    tag.putString("pos1_dim", level.dimension().identifier().toString());
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+                    player.sendSystemMessage(Component.literal("§e维度不匹配，已重新记录起点: [" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]"));
+                    return InteractionResult.SUCCESS;
+                }
+
+                BlockPos pos2 = pos;
+
+                // 距离计算与限制（欧氏距离 <= 64）
+                double distSqr = pos1.distSqr(pos2);
+                if (distSqr > 64.0 * 64.0) {
+                    player.sendSystemMessage(Component.literal("§c单次填充最大直线距离限制为 64 格！已重置。"));
+                    // 清空第一个点以便重新开始
+                    tag.remove("pos1_x");
+                    tag.remove("pos1_y");
+                    tag.remove("pos1_z");
+                    tag.remove("pos1_dim");
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                    return InteractionResult.SUCCESS;
+                }
+
+                // 计算体积
+                int minX = Math.min(pos1.getX(), pos2.getX());
+                int maxX = Math.max(pos1.getX(), pos2.getX());
+                int minY = Math.min(pos1.getY(), pos2.getY());
+                int maxY = Math.max(pos1.getY(), pos2.getY());
+                int minZ = Math.min(pos1.getZ(), pos2.getZ());
+                int maxZ = Math.max(pos1.getZ(), pos2.getZ());
+
+                int sizeX = maxX - minX + 1;
+                int sizeY = maxY - minY + 1;
+                int sizeZ = maxZ - minZ + 1;
+                int volume = sizeX * sizeY * sizeZ;
+
+                if (volume > 2048) {
+                    player.sendSystemMessage(Component.literal("§c单次填充最大体积限制为 2048 个方块（当前区域为 " + volume + " 格）！已重置。"));
+                    // 清空第一个点
+                    tag.remove("pos1_x");
+                    tag.remove("pos1_y");
+                    tag.remove("pos1_z");
+                    tag.remove("pos1_dim");
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                    return InteractionResult.SUCCESS;
+                }
+
+                // 扫描长方体区域，统计真正需要更改的格子并记录原状态
+                List<WorldSculptorsPenManager.BlockStateRecord> records = new ArrayList<>();
+                Item targetItem = (targetBlock != null) ? targetBlock.asItem() : net.minecraft.world.item.Items.AIR;
+                BlockState targetState = (targetBlock != null && targetBlock != Blocks.AIR)
+                        ? getTargetBlockState(targetBlock, tag)
+                        : Blocks.AIR.defaultBlockState();
+                int itemsPerBlock = (mode != FillMode.AIR_ONLY) ? getItemsPerBlock(targetBlock, tag) : 1;
+
+                for (int x = minX; x <= maxX; x++) {
+                    for (int y = minY; y <= maxY; y++) {
+                        for (int z = minZ; z <= maxZ; z++) {
+                            BlockPos targetPos = new BlockPos(x, y, z);
+                            BlockState state = level.getBlockState(targetPos);
+
+                            // 当硬度大于等于 0 (排除基岩、传送门等不可破坏方块) 时，才可记录填充
+                            if (state.getDestroySpeed(level, targetPos) < 0.0F) {
+                                continue;
+                            }
+
+                            boolean matches = false;
+                            if (mode == FillMode.AIR_ONLY) {
+                                matches = !state.isAir();
+                            } else if (mode == FillMode.REPLACE_AIR_ONLY) {
+                                matches = state.isAir();
+                            } else if (mode == FillMode.SEMI_REPLACE) {
+                                if ((state.isAir() || state.getCollisionShape(level, targetPos).isEmpty())
+                                        && !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor)) {
+                                    matches = true;
+                                }
+                            } else {
+                                matches = !isSameBlockStateAndColor(level, targetPos, state, targetState, selectedColor);
+                            }
+
+                            if (matches) {
+                                CompoundTag oldNbt = null;
+                                BlockEntity oldBe = level.getBlockEntity(targetPos);
+                                if (oldBe != null) {
+                                    oldNbt = oldBe.saveWithFullMetadata(level.registryAccess());
+                                }
+                                records.add(new WorldSculptorsPenManager.BlockStateRecord(targetPos, state, oldNbt));
+                            }
+                        }
+                    }
+                }
+
+                int N = records.size();
+                if (N == 0) {
+                    player.sendSystemMessage(Component.literal("§e该区域内无可被填充的方块！已重置起点。"));
+                    tag.remove("pos1_x");
+                    tag.remove("pos1_y");
+                    tag.remove("pos1_z");
+                    tag.remove("pos1_dim");
+                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                    return InteractionResult.SUCCESS;
+                }
+
+                int totalItemsNeeded = N * itemsPerBlock;
+
+                // 校验玩家背包及潜影盒内选中方块的存量是否足够 (填充空气模式不消耗背包物品)
+                if (mode != FillMode.AIR_ONLY) {
+                    int available = getTargetItemCount(player, targetItem, selectedColor);
+                    if (available < totalItemsNeeded) {
+                        player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + totalItemsNeeded + " 个，缺少 " + (totalItemsNeeded - available) + " 个。"));
+                        return InteractionResult.SUCCESS;
+                    }
+                }
+
+                // 校验笔的耐久度是否足够
+                int remainingDurability = stack.getMaxDamage() - stack.getDamageValue();
+                int durabilityCost = Math.max(1, N);
+                if (remainingDurability < durabilityCost) {
+                    player.sendSystemMessage(Component.literal("§c塑世之笔耐久度不足！需要 " + durabilityCost + " 点，剩余 " + remainingDurability + " 点。"));
+                    return InteractionResult.SUCCESS;
+                }
+
+                // 执行扣除 (填充空气模式不扣除背包物品)
+                if (mode != FillMode.AIR_ONLY) {
+                    deductTargetItems(player, targetItem, selectedColor, totalItemsNeeded);
+                }
+                stack.setDamageValue(stack.getDamageValue() + durabilityCost);
+
+                // 填充方块并应用颜色
+                for (WorldSculptorsPenManager.BlockStateRecord r : records) {
+                    BlockEntity existingBe = level.getBlockEntity(r.pos);
+                    if (existingBe instanceof Clearable clearable) {
+                        clearable.clearContent();
+                    }
+                    level.setBlock(r.pos, targetState, Block.UPDATE_ALL);
+                    applyBlockColor(level, r.pos, targetBlock, selectedColor);
+                    if (level instanceof ServerLevel serverLevel) {
+                        serverLevel.sendParticles(ParticleTypes.GLOW,
+                                r.pos.getX() + 0.5, r.pos.getY() + 0.5, r.pos.getZ() + 0.5, 2, 0.2, 0.2, 0.2, 0.05);
+                    }
+                }
+
+                // 注册撤销记录
+                UUID recordId = UUID.randomUUID();
+                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor, itemsPerBlock);
+
+                // 保存最后填充 ID
+                tag.putString("LastFillId", recordId.toString());
+
+                // 清理点 1 数据，让玩家能直接进行下一次填充
+                tag.remove("pos1_x");
+                tag.remove("pos1_y");
+                tag.remove("pos1_z");
+                tag.remove("pos1_dim");
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+
+                // 播放华丽奢华的紫水晶与信标音效
+                level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(),
+                        net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_CHIME, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+                level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(),
+                        net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
+
+                String countInfo = (itemsPerBlock > 1)
+                        ? "填充了 " + N + " 个方块（消耗物品 " + totalItemsNeeded + " 个），消耗耐久 " + durabilityCost + " 点。"
+                        : "填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。";
+                player.sendSystemMessage(Component.literal("§a填充成功！" + countInfo));
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N + "，单格消耗 " + itemsPerBlock + "，总物品消耗 " + totalItemsNeeded);
+            }
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    @Override
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (player.isSecondaryUseActive()) { // Shift + 右键空气
+            // 1. 如果在60秒内有可撤销记录，优先执行撤销
+            if (hasActiveUndoRecord(stack)) {
+                if (tryUndo(stack, player, level)) {
+                    return InteractionResult.SUCCESS;
+                }
+            }
+            // 2. 否则，清除已经记录的第一个起点
+            CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+            if (customData != null) {
+                CompoundTag tag = customData.copyTag();
+                if (tag.getInt("pos1_x").isPresent()) {
+                    if (!level.isClientSide()) {
+                        tag.remove("pos1_x");
+                        tag.remove("pos1_y");
+                        tag.remove("pos1_z");
+                        tag.remove("pos1_dim");
+                        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                        player.sendSystemMessage(Component.literal("§e已取消记录的第一个位置。"));
+                    }
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                            net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_HIT, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.8F);
+                    return InteractionResult.SUCCESS;
+                }
+            }
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, EquipmentSlot slot) {
+        // 当手持该笔移动或静止时，在笔尖位置喷射淡蓝色发光粒子（用 GLOW 代替 GLOW_SQUID_INK，降低几率并偏离视线中心以防遮挡第一人称）
+        if (slot != null && (slot == EquipmentSlot.MAINHAND || slot == EquipmentSlot.OFFHAND) && owner instanceof Player player) {
+            if (level.getRandom().nextFloat() < 0.2f) {
+                Vec3 pos = player.getEyePosition(1.0F).add(player.getLookAngle().scale(1.2)).add(0, -0.35, 0);
+                level.sendParticles(ParticleTypes.GLOW, pos.x, pos.y, pos.z, 1, 0.02, 0.02, 0.02, 0.01);
+            }
+        }
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, java.util.function.Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, display, tooltipComponents, tooltipFlag);
+
+        FillMode mode = getMode(stack);
+        tooltipComponents.accept(Component.literal("§b当前填充模式: ").append(mode.getDisplayName().copy().withStyle(ChatFormatting.YELLOW)));
+
+        ItemStack selected = getSelectedBlockStack(stack);
+        if (mode != FillMode.AIR_ONLY) {
+            if (!selected.isEmpty()) {
+                net.minecraft.network.chat.MutableComponent nameComp = Component.empty().withStyle(ChatFormatting.GOLD).append(selected.getHoverName());
+                CustomData cd = stack.get(DataComponents.CUSTOM_DATA);
+                if (cd != null) {
+                    CompoundTag tag = cd.copyTag();
+                    if (tag.getInt("SelectedColor").isPresent()) {
+                        int col = tag.getIntOr("SelectedColor", 0xFFFFFF);
+                        nameComp.append(Component.literal(String.format(" §7(#%06X)", col)));
+                    }
+                    if (tag.getCompound("SelectedProperties").isPresent()) {
+                        CompoundTag propsTag = tag.getCompoundOrEmpty("SelectedProperties");
+                        if (!propsTag.isEmpty()) {
+                            List<String> list = new ArrayList<>();
+                            for (String k : propsTag.keySet()) {
+                                list.add(k + "=" + propsTag.getStringOr(k, ""));
+                            }
+                            nameComp.append(Component.literal(" §e[" + String.join(", ", list) + "]"));
+                        }
+                    }
+                }
+                tooltipComponents.accept(Component.literal("§a选定填充方块: ").append(nameComp));
+            } else {
+                tooltipComponents.accept(Component.literal("§7选定填充方块: 未选定"));
+            }
+        }
+
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            CompoundTag tag = customData.copyTag();
+            if (tag.getInt("pos1_x").isPresent()) {
+                int x = tag.getIntOr("pos1_x", 0);
+                int y = tag.getIntOr("pos1_y", 0);
+                int z = tag.getIntOr("pos1_z", 0);
+                tooltipComponents.accept(Component.literal("§e已记录起点: [" + x + ", " + y + ", " + z + "]"));
+            }
+        }
+
+        if (hasActiveUndoRecord(stack)) {
+            tooltipComponents.accept(Component.literal("§d[可撤销] 面对空气 潜行 + 右键撤销本次填充"));
+        }
+
+        tooltipComponents.accept(Component.literal("§8限制: 最大填充直线距离 64 格，最大填充体积 2048"));
+        tooltipComponents.accept(Component.literal("§8按住 Shift + 右键点击方块重新选定方块类型"));
+        tooltipComponents.accept(Component.literal("§8按住 Shift + 左键循环切换填充模式"));
+    }
+
+    public enum FillMode {
+        FULL_REPLACE("tuanzis_mod.mode.full_replace"),
+        AIR_ONLY("tuanzis_mod.mode.air_only"),
+        SEMI_REPLACE("tuanzis_mod.mode.semi_replace"),
+        REPLACE_AIR_ONLY("tuanzis_mod.mode.replace_air_only");
+
+        public final String translationKey;
+
+        FillMode(String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        public Component getDisplayName() {
+            return Component.translatable(translationKey);
+        }
     }
 }

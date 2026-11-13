@@ -1,5 +1,6 @@
 package me.tuanzi.client.gui.screens;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.tuanzi.network.ChromaticSkullRequestPacket;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
@@ -16,7 +17,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
-import com.mojang.blaze3d.platform.InputConstants;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
@@ -60,18 +60,18 @@ public class ChromaticSkullScreen extends Screen {
 
         // 确认 / 获取该头颅 按钮
         Component btnText = isConfirmed()
-            ? Component.translatable("gui.tuanzis_mod.chromatic_skull.claim")
-            : Component.translatable("gui.tuanzis_mod.chromatic_skull.confirm");
+                ? Component.translatable("gui.tuanzis_mod.chromatic_skull.claim")
+                : Component.translatable("gui.tuanzis_mod.chromatic_skull.confirm");
         this.confirmButton = Button.builder(btnText, btn -> onConfirmOrClaim())
-            .bounds(startX + 18, startY + 94, 80, 20)
-            .build();
+                .bounds(startX + 18, startY + 94, 80, 20)
+                .build();
         this.confirmButton.active = isValidPlayerName(this.nameInput.getValue().trim());
         this.addRenderableWidget(this.confirmButton);
 
         // 取消按钮
         this.cancelButton = Button.builder(Component.translatable("gui.tuanzis_mod.chromatic_skull.cancel"), btn -> this.onClose())
-            .bounds(startX + 106, startY + 94, 80, 20)
-            .build();
+                .bounds(startX + 106, startY + 94, 80, 20)
+                .build();
         this.addRenderableWidget(this.cancelButton);
     }
 

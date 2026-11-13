@@ -6,11 +6,7 @@ import net.fabricmc.fabric.api.client.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.client.renderer.v1.render.submit.ExtendedBlockModelSubmit;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
-import net.minecraft.client.renderer.Sheets;
-import net.minecraft.client.renderer.SubmitNodeCollection;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
@@ -136,28 +132,28 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
 
     @Override
     public void submitBlockModel(
-        PoseStack poseStack,
-        Function<ChunkSectionLayer, RenderType> renderTypeFunction,
-        boolean hasTranslucent,
-        List<BlockStateModelPart> modelParts,
-        @Nullable Mesh mesh,
-        int[] tintLayers,
-        int lightCoords,
-        int overlayCoords,
-        int outlineColor
+            PoseStack poseStack,
+            Function<ChunkSectionLayer, RenderType> renderTypeFunction,
+            boolean hasTranslucent,
+            List<BlockStateModelPart> modelParts,
+            @Nullable Mesh mesh,
+            int[] tintLayers,
+            int lightCoords,
+            int overlayCoords,
+            int outlineColor
     ) {
         SubmitNodeCollection col = resolveCollection(this.parent);
         if (col != null) {
             col.translucentBlocksAndItems.submit(new ExtendedBlockModelSubmit(
-                poseStack.last().copy(),
-                GHOST_BLOCK_RENDER_TYPE,
-                modelParts,
-                mesh,
-                ensureOpaqueTints(tintLayers),
-                lightCoords,
-                overlayCoords,
-                ARGB.white(this.alpha),
-                null
+                    poseStack.last().copy(),
+                    GHOST_BLOCK_RENDER_TYPE,
+                    modelParts,
+                    mesh,
+                    ensureOpaqueTints(tintLayers),
+                    lightCoords,
+                    overlayCoords,
+                    ARGB.white(this.alpha),
+                    null
             ));
         } else {
             this.parent.submitBlockModel(poseStack, GHOST_BLOCK_RENDER_TYPE, true, modelParts, mesh, tintLayers, lightCoords, overlayCoords, outlineColor);
@@ -169,14 +165,14 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
         SubmitNodeCollection col = resolveCollection(this.parent);
         if (col != null) {
             col.translucentBlocksAndItems.submit(new BlockModelFeatureRenderer.Submit(
-                poseStack.last().copy(),
-                Sheets.translucentBlockItemSheet(),
-                parts,
-                ensureOpaqueTints(tintLayers),
-                lightCoords,
-                overlayCoords,
-                ARGB.white(this.alpha),
-                null
+                    poseStack.last().copy(),
+                    Sheets.translucentBlockItemSheet(),
+                    parts,
+                    ensureOpaqueTints(tintLayers),
+                    lightCoords,
+                    overlayCoords,
+                    ARGB.white(this.alpha),
+                    null
             ));
         } else {
             RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);
@@ -276,28 +272,28 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
 
         @Override
         public void submitBlockModel(
-            PoseStack poseStack,
-            Function<ChunkSectionLayer, RenderType> renderTypeFunction,
-            boolean hasTranslucent,
-            List<BlockStateModelPart> modelParts,
-            @Nullable Mesh mesh,
-            int[] tintLayers,
-            int lightCoords,
-            int overlayCoords,
-            int outlineColor
+                PoseStack poseStack,
+                Function<ChunkSectionLayer, RenderType> renderTypeFunction,
+                boolean hasTranslucent,
+                List<BlockStateModelPart> modelParts,
+                @Nullable Mesh mesh,
+                int[] tintLayers,
+                int lightCoords,
+                int overlayCoords,
+                int outlineColor
         ) {
             SubmitNodeCollection col = resolveCollection(this.delegate);
             if (col != null) {
                 col.translucentBlocksAndItems.submit(new ExtendedBlockModelSubmit(
-                    poseStack.last().copy(),
-                    GHOST_BLOCK_RENDER_TYPE,
-                    modelParts,
-                    mesh,
-                    ensureOpaqueTints(tintLayers),
-                    lightCoords,
-                    overlayCoords,
-                    ARGB.white(this.alpha),
-                    null
+                        poseStack.last().copy(),
+                        GHOST_BLOCK_RENDER_TYPE,
+                        modelParts,
+                        mesh,
+                        ensureOpaqueTints(tintLayers),
+                        lightCoords,
+                        overlayCoords,
+                        ARGB.white(this.alpha),
+                        null
                 ));
             } else {
                 this.delegate.submitBlockModel(poseStack, GHOST_BLOCK_RENDER_TYPE, true, modelParts, mesh, tintLayers, lightCoords, overlayCoords, outlineColor);
@@ -309,14 +305,14 @@ public class GhostSubmitNodeCollector implements SubmitNodeCollector {
             SubmitNodeCollection col = resolveCollection(this.delegate);
             if (col != null) {
                 col.translucentBlocksAndItems.submit(new BlockModelFeatureRenderer.Submit(
-                    poseStack.last().copy(),
-                    Sheets.translucentBlockItemSheet(),
-                    parts,
-                    ensureOpaqueTints(tintLayers),
-                    lightCoords,
-                    overlayCoords,
-                    ARGB.white(this.alpha),
-                    null
+                        poseStack.last().copy(),
+                        Sheets.translucentBlockItemSheet(),
+                        parts,
+                        ensureOpaqueTints(tintLayers),
+                        lightCoords,
+                        overlayCoords,
+                        ARGB.white(this.alpha),
+                        null
                 ));
             } else {
                 RenderType ghostType = GhostRenderRegistry.getOrCreateGhostType(renderType, this.alpha);

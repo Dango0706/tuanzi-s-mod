@@ -13,23 +13,23 @@ import net.minecraft.resources.Identifier;
  * 通知附近客户端某个大炮发射了方块，客户端立即触发转向、后坐力、炮口烟雾与抛物线飞行方块渲染。
  */
 public record BlueprintCannonShootS2CPacket(
-    BlockPos cannonPos,
-    BlockPos targetPos,
-    int blockStateId,
-    int totalTicks,
-    boolean isDestroy
+        BlockPos cannonPos,
+        BlockPos targetPos,
+        int blockStateId,
+        int totalTicks,
+        boolean isDestroy
 ) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<BlueprintCannonShootS2CPacket> TYPE =
-        new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon_shoot"));
+            new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_cannon_shoot"));
 
     public static final StreamCodec<FriendlyByteBuf, BlueprintCannonShootS2CPacket> CODEC = StreamCodec.composite(
-        BlockPos.STREAM_CODEC, BlueprintCannonShootS2CPacket::cannonPos,
-        BlockPos.STREAM_CODEC, BlueprintCannonShootS2CPacket::targetPos,
-        ByteBufCodecs.VAR_INT, BlueprintCannonShootS2CPacket::blockStateId,
-        ByteBufCodecs.VAR_INT, BlueprintCannonShootS2CPacket::totalTicks,
-        ByteBufCodecs.BOOL, BlueprintCannonShootS2CPacket::isDestroy,
-        BlueprintCannonShootS2CPacket::new
+            BlockPos.STREAM_CODEC, BlueprintCannonShootS2CPacket::cannonPos,
+            BlockPos.STREAM_CODEC, BlueprintCannonShootS2CPacket::targetPos,
+            ByteBufCodecs.VAR_INT, BlueprintCannonShootS2CPacket::blockStateId,
+            ByteBufCodecs.VAR_INT, BlueprintCannonShootS2CPacket::totalTicks,
+            ByteBufCodecs.BOOL, BlueprintCannonShootS2CPacket::isDestroy,
+            BlueprintCannonShootS2CPacket::new
     );
 
     @Override

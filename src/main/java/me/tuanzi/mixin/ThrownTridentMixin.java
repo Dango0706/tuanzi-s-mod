@@ -20,15 +20,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ThrownTrident.class)
 public abstract class ThrownTridentMixin extends AbstractArrow {
 
+    @Unique
+    private boolean tuanzis_mod$waterSpeedBoosted = false;
+
     protected ThrownTridentMixin(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
     }
 
     @Shadow
     public abstract ItemStack getWeaponItem();
-
-    @Unique
-    private boolean tuanzis_mod$waterSpeedBoosted = false;
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tuanzis_mod$onTickWaterSpeed(CallbackInfo ci) {

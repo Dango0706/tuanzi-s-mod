@@ -1,16 +1,15 @@
 package me.tuanzi.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.Minecraft;
-import com.mojang.blaze3d.platform.InputConstants;
 
 @Environment(EnvType.CLIENT)
 public class ClientTooltipHelper {
     public static boolean isShiftDown() {
         try {
-            return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT) 
-                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
+            return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                    || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
         } catch (Exception e) {
             return false;
         }

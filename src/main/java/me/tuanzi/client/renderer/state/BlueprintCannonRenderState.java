@@ -11,10 +11,10 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class BlueprintCannonRenderState extends BlockEntityRenderState {
+    public final List<LaunchedItem> flyingBlocks = new ArrayList<>();
     public double yaw;
     public double pitch;
     public double recoil;
     public BlockPos cannonPos = BlockPos.ZERO;
-    public final List<LaunchedItem> flyingBlocks = new ArrayList<>();
     public boolean firstRenderTick = true;
 }

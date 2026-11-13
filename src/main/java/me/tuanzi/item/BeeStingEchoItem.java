@@ -1,18 +1,17 @@
 package me.tuanzi.item;
 
+import me.tuanzi.init.ModStatusEffects;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.level.Level;
-import me.tuanzi.init.ModStatusEffects;
 
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class BeeStingEchoItem extends Item {
 
                 // 设置 CUSTOM_MODEL_DATA 组件，第 0 个 float 即为磨损度
                 net.minecraft.world.item.component.CustomModelData cmd = new net.minecraft.world.item.component.CustomModelData(
-                    List.of((float) wear), List.of(), List.of(), List.of()
+                        List.of((float) wear), List.of(), List.of(), List.of()
                 );
                 stack.set(DataComponents.CUSTOM_MODEL_DATA, cmd);
 
@@ -47,7 +46,7 @@ public class BeeStingEchoItem extends Item {
     @Override
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.postHurtEnemy(stack, target, attacker);
-        
+
         // 播放蜂鸣声，音调随磨损度加深而愈发低沉
         double wearValue = 0.0;
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
@@ -59,7 +58,7 @@ public class BeeStingEchoItem extends Item {
         }
         float pitch = 1.8f - (float) wearValue * 1.3f;
         target.level().playSound(null, target.getX(), target.getY(), target.getZ(),
-            SoundEvents.BEE_LOOP, net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, pitch);
+                SoundEvents.BEE_LOOP, net.minecraft.sounds.SoundSource.PLAYERS, 0.4f, pitch);
 
         // 仅在服务器端处理叠毒效果
         if (!target.level().isClientSide()) {

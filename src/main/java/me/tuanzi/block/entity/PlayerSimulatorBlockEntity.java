@@ -7,15 +7,9 @@ import me.tuanzi.world.inventory.PlayerSimulatorMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -54,12 +48,142 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
     // 拥有者归属数据
     private @Nullable java.util.UUID ownerUuid = null;
     private String ownerName = "";
-    
+
     // 持续充能攻击的锁定实体ID (-1 表示未锁定)
     private int attackingEntityId = -1;
 
     public PlayerSimulatorBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.PLAYER_SIMULATOR_BLOCK_ENTITY, pos, state);
+    }
+
+    // 状态机 tick 更新
+    public static void serverTick(Level level, BlockPos pos, BlockState state, PlayerSimulatorBlockEntity blockEntity) {
+        if (level.isClientSide()) {
+            return;
+        }
+
+        // 0. 递增充能计时器 (仅在接收到红石充能信号时递增，上限设为 200 ticks 防止溢出)
+        if (level.hasNeighborSignal(pos)) {
+            if (blockEntity.chargeTicks < 200) {
+                blockEntity.chargeTicks++;
+            }
+        }
+
+        // 1. 冷却倒计时更新
+        if (blockEntity.cooldown > 0) {
+            blockEntity.cooldown--;
+            if (blockEntity.cooldown == 0 && !blockEntity.running) {
+                // 冷却结束，释放红石触发状态
+                level.setBlock(pos, state.setValue(PlayerSimulatorBlock.TRIGGERED, false), 2);
+            }
+        }
+
+        // 2. 状态机处于运行中更新
+        if (blockEntity.running) {
+            SimulatorFakePlayer fakePlayer = blockEntity.getOrLoadFakePlayer();
+
+            // A. 持续挖掘判定
+            if (blockEntity.miningPos != null) {
+                // 当其破坏方块时，没在充能就停止破坏，在充能时则持续破坏
+                if (!level.hasNeighborSignal(pos)) {
+                    me.tuanzi.util.ModLog.debug("[玩家模拟器] 红石信号断开（没在充能），立即停止破坏方块: " + blockEntity.miningPos);
+                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
+                    blockEntity.miningPos = null;
+                    blockEntity.miningProgress = 0.0f;
+                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
+                    blockEntity.running = false;
+                    blockEntity.cooldown = 2;
+                    blockEntity.setChanged();
+                    return;
+                }
+
+                BlockState targetState = level.getBlockState(blockEntity.miningPos);
+                if (targetState.isAir()) {
+                    // 方块已被破坏（可能由水流或者其他外部触发破坏）
+                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
+                    blockEntity.miningPos = null;
+                    blockEntity.miningProgress = 0.0f;
+                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
+                    blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
+                    blockEntity.running = false;
+                    blockEntity.cooldown = 2;
+                    blockEntity.setChanged();
+                } else {
+                    blockEntity.actionTick++;
+                    // 在每 tick 计算进度前，确保假玩家主手持枪/手持镐，并同步加载其属性修改器以获得实际破坏速度
+                    ItemStack toolStack = blockEntity.items.get(blockEntity.currentSlot);
+                    ItemStack prevTool = fakePlayer.getMainHandItem().copy();
+                    fakePlayer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, toolStack);
+                    fakePlayer.updateEquipmentModifiers(prevTool, toolStack);
+                    fakePlayer.getInventory().setItem(0, toolStack);
+                    fakePlayer.getInventory().setSelectedSlot(0);
+                    // 强制假玩家为踩在地上状态，彻底避开浮空带来的 5 倍挖掘慢速惩罚！
+                    fakePlayer.setOnGround(true);
+
+                    // 持续增加进度
+                    float speed = targetState.getDestroyProgress(fakePlayer, level, blockEntity.miningPos);
+                    blockEntity.miningProgress += speed;
+                    int animStage = (int) (blockEntity.miningProgress * 10.0f);
+                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, animStage >= 0 && animStage < 10 ? animStage : -1);
+
+                    if (blockEntity.miningProgress >= 1.0f) {
+                        // 破坏完成：手动扣除耐久、结算时运/精准等全部工具掉落物并生成
+                        level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
+                        if (level instanceof ServerLevel serverLevel) {
+                            BlockEntity mineBe = level.getBlockEntity(blockEntity.miningPos);
+                            boolean canDrop = fakePlayer.hasCorrectToolForDrops(targetState);
+                            if (canDrop) {
+                                java.util.List<ItemStack> drops = net.minecraft.world.level.block.Block.getDrops(targetState, serverLevel, blockEntity.miningPos, mineBe, fakePlayer, toolStack);
+                                drops.forEach(drop -> net.minecraft.world.level.block.Block.popResource(level, blockEntity.miningPos, drop));
+                            }
+                            if (toolStack.isDamageableItem()) {
+                                me.tuanzi.util.ModLog.debug("[玩家模拟器] 触发持续挖掘完成耐久计算。物品: " + toolStack + ", 目标方块: " + targetState);
+                                toolStack.mineBlock(serverLevel, targetState, blockEntity.miningPos, fakePlayer);
+                            }
+                        }
+                        level.destroyBlock(blockEntity.miningPos, false, fakePlayer);
+
+                        blockEntity.miningPos = null;
+                        blockEntity.miningProgress = 0.0f;
+                        blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
+                        blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
+                        blockEntity.running = false;
+                        blockEntity.cooldown = 2;
+                        blockEntity.setChanged();
+                    }
+                }
+            }
+            // B. 武器蓄力判定 (拉弓/三叉戟等右键蓄力)
+            else if (blockEntity.targetChargeTicks > 0) {
+                blockEntity.actionTick++;
+                // 假玩家更新使用状态，确保使用时间递减
+                fakePlayer.publicUpdateUsingItem();
+
+                if (blockEntity.actionTick >= blockEntity.targetChargeTicks) {
+                    // 蓄力完毕，释放！
+                    fakePlayer.releaseUsingItem();
+                    blockEntity.targetChargeTicks = 0;
+                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
+                    blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
+                    blockEntity.running = false;
+                    blockEntity.cooldown = 2;
+                    blockEntity.setChanged();
+                }
+            }
+            // C. 持续充能左键攻击判定 (蓄力攻击生物，红石信号断开时释放伤害)
+            else if (blockEntity.attackingEntityId != -1) {
+                if (level.hasNeighborSignal(pos)) {
+                    blockEntity.actionTick++;
+                    // 蓄力上限保护：如果充能了 200 ticks，强制自动打出去
+                    if (blockEntity.chargeTicks >= 200) {
+                        blockEntity.executeOwnerAttackAndReset(level, fakePlayer);
+                    }
+                } else {
+                    // 充能结束 (红石信号断开)，释放全力一击！
+                    blockEntity.executeOwnerAttackAndReset(level, fakePlayer);
+                }
+            }
+        }
     }
 
     public NonNullList<ItemStack> getItems() {
@@ -169,9 +293,9 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
         double reach = 1.5;
         // 眼睛起点移至方块边界外侧（0.501格），防止射线与大炮自身碰撞箱发生误判自撞
         Vec3 eyePos = new Vec3(
-            this.worldPosition.getX() + 0.5 + facing.getStepX() * 0.501,
-            this.worldPosition.getY() + 0.5 + facing.getStepY() * 0.501,
-            this.worldPosition.getZ() + 0.5 + facing.getStepZ() * 0.501
+                this.worldPosition.getX() + 0.5 + facing.getStepX() * 0.501,
+                this.worldPosition.getY() + 0.5 + facing.getStepY() * 0.501,
+                this.worldPosition.getZ() + 0.5 + facing.getStepZ() * 0.501
         );
         // 直接使用方块面向对应的三维方向向量，确保绝对方向一致、杜绝角度反置或偏差
         Vec3 lookVec = new Vec3(facing.getStepX(), facing.getStepY(), facing.getStepZ());
@@ -181,11 +305,11 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
 
         // 1. 块射线检测
         ClipContext clipCtx = new ClipContext(
-            eyePos, 
-            endPos, 
-            ClipContext.Block.OUTLINE, 
-            ClipContext.Fluid.NONE, 
-            player
+                eyePos,
+                endPos,
+                ClipContext.Block.OUTLINE,
+                ClipContext.Fluid.NONE,
+                player
         );
         BlockHitResult blockHit = this.level.clip(clipCtx);
 
@@ -193,9 +317,9 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
         BlockPos targetPos = this.worldPosition.relative(facing);
         net.minecraft.world.phys.AABB aabb = new net.minecraft.world.phys.AABB(targetPos).inflate(0.5D, 1.0D, 0.5D);
         java.util.List<net.minecraft.world.entity.Entity> entities = this.level.getEntities(
-            player, 
-            aabb, 
-            entity -> !entity.isSpectator() && entity.isPickable()
+                player,
+                aabb,
+                entity -> !entity.isSpectator() && entity.isPickable()
         );
 
         net.minecraft.world.entity.Entity targetEntity = null;
@@ -222,7 +346,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
         me.tuanzi.util.ModLog.debug("[玩家模拟器] 射线检测结果 - 目标方块: " + (blockHit.getType() == HitResult.Type.MISS ? "无" : blockHit.getBlockPos() + " (" + this.level.getBlockState(blockHit.getBlockPos()).getBlock().getName().getString() + ")") + ", 目标实体: " + (entityHit != null ? entityHit.getEntity().getType().getDescription().getString() : "无") + ", 判定实体优先: " + hitEntity);
 
         // ================== 优先尝试右键 ==================
-        
+
         // 特殊：食物/药水/牛奶等瞬发消耗并给予效果的物品
         if (stack.has(net.minecraft.core.component.DataComponents.FOOD) || stack.is(Items.POTION) || stack.is(Items.MILK_BUCKET)) {
             me.tuanzi.util.ModLog.debug("[玩家模拟器] 识别为食品/药水瞬发消耗，执行 finishUsingItem。");
@@ -274,11 +398,11 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
             }
         } else if (blockHit.getType() != HitResult.Type.MISS) {
             InteractionResult interactRes = player.gameMode.useItemOn(
-                player, 
-                this.level, 
-                stack, 
-                InteractionHand.MAIN_HAND, 
-                blockHit
+                    player,
+                    this.level,
+                    stack,
+                    InteractionHand.MAIN_HAND,
+                    blockHit
             );
             if (interactRes.consumesAction()) {
                 me.tuanzi.util.ModLog.debug("[玩家模拟器] 右键使用方块/物品成功，方块位置: " + blockHit.getBlockPos() + " (结果: " + interactRes + ")");
@@ -310,7 +434,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
                 if (dmgSpeed >= 1.0f) {
                     // 瞬间挖掘：手动扣除耐久、结算时运/精准等全部工具掉落物并生成
                     me.tuanzi.util.ModLog.debug("[玩家模拟器] 右键无效，执行瞬间挖掘方块: " + targetBlockPos + " (挖掘进度: " + dmgSpeed + ")");
-                    
+
                     if (this.level instanceof ServerLevel serverLevel) {
                         BlockEntity mineBe = this.level.getBlockEntity(targetBlockPos);
                         boolean canDrop = player.hasCorrectToolForDrops(blockState);
@@ -324,7 +448,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
                         }
                     }
                     this.level.destroyBlock(targetBlockPos, false, player);
-                    
+
                     this.syncFakePlayerInventory(slotIdx);
                     return false;
                 } else {
@@ -374,7 +498,6 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
         this.setChanged();
     }
 
-
     // 将假玩家物品栏的变动和返回残留物写回模拟器
     private void syncFakePlayerInventory(int slotIdx) {
         if (this.fakePlayer == null) return;
@@ -391,11 +514,11 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
                     Direction facing = this.getBlockState().getValue(PlayerSimulatorBlock.FACING);
                     BlockPos spawnPos = this.worldPosition.relative(facing);
                     net.minecraft.world.entity.item.ItemEntity itemEntity = new net.minecraft.world.entity.item.ItemEntity(
-                        this.level, 
-                        spawnPos.getX() + 0.5, 
-                        spawnPos.getY() + 0.5, 
-                        spawnPos.getZ() + 0.5, 
-                        remaining
+                            this.level,
+                            spawnPos.getX() + 0.5,
+                            spawnPos.getY() + 0.5,
+                            spawnPos.getZ() + 0.5,
+                            remaining
                     );
                     this.level.addFreshEntity(itemEntity);
                 }
@@ -437,136 +560,6 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
             }
         }
         return copy;
-    }
-
-    // 状态机 tick 更新
-    public static void serverTick(Level level, BlockPos pos, BlockState state, PlayerSimulatorBlockEntity blockEntity) {
-        if (level.isClientSide()) {
-            return;
-        }
-
-        // 0. 递增充能计时器 (仅在接收到红石充能信号时递增，上限设为 200 ticks 防止溢出)
-        if (level.hasNeighborSignal(pos)) {
-            if (blockEntity.chargeTicks < 200) {
-                blockEntity.chargeTicks++;
-            }
-        }
-
-        // 1. 冷却倒计时更新
-        if (blockEntity.cooldown > 0) {
-            blockEntity.cooldown--;
-            if (blockEntity.cooldown == 0 && !blockEntity.running) {
-                // 冷却结束，释放红石触发状态
-                level.setBlock(pos, state.setValue(PlayerSimulatorBlock.TRIGGERED, false), 2);
-            }
-        }
-
-        // 2. 状态机处于运行中更新
-        if (blockEntity.running) {
-            SimulatorFakePlayer fakePlayer = blockEntity.getOrLoadFakePlayer();
-
-            // A. 持续挖掘判定
-            if (blockEntity.miningPos != null) {
-                // 当其破坏方块时，没在充能就停止破坏，在充能时则持续破坏
-                if (!level.hasNeighborSignal(pos)) {
-                    me.tuanzi.util.ModLog.debug("[玩家模拟器] 红石信号断开（没在充能），立即停止破坏方块: " + blockEntity.miningPos);
-                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
-                    blockEntity.miningPos = null;
-                    blockEntity.miningProgress = 0.0f;
-                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
-                    blockEntity.running = false;
-                    blockEntity.cooldown = 2;
-                    blockEntity.setChanged();
-                    return;
-                }
-
-                BlockState targetState = level.getBlockState(blockEntity.miningPos);
-                if (targetState.isAir()) {
-                    // 方块已被破坏（可能由水流或者其他外部触发破坏）
-                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
-                    blockEntity.miningPos = null;
-                    blockEntity.miningProgress = 0.0f;
-                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
-                    blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
-                    blockEntity.running = false;
-                    blockEntity.cooldown = 2;
-                    blockEntity.setChanged();
-                } else {
-                    blockEntity.actionTick++;
-                    // 在每 tick 计算进度前，确保假玩家主手持枪/手持镐，并同步加载其属性修改器以获得实际破坏速度
-                    ItemStack toolStack = blockEntity.items.get(blockEntity.currentSlot);
-                    ItemStack prevTool = fakePlayer.getMainHandItem().copy();
-                    fakePlayer.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, toolStack);
-                    fakePlayer.updateEquipmentModifiers(prevTool, toolStack);
-                    fakePlayer.getInventory().setItem(0, toolStack);
-                    fakePlayer.getInventory().setSelectedSlot(0);
-                    // 强制假玩家为踩在地上状态，彻底避开浮空带来的 5 倍挖掘慢速惩罚！
-                    fakePlayer.setOnGround(true);
-
-                    // 持续增加进度
-                    float speed = targetState.getDestroyProgress(fakePlayer, level, blockEntity.miningPos);
-                    blockEntity.miningProgress += speed;
-                    int animStage = (int)(blockEntity.miningProgress * 10.0f);
-                    level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, animStage >= 0 && animStage < 10 ? animStage : -1);
-
-                    if (blockEntity.miningProgress >= 1.0f) {
-                        // 破坏完成：手动扣除耐久、结算时运/精准等全部工具掉落物并生成
-                        level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
-                        if (level instanceof ServerLevel serverLevel) {
-                            BlockEntity mineBe = level.getBlockEntity(blockEntity.miningPos);
-                            boolean canDrop = fakePlayer.hasCorrectToolForDrops(targetState);
-                            if (canDrop) {
-                                java.util.List<ItemStack> drops = net.minecraft.world.level.block.Block.getDrops(targetState, serverLevel, blockEntity.miningPos, mineBe, fakePlayer, toolStack);
-                                drops.forEach(drop -> net.minecraft.world.level.block.Block.popResource(level, blockEntity.miningPos, drop));
-                            }
-                            if (toolStack.isDamageableItem()) {
-                                me.tuanzi.util.ModLog.debug("[玩家模拟器] 触发持续挖掘完成耐久计算。物品: " + toolStack + ", 目标方块: " + targetState);
-                                toolStack.mineBlock(serverLevel, targetState, blockEntity.miningPos, fakePlayer);
-                            }
-                        }
-                        level.destroyBlock(blockEntity.miningPos, false, fakePlayer);
-
-                        blockEntity.miningPos = null;
-                        blockEntity.miningProgress = 0.0f;
-                        blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
-                        blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
-                        blockEntity.running = false;
-                        blockEntity.cooldown = 2;
-                        blockEntity.setChanged();
-                    }
-                }
-            }
-            // B. 武器蓄力判定 (拉弓/三叉戟等右键蓄力)
-            else if (blockEntity.targetChargeTicks > 0) {
-                blockEntity.actionTick++;
-                // 假玩家更新使用状态，确保使用时间递减
-                fakePlayer.publicUpdateUsingItem();
-
-                if (blockEntity.actionTick >= blockEntity.targetChargeTicks) {
-                    // 蓄力完毕，释放！
-                    fakePlayer.releaseUsingItem();
-                    blockEntity.targetChargeTicks = 0;
-                    blockEntity.syncFakePlayerInventory(blockEntity.currentSlot);
-                    blockEntity.currentSlot = (blockEntity.currentSlot + 1) % 9;
-                    blockEntity.running = false;
-                    blockEntity.cooldown = 2;
-                    blockEntity.setChanged();
-                }
-            }
-            // C. 持续充能左键攻击判定 (蓄力攻击生物，红石信号断开时释放伤害)
-            else if (blockEntity.attackingEntityId != -1) {
-                if (level.hasNeighborSignal(pos)) {
-                    blockEntity.actionTick++;
-                    // 蓄力上限保护：如果充能了 200 ticks，强制自动打出去
-                    if (blockEntity.chargeTicks >= 200) {
-                        blockEntity.executeOwnerAttackAndReset(level, fakePlayer);
-                    }
-                } else {
-                    // 充能结束 (红石信号断开)，释放全力一击！
-                    blockEntity.executeOwnerAttackAndReset(level, fakePlayer);
-                }
-            }
-        }
     }
 
     // ================== WorldlyContainer & Container 接口实现 ==================

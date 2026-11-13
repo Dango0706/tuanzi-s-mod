@@ -1,26 +1,26 @@
 {
-	"required": true,
-	"package": "me.tuanzi.mixin.client",
-	"plugin": "me.tuanzi.mixin.client.LitematicaClientMixinPlugin",
-	"compatibilityLevel": "JAVA_25",
-	"refmap": "tuanzis_mod.refmap.json",
-	"mixins": [
-		"EntityClientGlowingMixin",
-		"TitleScreenMixin",
-		"AbstractContainerScreenMixin",
-		"WorldSculptorsPenRendererMixin",
-		"MinecraftMixin",
-		"AnvilScreenMixin",
-		"EnchantmentScreenMixin",
-		"LocalPlayerMixin",
-		"InventoryScreenMixin",
-		"LitematicaMaterialListUtilsMixin",
-		"MalilibInventoryUtilsMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"overwrites": {
-		"requireAnnotations": true
-	}
+  "required": true,
+  "package": "me.tuanzi.mixin.client",
+  "plugin": "me.tuanzi.mixin.client.LitematicaClientMixinPlugin",
+  "compatibilityLevel": "JAVA_25",
+  "refmap": "tuanzis_mod.refmap.json",
+  "mixins": [
+    "AbstractContainerScreenMixin",
+    "AnvilScreenMixin",
+    "EnchantmentScreenMixin",
+    "EntityClientGlowingMixin",
+    "InventoryScreenMixin",
+    "LitematicaMaterialListUtilsMixin",
+    "LocalPlayerMixin",
+    "MalilibInventoryUtilsMixin",
+    "MinecraftMixin",
+    "TitleScreenMixin",
+    "WorldSculptorsPenRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
 }

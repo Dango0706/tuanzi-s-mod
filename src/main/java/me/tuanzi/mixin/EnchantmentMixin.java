@@ -4,12 +4,7 @@ import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.util.DamageCalculator;
 import me.tuanzi.util.ModLog;
 import net.minecraft.core.Holder;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.EntityTypeTags;
@@ -32,27 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Enchantment.class)
 public abstract class EnchantmentMixin {
-    @Shadow
-    public abstract Component description();
-
     @Unique
     private static final Style TUANZIS_MOD$ANCIENT_SCROLL_STYLE = Style.EMPTY.withColor(TextColor.fromRgb(0x7F00FF));
-
-    @Unique
-    private boolean tuanzis_mod$isPowerEnchantment() {
-        if (this.description().getContents() instanceof TranslatableContents tc) {
-            return "enchantment.minecraft.power".equals(tc.getKey());
-        }
-        return this.description().getString().contains("enchantment.minecraft.power");
-    }
-
-    @Unique
-    private boolean tuanzis_mod$isTonghuiEnchantment() {
-        if (this.description().getContents() instanceof TranslatableContents tc) {
-            return "enchantment.tuanzis_mod.tonghui".equals(tc.getKey());
-        }
-        return this.description().getString().contains("enchantment.tuanzis_mod.tonghui");
-    }
 
     @Unique
     private static boolean tuanzis_mod$isCrossbow(ItemStack stack) {
@@ -71,6 +47,25 @@ public abstract class EnchantmentMixin {
 
             cir.setReturnValue(result);
         }
+    }
+
+    @Shadow
+    public abstract Component description();
+
+    @Unique
+    private boolean tuanzis_mod$isPowerEnchantment() {
+        if (this.description().getContents() instanceof TranslatableContents tc) {
+            return "enchantment.minecraft.power".equals(tc.getKey());
+        }
+        return this.description().getString().contains("enchantment.minecraft.power");
+    }
+
+    @Unique
+    private boolean tuanzis_mod$isTonghuiEnchantment() {
+        if (this.description().getContents() instanceof TranslatableContents tc) {
+            return "enchantment.tuanzis_mod.tonghui".equals(tc.getKey());
+        }
+        return this.description().getString().contains("enchantment.tuanzis_mod.tonghui");
     }
 
     /**

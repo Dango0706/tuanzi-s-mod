@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+
 import java.util.UUID;
 
 public class TrialDummyItem extends Item {
@@ -39,7 +40,7 @@ public class TrialDummyItem extends Item {
 
         BlockPos clickedPos = context.getClickedPos();
         BlockState clickedState = level.getBlockState(clickedPos);
-        
+
         // 验证底座必须是固体方块
         if (!clickedState.isCollisionShapeFullBlock(level, clickedPos)) {
             return InteractionResult.FAIL;
@@ -47,7 +48,7 @@ public class TrialDummyItem extends Item {
 
         BlockPos spawnPos = clickedPos.above();
         BlockPos headPos = spawnPos.above();
-        
+
         // 检查假人占用的2格空间是否允许放置（必须是空气或可替换方块）
         if (!level.getBlockState(spawnPos).isAir() || !level.getBlockState(headPos).isAir()) {
             return InteractionResult.FAIL;
@@ -75,10 +76,10 @@ public class TrialDummyItem extends Item {
             entity.yHeadRot = yRot;
 
             serverLevel.addFreshEntityWithPassengers(entity);
-            
+
             // 播放清脆的盔甲架放置声音
-            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), 
-                SoundEvents.ARMOR_STAND_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                    SoundEvents.ARMOR_STAND_PLACE, SoundSource.BLOCKS, 0.75F, 0.8F);
         }
 
         // 扣除手持物品

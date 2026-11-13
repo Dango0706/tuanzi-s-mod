@@ -9,12 +9,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DirectionalBlock;
-import net.minecraft.world.level.block.Mirror;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -64,7 +59,7 @@ public class PlayerSimulatorBlock extends BaseEntityBlock {
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
         boolean shouldTrigger = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
         boolean isTriggered = state.getValue(TRIGGERED);
-        
+
         if (shouldTrigger && !isTriggered) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof PlayerSimulatorBlockEntity simulatorBe) {
@@ -92,7 +87,8 @@ public class PlayerSimulatorBlock extends BaseEntityBlock {
                         }
                         return null; // 直接返回 null 拦截放置行为
                     }
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
         return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
@@ -114,7 +110,8 @@ public class PlayerSimulatorBlock extends BaseEntityBlock {
                             try {
                                 java.util.UUID ownerUuid = java.util.UUID.fromString(tag.getString("OwnerUUID").orElse(""));
                                 simulatorBe.setOwner(ownerUuid, tag.getString("OwnerName").orElse(""));
-                            } catch (IllegalArgumentException ignored) {}
+                            } catch (IllegalArgumentException ignored) {
+                            }
                         }
                     }
                 }

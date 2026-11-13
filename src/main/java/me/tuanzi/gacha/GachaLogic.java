@@ -15,31 +15,13 @@ import java.util.Random;
 public class GachaLogic {
     private static final Random random = new Random();
 
-    public static class RollResult {
-        private final GachaPoolItem poolItem;
-        private final String rarity;
-
-        public RollResult(GachaPoolItem poolItem, String rarity) {
-            this.poolItem = poolItem;
-            this.rarity = rarity;
-        }
-
-        public GachaPoolItem getPoolItem() {
-            return poolItem;
-        }
-
-        public String getRarity() {
-            return rarity;
-        }
-    }
-
     /**
      * 核心抽卡方法（支持单抽或十连）
      */
     public static List<RollResult> performRoll(ServerPlayer player, String poolId, boolean isTenFold) {
         HolderLookup.Provider registries = player.level().getServer().registryAccess();
         GachaPool pool = PoolManager.getPool(poolId);
-        
+
         if (pool == null) {
             player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
             return new ArrayList<>();
@@ -47,7 +29,7 @@ public class GachaLogic {
 
         boolean isLimited = isLimitedPool(poolId);
         PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
-        
+
         List<RollResult> results = new ArrayList<>();
         int rollsCount = isTenFold ? 10 : 1;
         boolean hasRareOrAboveInTenFold = false;
@@ -56,7 +38,7 @@ public class GachaLogic {
             for (int i = 0; i < rollsCount; i++) {
                 // 判定是否是十连的最后一次保底 (第 10 抽，且前 9 抽没有任何稀有以上)
                 boolean isGuaranteedRare = isTenFold && (i == 9) && !hasRareOrAboveInTenFold;
-                
+
                 RollResult singleResult = rollSingle(player, state, pool, isLimited, isGuaranteedRare);
                 results.add(singleResult);
 
@@ -69,10 +51,10 @@ public class GachaLogic {
                 ItemStack itemStack = singleResult.getPoolItem().getItem();
                 String itemName = itemStack.getHoverName().getString();
                 String itemRegistryId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(itemStack.getItem()).toString();
-                
+
                 DateTimeFormatter dft = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String timestamp = LocalDateTime.now().format(dft);
-                
+
                 GachaHistoryEntry historyEntry = new GachaHistoryEntry(
                         pool.getPoolName(),
                         rarity,
@@ -132,12 +114,12 @@ public class GachaLogic {
         if (isGuaranteedRare && (pLegendary + pEpic < 1.0)) {
             // 触发十连保底：排除优秀与普通，在传说、史诗、稀有中随机
             double currentRare = 1.0 - pLegendary - pEpic;
-            
+
             ModLog.debug(player, null, String.format(
                     "概率计算 -> 触发十连稀有保底（第 10 抽）！区间划分 -> 传说: [0.0, %.4f) | 史诗: [%.4f, %.4f) | 稀有保底: [%.4f, 1.0) | 随机因子: %.4f",
                     pLegendary, pLegendary, pLegendary + pEpic, pLegendary + pEpic, r
             ));
-            
+
             if (r < pLegendary) {
                 raritySelected = "legendary";
             } else if (r < pLegendary + pEpic) {
@@ -166,7 +148,7 @@ public class GachaLogic {
 
         // 6. 从对应品质的卡池中按权重随机选择具体物品
         List<GachaPoolItem> list = pool.getListByRarity(raritySelected);
-        
+
         // 品质顺降保护：若当前稀有度无任何物品，顺降一级直到有物品，防止死锁或空指针
         if (list.isEmpty()) {
             String[] rarities = {"legendary", "epic", "rare", "uncommon", "common"};
@@ -205,7 +187,7 @@ public class GachaLogic {
             if (targetRarity != null && targetRarity.equalsIgnoreCase(raritySelected)) {
                 hasFateTargetAndMatched = true;
                 int limit = getFateLimit(pool.getPoolId(), raritySelected);
-                
+
                 if (anchor.getFateValue() >= limit) {
                     // 命定值已满，必中目标物品
                     selectedItem = pool.getItemById(anchor.getTargetItemId());
@@ -222,14 +204,14 @@ public class GachaLogic {
                         ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
                     }
                 }
-                
+
                 if (selectedItem == null) {
                     if (isLimited && raritySelected.equals("legendary")) {
                         selectedItem = list.get(0);
                     } else {
                         selectedItem = selectWeightedItem(list);
                     }
-                    
+
                     if (selectedItem.getId().equals(anchor.getTargetItemId())) {
                         boolean isEpicOrAbove = raritySelected.equalsIgnoreCase("legendary") || raritySelected.equalsIgnoreCase("epic");
                         if (isEpicOrAbove) {
@@ -359,9 +341,27 @@ public class GachaLogic {
                     .replace("%player_x%", String.format("%.2f", player.getX()))
                     .replace("%player_y%", String.format("%.2f", player.getY()))
                     .replace("%player_z%", String.format("%.2f", player.getZ()));
-            
+
             player.level().getServer().getCommands().performPrefixedCommand(source, processedCmd);
             ModLog.debug(player, null, "卡池特殊出货指令执行: " + processedCmd);
+        }
+    }
+
+    public static class RollResult {
+        private final GachaPoolItem poolItem;
+        private final String rarity;
+
+        public RollResult(GachaPoolItem poolItem, String rarity) {
+            this.poolItem = poolItem;
+            this.rarity = rarity;
+        }
+
+        public GachaPoolItem getPoolItem() {
+            return poolItem;
+        }
+
+        public String getRarity() {
+            return rarity;
         }
     }
 }

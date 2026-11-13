@@ -11,13 +11,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.CrossbowItem;
-import net.minecraft.world.item.FishingRodItem;
-import net.minecraft.world.item.FlintAndSteelItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ShearsItem;
+import net.minecraft.world.item.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,27 +36,6 @@ public record ScavengerItemMeta(
 ) {
 
     public static final int FIXED_MAX_STACK = 1;
-
-    public record GridSize(int width, int height) {
-        public static final Codec<GridSize> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ExtraCodecs.intRange(1, 9).fieldOf("width").forGetter(GridSize::width),
-                ExtraCodecs.intRange(1, 9).fieldOf("height").forGetter(GridSize::height)
-        ).apply(instance, GridSize::new));
-
-        public static final StreamCodec<ByteBuf, GridSize> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.VAR_INT,
-                GridSize::width,
-                ByteBufCodecs.VAR_INT,
-                GridSize::height,
-                GridSize::new
-        );
-
-        public GridSize {
-            width = Mth.clamp(width, 1, 9);
-            height = Mth.clamp(height, 1, 9);
-        }
-    }
-
     public static final Codec<ScavengerItemMeta> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("item").forGetter(ScavengerItemMeta::itemId),
             ScavengerCategory.CODEC.optionalFieldOf("category", ScavengerCategory.MISC).forGetter(ScavengerItemMeta::category),
@@ -76,14 +49,12 @@ public record ScavengerItemMeta(
             ScavengerSoundProfile.CODEC.optionalFieldOf("sound_profile", ScavengerSoundProfile.DEFAULT_TACTICAL).forGetter(ScavengerItemMeta::soundProfile),
             Codec.STRING.optionalFieldOf("lore_translation_key").forGetter(ScavengerItemMeta::loreTranslationKey)
     ).apply(instance, ScavengerItemMeta::new));
-
     private static final StreamCodec<ByteBuf, List<String>> STRING_LIST_STREAM_CODEC =
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list());
     private static final StreamCodec<ByteBuf, Optional<EquipmentGridSpec>> OPTIONAL_EQUIP_STREAM_CODEC =
             ByteBufCodecs.optional(EquipmentGridSpec.STREAM_CODEC);
     private static final StreamCodec<ByteBuf, Optional<String>> OPTIONAL_LORE_STREAM_CODEC =
             ByteBufCodecs.optional(ByteBufCodecs.STRING_UTF8);
-
     public static final StreamCodec<FriendlyByteBuf, ScavengerItemMeta> STREAM_CODEC = StreamCodec.of(
             (buf, meta) -> {
                 Identifier.STREAM_CODEC.encode(buf, meta.itemId());
@@ -120,63 +91,6 @@ public record ScavengerItemMeta(
         allowedContainerTags = allowedContainerTags == null || allowedContainerTags.isEmpty()
                 ? List.of("*")
                 : List.copyOf(allowedContainerTags);
-    }
-
-    public int width() {
-        return this.gridSize.width();
-    }
-
-    public int height() {
-        return this.gridSize.height();
-    }
-
-    public boolean canRotate() {
-        return this.gridSize.width() != this.gridSize.height();
-    }
-
-    public int effectiveWidth(boolean rotated) {
-        return (rotated && canRotate()) ? this.gridSize.height() : this.gridSize.width();
-    }
-
-    public int effectiveHeight(boolean rotated) {
-        return (rotated && canRotate()) ? this.gridSize.width() : this.gridSize.height();
-    }
-
-    public int cellCount() {
-        return this.gridSize.width() * this.gridSize.height();
-    }
-
-    public double valuePerCell() {
-        return (double) this.baseValue / Math.max(1, cellCount());
-    }
-
-    /**
-     * 判断该物品是否符合指定容器的标签准入要求（"*" 为通配符）
-     */
-    public boolean matchesContainerTags(Collection<String> targetTags) {
-        if (targetTags == null || targetTags.isEmpty() || targetTags.contains("*") || this.allowedContainerTags.contains("*")) {
-            return true;
-        }
-        for (String tag : this.allowedContainerTags) {
-            if (targetTags.contains(tag)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 判断物品在拾荒回廊维度内是否允许放入玩家快捷栏（1~9）：
-     * 仅允许近战武器/工具类，或尺寸严格为 1x1 的非背包/非安全箱物品。
-     */
-    public boolean isAllowedInHotbar(ItemStack stack) {
-        if (this.equipmentGrid.isPresent() || this.category == ScavengerCategory.BACKPACK || this.category == ScavengerCategory.SAFEBOX) {
-            return false;
-        }
-        if (this.category == ScavengerCategory.TOOL || isWeaponOrToolStack(stack)) {
-            return true;
-        }
-        return this.gridSize.width() == 1 && this.gridSize.height() == 1;
     }
 
     public static boolean isWeaponOrToolStack(ItemStack stack) {
@@ -246,5 +160,82 @@ public record ScavengerItemMeta(
                 ScavengerSoundProfile.DEFAULT_TACTICAL,
                 Optional.empty()
         );
+    }
+
+    public int width() {
+        return this.gridSize.width();
+    }
+
+    public int height() {
+        return this.gridSize.height();
+    }
+
+    public boolean canRotate() {
+        return this.gridSize.width() != this.gridSize.height();
+    }
+
+    public int effectiveWidth(boolean rotated) {
+        return (rotated && canRotate()) ? this.gridSize.height() : this.gridSize.width();
+    }
+
+    public int effectiveHeight(boolean rotated) {
+        return (rotated && canRotate()) ? this.gridSize.width() : this.gridSize.height();
+    }
+
+    public int cellCount() {
+        return this.gridSize.width() * this.gridSize.height();
+    }
+
+    public double valuePerCell() {
+        return (double) this.baseValue / Math.max(1, cellCount());
+    }
+
+    /**
+     * 判断该物品是否符合指定容器的标签准入要求（"*" 为通配符）
+     */
+    public boolean matchesContainerTags(Collection<String> targetTags) {
+        if (targetTags == null || targetTags.isEmpty() || targetTags.contains("*") || this.allowedContainerTags.contains("*")) {
+            return true;
+        }
+        for (String tag : this.allowedContainerTags) {
+            if (targetTags.contains(tag)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断物品在拾荒回廊维度内是否允许放入玩家快捷栏（1~9）：
+     * 仅允许近战武器/工具类，或尺寸严格为 1x1 的非背包/非安全箱物品。
+     */
+    public boolean isAllowedInHotbar(ItemStack stack) {
+        if (this.equipmentGrid.isPresent() || this.category == ScavengerCategory.BACKPACK || this.category == ScavengerCategory.SAFEBOX) {
+            return false;
+        }
+        if (this.category == ScavengerCategory.TOOL || isWeaponOrToolStack(stack)) {
+            return true;
+        }
+        return this.gridSize.width() == 1 && this.gridSize.height() == 1;
+    }
+
+    public record GridSize(int width, int height) {
+        public static final Codec<GridSize> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ExtraCodecs.intRange(1, 9).fieldOf("width").forGetter(GridSize::width),
+                ExtraCodecs.intRange(1, 9).fieldOf("height").forGetter(GridSize::height)
+        ).apply(instance, GridSize::new));
+
+        public static final StreamCodec<ByteBuf, GridSize> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT,
+                GridSize::width,
+                ByteBufCodecs.VAR_INT,
+                GridSize::height,
+                GridSize::new
+        );
+
+        public GridSize {
+            width = Mth.clamp(width, 1, 9);
+            height = Mth.clamp(height, 1, 9);
+        }
     }
 }

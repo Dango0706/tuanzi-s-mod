@@ -9,7 +9,9 @@
   "weight_kg": 0.20,
   "base_value": 800,
   "base_search_seconds": 1.2,
-  "allowed_container_tags": ["*"],
+  "allowed_container_tags": [
+    "*"
+  ],
   "sound_profile": "FABRIC_RUSTLE",
   "lore_translation_key": "item.tuanzis_mod.scavenger_bandage_roll.lore"
 }

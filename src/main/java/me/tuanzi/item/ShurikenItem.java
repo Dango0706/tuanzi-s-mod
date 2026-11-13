@@ -6,10 +6,10 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 
 public class ShurikenItem extends Item {
@@ -20,10 +20,10 @@ public class ShurikenItem extends Item {
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        
+
         boolean isSneaking = player.isShiftKeyDown();
         int required = isSneaking ? 3 : 1;
-        
+
         boolean hasEnough = player.getAbilities().instabuild || countShurikens(player) >= required;
         if (!hasEnough) {
             return InteractionResult.FAIL;
@@ -35,29 +35,29 @@ public class ShurikenItem extends Item {
             }
 
             float speed = 4.5f; // 1.5倍箭速
-            
+
             if (isSneaking) {
                 // 潜行+右键：扇形三连发
                 throwShuriken(level, player, 0.0f, speed);
                 throwShuriken(level, player, -15.0f, speed);
                 throwShuriken(level, player, 15.0f, speed);
 
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), 
-                    SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.6F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-                
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.6F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+
                 // 12 ticks (0.6 秒) 冷却
                 player.getCooldowns().addCooldown(itemStack, 12);
             } else {
                 // 普通单发
                 throwShuriken(level, player, 0.0f, speed);
 
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), 
-                    SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
-                
+                level.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.SNOWBALL_THROW, SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+
                 // 4 ticks (0.2 秒) 冷却
                 player.getCooldowns().addCooldown(itemStack, 4);
             }
-            
+
             player.awardStat(Stats.ITEM_USED.get(this));
         }
 
@@ -87,7 +87,7 @@ public class ShurikenItem extends Item {
 
     private void consumeShurikens(Player player, int amount) {
         int remaining = amount;
-        
+
         // 优先从副手扣除
         ItemStack offhandStack = player.getOffhandItem();
         if (offhandStack.is(this)) {
@@ -96,7 +96,7 @@ public class ShurikenItem extends Item {
             remaining -= take;
             if (remaining <= 0) return;
         }
-        
+
         // 再从主手及背包扣除
         for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
             if (stack.is(this)) {

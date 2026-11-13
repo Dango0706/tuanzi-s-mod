@@ -20,96 +20,96 @@ import java.util.Set;
 
 public class ModLootTableModifiers {
     private static final Set<ResourceKey<LootTable>> TARGET_CHESTS = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_fortress")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/desert_pyramid"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_fortress")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/desert_pyramid"))
     );
 
     private static final Set<ResourceKey<LootTable>> DUMMY_CHESTS = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_weaponsmith"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_weaponsmith"))
     );
 
     private static final Set<ResourceKey<LootTable>> SATIATION_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/desert_pyramid")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/jungle_temple")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/buried_treasure")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("gameplay/fishing/treasure"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/desert_pyramid")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/jungle_temple")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/buried_treasure")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("gameplay/fishing/treasure"))
     );
 
     private static final Set<ResourceKey<LootTable>> SHIPWRECK_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/shipwreck_treasure")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/shipwreck_supply"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/shipwreck_treasure")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/shipwreck_supply"))
     );
 
     private static final Set<ResourceKey<LootTable>> IGLOO_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/igloo_chest"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/igloo_chest"))
     );
 
     private static final Set<ResourceKey<LootTable>> END_CITY_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/end_city_treasure"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/end_city_treasure"))
     );
 
     private static final Set<ResourceKey<LootTable>> VILLAGE_OUTPOST_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_plains_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_desert_house"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_plains_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_desert_house"))
     );
 
     // 新增附魔专属战利品箱表
     private static final Set<ResourceKey<LootTable>> ECHOLOCATION_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library"))
     );
 
     private static final Set<ResourceKey<LootTable>> VILLAGE_CHEST_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_plains_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_desert_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_savanna_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_snowy_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_taiga_house")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_weaponsmith")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_toolsmith")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_fletcher"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_plains_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_desert_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_savanna_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_snowy_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_taiga_house")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_weaponsmith")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_toolsmith")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/village/village_fletcher"))
     );
 
     private static final Set<ResourceKey<LootTable>> MOON_EMBRACE_LOOT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/igloo_chest")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/buried_treasure"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/igloo_chest")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/buried_treasure"))
     );
 
     private static final Set<ResourceKey<LootTable>> UNDERWATER_RUIN_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/underwater_ruin_big")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/underwater_ruin_small"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/underwater_ruin_big")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/underwater_ruin_small"))
     );
 
     private static final Set<ResourceKey<LootTable>> PILLAGER_OUTPOST_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/pillager_outpost"))
     );
 
     private static final Set<ResourceKey<LootTable>> MINESHAFT_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/abandoned_mineshaft"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/abandoned_mineshaft"))
     );
 
     private static final Set<ResourceKey<LootTable>> DORMANT_REPAIR_CHEST_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_corridor")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_crossing")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/simple_dungeon")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_bridge")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_fortress"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_corridor")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_crossing")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/simple_dungeon")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_bridge")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/nether_fortress"))
     );
 
     private static final Set<ResourceKey<LootTable>> DORMANT_REPAIR_FISHING_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("gameplay/fishing/treasure"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("gameplay/fishing/treasure"))
     );
 
     private static final Set<ResourceKey<LootTable>> METABOLISM_CHEST_TABLES = Set.of(
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_corridor")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_crossing")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library")),
-        ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/simple_dungeon"))
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/ancient_city")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_corridor")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_crossing")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/stronghold_library")),
+            ResourceKey.create(Registries.LOOT_TABLE, Identifier.withDefaultNamespace("chests/simple_dungeon"))
     );
 
     public static void initialize() {
@@ -123,8 +123,8 @@ public class ModLootTableModifiers {
 
             if (DUMMY_CHESTS.contains(key)) {
                 LootPool.Builder poolBuilder = LootPool.lootPool()
-                    .setRolls(ContextIntProviders.binomial(1, 0.20f))
-                    .add(LootItem.lootTableItem(me.tuanzi.init.ModItems.TRIAL_DUMMY));
+                        .setRolls(ContextIntProviders.binomial(1, 0.20f))
+                        .add(LootItem.lootTableItem(me.tuanzi.init.ModItems.TRIAL_DUMMY));
                 tableBuilder.pool(poolBuilder.build());
             }
 
@@ -215,21 +215,21 @@ public class ModLootTableModifiers {
     }
 
     private static void addEnchantedBookPool(
-        LootTable.Builder tableBuilder,
-        Holder<Enchantment> enchantmentHolder,
-        float dropChance,
-        int maxLevel
+            LootTable.Builder tableBuilder,
+            Holder<Enchantment> enchantmentHolder,
+            float dropChance,
+            int maxLevel
     ) {
         LootPool.Builder poolBuilder = LootPool.lootPool()
-            .setRolls(ContextIntProviders.binomial(1, dropChance));
+                .setRolls(ContextIntProviders.binomial(1, dropChance));
 
         for (int lvl = 1; lvl <= maxLevel; lvl++) {
             ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
             mutable.set(enchantmentHolder, lvl);
             int weight = maxLevel - lvl + 1; // 1级权重最高，3级稀有
             poolBuilder.add(LootItem.lootTableItem(Items.ENCHANTED_BOOK)
-                .setWeight(weight)
-                .apply(SetComponentsFunction.setComponent(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable())));
+                    .setWeight(weight)
+                    .apply(SetComponentsFunction.setComponent(DataComponents.STORED_ENCHANTMENTS, mutable.toImmutable())));
         }
 
         tableBuilder.pool(poolBuilder.build());

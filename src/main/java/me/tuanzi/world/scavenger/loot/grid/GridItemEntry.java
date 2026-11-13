@@ -65,6 +65,22 @@ public record GridItemEntry(
         solidifiedSearchTicks = Math.max(1, solidifiedSearchTicks);
     }
 
+    public static Optional<GridItemEntry> fromTag(HolderLookup.Provider registries, CompoundTag tag) {
+        if (tag == null || tag.isEmpty()) {
+            return Optional.empty();
+        }
+        ItemStack parsedStack = ItemStackNbtHelper.read(registries, tag.getCompoundOrEmpty("stack"));
+        if (parsedStack.isEmpty()) {
+            return Optional.empty();
+        }
+        int id = tag.getIntOr("entry_id", 1);
+        int x = tag.getIntOr("x", 0);
+        int y = tag.getIntOr("y", 0);
+        boolean rot = tag.getBooleanOr("rotated", false);
+        int searchTicks = tag.getIntOr("search_ticks", 20);
+        return Optional.of(new GridItemEntry(id, x, y, rot, parsedStack, searchTicks));
+    }
+
     /**
      * 获取内部物品栈的安全深拷贝（防止调用方意外篡改网格内物品状态或数量）。
      */
@@ -130,21 +146,5 @@ public record GridItemEntry(
         tag.putInt("search_ticks", this.solidifiedSearchTicks);
         tag.put("stack", ItemStackNbtHelper.write(registries, this.stack));
         return tag;
-    }
-
-    public static Optional<GridItemEntry> fromTag(HolderLookup.Provider registries, CompoundTag tag) {
-        if (tag == null || tag.isEmpty()) {
-            return Optional.empty();
-        }
-        ItemStack parsedStack = ItemStackNbtHelper.read(registries, tag.getCompoundOrEmpty("stack"));
-        if (parsedStack.isEmpty()) {
-            return Optional.empty();
-        }
-        int id = tag.getIntOr("entry_id", 1);
-        int x = tag.getIntOr("x", 0);
-        int y = tag.getIntOr("y", 0);
-        boolean rot = tag.getBooleanOr("rotated", false);
-        int searchTicks = tag.getIntOr("search_ticks", 20);
-        return Optional.of(new GridItemEntry(id, x, y, rot, parsedStack, searchTicks));
     }
 }

@@ -24,7 +24,7 @@ public abstract class FlightEffectMixin {
         if (entity instanceof Player player && !player.getAbilities().instabuild) {
             MobEffectInstance effect = player.getEffect(ModStatusEffects.FLIGHT);
             boolean hasEffect = effect != null;
-            
+
             if (hasEffect) {
                 int duration = effect.getDuration();
                 // 15秒提醒 (300 tick)
@@ -59,10 +59,10 @@ public abstract class FlightEffectMixin {
     private void tuanzis_mod$sendFlightAlert(Player player, int seconds) {
         // 在 1.21.2+ 中，Actionbar 消息使用 sendOverlayMessage
         player.sendOverlayMessage(Component.translatable("message.tuanzis_mod.flight_expiring", seconds));
-        
+
         // 播放音效
         float pitch = seconds <= 5 ? 1.5f : 1.0f;
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), 
-            SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0f, pitch);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0f, pitch);
     }
 }

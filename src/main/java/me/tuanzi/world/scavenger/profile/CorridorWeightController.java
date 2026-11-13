@@ -35,7 +35,9 @@ public final class CorridorWeightController {
     public static final Identifier SPEED_PENALTY_MODIFIER_ID =
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "corridor_weight_penalty");
 
-    /** 零数值标记修饰器：通过原版属性包自动向客户端同步“超负荷禁止疾跑”状态，实现双端零抖动禁跑 */
+    /**
+     * 零数值标记修饰器：通过原版属性包自动向客户端同步“超负荷禁止疾跑”状态，实现双端零抖动禁跑
+     */
     public static final Identifier OVERLOAD_NO_SPRINT_MODIFIER_ID =
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "corridor_overload_no_sprint");
 
@@ -52,22 +54,6 @@ public final class CorridorWeightController {
             EquipmentSlot.FEET,
             EquipmentSlot.OFFHAND
     };
-
-    public enum WeightState {
-        NORMAL,
-        OVERWEIGHT,
-        OVERLOADED
-    }
-
-    public record WeightEvaluation(
-            float totalWeightKg,
-            float overweightThresholdKg,
-            float overloadedThresholdKg,
-            float speedMultiplier,
-            boolean sprintAllowed,
-            WeightState state
-    ) {
-    }
 
     private CorridorWeightController() {
     }
@@ -272,5 +258,21 @@ public final class CorridorWeightController {
         }
         AttributeInstance speedAttr = player.getAttribute(Attributes.MOVEMENT_SPEED);
         return speedAttr != null && speedAttr.hasModifier(OVERLOAD_NO_SPRINT_MODIFIER_ID);
+    }
+
+    public enum WeightState {
+        NORMAL,
+        OVERWEIGHT,
+        OVERLOADED
+    }
+
+    public record WeightEvaluation(
+            float totalWeightKg,
+            float overweightThresholdKg,
+            float overloadedThresholdKg,
+            float speedMultiplier,
+            boolean sprintAllowed,
+            WeightState state
+    ) {
     }
 }

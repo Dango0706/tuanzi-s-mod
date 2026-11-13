@@ -1,7 +1,6 @@
 package me.tuanzi.client.renderer;
 
 import com.geckolib.renderer.GeoEntityRenderer;
-import com.geckolib.renderer.layer.builtin.AutoGlowingGeoLayer;
 import me.tuanzi.client.renderer.model.CinderMeteorModel;
 import me.tuanzi.client.renderer.state.CinderMeteorRenderState;
 import me.tuanzi.entity.CinderMeteorEntity;

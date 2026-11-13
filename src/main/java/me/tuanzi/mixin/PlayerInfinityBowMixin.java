@@ -19,16 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Player.class)
 public abstract class PlayerInfinityBowMixin {
 
-    @Inject(method = "getProjectile", at = @At("RETURN"), cancellable = true)
-    private void tuanzis_mod$provideVirtualArrowForInfinity(ItemStack heldWeapon, CallbackInfoReturnable<ItemStack> cir) {
-        if (cir.getReturnValue().isEmpty() && !heldWeapon.isEmpty() && heldWeapon.getItem() instanceof BowItem) {
-            if (tuanzis_mod$hasInfinity(heldWeapon)) {
-                ModLog.debug("PlayerInfinityBow", "getProjectile", "检测到玩家手持具有无限附魔的弓且背包无箭，提供虚拟箭矢支持射击。");
-                cir.setReturnValue(new ItemStack(Items.ARROW));
-            }
-        }
-    }
-
     @Unique
     private static boolean tuanzis_mod$hasInfinity(ItemStack stack) {
         ItemEnchantments enchantments = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
@@ -38,5 +28,15 @@ public abstract class PlayerInfinityBowMixin {
             }
         }
         return false;
+    }
+
+    @Inject(method = "getProjectile", at = @At("RETURN"), cancellable = true)
+    private void tuanzis_mod$provideVirtualArrowForInfinity(ItemStack heldWeapon, CallbackInfoReturnable<ItemStack> cir) {
+        if (cir.getReturnValue().isEmpty() && !heldWeapon.isEmpty() && heldWeapon.getItem() instanceof BowItem) {
+            if (tuanzis_mod$hasInfinity(heldWeapon)) {
+                ModLog.debug("PlayerInfinityBow", "getProjectile", "检测到玩家手持具有无限附魔的弓且背包无箭，提供虚拟箭矢支持射击。");
+                cir.setReturnValue(new ItemStack(Items.ARROW));
+            }
+        }
     }
 }
