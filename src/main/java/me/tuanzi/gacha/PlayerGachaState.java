@@ -40,14 +40,22 @@ public class PlayerGachaState {
     }
 
     public void setFateAnchor(String poolId, String rarity, String targetItemId) {
+        setFateAnchor(poolId, rarity, targetItemId, false);
+    }
+
+    public void setFateAnchor(String poolId, String rarity, String targetItemId, boolean alwaysTrack) {
         java.util.Map<String, FateAnchor> anchors = getFateAnchors();
         String key = getFateKey(poolId, rarity);
         if (targetItemId == null) {
             anchors.remove(key);
+            me.tuanzi.util.ModLog.debug("清除定轨目标: player=" + uuid + ", key=" + key);
         } else {
+            boolean effectiveAlwaysTrack = alwaysTrack && GachaLogic.supportsAlwaysTrack(rarity);
             FateAnchor anchor = anchors.computeIfAbsent(key, k -> new FateAnchor());
             anchor.setTargetItemId(targetItemId);
             anchor.setFateValue(0);
+            anchor.setAlwaysTrack(effectiveAlwaysTrack);
+            me.tuanzi.util.ModLog.debug("设置定轨目标: player=" + uuid + ", key=" + key + ", target=" + targetItemId + ", alwaysTrack=" + effectiveAlwaysTrack);
         }
         this.isDirty = true;
         PlayerGachaManager.saveStateSafe(this);
@@ -113,6 +121,7 @@ public class PlayerGachaState {
     public static class FateAnchor {
         private String targetItemId;
         private int fateValue = 0;
+        private boolean alwaysTrack = false;
 
         public FateAnchor() {
         }
@@ -131,6 +140,14 @@ public class PlayerGachaState {
 
         public void setFateValue(int fateValue) {
             this.fateValue = fateValue;
+        }
+
+        public boolean isAlwaysTrack() {
+            return alwaysTrack;
+        }
+
+        public void setAlwaysTrack(boolean alwaysTrack) {
+            this.alwaysTrack = alwaysTrack;
         }
     }
 }

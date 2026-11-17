@@ -116,6 +116,11 @@ public class GachaPreviewMenu extends ChestMenu {
                 if (anchor != null && poolItem.getId().equals(anchor.getTargetItemId())) {
                     displayLore.add(Component.literal("§7--------------------"));
                     displayLore.add(Component.literal("§d§l★ 当前定轨目标 ★"));
+                    if (GachaLogic.supportsAlwaysTrack(currentRarity) && anchor.isAlwaysTrack()) {
+                        displayLore.add(Component.literal("§7定轨模式: §d一直定轨 §8(抽出后不重置)"));
+                    } else {
+                        displayLore.add(Component.literal("§7定轨模式: §e单次定轨 §8(抽出后重置)"));
+                    }
                     displayLore.add(Component.literal("§7命定值: §c" + anchor.getFateValue() + " / " + GachaLogic.getFateLimit(pool.getPoolId(), currentRarity)));
                     displayLore.add(Component.literal("§c[左键点击取消定轨]"));
                 } else {
@@ -256,7 +261,8 @@ public class GachaPreviewMenu extends ChestMenu {
                 GachaPoolItem targetItem = pool.getItemById(anchor.getTargetItemId());
                 String targetName = targetItem != null ? targetItem.getItem().getHoverName().getString() : anchor.getTargetItemId();
                 int limit = GachaLogic.getFateLimit(pool.getPoolId(), rty);
-                lore.add("§7▶ " + getRarityName(rty) + "§7: §6" + targetName + " §c(" + anchor.getFateValue() + "/" + limit + ")");
+                String modeTag = (GachaLogic.supportsAlwaysTrack(rty) && anchor.isAlwaysTrack()) ? " §d[一直定轨]" : "";
+                lore.add("§7▶ " + getRarityName(rty) + "§7: §6" + targetName + modeTag + " §c(" + anchor.getFateValue() + "/" + limit + ")");
             }
         }
         if (!hasAnyFate) {

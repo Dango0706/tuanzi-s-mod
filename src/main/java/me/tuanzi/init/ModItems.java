@@ -246,6 +246,41 @@ public class ModItems {
             .component(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.EMPTY)
     ));
 
+    // 装饰性钱币系列（按面额升序）
+    public static final Item COIN_1_FEN = register("coin_1_fen", Item::new);
+    public static final Item COIN_1_JIAO = register("coin_1_jiao", Item::new);
+    public static final Item COIN_1_YUAN = register("coin_1_yuan", Item::new);
+    public static final Item COIN_5_YUAN = register("coin_5_yuan", Item::new);
+    public static final Item COIN_10_YUAN = register("coin_10_yuan", Item::new);
+    public static final Item COIN_20_YUAN = register("coin_20_yuan", Item::new);
+    public static final Item COIN_50_YUAN = register("coin_50_yuan", Item::new);
+    public static final Item COIN_100_YUAN = register("coin_100_yuan", Item::new);
+    public static final Item COIN_200_YUAN = register("coin_200_yuan", Item::new);
+    public static final Item COIN_500_YUAN = register("coin_500_yuan", Item::new);
+    public static final Item COIN_1000_YUAN = register("coin_1000_yuan", Item::new);
+    public static final Item COIN_5000_YUAN = register("coin_5000_yuan", Item::new);
+    public static final Item COIN_10000_YUAN = register("coin_10000_yuan", Item::new);
+    public static final Item COIN_50000_YUAN = register("coin_50000_yuan", Item::new);
+    public static final Item COIN_100000_YUAN = register("coin_100000_yuan", Item::new);
+
+    public static final java.util.List<Item> COINS = java.util.List.of(
+            COIN_1_FEN,
+            COIN_1_JIAO,
+            COIN_1_YUAN,
+            COIN_5_YUAN,
+            COIN_10_YUAN,
+            COIN_20_YUAN,
+            COIN_50_YUAN,
+            COIN_100_YUAN,
+            COIN_200_YUAN,
+            COIN_500_YUAN,
+            COIN_1000_YUAN,
+            COIN_5000_YUAN,
+            COIN_10000_YUAN,
+            COIN_50000_YUAN,
+            COIN_100000_YUAN
+    );
+
 
     private static Item register(String path, Function<Item.Properties, Item> itemFactory) {
         ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));

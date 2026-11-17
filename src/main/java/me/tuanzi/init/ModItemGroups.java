@@ -160,6 +160,11 @@ public class ModItemGroups {
                         entries.accept(ModItems.GOLDEN_POCKET);
                         entries.accept(ModItems.CINDER_SOVEREIGN_SPAWN_EGG);
 
+                        // 加入装饰性钱币系列
+                        ModItems.COINS.forEach(entries::accept);
+                        // 加入装饰性筹码系列
+                        ModBlocks.CHIPS.forEach(entries::accept);
+
                         // 加入抽卡道具
                         entries.accept(ModItems.STAR_TRAVEL_CARD_PACK);
                         entries.accept(ModItems.STAR_TRAVEL_CARD_CHEST);

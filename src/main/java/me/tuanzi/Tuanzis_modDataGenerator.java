@@ -36,6 +36,41 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
         registryBuilder.add(Registries.LEVEL_STEM, me.tuanzi.init.ModDimensions::bootstrapLevelStem);
     }
 
+    private record CoinLangEntry(net.minecraft.world.item.Item item, String idPath, String zhName, String zhDenom, String enName, String enDenom) {
+    }
+
+    private static final java.util.List<CoinLangEntry> COIN_LANG_ENTRIES = java.util.List.of(
+            new CoinLangEntry(ModItems.COIN_1_FEN, "coin_1_fen", "1分钱币", "1分", "1 Fen Coin", "1 Fen"),
+            new CoinLangEntry(ModItems.COIN_1_JIAO, "coin_1_jiao", "1毛钱币", "1毛", "1 Jiao Coin", "1 Jiao"),
+            new CoinLangEntry(ModItems.COIN_1_YUAN, "coin_1_yuan", "1块钱币", "1块", "1 Yuan Coin", "1 Yuan"),
+            new CoinLangEntry(ModItems.COIN_5_YUAN, "coin_5_yuan", "5块钱币", "5块", "5 Yuan Coin", "5 Yuan"),
+            new CoinLangEntry(ModItems.COIN_10_YUAN, "coin_10_yuan", "10块钱币", "10块", "10 Yuan Coin", "10 Yuan"),
+            new CoinLangEntry(ModItems.COIN_20_YUAN, "coin_20_yuan", "20块钱币", "20块", "20 Yuan Coin", "20 Yuan"),
+            new CoinLangEntry(ModItems.COIN_50_YUAN, "coin_50_yuan", "50块钱币", "50块", "50 Yuan Coin", "50 Yuan"),
+            new CoinLangEntry(ModItems.COIN_100_YUAN, "coin_100_yuan", "100块钱币", "100块", "100 Yuan Coin", "100 Yuan"),
+            new CoinLangEntry(ModItems.COIN_200_YUAN, "coin_200_yuan", "200块钱币", "200块", "200 Yuan Coin", "200 Yuan"),
+            new CoinLangEntry(ModItems.COIN_500_YUAN, "coin_500_yuan", "500块钱币", "500块", "500 Yuan Coin", "500 Yuan"),
+            new CoinLangEntry(ModItems.COIN_1000_YUAN, "coin_1000_yuan", "1000块钱币", "1000块", "1000 Yuan Coin", "1000 Yuan"),
+            new CoinLangEntry(ModItems.COIN_5000_YUAN, "coin_5000_yuan", "5000块钱币", "5000块", "5000 Yuan Coin", "5000 Yuan"),
+            new CoinLangEntry(ModItems.COIN_10000_YUAN, "coin_10000_yuan", "10000块钱币", "10000块", "10000 Yuan Coin", "10000 Yuan"),
+            new CoinLangEntry(ModItems.COIN_50000_YUAN, "coin_50000_yuan", "50000块钱币", "50000块", "50000 Yuan Coin", "50000 Yuan"),
+            new CoinLangEntry(ModItems.COIN_100000_YUAN, "coin_100000_yuan", "100000块钱币", "100000块", "100000 Yuan Coin", "100000 Yuan")
+    );
+
+    private record ChipLangEntry(net.minecraft.world.level.block.Block block, String idPath, String zhName, String zhDenom, String enName, String enDenom) {
+    }
+
+    private static final java.util.List<ChipLangEntry> CHIP_LANG_ENTRIES = java.util.List.of(
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_50, "chip_50", "50块筹码", "50块", "50 Yuan Chip", "50 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_100, "chip_100", "100块筹码", "100块", "100 Yuan Chip", "100 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_500, "chip_500", "500块筹码", "500块", "500 Yuan Chip", "500 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_1000, "chip_1000", "1000块筹码", "1000块", "1000 Yuan Chip", "1000 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_5000, "chip_5000", "5000块筹码", "5000块", "5000 Yuan Chip", "5000 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_10000, "chip_10000", "10000块筹码", "10000块", "10000 Yuan Chip", "10000 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_50000, "chip_50000", "50000块筹码", "50000块", "50000 Yuan Chip", "50000 Yuan"),
+            new ChipLangEntry(me.tuanzi.init.ModBlocks.CHIP_100000, "chip_100000", "100000块筹码", "100000块", "100000 Yuan Chip", "100000 Yuan")
+    );
+
     private static class TuanziChineseLanguageProvider extends FabricLanguageProvider {
         protected TuanziChineseLanguageProvider(net.fabricmc.fabric.api.datagen.v1.FabricPackOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
             super(dataOutput, "zh_cn", registryLookup);
@@ -1796,6 +1831,21 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.witherkills.set.success", "§a已将玩家 §b%s§a 的凋灵击杀数设置为：§e%s§a 只。");
             translationBuilder.add("commands.tuanzis_mod.witherkills.reset.success", "§a已重置玩家 §b%s§a 的凋灵击杀数为 0。");
             translationBuilder.add("jei.tuanzis_mod.soulbound.description", "【灵魂绑定】附魔书\n\n§e功能机制：\n死亡时附有此附魔的物品直接保留在背包中，不会掉落。\n无法通过普通附魔台获得。\n\n§b获取途径：\n1. §e监守者击杀掉落：单人对监守者造成超过 50% 伤害击杀时有 10%（每级抢夺 +2.5%）概率掉落。\n2. §e凋灵击杀累计奖励：玩家群体对凋灵造成的总伤害占比 ≥ 90% 且最后一击由玩家杀死凋灵时，为该击杀者累计有效击杀数。累计达到 1000 次（及后续每满 1000 次）时，将在击杀者身旁直接掉落 1 本《灵魂绑定》附魔书！\n- 可使用指令 §b/witherkills§e 查看个人当前击杀进度。");
+
+            // 装饰性钱币系列
+            for (CoinLangEntry entry : COIN_LANG_ENTRIES) {
+                translationBuilder.add(entry.item(), entry.zhName());
+                translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
+                        "【" + entry.zhName() + "】\n装饰性纸币钱币物品，面额为 " + entry.zhDenom() + "。\n\n§e特性说明：\n1. §b纯装饰收集：最大堆叠 64，可用于建筑展示、服务器交易代币或趣味收藏。\n2. §b统一纸币风格：全套共 15 种面额（1分至 100000块），采用统一像素纸币样式并以不同配色区分面额。");
+            }
+
+            // 装饰性筹码系列
+            for (ChipLangEntry entry : CHIP_LANG_ENTRIES) {
+                translationBuilder.add(entry.block(), entry.zhName());
+                translationBuilder.add(entry.block().asItem(), entry.zhName());
+                translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
+                        "【" + entry.zhName() + "】\n可摆放在地面上作为装饰的筹码道具，面额为 " + entry.zhDenom() + "。\n\n§e特性说明：\n1. §b立体堆叠摆放：右键放置在稳固表面后，继续使用同款筹码右键即可在同格内逐步叠放，最多堆叠 8 枚（1~4 枚呈单摞，5~8 枚呈双摞错落摆放）；破坏时精确掉落已堆叠的全部筹码。\n2. §b统一配色与互换：全套共 8 种面额（50块至 100000块），采用统一像素筹码样式并以专属配色区分；可在合成格中与对应面额钱币 1:1 自由互换。");
+            }
         }
     }
 
@@ -3561,6 +3611,21 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.witherkills.set.success", "§aSet Wither kills of player §b%s§a to: §e%s§a.");
             translationBuilder.add("commands.tuanzis_mod.witherkills.reset.success", "§aReset Wither kills of player §b%s§a to 0.");
             translationBuilder.add("jei.tuanzis_mod.soulbound.description", "【Soulbound】Enchanted Book\n\n§eMechanics:\nItems with this enchantment remain in your inventory upon death and are not dropped.\nCannot be obtained through normal Enchanting Tables.\n\n§bAcquisition Methods:\n1. §eWarden Drop: 10% base chance (+2.5% per Looting level) when dealing >50% damage to a Warden and slaying it.\n2. §eWither Slaying Milestone: When total player damage accounts for >=90% of a Wither's total damage taken and a player lands the final blow, kill progress increments for that killer. Reaching 1,000 kills (and every 1,000 kills thereafter) drops 1 Soulbound enchanted book beside the killer!\n- Use command §b/witherkills§e to view your current progress.");
+
+            // Decorative Coins Series
+            for (CoinLangEntry entry : COIN_LANG_ENTRIES) {
+                translationBuilder.add(entry.item(), entry.enName());
+                translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
+                        "[" + entry.enName() + "]\nA decorative banknote currency item with a face value of " + entry.enDenom() + ".\n\n§eDetails:\n1. §bDecorative Collectible: Stacks up to 64; ideal for display, server economy tokens, or collection.\n2. §bUnified Banknote Style: Part of a 15-denomination series (1 Fen to 100000 Yuan) sharing a consistent pixel-art banknote design with distinct color themes.");
+            }
+
+            // Decorative Chips Series
+            for (ChipLangEntry entry : CHIP_LANG_ENTRIES) {
+                translationBuilder.add(entry.block(), entry.enName());
+                translationBuilder.add(entry.block().asItem(), entry.enName());
+                translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
+                        "[" + entry.enName() + "]\nA placeable decorative casino chip with a face value of " + entry.enDenom() + ".\n\n§eDetails:\n1. §bStackable Display: Right-click on a solid surface to place, and right-click again with the same chip to stack up to 8 chips in one block (single stack for 1-4, dual stacks for 5-8). Breaking drops the exact stacked count.\n2. §bUnified Style & Exchange: Part of an 8-denomination series (50 to 100000 Yuan) with consistent pixel-art styling and distinct color themes; freely 1:1 craft-exchangeable with the matching denomination banknote.");
+            }
         }
     }
 }

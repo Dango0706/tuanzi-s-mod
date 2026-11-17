@@ -1,6 +1,7 @@
 package me.tuanzi.gacha;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.tuanzi.gacha.gui.GachaHistoryMenu;
@@ -167,40 +168,22 @@ public class GachaCommands {
                                                                     }
                                                                     return net.minecraft.commands.SharedSuggestionProvider.suggest(new String[]{}, builder);
                                                                 })
-                                                                .executes(context -> {
-                                                                    ServerPlayer player = context.getSource().getPlayerOrException();
-                                                                    String poolId = StringArgumentType.getString(context, "pool");
-                                                                    String rarity = StringArgumentType.getString(context, "rarity");
-                                                                    String itemId = StringArgumentType.getString(context, "item");
-
-                                                                    GachaPool pool = PoolManager.getPool(poolId);
-                                                                    if (pool == null) {
-                                                                        player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
-                                                                        return 0;
-                                                                    }
-
-                                                                    String rarityLower = rarity.toLowerCase();
-                                                                    if (!rarityLower.equals("legendary") && !rarityLower.equals("epic") && !rarityLower.equals("rare") && !rarityLower.equals("uncommon") && !rarityLower.equals("common")) {
-                                                                        player.sendSystemMessage(Component.literal("§c非法的品质等级: " + rarity));
-                                                                        return 0;
-                                                                    }
-
-                                                                    GachaPoolItem targetItem = pool.getListByRarity(rarityLower).stream()
-                                                                            .filter(item -> item.getId().equals(itemId))
-                                                                            .findFirst().orElse(null);
-                                                                    if (targetItem == null) {
-                                                                        player.sendSystemMessage(Component.literal("§c该物品未在卡池【" + pool.getPoolName() + "】的品质【" + rarity + "】中找到！"));
-                                                                        return 0;
-                                                                    }
-
-                                                                    PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
-                                                                    state.setFateAnchor(poolId, rarityLower, itemId);
-                                                                    player.sendSystemMessage(Component.literal("§a定轨目标已成功设为【" + targetItem.getItem().getHoverName().getString() + "】，当前命定值已清零。"));
-
-                                                                    me.tuanzi.util.ModLog.debug(player, null, "通过指令设定轨目标: 卡池ID=" + poolId + ", 稀有度=" + rarityLower + ", 物品ID=" + itemId);
-
-                                                                    return 1;
-                                                                })
+                                                                .executes(context -> executeSetFate(
+                                                                        context.getSource().getPlayerOrException(),
+                                                                        StringArgumentType.getString(context, "pool"),
+                                                                        StringArgumentType.getString(context, "rarity"),
+                                                                        StringArgumentType.getString(context, "item"),
+                                                                        false
+                                                                ))
+                                                                .then(Commands.argument("alwaysTrack", BoolArgumentType.bool())
+                                                                        .executes(context -> executeSetFate(
+                                                                                context.getSource().getPlayerOrException(),
+                                                                                StringArgumentType.getString(context, "pool"),
+                                                                                StringArgumentType.getString(context, "rarity"),
+                                                                                StringArgumentType.getString(context, "item"),
+                                                                                BoolArgumentType.getBool(context, "alwaysTrack")
+                                                                        ))
+                                                                )
                                                         )
                                                 )
                                         )
@@ -321,6 +304,41 @@ public class GachaCommands {
                                 )
                         )
         );
+    }
+
+    private static int executeSetFate(ServerPlayer player, String poolId, String rarity, String itemId, boolean alwaysTrack) {
+        GachaPool pool = PoolManager.getPool(poolId);
+        if (pool == null) {
+            player.sendSystemMessage(Component.literal("§c未找到指定的卡池: " + poolId));
+            return 0;
+        }
+
+        String rarityLower = rarity.toLowerCase();
+        if (!rarityLower.equals("legendary") && !rarityLower.equals("epic") && !rarityLower.equals("rare") && !rarityLower.equals("uncommon") && !rarityLower.equals("common")) {
+            player.sendSystemMessage(Component.literal("§c非法的品质等级: " + rarity));
+            return 0;
+        }
+
+        if (alwaysTrack && !GachaLogic.supportsAlwaysTrack(rarityLower)) {
+            player.sendSystemMessage(Component.literal("§c传说(legendary)品质不支持「一直定轨」，仅紫色(epic)及以下品质支持！"));
+            return 0;
+        }
+
+        GachaPoolItem targetItem = pool.getListByRarity(rarityLower).stream()
+                .filter(item -> item.getId().equals(itemId))
+                .findFirst().orElse(null);
+        if (targetItem == null) {
+            player.sendSystemMessage(Component.literal("§c该物品未在卡池【" + pool.getPoolName() + "】的品质【" + rarity + "】中找到！"));
+            return 0;
+        }
+
+        PlayerGachaState state = PlayerGachaManager.getOrCreatePlayerState(player.getUUID());
+        state.setFateAnchor(poolId, rarityLower, itemId, alwaysTrack);
+        String suffix = alwaysTrack ? "（一直定轨）" : "";
+        player.sendSystemMessage(Component.literal("§a定轨目标已成功设为【" + targetItem.getItem().getHoverName().getString() + "】" + suffix + "，当前命定值已清零。"));
+
+        me.tuanzi.util.ModLog.debug(player, null, "通过指令设定轨目标: 卡池ID=" + poolId + ", 稀有度=" + rarityLower + ", 物品ID=" + itemId + ", alwaysTrack=" + alwaysTrack);
+        return 1;
     }
 
     private static void showStats(ServerPlayer player, ServerPlayer target) {

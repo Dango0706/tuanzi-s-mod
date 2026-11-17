@@ -515,6 +515,39 @@ public class ModModelProvider extends FabricModelProvider {
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/paint_bucket"),
                 () -> new com.google.gson.JsonObject()
         );
+
+        // 自动生成装饰性筹码系列（1~8 枚堆叠 x 4 朝向）方块模型、BlockState 与扁平物品模型
+        net.minecraft.client.data.models.model.ModelTemplate[] chipTemplates = new net.minecraft.client.data.models.model.ModelTemplate[me.tuanzi.block.ChipBlock.MAX_CHIPS];
+        for (int i = 0; i < me.tuanzi.block.ChipBlock.MAX_CHIPS; i++) {
+            int count = i + 1;
+            chipTemplates[i] = new net.minecraft.client.data.models.model.ModelTemplate(
+                    java.util.Optional.of(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/chip_stack_" + count)),
+                    java.util.Optional.of("_" + count),
+                    TextureSlot.TOP, TextureSlot.SIDE
+            );
+        }
+        for (net.minecraft.world.level.block.Block chip : me.tuanzi.init.ModBlocks.CHIPS) {
+            net.minecraft.resources.Identifier chipId = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(chip);
+            String chipPath = chipId.getPath();
+            TextureMapping chipTex = new TextureMapping()
+                    .put(TextureSlot.TOP, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/" + chipPath + "_top")))
+                    .put(TextureSlot.SIDE, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/" + chipPath + "_side")));
+
+            var chipDispatch = PropertyDispatch.initial(me.tuanzi.block.ChipBlock.CHIPS, me.tuanzi.block.ChipBlock.FACING);
+            for (int count = 1; count <= me.tuanzi.block.ChipBlock.MAX_CHIPS; count++) {
+                net.minecraft.resources.Identifier variantModelId = chipTemplates[count - 1].create(chip, chipTex, blockStateModelGenerator.modelOutput);
+                MultiVariant variant = BlockModelGenerators.plainVariant(variantModelId);
+                chipDispatch
+                        .select(count, Direction.NORTH, variant)
+                        .select(count, Direction.EAST, variant.with(BlockModelGenerators.Y_ROT_90))
+                        .select(count, Direction.SOUTH, variant.with(BlockModelGenerators.Y_ROT_180))
+                        .select(count, Direction.WEST, variant.with(BlockModelGenerators.Y_ROT_270));
+            }
+            blockStateModelGenerator.blockStateOutput.accept(
+                    MultiVariantGenerator.dispatch(chip).with(chipDispatch)
+            );
+            blockStateModelGenerator.registerSimpleFlatItemModel(chip.asItem());
+        }
     }
 
     @Override
@@ -559,6 +592,11 @@ public class ModModelProvider extends FabricModelProvider {
         // 虚空墨锭物品模型生成
         itemModelGenerator.generateFlatItem(ModItems.VOID_INK_INGOT, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.GOLDEN_POCKET, ModelTemplates.FLAT_ITEM);
+
+        // 装饰性钱币系列扁平模型生成
+        for (var coin : ModItems.COINS) {
+            itemModelGenerator.generateFlatItem(coin, ModelTemplates.FLAT_ITEM);
+        }
 
         // 蓝图系统物品扁平模型生成
         itemModelGenerator.generateFlatItem(ModItems.COMPRESSED_BUILD_SLURRY, ModelTemplates.FLAT_ITEM);

@@ -178,69 +178,7 @@ public class GachaLogic {
         }
 
         // 7. 定轨机制处理与物品选择
-        GachaPoolItem selectedItem = null;
-        PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), raritySelected);
-        boolean hasFateTargetAndMatched = false;
-
-        if (anchor != null && anchor.getTargetItemId() != null) {
-            String targetRarity = pool.getItemRarity(anchor.getTargetItemId());
-            if (targetRarity != null && targetRarity.equalsIgnoreCase(raritySelected)) {
-                hasFateTargetAndMatched = true;
-                int limit = getFateLimit(pool.getPoolId(), raritySelected);
-
-                if (anchor.getFateValue() >= limit) {
-                    // 命定值已满，必中目标物品
-                    selectedItem = pool.getItemById(anchor.getTargetItemId());
-                    if (selectedItem != null) {
-                        boolean isEpicOrAbove = raritySelected.equalsIgnoreCase("legendary") || raritySelected.equalsIgnoreCase("epic");
-                        if (isEpicOrAbove) {
-                            state.setFateAnchor(pool.getPoolId(), raritySelected, null);
-                        } else {
-                            anchor.setFateValue(0);
-                            state.setDirty(true);
-                            PlayerGachaManager.saveStateSafe(state);
-                        }
-//                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
-                        ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
-                    }
-                }
-
-                if (selectedItem == null) {
-                    if (isLimited && raritySelected.equals("legendary")) {
-                        selectedItem = list.get(0);
-                    } else {
-                        selectedItem = selectWeightedItem(list);
-                    }
-
-                    if (selectedItem.getId().equals(anchor.getTargetItemId())) {
-                        boolean isEpicOrAbove = raritySelected.equalsIgnoreCase("legendary") || raritySelected.equalsIgnoreCase("epic");
-                        if (isEpicOrAbove) {
-                            state.setFateAnchor(pool.getPoolId(), raritySelected, null);
-                        } else {
-                            anchor.setFateValue(0);
-                            state.setDirty(true);
-                            PlayerGachaManager.saveStateSafe(state);
-                        }
-//                        player.sendSystemMessage(Component.literal("§a恭喜！你获得了定轨目标物品【" + selectedItem.getItem().getHoverName().getString() + "】！"));
-                        ModLog.debug(player, null, "定轨大保底触发！获得定轨目标: " + selectedItem.getId());
-                    } else {
-                        anchor.setFateValue(anchor.getFateValue() + 1);
-                        state.setDirty(true);
-                        PlayerGachaManager.saveStateSafe(state);
-//                        player.sendSystemMessage(Component.literal("§e你获得了其他" + getRarityChineseName(raritySelected) + "品质的物品，命定值 +1（当前 " + anchor.getFateValue() + "/" + limit + "）。"));
-                        ModLog.debug(player, null, "定轨匹配但抽中其他物品，歪了！获得物品: " + selectedItem.getId() + " | 当前命定值: " + anchor.getFateValue() + "/" + limit);
-                    }
-                }
-            }
-        }
-
-        if (!hasFateTargetAndMatched || selectedItem == null) {
-            if (isLimited && raritySelected.equals("legendary")) {
-                selectedItem = list.get(0);
-            } else {
-                selectedItem = selectWeightedItem(list);
-            }
-        }
+        GachaPoolItem selectedItem = resolveItemWithFate(player, state, pool, raritySelected, list, isLimited);
 
         // 8. 调试概率计算日志输出 ( me.tuanzi.util.ModLog.debug )
         ModLog.debug(player, null, String.format(
@@ -276,6 +214,74 @@ public class GachaLogic {
         }
 
         return new RollResult(selectedItem, raritySelected);
+    }
+
+    public static boolean supportsAlwaysTrack(String rarity) {
+        return rarity != null && !"legendary".equalsIgnoreCase(rarity);
+    }
+
+    /**
+     * 结合定轨机制从指定品质列表抽取并结算命定值/定轨保留状态
+     */
+    public static GachaPoolItem resolveItemWithFate(ServerPlayer player, PlayerGachaState state, GachaPool pool, String raritySelected, List<GachaPoolItem> list, boolean isLimited) {
+        GachaPoolItem selectedItem = null;
+        PlayerGachaState.FateAnchor anchor = state.getFateAnchor(pool.getPoolId(), raritySelected);
+        boolean hasFateTargetAndMatched = false;
+
+        if (anchor != null && anchor.getTargetItemId() != null) {
+            String targetRarity = pool.getItemRarity(anchor.getTargetItemId());
+            if (targetRarity != null && targetRarity.equalsIgnoreCase(raritySelected)) {
+                hasFateTargetAndMatched = true;
+                int limit = getFateLimit(pool.getPoolId(), raritySelected);
+
+                if (anchor.getFateValue() >= limit) {
+                    // 命定值已满，必中目标物品
+                    selectedItem = pool.getItemById(anchor.getTargetItemId());
+                    if (selectedItem != null) {
+                        onFateTargetObtained(player, state, pool.getPoolId(), raritySelected, anchor, selectedItem, true);
+                    }
+                }
+
+                if (selectedItem == null) {
+                    if (isLimited && raritySelected.equals("legendary")) {
+                        selectedItem = list.get(0);
+                    } else {
+                        selectedItem = selectWeightedItem(list);
+                    }
+
+                    if (selectedItem.getId().equals(anchor.getTargetItemId())) {
+                        onFateTargetObtained(player, state, pool.getPoolId(), raritySelected, anchor, selectedItem, false);
+                    } else {
+                        anchor.setFateValue(anchor.getFateValue() + 1);
+                        state.setDirty(true);
+                        PlayerGachaManager.saveStateSafe(state);
+                        ModLog.debug(player, null, "定轨匹配但抽中其他物品，歪了！获得物品: " + selectedItem.getId() + " | 当前命定值: " + anchor.getFateValue() + "/" + limit);
+                    }
+                }
+            }
+        }
+
+        if (!hasFateTargetAndMatched || selectedItem == null) {
+            if (isLimited && raritySelected.equals("legendary")) {
+                selectedItem = list.get(0);
+            } else {
+                selectedItem = selectWeightedItem(list);
+            }
+        }
+        return selectedItem;
+    }
+
+    private static void onFateTargetObtained(ServerPlayer player, PlayerGachaState state, String poolId, String raritySelected, PlayerGachaState.FateAnchor anchor, GachaPoolItem selectedItem, boolean byGuarantee) {
+        String triggerReason = byGuarantee ? "定轨大保底触发" : "定轨自然命中";
+        if (supportsAlwaysTrack(raritySelected) && anchor.isAlwaysTrack()) {
+            anchor.setFateValue(0);
+            state.setDirty(true);
+            PlayerGachaManager.saveStateSafe(state);
+            ModLog.debug(player, null, triggerReason + "（一直定轨保留目标，命定值清零）！获得定轨目标: " + selectedItem.getId());
+        } else {
+            state.setFateAnchor(poolId, raritySelected, null);
+            ModLog.debug(player, null, triggerReason + "（单次定轨，重置定轨目标）！获得定轨目标: " + selectedItem.getId());
+        }
     }
 
     public static boolean isLimitedPool(String poolId) {

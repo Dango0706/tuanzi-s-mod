@@ -1,9 +1,11 @@
 package me.tuanzi.gacha.gui;
 
+import me.tuanzi.gacha.GachaLogic;
 import me.tuanzi.gacha.GachaPool;
 import me.tuanzi.gacha.GachaPoolItem;
 import me.tuanzi.gacha.PlayerGachaManager;
 import me.tuanzi.gacha.PlayerGachaState;
+import me.tuanzi.util.ModLog;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,18 +53,36 @@ public class GachaFateConfirmMenu extends ChestMenu {
         }
 
         // 2. 绘制确认按钮 (Slot 11)
+        boolean supportsAlwaysTrack = !isCancel && GachaLogic.supportsAlwaysTrack(rarity);
         ItemStack confirmButton = new ItemStack(Items.STAINED_GLASS_PANE.green());
-        confirmButton.set(DataComponents.CUSTOM_NAME, Component.literal("§a§l✔ 确认"));
+        confirmButton.set(DataComponents.CUSTOM_NAME, Component.literal(supportsAlwaysTrack ? "§a§l✔ 确认（单次定轨）" : "§a§l✔ 确认"));
         List<Component> confirmLore = new ArrayList<>();
         if (isCancel) {
             confirmLore.add(Component.literal("§7点击取消对该物品的定轨"));
             confirmLore.add(Component.literal("§7取消后，当前的命定值将 §c清零§7。"));
+        } else if (supportsAlwaysTrack) {
+            confirmLore.add(Component.literal("§7点击将该物品设为§e单次定轨§7目标"));
+            confirmLore.add(Component.literal("§7抽出该物品后将§c自动重置（清除）定轨目标§7。"));
+            confirmLore.add(Component.literal("§7设置后，当前的命定值将 §c清零§7。"));
         } else {
             confirmLore.add(Component.literal("§7点击将该物品设为定轨目标"));
             confirmLore.add(Component.literal("§7设置后，当前的命定值将 §c清零§7。"));
         }
         confirmButton.set(DataComponents.LORE, new ItemLore(confirmLore));
         container.setItem(11, confirmButton);
+
+        // 2.5 紫色及以下定轨时，额外绘制「一直定轨此物品」选项 (Slot 22)
+        if (supportsAlwaysTrack) {
+            ItemStack alwaysTrackButton = new ItemStack(Items.STAINED_GLASS_PANE.purple());
+            alwaysTrackButton.set(DataComponents.CUSTOM_NAME, Component.literal("§d§l∞ 一直定轨此物品"));
+            List<Component> alwaysLore = new ArrayList<>();
+            alwaysLore.add(Component.literal("§7点击将该物品设为§d一直定轨§7目标"));
+            alwaysLore.add(Component.literal("§7抽出定轨物品后§a不会重置定轨目标§7（仅清零命定值），"));
+            alwaysLore.add(Component.literal("§7无需重新定轨，直至手动取消或更换目标。"));
+            alwaysLore.add(Component.literal("§7设置后，当前的命定值将 §c清零§7。"));
+            alwaysTrackButton.set(DataComponents.LORE, new ItemLore(alwaysLore));
+            container.setItem(22, alwaysTrackButton);
+        }
 
         // 3. 绘制展示物品 (Slot 13)
         ItemStack displayStack = targetItem.getItem().copy();
@@ -100,11 +120,20 @@ public class GachaFateConfirmMenu extends ChestMenu {
         if (slotIndex == 11 && buttonNum == 0 && containerInput == ContainerInput.PICKUP) {
             if (isCancel) {
                 state.setFateAnchor(pool.getPoolId(), rarity, null);
+                ModLog.debug(this.player, null, "GUI 取消定轨目标: pool=" + pool.getPoolId() + ", rarity=" + rarity);
                 this.player.sendSystemMessage(Component.literal("§a定轨目标已取消，命定值已清零。"));
             } else {
-                state.setFateAnchor(pool.getPoolId(), rarity, targetItem.getId());
+                state.setFateAnchor(pool.getPoolId(), rarity, targetItem.getId(), false);
+                ModLog.debug(this.player, null, "GUI 设定单次定轨目标: pool=" + pool.getPoolId() + ", rarity=" + rarity + ", item=" + targetItem.getId());
                 this.player.sendSystemMessage(Component.literal("§a定轨目标已设为【" + targetItem.getItem().getHoverName().getString() + "】，当前命定值已清零。"));
             }
+            openPreviewMenu();
+        }
+        // 左键点击 Slot 22 (紫色及以下：一直定轨此物品)
+        else if (slotIndex == 22 && buttonNum == 0 && containerInput == ContainerInput.PICKUP && !isCancel && GachaLogic.supportsAlwaysTrack(rarity)) {
+            state.setFateAnchor(pool.getPoolId(), rarity, targetItem.getId(), true);
+            ModLog.debug(this.player, null, "GUI 设定一直定轨目标: pool=" + pool.getPoolId() + ", rarity=" + rarity + ", item=" + targetItem.getId());
+            this.player.sendSystemMessage(Component.literal("§d定轨目标已设为【" + targetItem.getItem().getHoverName().getString() + "】（一直定轨），当前命定值已清零。"));
             openPreviewMenu();
         }
         // 左键点击 Slot 15 (返回)

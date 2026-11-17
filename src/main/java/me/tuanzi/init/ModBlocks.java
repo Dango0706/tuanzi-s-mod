@@ -56,6 +56,36 @@ public class ModBlocks {
     public static final Block BASE_UPGRADE_STATION = registerBlock("base_upgrade_station",
             properties -> new me.tuanzi.block.BaseUpgradeStationBlock(properties.strength(3.5f, 600.0f).noOcclusion()));
 
+    // 装饰性筹码系列（按面额升序，支持地面堆叠最多 8 枚）
+    public static final Block CHIP_50 = registerChipBlock("chip_50");
+    public static final Block CHIP_100 = registerChipBlock("chip_100");
+    public static final Block CHIP_500 = registerChipBlock("chip_500");
+    public static final Block CHIP_1000 = registerChipBlock("chip_1000");
+    public static final Block CHIP_5000 = registerChipBlock("chip_5000");
+    public static final Block CHIP_10000 = registerChipBlock("chip_10000");
+    public static final Block CHIP_50000 = registerChipBlock("chip_50000");
+    public static final Block CHIP_100000 = registerChipBlock("chip_100000");
+
+    public static final java.util.List<Block> CHIPS = java.util.List.of(
+            CHIP_50,
+            CHIP_100,
+            CHIP_500,
+            CHIP_1000,
+            CHIP_5000,
+            CHIP_10000,
+            CHIP_50000,
+            CHIP_100000
+    );
+
+    private static Block registerChipBlock(String path) {
+        return registerBlock(path, properties -> new me.tuanzi.block.ChipBlock(
+                properties.strength(0.2f, 0.2f)
+                        .noOcclusion()
+                        .sound(net.minecraft.world.level.block.SoundType.STONE)
+                        .pushReaction(PushReaction.POPPED)
+        ));
+    }
+
     public static final BlockEntityType<SoulMerchantStationBlockEntity> SOUL_MERCHANT_STATION_BLOCK_ENTITY =
             Registry.register(
                     BuiltInRegistries.BLOCK_ENTITY_TYPE,

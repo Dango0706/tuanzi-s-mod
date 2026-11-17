@@ -421,6 +421,31 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                             null
                     );
                 }
+
+                // 装饰性筹码 <-> 对应面额钱币 1:1 无序互换配方
+                record ChipCoinPair(net.minecraft.world.level.block.Block chip, net.minecraft.world.item.Item coin, String idSuffix) {
+                }
+                List<ChipCoinPair> chipCoinPairs = List.of(
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_50, ModItems.COIN_50_YUAN, "50"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_100, ModItems.COIN_100_YUAN, "100"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_500, ModItems.COIN_500_YUAN, "500"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_1000, ModItems.COIN_1000_YUAN, "1000"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_5000, ModItems.COIN_5000_YUAN, "5000"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_10000, ModItems.COIN_10000_YUAN, "10000"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_50000, ModItems.COIN_50000_YUAN, "50000"),
+                        new ChipCoinPair(me.tuanzi.init.ModBlocks.CHIP_100000, ModItems.COIN_100000_YUAN, "100000")
+                );
+                for (ChipCoinPair pair : chipCoinPairs) {
+                    shapeless(RecipeCategory.DECORATIONS, pair.chip(), 1)
+                            .requires(pair.coin())
+                            .unlockedBy("has_coin_" + pair.idSuffix(), has(pair.coin()))
+                            .save(exporter, Tuanzis_mod.MOD_ID + ":chip_" + pair.idSuffix() + "_from_coin");
+
+                    shapeless(RecipeCategory.DECORATIONS, pair.coin(), 1)
+                            .requires(pair.chip())
+                            .unlockedBy("has_chip_" + pair.idSuffix(), has(pair.chip()))
+                            .save(exporter, Tuanzis_mod.MOD_ID + ":coin_" + pair.idSuffix() + "_yuan_from_chip");
+                }
             }
         };
     }

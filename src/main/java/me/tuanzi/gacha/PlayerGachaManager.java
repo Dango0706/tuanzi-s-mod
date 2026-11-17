@@ -22,6 +22,11 @@ public class PlayerGachaManager {
 
     private static final Map<UUID, PlayerGachaState> cache = new ConcurrentHashMap<>();
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static volatile boolean persistenceEnabled = true;
+
+    public static void setPersistenceEnabledForTest(boolean enabled) {
+        persistenceEnabled = enabled;
+    }
 
     // 异步 30 秒合并落盘定时器
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
@@ -96,6 +101,9 @@ public class PlayerGachaManager {
     // 💾 安全原子保存机制
     // ──────────────────────────────────────────────
     public static synchronized void saveStateSafe(PlayerGachaState state) {
+        if (!persistenceEnabled) {
+            return;
+        }
         Path targetPath = PLAYER_DIR.resolve(state.getUuid().toString() + ".json");
         Path tempPath = PLAYER_DIR.resolve(state.getUuid().toString() + ".json.tmp");
 

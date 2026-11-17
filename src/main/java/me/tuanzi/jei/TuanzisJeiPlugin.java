@@ -1330,6 +1330,20 @@ public class TuanzisJeiPlugin implements IModPlugin {
 
         // 注册贯震铭刻附魔介绍页
         registerEnchantmentBookInfo(registration, ModEnchantments.PERVADING_VIBRATION, "jei.tuanzis_mod.pervading_vibration.description");
+
+        // 注册装饰性钱币系列 JEI 介绍页
+        for (var coin : ModItems.COINS) {
+            Identifier coinId = BuiltInRegistries.ITEM.getKey(coin);
+            registration.addIngredientInfo(new ItemStack(coin), VanillaTypes.ITEM_STACK,
+                    Component.translatable("jei.tuanzis_mod." + coinId.getPath() + ".description"));
+        }
+
+        // 注册装饰性筹码系列 JEI 介绍页
+        for (var chip : me.tuanzi.init.ModBlocks.CHIPS) {
+            Identifier chipId = BuiltInRegistries.BLOCK.getKey(chip);
+            registration.addIngredientInfo(new ItemStack(chip), VanillaTypes.ITEM_STACK,
+                    Component.translatable("jei.tuanzis_mod." + chipId.getPath() + ".description"));
+        }
     }
 
     @Override
