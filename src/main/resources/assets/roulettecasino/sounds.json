@@ -1,0 +1,324 @@
+{
+  "start": {
+    "sounds": [
+      "roulettecasino:start"
+    ],
+    "subtitle": "subtitles.roulettecasino.start"
+  },
+  "tick": {
+    "sounds": [
+      "roulettecasino:tick"
+    ],
+    "subtitle": "subtitles.roulettecasino.tick"
+  },
+  "win": {
+    "sounds": [
+      "roulettecasino:win"
+    ],
+    "subtitle": "subtitles.roulettecasino.win"
+  },
+  "lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.lose"
+  },
+  "payout": {
+    "sounds": [
+      "roulettecasino:payout"
+    ],
+    "subtitle": "subtitles.roulettecasino.payout"
+  },
+  "card_deal": {
+    "sounds": [
+      "roulettecasino:card_deal"
+    ],
+    "subtitle": "subtitles.roulettecasino.card_deal"
+  },
+  "card_flip": {
+    "sounds": [
+      "roulettecasino:card_flip"
+    ],
+    "subtitle": "subtitles.roulettecasino.card_flip"
+  },
+  "card_shuffle": {
+    "sounds": [
+      "roulettecasino:card_shuffle"
+    ],
+    "subtitle": "subtitles.roulettecasino.card_shuffle"
+  },
+  "blackjack_push": {
+    "sounds": [
+      "roulettecasino:blackjack_push"
+    ],
+    "subtitle": "subtitles.roulettecasino.blackjack_push"
+  },
+  "duck_quack": {
+    "sounds": [
+      "roulettecasino:duck_quack_1",
+      "roulettecasino:duck_quack_2",
+      "roulettecasino:duck_quack_3"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_quack"
+  },
+  "duck_start": {
+    "sounds": [
+      "roulettecasino:duck_start"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_start"
+  },
+  "duck_finish": {
+    "sounds": [
+      "roulettecasino:duck_finish"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_finish"
+  },
+  "duck_win": {
+    "sounds": [
+      "roulettecasino:win"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_win"
+  },
+  "duck_lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_lose"
+  },
+  "duck_payout": {
+    "sounds": [
+      "roulettecasino:payout"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_payout"
+  },
+  "duck_push": {
+    "sounds": [
+      "roulettecasino:blackjack_push"
+    ],
+    "subtitle": "subtitles.roulettecasino.duck_push"
+  },
+  "slot_lever": {
+    "sounds": [
+      "roulettecasino:slot_lever"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_lever"
+  },
+  "slot_whirr": {
+    "sounds": [
+      "roulettecasino:slot_whirr"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_whirr"
+  },
+  "slot_click": {
+    "sounds": [
+      "roulettecasino:slot_click"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_click"
+  },
+  "slot_stop": {
+    "sounds": [
+      "roulettecasino:slot_stop"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_stop"
+  },
+  "slot_win": {
+    "sounds": [
+      "roulettecasino:slot_win"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_win"
+  },
+  "slot_jackpot": {
+    "sounds": [
+      "roulettecasino:slot_jackpot"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_jackpot"
+  },
+  "slot_lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_lose"
+  },
+  "slot_push": {
+    "sounds": [
+      "roulettecasino:blackjack_push"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_push"
+  },
+  "slot_payout": {
+    "sounds": [
+      "roulettecasino:slot_coin_1",
+      "roulettecasino:slot_coin_2",
+      "roulettecasino:slot_coin_3"
+    ],
+    "subtitle": "subtitles.roulettecasino.slot_payout"
+  },
+  "wheel_spin": {
+    "sounds": [
+      "roulettecasino:wheel_spin"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_spin"
+  },
+  "wheel_whirr": {
+    "sounds": [
+      "roulettecasino:wheel_whirr"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_whirr"
+  },
+  "wheel_click": {
+    "sounds": [
+      "roulettecasino:wheel_click"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_click"
+  },
+  "wheel_stop": {
+    "sounds": [
+      "roulettecasino:wheel_stop"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_stop"
+  },
+  "wheel_win": {
+    "sounds": [
+      "roulettecasino:wheel_win"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_win"
+  },
+  "wheel_jackpot": {
+    "sounds": [
+      "roulettecasino:wheel_jackpot"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_jackpot"
+  },
+  "wheel_lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_lose"
+  },
+  "wheel_push": {
+    "sounds": [
+      "roulettecasino:blackjack_push"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_push"
+  },
+  "wheel_payout": {
+    "sounds": [
+      "roulettecasino:slot_coin_1",
+      "roulettecasino:slot_coin_2",
+      "roulettecasino:slot_coin_3"
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_payout"
+  },
+  "wheel_partial": {
+    "sounds": [
+      {
+        "name": "roulettecasino:blackjack_push",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.roulettecasino.wheel_partial"
+  },
+  "plinko_drop": {
+    "sounds": [
+      "roulettecasino:plinko_drop"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_drop"
+  },
+  "plinko_peg": {
+    "sounds": [
+      "roulettecasino:plinko_peg_1",
+      "roulettecasino:plinko_peg_2",
+      "roulettecasino:plinko_peg_3"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_peg"
+  },
+  "plinko_pocket": {
+    "sounds": [
+      "roulettecasino:plinko_pocket"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_pocket"
+  },
+  "plinko_win": {
+    "sounds": [
+      "roulettecasino:plinko_win"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_win"
+  },
+  "plinko_jackpot": {
+    "sounds": [
+      "roulettecasino:plinko_jackpot"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_jackpot"
+  },
+  "plinko_lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_lose"
+  },
+  "plinko_payout": {
+    "sounds": [
+      "roulettecasino:slot_coin_1",
+      "roulettecasino:slot_coin_2",
+      "roulettecasino:slot_coin_3"
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_payout"
+  },
+  "plinko_partial": {
+    "sounds": [
+      {
+        "name": "roulettecasino:blackjack_push",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.roulettecasino.plinko_partial"
+  },
+  "poker_card_deal": {
+    "sounds": [
+      "roulettecasino:card_deal"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_card_deal"
+  },
+  "poker_card_flip": {
+    "sounds": [
+      "roulettecasino:card_flip"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_card_flip"
+  },
+  "poker_shuffle": {
+    "sounds": [
+      "roulettecasino:card_shuffle"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_shuffle"
+  },
+  "poker_turn": {
+    "sounds": [
+      "roulettecasino:tick"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_turn"
+  },
+  "poker_win": {
+    "sounds": [
+      "roulettecasino:win"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_win"
+  },
+  "poker_lose": {
+    "sounds": [
+      "roulettecasino:lose"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_lose"
+  },
+  "poker_push": {
+    "sounds": [
+      "roulettecasino:blackjack_push"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_push"
+  },
+  "poker_payout": {
+    "sounds": [
+      "roulettecasino:payout"
+    ],
+    "subtitle": "subtitles.roulettecasino.poker_payout"
+  }
+}

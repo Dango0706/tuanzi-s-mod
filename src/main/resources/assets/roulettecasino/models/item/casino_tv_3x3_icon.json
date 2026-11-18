@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "roulettecasino:item/casino_tv_3x3"
+  }
+}

@@ -25,7 +25,15 @@
       "me.tuanzi.Tuanzis_modDataGenerator"
     ],
     "jei_mod_plugin": [
-      "me.tuanzi.jei.TuanzisJeiPlugin"
+      "me.tuanzi.jei.TuanzisJeiPlugin",
+      "fr.minevegas.casino.CasinoJeiPlugin"
+    ],
+    "fabric-gametest": [
+      "me.tuanzi.gametest.MineVegasGameTest",
+      "me.tuanzi.gametest.BlueprintAndPenGameTest",
+      "me.tuanzi.gametest.BlueprintCannonGameTest",
+      "me.tuanzi.gametest.BlueprintDirectPlaceGameTest",
+      "me.tuanzi.gametest.EternalEnchantmentGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"
@@ -33,8 +41,13 @@
   },
   "mixins": [
     "tuanzis_mod.mixins.json",
+    "roulettecasino.mixins.json",
     {
       "config": "tuanzis_mod.client.mixins.json",
+      "environment": "client"
+    },
+    {
+      "config": "casinosound.client.mixins.json",
       "environment": "client"
     }
   ],
@@ -43,6 +56,11 @@
     "minecraft": "26.3",
     "java": ">=25",
     "fabric-api": "*"
+  },
+  "breaks": {
+    "roulettecasino": "*",
+    "casinodeco": "*",
+    "casinosound": "*"
   },
   "suggests": {
     "jei": "*"

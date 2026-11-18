@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "roulettecasino:duck_derby_mechanism",
+  "pattern": [
+    " A ",
+    "BRD",
+    " C "
+  ],
+  "key": {
+    "A": "roulettecasino:derby_duck_white",
+    "B": "roulettecasino:derby_duck_red",
+    "C": "roulettecasino:derby_duck_yellow",
+    "D": "roulettecasino:derby_duck_black",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:duck_derby_mechanism",
+    "count": 1
+  }
+}

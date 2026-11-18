@@ -27,7 +27,84 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
                 .add(ModBlocks.BASE_STASH_CABINET.builtInRegistryHolder().key())
                 .add(ModBlocks.BASE_UPGRADE_STATION.builtInRegistryHolder().key())
                 .add(ModBlocks.BLOCK_BREAKER.builtInRegistryHolder().key())
-                .add(ModBlocks.BLOCK_PLACER.builtInRegistryHolder().key());
+                .add(ModBlocks.BLOCK_PLACER.builtInRegistryHolder().key())
+                .add(casinodecoKey("glass_coffee_table"))
+                .add(casinodecoKey("casino_chandelier"))
+                .add(casinodecoKey("velvet_rope_post"))
+                .add(casinodecoKey("glass_table"))
+                .add(casinodecoKey("ivory_black_checkers"))
+                .add(casinodecoKey("jade_inlay"))
+                .add(casinodecoKey("ivory_marble"))
+                .add(casinodecoKey("obsidian_marble"))
+                .add(casinodecoKey("gold_veined_black_marble"))
+                .add(casinodecoKey("ivory_marble_bar"))
+                .add(casinodecoKey("black_marble_bar"))
+                .add(casinodecoKey("chandelier_wall_sconce"))
+                .add(casinodecoKey("reception_plaque"))
+                .add(casinodecoKey("vip_only_plaque"))
+                .add(casinodecoKey("serving_tray"))
+                .add(casinodecoKey("ivory_black_checkers_stairs"))
+                .add(casinodecoKey("ivory_black_checkers_slab"))
+                .add(casinodecoKey("ivory_marble_stairs"))
+                .add(casinodecoKey("ivory_marble_slab"))
+                .add(casinodecoKey("obsidian_marble_stairs"))
+                .add(casinodecoKey("obsidian_marble_slab"))
+                .add(casinodecoKey("gold_veined_black_marble_stairs"))
+                .add(casinodecoKey("gold_veined_black_marble_slab"));
+
+        builder(BlockTags.MINEABLE_WITH_AXE)
+                .add(casinodecoKey("casino_sofa"))
+                .add(casinodecoKey("casino_sign"))
+                .add(casinodecoKey("small_casino_sign"))
+                .add(casinodecoKey("wood_coffee_table"))
+                .add(casinodecoKey("wood_table"))
+                .add(casinodecoKey("dark_oak_paneling"))
+                .add(casinodecoKey("gilded_dark_oak_paneling"))
+                .add(casinodecoKey("dark_oak_baseboard"))
+                .add(casinodecoKey("dark_oak_cornice"))
+                .add(casinodecoKey("dark_oak_dado_rail"))
+                .add(casinodecoKey("dark_oak_pilaster"))
+                .add(casinodecoKey("dark_oak_diamond_panel"))
+                .add(casinodecoKey("classic_gilded_dark_oak_paneling"))
+                .add(casinodecoKey("classic_dark_oak_baseboard"))
+                .add(casinodecoKey("classic_dark_oak_cornice"))
+                .add(casinodecoKey("classic_dark_oak_dado_rail"))
+                .add(casinodecoKey("classic_dark_oak_pilaster"))
+                .add(casinodecoKey("classic_dark_oak_diamond_panel"))
+                .add(casinodecoKey("walnut_bar"))
+                .add(casinodecoKey("chip_case"))
+                .add(casinodecoKey("cash_register"))
+                .add(casinodecoKey("bottle_display_shelf"))
+                .add(casinodecoKey("glass_display_shelf"));
+
+        builder(BlockTags.SLABS)
+                .add(casinodecoKey("ruby_velvet_slab"))
+                .add(casinodecoKey("emerald_velvet_slab"))
+                .add(casinodecoKey("sapphire_velvet_slab"))
+                .add(casinodecoKey("ivory_black_checkers_slab"))
+                .add(casinodecoKey("ivory_marble_slab"))
+                .add(casinodecoKey("obsidian_marble_slab"))
+                .add(casinodecoKey("gold_veined_black_marble_slab"));
+
+        builder(BlockTags.STAIRS)
+                .add(casinodecoKey("ruby_velvet_stairs"))
+                .add(casinodecoKey("emerald_velvet_stairs"))
+                .add(casinodecoKey("sapphire_velvet_stairs"))
+                .add(casinodecoKey("ivory_black_checkers_stairs"))
+                .add(casinodecoKey("ivory_marble_stairs"))
+                .add(casinodecoKey("obsidian_marble_stairs"))
+                .add(casinodecoKey("gold_veined_black_marble_stairs"));
+
+        builder(BlockTags.WOOL)
+                .add(casinodecoKey("ruby_trellis"))
+                .add(casinodecoKey("ruby_stars"))
+                .add(casinodecoKey("ruby_velvet"))
+                .add(casinodecoKey("emerald_trellis"))
+                .add(casinodecoKey("emerald_stars"))
+                .add(casinodecoKey("emerald_velvet"))
+                .add(casinodecoKey("sapphire_trellis"))
+                .add(casinodecoKey("sapphire_stars"))
+                .add(casinodecoKey("sapphire_velvet"));
 
         // 方块破坏器黑名单
         builder(me.tuanzi.init.ModBlockTags.BLOCK_BREAKER_BLACKLIST)
@@ -71,5 +148,12 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
         builder(me.tuanzi.init.ModBlockTags.SNOW_STRIDER_BLOCKS)
                 .addOptionalTag(BlockTags.SNOW)
                 .addOptionalTag(BlockTags.ICE);
+    }
+
+    private static net.minecraft.resources.ResourceKey<Block> casinodecoKey(String path) {
+        return net.minecraft.resources.ResourceKey.create(
+                Registries.BLOCK,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("casinodeco", path)
+        );
     }
 }

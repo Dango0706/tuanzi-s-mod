@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "package": "fr.minevegas.casino.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "CroupierOfferXpMixin",
+    "CroupierTradesMixin",
+    "DealerRecipeMixin"
+  ],
+  "client": [
+    "MerchantScreenMixin",
+    "TradeOfferButtonMixin",
+    "TradeOfferButtonAccess",
+    "CroupierLayerMixin",
+    "PanelRenderTypeAccess",
+    "PanelRenderSetupAccess",
+    "PanelTextureBindingAccess"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

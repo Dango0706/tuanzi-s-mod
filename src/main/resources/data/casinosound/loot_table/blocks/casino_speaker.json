@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "casinosound:casino_speaker"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "casinosound:blocks/casino_speaker"
+}

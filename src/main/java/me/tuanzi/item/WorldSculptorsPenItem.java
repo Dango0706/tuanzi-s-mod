@@ -53,6 +53,10 @@ public class WorldSculptorsPenItem extends Item {
         super(properties);
     }
 
+    public static boolean isCreativeExempt(Player player) {
+        return player != null && (player.isCreative() || player.hasInfiniteMaterials());
+    }
+
     public static FillMode getMode(ItemStack stack) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData != null) {
@@ -280,17 +284,22 @@ public class WorldSculptorsPenItem extends Item {
             }
         }
 
-        // 仅在实际还原了方块的情况下，退回扣除的方块与耐久
+        // 仅在实际还原了方块的情况下，退回扣除的方块与耐久（创造模式无消耗填充不返还物品与耐久）
         if (restoredCount > 0) {
-            int totalReturnItems = restoredCount * record.itemsPerBlock;
-            giveTargetItems(player, targetItem, record.color, totalReturnItems);
+            if (record.creativeFill) {
+                player.sendSystemMessage(Component.literal("§a已成功撤销填充！恢复了 " + restoredCount + " 个方块（创造模式填充无返还）。"));
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔成功撤销(创造模式填充): 还原了 " + restoredCount + " 个方块，不返还物品与耐久");
+            } else {
+                int totalReturnItems = restoredCount * record.itemsPerBlock;
+                giveTargetItems(player, targetItem, record.color, totalReturnItems);
 
-            // 返还笔 of 耐久
-            int currentDamage = stack.getDamageValue();
-            stack.setDamageValue(Math.max(0, currentDamage - restoredCount));
+                // 返还笔的耐久
+                int currentDamage = stack.getDamageValue();
+                stack.setDamageValue(Math.max(0, currentDamage - restoredCount));
 
-            player.sendSystemMessage(Component.literal("§a已成功撤销填充！恢复了 " + restoredCount + " 个方块，物品及耐久度已返还。"));
-            me.tuanzi.util.ModLog.debug(player, null, "塑世之笔成功撤销: 还原了 " + restoredCount + " 个方块，返还物品数: " + totalReturnItems);
+                player.sendSystemMessage(Component.literal("§a已成功撤销填充！恢复了 " + restoredCount + " 个方块，物品及耐久度已返还。"));
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔成功撤销: 还原了 " + restoredCount + " 个方块，返还物品数: " + totalReturnItems);
+            }
         } else {
             player.sendSystemMessage(Component.literal("§e填充的方块已全部被修改或挖掉，无可退回内容！"));
         }
@@ -804,29 +813,34 @@ public class WorldSculptorsPenItem extends Item {
                 }
 
                 int totalItemsNeeded = N * itemsPerBlock;
+                int durabilityCost = Math.max(1, N);
+                boolean isCreative = isCreativeExempt(player);
 
-                // 校验玩家背包及潜影盒内选中方块的存量是否足够 (填充空气模式不消耗背包物品)
-                if (mode != FillMode.AIR_ONLY) {
-                    int available = getTargetItemCount(player, targetItem, selectedColor);
-                    if (available < totalItemsNeeded) {
-                        player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + totalItemsNeeded + " 个，缺少 " + (totalItemsNeeded - available) + " 个。"));
+                if (!isCreative) {
+                    // 校验玩家背包及潜影盒内选中方块的存量是否足够 (填充空气模式不消耗背包物品)
+                    if (mode != FillMode.AIR_ONLY) {
+                        int available = getTargetItemCount(player, targetItem, selectedColor);
+                        if (available < totalItemsNeeded) {
+                            player.sendSystemMessage(Component.literal("§c背包中方块数量不足！需要 " + totalItemsNeeded + " 个，缺少 " + (totalItemsNeeded - available) + " 个。"));
+                            return InteractionResult.SUCCESS;
+                        }
+                    }
+
+                    // 校验笔的耐久度是否足够
+                    int remainingDurability = stack.getMaxDamage() - stack.getDamageValue();
+                    if (remainingDurability < durabilityCost) {
+                        player.sendSystemMessage(Component.literal("§c塑世之笔耐久度不足！需要 " + durabilityCost + " 点，剩余 " + remainingDurability + " 点。"));
                         return InteractionResult.SUCCESS;
                     }
-                }
 
-                // 校验笔的耐久度是否足够
-                int remainingDurability = stack.getMaxDamage() - stack.getDamageValue();
-                int durabilityCost = Math.max(1, N);
-                if (remainingDurability < durabilityCost) {
-                    player.sendSystemMessage(Component.literal("§c塑世之笔耐久度不足！需要 " + durabilityCost + " 点，剩余 " + remainingDurability + " 点。"));
-                    return InteractionResult.SUCCESS;
+                    // 执行扣除 (填充空气模式不扣除背包物品)
+                    if (mode != FillMode.AIR_ONLY) {
+                        deductTargetItems(player, targetItem, selectedColor, totalItemsNeeded);
+                    }
+                    stack.setDamageValue(stack.getDamageValue() + durabilityCost);
+                } else {
+                    me.tuanzi.util.ModLog.debug(player, null, "塑世之笔创造模式免检查并跳过消耗: 方块数=" + N + ", 理论物品需求=" + totalItemsNeeded + ", 理论耐久消耗=" + durabilityCost);
                 }
-
-                // 执行扣除 (填充空气模式不扣除背包物品)
-                if (mode != FillMode.AIR_ONLY) {
-                    deductTargetItems(player, targetItem, selectedColor, totalItemsNeeded);
-                }
-                stack.setDamageValue(stack.getDamageValue() + durabilityCost);
 
                 // 填充方块并应用颜色
                 for (WorldSculptorsPenManager.BlockStateRecord r : records) {
@@ -844,7 +858,7 @@ public class WorldSculptorsPenItem extends Item {
 
                 // 注册撤销记录
                 UUID recordId = UUID.randomUUID();
-                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor, itemsPerBlock);
+                WorldSculptorsPenManager.addRecord(recordId, level.dimension(), records, selectedBlockId, N, selectedColor, itemsPerBlock, isCreative);
 
                 // 保存最后填充 ID
                 tag.putString("LastFillId", recordId.toString());
@@ -862,11 +876,16 @@ public class WorldSculptorsPenItem extends Item {
                 level.playSound(null, pos2.getX(), pos2.getY(), pos2.getZ(),
                         net.minecraft.sounds.SoundEvents.BEACON_ACTIVATE, net.minecraft.sounds.SoundSource.PLAYERS, 0.8F, 1.2F);
 
-                String countInfo = (itemsPerBlock > 1)
-                        ? "填充了 " + N + " 个方块（消耗物品 " + totalItemsNeeded + " 个），消耗耐久 " + durabilityCost + " 点。"
-                        : "填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。";
+                String countInfo;
+                if (isCreative) {
+                    countInfo = "填充了 " + N + " 个方块（创造模式无消耗）。";
+                } else if (itemsPerBlock > 1) {
+                    countInfo = "填充了 " + N + " 个方块（消耗物品 " + totalItemsNeeded + " 个），消耗耐久 " + durabilityCost + " 点。";
+                } else {
+                    countInfo = "填充了 " + N + " 个方块，消耗耐久 " + durabilityCost + " 点。";
+                }
                 player.sendSystemMessage(Component.literal("§a填充成功！" + countInfo));
-                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N + "，单格消耗 " + itemsPerBlock + "，总物品消耗 " + totalItemsNeeded);
+                me.tuanzi.util.ModLog.debug(player, null, "塑世之笔填充成功: " + pos1 + " 到 " + pos2 + "，方块数 " + N + "，创造模式=" + isCreative + "，单格消耗 " + itemsPerBlock + "，总物品消耗 " + (isCreative ? 0 : totalItemsNeeded));
             }
             return InteractionResult.SUCCESS;
         }

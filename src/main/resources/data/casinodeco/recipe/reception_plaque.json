@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#minecraft:signs",
+    "minecraft:gold_nugget",
+    "minecraft:green_dye"
+  ],
+  "result": {
+    "id": "casinodeco:reception_plaque"
+  }
+}

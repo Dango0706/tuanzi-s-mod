@@ -78,6 +78,7 @@ public class ModItemGroups {
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.HUSBANDRY), 3);
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.METABOLISM), 3);
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.GAP_VERDICT), 4);
+                        addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ETERNAL), 1);
 
                         // 加入彩虹海绵
                         entries.accept(ModItems.RAINBOW_SPONGE);

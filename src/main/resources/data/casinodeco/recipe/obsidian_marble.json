@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "III",
+    "IDI",
+    "III"
+  ],
+  "key": {
+    "I": "casinodeco:ivory_marble",
+    "D": "minecraft:black_dye"
+  },
+  "result": {
+    "id": "casinodeco:obsidian_marble",
+    "count": 8
+  }
+}

@@ -2,6 +2,7 @@ package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.init.ModItems;
+import me.tuanzi.util.EternalEnchantmentHelper;
 import me.tuanzi.util.ModLog;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
@@ -11,6 +12,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -54,15 +56,57 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
     }
 
     @Unique
-    private static boolean tuanzis_mod$hasTonghuiEnchantment(ItemStack stack) {
-        if (stack.isEmpty()) return false;
+    private static Holder<Enchantment> tuanzis_mod$findEnchantment(ItemStack stack, ResourceKey<Enchantment> key) {
+        if (stack.isEmpty()) return null;
         ItemEnchantments enchantments = EnchantmentHelper.getEnchantmentsForCrafting(stack);
         for (Holder<Enchantment> holder : enchantments.keySet()) {
-            if (holder.is(ModEnchantments.TONGHUI)) {
-                return true;
+            if (holder.is(key)) {
+                return holder;
             }
         }
-        return false;
+        return null;
+    }
+
+    @Unique
+    private static void tuanzis_mod$mergeRightEnchantments(ItemStack result, ItemStack right) {
+        DataComponentType<ItemEnchantments> componentType = EnchantmentHelper.getComponentType(result);
+        ItemEnchantments currentEnchants = result.getOrDefault(componentType, ItemEnchantments.EMPTY);
+        ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(currentEnchants);
+
+        ItemEnchantments rightEnchants = EnchantmentHelper.getEnchantmentsForCrafting(right);
+        for (var entry : rightEnchants.entrySet()) {
+            Holder<Enchantment> enchHolder = entry.getKey();
+            int level = entry.getIntValue();
+            if (enchHolder.is(ModEnchantments.TONGHUI) || enchHolder.is(ModEnchantments.ETERNAL)) {
+                mutable.set(enchHolder, 1);
+            } else {
+                boolean compatible = true;
+                for (Holder<Enchantment> other : mutable.keySet()) {
+                    if (!other.equals(enchHolder) && !Enchantment.areCompatible(enchHolder, other)) {
+                        compatible = false;
+                        break;
+                    }
+                }
+                if (compatible) {
+                    int curLevel = mutable.getLevel(enchHolder);
+                    int newLevel = curLevel == level ? level + 1 : Math.max(level, curLevel);
+                    if (newLevel > enchHolder.value().getMaxLevel()) {
+                        newLevel = enchHolder.value().getMaxLevel();
+                    }
+                    mutable.set(enchHolder, newLevel);
+                }
+            }
+        }
+        result.set(componentType, mutable.toImmutable());
+    }
+
+    @Unique
+    private void tuanzis_mod$applyCustomNameIfChanged(ItemStack result, ItemStack originalLeft) {
+        if (this.itemName != null && !net.minecraft.util.StringUtil.isBlank(this.itemName)) {
+            if (!this.itemName.equals(originalLeft.getHoverName().getString())) {
+                result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
+            }
+        }
     }
 
     /**
@@ -192,9 +236,67 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
             }
         }
 
+        // 永恒附魔处理逻辑（优先级高于通惠：已拥有永恒的物品不可再获得包括通惠在内的任何附魔）
+        boolean leftHasEternal = EternalEnchantmentHelper.hasEternal(left);
+        Holder<Enchantment> rightEternalHolder = tuanzis_mod$findEnchantment(right, ModEnchantments.ETERNAL);
+        boolean leftHasTonghui = tuanzis_mod$findEnchantment(left, ModEnchantments.TONGHUI) != null;
+        boolean rightHasTonghui = tuanzis_mod$findEnchantment(right, ModEnchantments.TONGHUI) != null;
+
+        // 1. 左侧物品已拥有永恒：禁止通过铁砧再次获得或升级任何附魔（允许空槽改名与彩虹海绵改色）
+        if (leftHasEternal && !right.isEmpty() && !right.is(ModItems.RAINBOW_SPONGE)
+                && (right.is(net.minecraft.world.item.Items.ENCHANTED_BOOK) || !EnchantmentHelper.getEnchantmentsForCrafting(right).isEmpty())) {
+            ModLog.debug("AnvilMenu", "createResult",
+                    "检测到物品已拥有【永恒】附魔，禁止再次获得或升级任何附魔，铁砧强制清空输出。物品: " + left.getHoverName().getString());
+            this.resultSlots.setItem(0, ItemStack.EMPTY);
+            this.cost.set(0);
+            this.repairItemCountCost = 0;
+            menu.broadcastChanges();
+            ci.cancel();
+            return;
+        }
+
+        // 2. 首次附魔永恒：仅限有耐久度的物品；附魔后获得无法破坏属性，消耗固定为 原有附魔数 × 8 级（最低 8 级）
+        if (!left.isEmpty() && !leftHasEternal && rightEternalHolder != null) {
+            if (left.is(net.minecraft.world.item.Items.ENCHANTED_BOOK) || !rightEternalHolder.value().canEnchant(left)) {
+                ModLog.debug("AnvilMenu", "createResult",
+                        "目标物品不支持【永恒】附魔，铁砧强制清空输出。物品: " + left.getHoverName().getString());
+                this.resultSlots.setItem(0, ItemStack.EMPTY);
+                this.cost.set(0);
+                this.repairItemCountCost = 0;
+                menu.broadcastChanges();
+                ci.cancel();
+                return;
+            }
+
+            int existingEnchantCount = EnchantmentHelper.getEnchantmentsForCrafting(left).size();
+            int eternalCost = EternalEnchantmentHelper.calculateAnvilCost(existingEnchantCount);
+
+            ItemStack result = left.copyWithCount(1);
+            tuanzis_mod$mergeRightEnchantments(result, right);
+            EternalEnchantmentHelper.applyUnbreakable(result);
+
+            if (rightHasTonghui && !leftHasTonghui) {
+                result.set(DataComponents.REPAIR_COST, 0);
+            } else {
+                int baseCost = Math.max(left.getOrDefault(DataComponents.REPAIR_COST, 0), right.getOrDefault(DataComponents.REPAIR_COST, 0));
+                result.set(DataComponents.REPAIR_COST, AnvilMenu.calculateIncreasedRepairCost(baseCost));
+            }
+
+            tuanzis_mod$applyCustomNameIfChanged(result, left);
+
+            this.cost.set(eternalCost);
+            this.repairItemCountCost = 0;
+            this.resultSlots.setItem(0, result);
+            ModLog.debug("AnvilMenu", "createResult",
+                    "成功应用【永恒】附魔！物品: " + left.getHoverName().getString()
+                            + "，原有附魔数: " + existingEnchantCount
+                            + "，消耗等级: " + eternalCost + "，已赋予 Unbreakable=true");
+            menu.broadcastChanges();
+            ci.cancel();
+            return;
+        }
+
         // 通惠附魔处理逻辑
-        boolean leftHasTonghui = tuanzis_mod$hasTonghuiEnchantment(left);
-        boolean rightHasTonghui = tuanzis_mod$hasTonghuiEnchantment(right);
 
         // 1. 当物品已拥有通惠附魔，再次附魔通惠则无法取消累计惩罚，铁砧不输出
         if (leftHasTonghui && rightHasTonghui) {
@@ -210,44 +312,12 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
         // 2. 首次附魔通惠：重置目前此物品积累的“累积惩罚”为0，附魔时需要20级经验等级，可附魔在任何物品上
         if (!left.isEmpty() && !leftHasTonghui && rightHasTonghui) {
             ItemStack result = left.copyWithCount(1);
-            DataComponentType<ItemEnchantments> componentType = EnchantmentHelper.getComponentType(result);
-            ItemEnchantments currentEnchants = result.getOrDefault(componentType, ItemEnchantments.EMPTY);
-            ItemEnchantments.Mutable mutable = new ItemEnchantments.Mutable(currentEnchants);
+            tuanzis_mod$mergeRightEnchantments(result, right);
 
-            ItemEnchantments rightEnchants = EnchantmentHelper.getEnchantmentsForCrafting(right);
-            for (var entry : rightEnchants.entrySet()) {
-                Holder<Enchantment> enchHolder = entry.getKey();
-                int level = entry.getIntValue();
-                if (enchHolder.is(ModEnchantments.TONGHUI)) {
-                    mutable.set(enchHolder, 1);
-                } else {
-                    boolean compatible = true;
-                    for (Holder<Enchantment> other : mutable.keySet()) {
-                        if (!other.equals(enchHolder) && !Enchantment.areCompatible(enchHolder, other)) {
-                            compatible = false;
-                            break;
-                        }
-                    }
-                    if (compatible) {
-                        int curLevel = mutable.getLevel(enchHolder);
-                        int newLevel = curLevel == level ? level + 1 : Math.max(level, curLevel);
-                        if (newLevel > enchHolder.value().getMaxLevel()) {
-                            newLevel = enchHolder.value().getMaxLevel();
-                        }
-                        mutable.set(enchHolder, newLevel);
-                    }
-                }
-            }
-
-            result.set(componentType, mutable.toImmutable());
             int oldRepairCost = left.getOrDefault(DataComponents.REPAIR_COST, 0);
             result.set(DataComponents.REPAIR_COST, 0);
 
-            if (this.itemName != null && !net.minecraft.util.StringUtil.isBlank(this.itemName)) {
-                if (!this.itemName.equals(left.getHoverName().getString())) {
-                    result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
-                }
-            }
+            tuanzis_mod$applyCustomNameIfChanged(result, left);
 
             this.cost.set(20);
             this.repairItemCountCost = 0;

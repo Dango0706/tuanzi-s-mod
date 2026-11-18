@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "casino_bar_counter",
+  "pattern": [
+    "BBB",
+    "BBB",
+    "NNN"
+  ],
+  "key": {
+    "B": "casinodeco:obsidian_marble",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:black_marble_bar",
+    "count": 6
+  }
+}

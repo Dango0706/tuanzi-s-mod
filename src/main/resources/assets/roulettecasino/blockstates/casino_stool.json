@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "roulettecasino:block/casino_stool",
+      "y": 0
+    },
+    "facing=west": {
+      "model": "roulettecasino:block/casino_stool",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "roulettecasino:block/casino_stool",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "roulettecasino:block/casino_stool",
+      "y": 270
+    }
+  }
+}

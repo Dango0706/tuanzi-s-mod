@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WWW",
+    "PWP",
+    "P P"
+  ],
+  "key": {
+    "W": "minecraft:red_wool",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "casinodeco:casino_sofa",
+    "count": 2
+  }
+}

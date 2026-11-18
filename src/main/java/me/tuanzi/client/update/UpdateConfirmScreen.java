@@ -129,18 +129,18 @@ public class UpdateConfirmScreen extends Screen {
 
         // 预先使用自定义 Markdown 解析并切分折行，缓存至内存中，避免 extractRenderState 产生高频 GC
         String rawChangelog = UpdateChecker.getChangelog();
-        if (rawChangelog != null && rawChangelog.length() > 1000) {
-            ModLog.debug("[更新日志] 日志长度超过 1000 字符 (" + rawChangelog.length() + ")，已截断并追加引导提示");
-            int cutIndex = 1000;
-            if (Character.isHighSurrogate(rawChangelog.charAt(cutIndex - 1))) {
-                cutIndex--;
-            }
-            String truncated = rawChangelog.substring(0, cutIndex);
-            if (truncated.endsWith("\r")) {
-                truncated = truncated.substring(0, truncated.length() - 1);
-            }
-            rawChangelog = truncated + (truncated.endsWith("\n") ? "" : "\n") + "...更多内容请查看modrinth/腾讯文档";
-        }
+//        if (rawChangelog != null && rawChangelog.length() > 1000) {
+//            ModLog.debug("[更新日志] 日志长度超过 1000 字符 (" + rawChangelog.length() + ")，已截断并追加引导提示");
+//            int cutIndex = 1000;
+//            if (Character.isHighSurrogate(rawChangelog.charAt(cutIndex - 1))) {
+//                cutIndex--;
+//            }
+//            String truncated = rawChangelog.substring(0, cutIndex);
+//            if (truncated.endsWith("\r")) {
+//                truncated = truncated.substring(0, truncated.length() - 1);
+//            }
+//            rawChangelog = truncated + (truncated.endsWith("\n") ? "" : "\n") + "...更多内容请查看modrinth/腾讯文档";
+//        }
         Component parsedChangelog = SimpleMarkdownParser.parse(rawChangelog);
         this.changelogLines = this.font.split(parsedChangelog, panelWidth - 40);
 

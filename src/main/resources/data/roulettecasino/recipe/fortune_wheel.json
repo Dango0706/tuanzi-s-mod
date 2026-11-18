@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RVW",
+    "GMG",
+    "PSP"
+  ],
+  "key": {
+    "R": "minecraft:red_wool",
+    "V": "minecraft:green_wool",
+    "W": "minecraft:white_wool",
+    "G": "minecraft:gold_block",
+    "M": "roulettecasino:roulette_mechanism",
+    "P": "#minecraft:planks",
+    "S": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:fortune_wheel",
+    "count": 1
+  }
+}

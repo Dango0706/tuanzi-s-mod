@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WWW",
+    "GBG",
+    "PRP"
+  ],
+  "key": {
+    "W": "minecraft:green_wool",
+    "G": "minecraft:gold_block",
+    "B": "roulettecasino:croupier_badge",
+    "P": "#minecraft:planks",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:blackjack_table"
+  }
+}

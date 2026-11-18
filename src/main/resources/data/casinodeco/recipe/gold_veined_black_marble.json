@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB",
+    "BNB",
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:obsidian_marble",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:gold_veined_black_marble",
+    "count": 8
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "casino_bar_counter",
+  "pattern": [
+    "SSS",
+    "PPP",
+    "NNN"
+  ],
+  "key": {
+    "S": "#minecraft:wooden_slabs",
+    "P": "#minecraft:planks",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:walnut_bar",
+    "count": 6
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "casinodeco:block/ruby_velvet_slab"
+    },
+    "type=double": {
+      "model": "casinodeco:block/ruby_velvet"
+    },
+    "type=top": {
+      "model": "casinodeco:block/ruby_velvet_slab_top"
+    }
+  }
+}

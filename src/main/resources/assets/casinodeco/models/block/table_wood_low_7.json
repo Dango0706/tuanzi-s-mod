@@ -1,0 +1,201 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "casinodeco:block/sofa_walnut",
+    "wood": "casinodeco:block/sofa_walnut",
+    "gold": "casinodeco:block/sofa_brass",
+    "glass": "casinodeco:block/decor_glass"
+  },
+  "elements": [
+    {
+      "name": "top_slab",
+      "from": [
+        0.0,
+        6.4,
+        0.0
+      ],
+      "to": [
+        16.0,
+        7.4,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "top_plate",
+      "from": [
+        0.5,
+        7.4,
+        0.0
+      ],
+      "to": [
+        16.0,
+        8.0,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            15.4,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.4,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            15.4,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            0.0,
+            15.4,
+            16.0,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            0.5,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "brass_hem",
+      "from": [
+        0.6,
+        6.0,
+        0.0
+      ],
+      "to": [
+        1.2,
+        6.4,
+        16.0
+      ],
+      "faces": {
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.6,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#gold",
+          "uv": [
+            0.6,
+            15.6,
+            1.2,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.6,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#gold",
+          "uv": [
+            0.6,
+            15.6,
+            1.2,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            0.6,
+            16.0,
+            1.2
+          ],
+          "rotation": 270
+        }
+      }
+    }
+  ]
+}

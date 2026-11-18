@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "VCV",
+    "NNN"
+  ],
+  "key": {
+    "V": "casinodeco:shot_glasses",
+    "C": "casinodeco:champagne_coupes",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:serving_tray"
+  }
+}

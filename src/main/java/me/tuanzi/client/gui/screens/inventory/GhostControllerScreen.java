@@ -1,12 +1,14 @@
 package me.tuanzi.client.gui.screens.inventory;
 
 import me.tuanzi.client.ClientGhostManager;
+import me.tuanzi.network.GhostPlaceStructurePacket;
 import me.tuanzi.network.GhostTransformPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -20,16 +22,28 @@ public class GhostControllerScreen extends Screen {
     private Button layerModeBtn;
     private Button smartAssistBtn;
     private Button visibilityBtn;
+    private Button placeBuildingBtn;
+    private boolean showAdminPlaceButton = false;
 
     public GhostControllerScreen() {
         super(Component.translatable("gui.tuanzis_mod.ghost_control.title"));
     }
 
+    private boolean canShowPlaceButton() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player != null && mc.player.canUseGameMasterBlocks();
+    }
+
+    private int getPanelTopY() {
+        return this.height / 2 - (this.showAdminPlaceButton ? 88 : 78);
+    }
+
     @Override
     protected void init() {
         super.init();
+        this.showAdminPlaceButton = canShowPlaceButton();
         int x = this.width / 2 - 75;
-        int y = this.height / 2 - 78;
+        int y = getPanelTopY();
 
         // X平移 [-] 与 [+]
         this.addRenderableWidget(Button.builder(Component.literal("-"), btn -> adjust(new BlockPos(-1, 0, 0), 0, false)).bounds(x, y + 16, 20, 16).build());
@@ -79,6 +93,66 @@ public class GhostControllerScreen extends Screen {
             }
             this.onClose();
         }).bounds(x + 77, y + 134, 73, 16).build());
+
+        this.placeBuildingBtn = null;
+        if (this.showAdminPlaceButton) {
+            this.placeBuildingBtn = this.addRenderableWidget(Button.builder(
+                            Component.translatable("gui.tuanzis_mod.ghost_control.place_building").withStyle(ChatFormatting.GOLD),
+                            btn -> placeBuildingAtGhost())
+                    .bounds(x, y + 154, 150, 16)
+                    .tooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.ghost_control.place_building.tooltip")))
+                    .build());
+            this.placeBuildingBtn.active = ClientGhostManager.hasActiveGhost();
+        }
+    }
+
+    private void placeBuildingAtGhost() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || !mc.player.canUseGameMasterBlocks()) {
+            return;
+        }
+        if (!ClientGhostManager.hasActiveGhost() || ClientGhostManager.getBasePos() == null) {
+            mc.player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.no_active_ghost").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        BlockPos basePos = ClientGhostManager.getBasePos();
+        BlockPos offset = ClientGhostManager.getOffset();
+        int rot = ClientGhostManager.getRotationIdx();
+        boolean mir = ClientGhostManager.isMirrored();
+
+        boolean useHeld = false;
+        if (ClientGhostManager.isBoundToHeldItem()) {
+            ItemStack stack = mc.player.getMainHandItem();
+            if (!(stack.getItem() instanceof me.tuanzi.item.StructureBlueprintItem)) {
+                stack = mc.player.getOffhandItem();
+            }
+            if (stack.getItem() instanceof me.tuanzi.item.StructureBlueprintItem) {
+                CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+                if (customData != null && customData.copyTag().getBooleanOr("GhostPlaced", false)) {
+                    useHeld = true;
+                }
+            }
+        }
+
+        CompoundTag payloadTag = useHeld || ClientGhostManager.getActiveBlueprintTag() == null
+                ? new CompoundTag()
+                : ClientGhostManager.getActiveBlueprintTag().copy();
+
+        ClientPlayNetworking.send(new GhostPlaceStructurePacket(basePos, offset, rot, mir, useHeld, payloadTag));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        boolean canShow = canShowPlaceButton();
+        if (canShow != this.showAdminPlaceButton) {
+            this.rebuildWidgets();
+            return;
+        }
+        if (this.placeBuildingBtn != null) {
+            this.placeBuildingBtn.active = ClientGhostManager.hasActiveGhost();
+        }
     }
 
     private Component getLayerModeLabel() {
@@ -139,17 +213,18 @@ public class GhostControllerScreen extends Screen {
     @Override
     public void extractBackground(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
         int cx = this.width / 2;
-        int y = this.height / 2 - 78;
+        int y = getPanelTopY();
+        int panelHeight = this.showAdminPlaceButton ? 184 : 164;
         // 在按钮层之前绘制半透明深色面板与边框，避免遮暗按钮文字
-        graphics.fill(cx - 84, y - 6, cx + 84, y + 158, 0xCC14141C);
-        graphics.outline(cx - 84, y - 6, 168, 164, 0xFF3A3A4E);
+        graphics.fill(cx - 84, y - 6, cx + 84, y - 6 + panelHeight, 0xCC14141C);
+        graphics.outline(cx - 84, y - 6, 168, panelHeight, 0xFF3A3A4E);
     }
 
     @Override
     public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
         super.extractRenderState(graphics, mouseX, mouseY, delta);
         int cx = this.width / 2;
-        int y = this.height / 2 - 78;
+        int y = getPanelTopY();
 
         graphics.text(this.font, this.title, cx - this.font.width(this.title) / 2, y + 2, 0xFFFFFFFF, true);
 

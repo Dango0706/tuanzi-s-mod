@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "casinodeco:block/ivory_black_checkers_slab"
+    },
+    "type=double": {
+      "model": "casinodeco:block/ivory_black_checkers"
+    },
+    "type=top": {
+      "model": "casinodeco:block/ivory_black_checkers_slab_top"
+    }
+  }
+}

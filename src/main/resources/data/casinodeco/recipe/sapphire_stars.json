@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "casino_starred_carpet",
+  "pattern": [
+    "VVV",
+    "VNV",
+    "VVV"
+  ],
+  "key": {
+    "V": "casinodeco:sapphire_velvet",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:sapphire_stars",
+    "count": 8
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " P ",
+    "ID ",
+    " W "
+  ],
+  "key": {
+    "P": "minecraft:paper",
+    "I": "minecraft:iron_ingot",
+    "D": "minecraft:diamond",
+    "W": "minecraft:red_wool"
+  },
+  "result": {
+    "id": "roulettecasino:slot_machine_reel",
+    "count": 1
+  }
+}

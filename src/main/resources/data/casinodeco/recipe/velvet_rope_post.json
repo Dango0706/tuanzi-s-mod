@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " N ",
+    "WNW",
+    "NNN"
+  ],
+  "key": {
+    "N": "minecraft:gold_nugget",
+    "W": "minecraft:red_wool"
+  },
+  "result": {
+    "id": "casinodeco:velvet_rope_post",
+    "count": 2
+  }
+}

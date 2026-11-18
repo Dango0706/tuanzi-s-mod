@@ -7,6 +7,7 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
@@ -22,6 +23,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 蓝图大炮飞行方块对象（参考 Create Schematicannon 架构）
@@ -61,6 +65,8 @@ public abstract class LaunchedItem {
         LaunchedItem launched;
         if (tag.contains("EntityId")) {
             launched = new ForEntity();
+        } else if (tag.contains("Parts")) {
+            launched = new ForMultiBlock();
         } else {
             launched = new ForBlockState();
         }
@@ -79,7 +85,7 @@ public abstract class LaunchedItem {
             return false;
         }
         if (world.isClientSide()) {
-            return false;
+            return true;
         }
 
         place(world);
@@ -122,16 +128,22 @@ public abstract class LaunchedItem {
         public BlockState state = Blocks.AIR.defaultBlockState();
         public @Nullable CompoundTag data;
         public boolean isDestroy = false;
+        public boolean forceKeepShape = false;
 
         public ForBlockState() {
             super();
         }
 
         public ForBlockState(BlockPos start, BlockPos target, ItemStack stack, BlockState state, @Nullable CompoundTag data, boolean isDestroy) {
+            this(start, target, stack, state, data, isDestroy, false);
+        }
+
+        public ForBlockState(BlockPos start, BlockPos target, ItemStack stack, BlockState state, @Nullable CompoundTag data, boolean isDestroy, boolean forceKeepShape) {
             super(start, target, stack);
             this.state = state;
             this.data = data;
             this.isDestroy = isDestroy;
+            this.forceKeepShape = forceKeepShape;
         }
 
         @Override
@@ -139,6 +151,9 @@ public abstract class LaunchedItem {
             CompoundTag tag = super.serializeNBT(registries);
             tag.put("BlockState", NbtUtils.writeBlockState(state));
             tag.putBoolean("IsDestroy", isDestroy);
+            if (forceKeepShape) {
+                tag.putBoolean("ForceKeepShape", true);
+            }
             if (data != null) {
                 CompoundTag copy = data.copy();
                 copy.remove("x");
@@ -157,6 +172,7 @@ public abstract class LaunchedItem {
                 this.state = NbtUtils.readBlockState(holderGetter, tag.getCompoundOrEmpty("BlockState"));
             }
             this.isDestroy = tag.getBooleanOr("IsDestroy", false);
+            this.forceKeepShape = tag.getBooleanOr("ForceKeepShape", false);
             if (tag.contains("Data")) {
                 this.data = tag.getCompoundOrEmpty("Data").copy();
             } else {
@@ -175,8 +191,9 @@ public abstract class LaunchedItem {
                 return;
             }
 
-            // 放置方块
-            world.setBlock(target, state, 3);
+            // 放置方块（若无支撑的悬浮方块则保留形状避免立即自毁）
+            int flags = forceKeepShape ? (Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE) : Block.UPDATE_ALL;
+            world.setBlock(target, state, flags);
 
             // 恢复方块实体数据
             if (data != null) {
@@ -188,11 +205,110 @@ public abstract class LaunchedItem {
                     nbt.putInt("z", target.getZ());
                     be.loadWithComponents(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, world.registryAccess(), nbt));
                     be.setChanged();
-                    world.sendBlockUpdated(target, state, state, 3);
+                    world.sendBlockUpdated(target, state, state, Block.UPDATE_ALL);
                 }
             }
 
             world.playSound(null, target, state.getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
+        }
+    }
+
+    /**
+     * 耦合多方块整体放置子类（如床、门、双格高植物及通用耦合多方块结构）
+     */
+    public static class ForMultiBlock extends LaunchedItem {
+        public record Part(BlockPos pos, BlockState state, @Nullable CompoundTag data) {
+        }
+
+        public List<Part> parts = new ArrayList<>();
+        public boolean forceKeepShape = false;
+
+        public ForMultiBlock() {
+            super();
+        }
+
+        public ForMultiBlock(BlockPos start, BlockPos primaryTarget, ItemStack stack, List<Part> parts, boolean forceKeepShape) {
+            super(start, primaryTarget, stack);
+            this.parts = new ArrayList<>(parts);
+            this.forceKeepShape = forceKeepShape;
+        }
+
+        @Override
+        public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+            CompoundTag tag = super.serializeNBT(registries);
+            if (forceKeepShape) {
+                tag.putBoolean("ForceKeepShape", true);
+            }
+            ListTag partsTag = new ListTag();
+            for (Part part : parts) {
+                CompoundTag pTag = new CompoundTag();
+                pTag.putInt("X", part.pos().getX());
+                pTag.putInt("Y", part.pos().getY());
+                pTag.putInt("Z", part.pos().getZ());
+                pTag.put("BlockState", NbtUtils.writeBlockState(part.state()));
+                if (part.data() != null) {
+                    CompoundTag copy = part.data().copy();
+                    copy.remove("x");
+                    copy.remove("y");
+                    copy.remove("z");
+                    copy.remove("id");
+                    pTag.put("Data", copy);
+                }
+                partsTag.add(pTag);
+            }
+            tag.put("Parts", partsTag);
+            return tag;
+        }
+
+        @Override
+        public void readNBT(CompoundTag tag, HolderLookup.Provider registries, HolderGetter<Block> holderGetter) {
+            super.readNBT(tag, registries, holderGetter);
+            this.forceKeepShape = tag.getBooleanOr("ForceKeepShape", false);
+            this.parts = new ArrayList<>();
+            ListTag partsTag = tag.getListOrEmpty("Parts");
+            for (int i = 0; i < partsTag.size(); i++) {
+                CompoundTag pTag = partsTag.getCompoundOrEmpty(i);
+                BlockPos pos = new BlockPos(pTag.getIntOr("X", 0), pTag.getIntOr("Y", 0), pTag.getIntOr("Z", 0));
+                BlockState state = pTag.contains("BlockState")
+                        ? NbtUtils.readBlockState(holderGetter, pTag.getCompoundOrEmpty("BlockState"))
+                        : Blocks.AIR.defaultBlockState();
+                CompoundTag data = pTag.contains("Data") ? pTag.getCompoundOrEmpty("Data").copy() : null;
+                this.parts.add(new Part(pos, state, data));
+            }
+        }
+
+        @Override
+        public void place(Level world) {
+            if (parts.isEmpty()) return;
+            ModLog.debug("LaunchedItem.ForMultiBlock 整体落地触发: target=" + target + ", parts=" + parts.size());
+
+            // 1. 原子化写入所有组成方块并跳过中途形变更新，避免仅放置一半时被邻居更新拆毁
+            for (Part part : parts) {
+                world.setBlock(part.pos(), part.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                if (part.data() != null) {
+                    BlockEntity be = world.getBlockEntity(part.pos());
+                    if (be != null) {
+                        CompoundTag nbt = part.data().copy();
+                        nbt.putInt("x", part.pos().getX());
+                        nbt.putInt("y", part.pos().getY());
+                        nbt.putInt("z", part.pos().getZ());
+                        be.loadWithComponents(TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING, world.registryAccess(), nbt));
+                        be.setChanged();
+                    }
+                }
+            }
+
+            // 2. 全部组件到位后，统一触发邻居与形变通知并同步至客户端
+            for (Part part : parts) {
+                if (!forceKeepShape) {
+                    world.updateNeighborsAt(part.pos(), part.state().getBlock());
+                    part.state().updateNeighbourShapes(world, part.pos(), Block.UPDATE_ALL);
+                    part.state().updateIndirectNeighbourShapes(world, part.pos(), Block.UPDATE_ALL);
+                }
+                world.sendBlockUpdated(part.pos(), part.state(), part.state(), Block.UPDATE_ALL);
+            }
+
+            world.playSound(null, target, parts.getFirst().state().getSoundType().getPlaceSound(), SoundSource.BLOCKS, 1.0f, 1.0f);
         }
     }
 
@@ -253,11 +369,24 @@ public abstract class LaunchedItem {
         @Override
         public void place(Level world) {
             ModLog.debug("LaunchedItem.ForEntity 落地触发: target=" + target + ", exactTarget=" + exactTarget + ", entityId=" + entityId);
+            spawnEntity(world, target, exactTarget, entityId, entityNbt);
+        }
+
+        /**
+         * 将蓝图实体数据实例化并生成到世界中（供蓝图大炮落地与创造模式直接放置共用）。
+         */
+        public static boolean spawnEntity(
+                Level world,
+                BlockPos target,
+                @Nullable Vec3 exactTarget,
+                String entityId,
+                @Nullable CompoundTag entityNbt
+        ) {
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(entityId)).orElse(null);
-            if (type == null) return;
+            if (type == null) return false;
 
             Entity entity = type.create(world, EntitySpawnReason.STRUCTURE);
-            if (entity == null) return;
+            if (entity == null) return false;
 
             Vec3 spawnPos = (exactTarget != null && !exactTarget.equals(Vec3.ZERO)) ? exactTarget : Vec3.atBottomCenterOf(target);
 
@@ -299,6 +428,7 @@ public abstract class LaunchedItem {
 
             world.addFreshEntity(entity);
             world.playSound(null, BlockPos.containing(spawnPos), net.minecraft.sounds.SoundEvents.ARMOR_STAND_PLACE, SoundSource.BLOCKS, 0.75f, 1.0f);
+            return true;
         }
     }
 }

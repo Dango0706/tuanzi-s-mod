@@ -23,11 +23,18 @@ public class WorldSculptorsPenManager {
     }
 
     /**
+     * 新增一次带色彩数据、物品单耗与创造模式标记的填充记录
+     */
+    public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color, int itemsPerBlock, boolean creativeFill) {
+        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color, itemsPerBlock, creativeFill));
+        cleanExpiredRecords();
+    }
+
+    /**
      * 新增一次带色彩数据与物品单耗的填充记录
      */
     public static void addRecord(UUID id, ResourceKey<Level> dimension, List<BlockStateRecord> records, String blockId, int count, Integer color, int itemsPerBlock) {
-        RECORDS.put(id, new FillRecord(id, dimension, records, blockId, count, color, itemsPerBlock));
-        cleanExpiredRecords();
+        addRecord(id, dimension, records, blockId, count, color, itemsPerBlock, false);
     }
 
     /**
@@ -75,8 +82,9 @@ public class WorldSculptorsPenManager {
         public final int fillCount;  // 填充的方块数
         public final Integer color;  // 填充的方块色彩数据 (若非彩色方块系列则为 null)
         public final int itemsPerBlock; // 每个方块消耗的物品数 (普通方块/单半砖为1, 双半砖为2)
+        public final boolean creativeFill; // 是否为创造模式无消耗填充
 
-        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color, int itemsPerBlock) {
+        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color, int itemsPerBlock, boolean creativeFill) {
             this.recordId = recordId;
             this.dimension = dimension;
             this.blockRecords = blockRecords;
@@ -85,6 +93,11 @@ public class WorldSculptorsPenManager {
             this.fillCount = fillCount;
             this.color = color;
             this.itemsPerBlock = itemsPerBlock;
+            this.creativeFill = creativeFill;
+        }
+
+        public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color, int itemsPerBlock) {
+            this(recordId, dimension, blockRecords, blockId, fillCount, color, itemsPerBlock, false);
         }
 
         public FillRecord(UUID recordId, ResourceKey<Level> dimension, List<BlockStateRecord> blockRecords, String blockId, int fillCount, Integer color) {

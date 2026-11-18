@@ -1,0 +1,203 @@
+{
+  "textures": {
+    "particle": "roulettecasino:block/bj_side",
+    "bj_side": "roulettecasino:block/bj_side",
+    "dd_top_0_1": "roulettecasino:block/dd_top_0_1",
+    "bj_rim": "roulettecasino:block/bj_rim",
+    "gold": "roulettecasino:block/gold"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#bj_side",
+          "uv": [
+            3,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        1,
+        0
+      ],
+      "to": [
+        16,
+        10,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            6,
+            16,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        10,
+        0
+      ],
+      "to": [
+        16,
+        12,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            4,
+            16,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        12,
+        0
+      ],
+      "to": [
+        16,
+        12.5,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_0_1",
+          "uv": [
+            1,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        0
+      ],
+      "to": [
+        1,
+        14,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_0_1",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#bj_rim",
+          "uv": [
+            0,
+            1,
+            16,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#bj_rim",
+          "uv": [
+            0,
+            1,
+            16,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        12.5,
+        0
+      ],
+      "to": [
+        13,
+        14,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_0_1",
+          "uv": [
+            11,
+            0,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            0,
+            1,
+            16,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            0,
+            1,
+            16,
+            2.5
+          ]
+        }
+      }
+    }
+  ]
+}

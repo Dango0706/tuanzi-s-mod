@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NDN",
+    "NNN"
+  ],
+  "key": {
+    "N": "minecraft:gold_nugget",
+    "D": "minecraft:green_dye"
+  },
+  "result": {
+    "id": "casinodeco:vip_only_plaque"
+  }
+}

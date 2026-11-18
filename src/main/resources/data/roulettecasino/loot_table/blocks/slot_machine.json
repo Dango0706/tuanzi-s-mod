@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "roulettecasino:slot_machine",
+            "state": {
+              "half": "lower"
+            }
+          },
+          "name": "roulettecasino:slot_machine"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "roulettecasino:blocks/slot_machine"
+}

@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "casinodeco:block/ivory_marble"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v1"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v2"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v3"
+      }
+    ]
+  }
+}

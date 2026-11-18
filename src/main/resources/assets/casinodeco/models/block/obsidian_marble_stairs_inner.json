@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "casinodeco:block/obsidian_marble",
+    "top": "casinodeco:block/obsidian_marble",
+    "side": "casinodeco:block/obsidian_marble"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "NNN",
+    "PPP"
+  ],
+  "key": {
+    "P": "casinodeco:dark_oak_paneling",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:dark_oak_dado_rail",
+    "count": 6
+  }
+}

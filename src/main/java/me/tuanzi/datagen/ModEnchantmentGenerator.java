@@ -898,6 +898,19 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
         ).exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_NORMALIZATION))
         .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "gap_verdict")));
 
+        // 永恒 (Eternal) - 无生存获取方式，附魔后获得无法破坏且无法再次获得任何附魔
+        entries.add(ModEnchantments.ETERNAL, Enchantment.enchantment(
+                Enchantment.definition(
+                        items.getOrThrow(ItemTags.DURABILITY_ENCHANTABLE),
+                        1,    // weight
+                        1,    // max level
+                        Enchantment.constantCost(20),
+                        Enchantment.constantCost(50),
+                        8,    // anvil cost
+                        EquipmentSlotGroup.ANY
+                )
+        ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "eternal")));
+
     }
 
     @Override

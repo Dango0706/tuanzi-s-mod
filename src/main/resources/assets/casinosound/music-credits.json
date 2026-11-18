@@ -1,0 +1,84 @@
+{
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "changes": "Converted MP3 to Ogg Vorbis; loudness normalization to -20 LUFS. No composition edits.",
+  "tracks": [
+    {
+      "id": "airport_lounge",
+      "title": "Airport Lounge",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1100806",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100806",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Airport%20Lounge.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 13569570,
+      "duration_ms": 307700,
+      "sha256": "71a1924ac502043541d3a6d06a1f604f8d84150f9662a8d8dbfa5e487d491d26"
+    },
+    {
+      "id": "backbay_lounge",
+      "title": "Backbay Lounge",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1700068",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700068",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Backbay%20Lounge.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 11757060,
+      "duration_ms": 266600,
+      "sha256": "76ea46149f19878c38f2c046479d9ae4e19a2b20547e9b518d63128c5206a845"
+    },
+    {
+      "id": "jazz_brunch",
+      "title": "Jazz Brunch",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1700074",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700074",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Jazz%20Brunch.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 14253120,
+      "duration_ms": 323200,
+      "sha256": "6b6353b05710f20364b929ea3c29002827f55f81402a63d7092a8cfae3a13229"
+    },
+    {
+      "id": "george_street_shuffle",
+      "title": "George Street Shuffle",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1300035",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300035",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/George%20Street%20Shuffle.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 11836440,
+      "duration_ms": 268400,
+      "sha256": "114b092d93b3002b6f2fc5426be4cb840d9124f7fd9ad8e2746fad6ad35e232a"
+    },
+    {
+      "id": "cool_vibes",
+      "title": "Cool Vibes",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1100863",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100863",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Cool%20Vibes.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 9631440,
+      "duration_ms": 218400,
+      "sha256": "719929474205f0ad8c223c5a240cf7f0c6d3d650e7b16f9dfcde30473b288264"
+    },
+    {
+      "id": "bossa_antigua",
+      "title": "Bossa Antigua",
+      "artist": "Kevin MacLeod",
+      "isrc": "USUAN1700069",
+      "source": "https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1700069",
+      "download": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bossa%20Antigua.mp3",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "sample_rate": 44100,
+      "samples": 12497940,
+      "duration_ms": 283400,
+      "sha256": "99f57496fc0a55870378cc1af04be0a46a5c90797aeefa6151f9e2f44a6e4808"
+    }
+  ]
+}

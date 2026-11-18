@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "casinodeco:block/emerald_velvet_slab"
+    },
+    "type=double": {
+      "model": "casinodeco:block/emerald_velvet"
+    },
+    "type=top": {
+      "model": "casinodeco:block/emerald_velvet_slab_top"
+    }
+  }
+}

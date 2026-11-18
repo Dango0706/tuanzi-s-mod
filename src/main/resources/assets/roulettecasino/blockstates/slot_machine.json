@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=south,half=lower": {
+      "model": "roulettecasino:block/slot_machine_lower"
+    },
+    "facing=south,half=upper": {
+      "model": "roulettecasino:block/slot_machine_upper"
+    },
+    "facing=south,half=top": {
+      "model": "roulettecasino:block/slot_machine_top"
+    },
+    "facing=west,half=lower": {
+      "model": "roulettecasino:block/slot_machine_lower",
+      "y": 90
+    },
+    "facing=west,half=upper": {
+      "model": "roulettecasino:block/slot_machine_upper",
+      "y": 90
+    },
+    "facing=west,half=top": {
+      "model": "roulettecasino:block/slot_machine_top",
+      "y": 90
+    },
+    "facing=north,half=lower": {
+      "model": "roulettecasino:block/slot_machine_lower",
+      "y": 180
+    },
+    "facing=north,half=upper": {
+      "model": "roulettecasino:block/slot_machine_upper",
+      "y": 180
+    },
+    "facing=north,half=top": {
+      "model": "roulettecasino:block/slot_machine_top",
+      "y": 180
+    },
+    "facing=east,half=lower": {
+      "model": "roulettecasino:block/slot_machine_lower",
+      "y": 270
+    },
+    "facing=east,half=upper": {
+      "model": "roulettecasino:block/slot_machine_upper",
+      "y": 270
+    },
+    "facing=east,half=top": {
+      "model": "roulettecasino:block/slot_machine_top",
+      "y": 270
+    }
+  }
+}

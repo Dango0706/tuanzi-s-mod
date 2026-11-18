@@ -1,0 +1,585 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_caps"
+      }
+    },
+    {
+      "when": {
+        "east": "0",
+        "west": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_0_0"
+      }
+    },
+    {
+      "when": {
+        "east": "0",
+        "west": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_0_1"
+      }
+    },
+    {
+      "when": {
+        "east": "0",
+        "west": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_0_2"
+      }
+    },
+    {
+      "when": {
+        "east": "0",
+        "west": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_0_3"
+      }
+    },
+    {
+      "when": {
+        "east": "1",
+        "west": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_1_0"
+      }
+    },
+    {
+      "when": {
+        "east": "1",
+        "west": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_1_1"
+      }
+    },
+    {
+      "when": {
+        "east": "1",
+        "west": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_1_2"
+      }
+    },
+    {
+      "when": {
+        "east": "1",
+        "west": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_1_3"
+      }
+    },
+    {
+      "when": {
+        "east": "2",
+        "west": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_2_0"
+      }
+    },
+    {
+      "when": {
+        "east": "2",
+        "west": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_2_1"
+      }
+    },
+    {
+      "when": {
+        "east": "2",
+        "west": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_2_2"
+      }
+    },
+    {
+      "when": {
+        "east": "2",
+        "west": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_2_3"
+      }
+    },
+    {
+      "when": {
+        "east": "3",
+        "west": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_3_0"
+      }
+    },
+    {
+      "when": {
+        "east": "3",
+        "west": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_3_1"
+      }
+    },
+    {
+      "when": {
+        "east": "3",
+        "west": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_3_2"
+      }
+    },
+    {
+      "when": {
+        "east": "3",
+        "west": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_north_3_3"
+      }
+    },
+    {
+      "when": {
+        "west": "0",
+        "east": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_0_0"
+      }
+    },
+    {
+      "when": {
+        "west": "0",
+        "east": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_0_1"
+      }
+    },
+    {
+      "when": {
+        "west": "0",
+        "east": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_0_2"
+      }
+    },
+    {
+      "when": {
+        "west": "0",
+        "east": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_0_3"
+      }
+    },
+    {
+      "when": {
+        "west": "1",
+        "east": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_1_0"
+      }
+    },
+    {
+      "when": {
+        "west": "1",
+        "east": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_1_1"
+      }
+    },
+    {
+      "when": {
+        "west": "1",
+        "east": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_1_2"
+      }
+    },
+    {
+      "when": {
+        "west": "1",
+        "east": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_1_3"
+      }
+    },
+    {
+      "when": {
+        "west": "2",
+        "east": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_2_0"
+      }
+    },
+    {
+      "when": {
+        "west": "2",
+        "east": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_2_1"
+      }
+    },
+    {
+      "when": {
+        "west": "2",
+        "east": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_2_2"
+      }
+    },
+    {
+      "when": {
+        "west": "2",
+        "east": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_2_3"
+      }
+    },
+    {
+      "when": {
+        "west": "3",
+        "east": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_3_0"
+      }
+    },
+    {
+      "when": {
+        "west": "3",
+        "east": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_3_1"
+      }
+    },
+    {
+      "when": {
+        "west": "3",
+        "east": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_3_2"
+      }
+    },
+    {
+      "when": {
+        "west": "3",
+        "east": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_south_3_3"
+      }
+    },
+    {
+      "when": {
+        "south": "0",
+        "north": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_0_0"
+      }
+    },
+    {
+      "when": {
+        "south": "0",
+        "north": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_0_1"
+      }
+    },
+    {
+      "when": {
+        "south": "0",
+        "north": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_0_2"
+      }
+    },
+    {
+      "when": {
+        "south": "0",
+        "north": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_0_3"
+      }
+    },
+    {
+      "when": {
+        "south": "1",
+        "north": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_1_0"
+      }
+    },
+    {
+      "when": {
+        "south": "1",
+        "north": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_1_1"
+      }
+    },
+    {
+      "when": {
+        "south": "1",
+        "north": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_1_2"
+      }
+    },
+    {
+      "when": {
+        "south": "1",
+        "north": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_1_3"
+      }
+    },
+    {
+      "when": {
+        "south": "2",
+        "north": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_2_0"
+      }
+    },
+    {
+      "when": {
+        "south": "2",
+        "north": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_2_1"
+      }
+    },
+    {
+      "when": {
+        "south": "2",
+        "north": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_2_2"
+      }
+    },
+    {
+      "when": {
+        "south": "2",
+        "north": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_2_3"
+      }
+    },
+    {
+      "when": {
+        "south": "3",
+        "north": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_3_0"
+      }
+    },
+    {
+      "when": {
+        "south": "3",
+        "north": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_3_1"
+      }
+    },
+    {
+      "when": {
+        "south": "3",
+        "north": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_3_2"
+      }
+    },
+    {
+      "when": {
+        "south": "3",
+        "north": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_east_3_3"
+      }
+    },
+    {
+      "when": {
+        "north": "0",
+        "south": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_0_0"
+      }
+    },
+    {
+      "when": {
+        "north": "0",
+        "south": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_0_1"
+      }
+    },
+    {
+      "when": {
+        "north": "0",
+        "south": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_0_2"
+      }
+    },
+    {
+      "when": {
+        "north": "0",
+        "south": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_0_3"
+      }
+    },
+    {
+      "when": {
+        "north": "1",
+        "south": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_1_0"
+      }
+    },
+    {
+      "when": {
+        "north": "1",
+        "south": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_1_1"
+      }
+    },
+    {
+      "when": {
+        "north": "1",
+        "south": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_1_2"
+      }
+    },
+    {
+      "when": {
+        "north": "1",
+        "south": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_1_3"
+      }
+    },
+    {
+      "when": {
+        "north": "2",
+        "south": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_2_0"
+      }
+    },
+    {
+      "when": {
+        "north": "2",
+        "south": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_2_1"
+      }
+    },
+    {
+      "when": {
+        "north": "2",
+        "south": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_2_2"
+      }
+    },
+    {
+      "when": {
+        "north": "2",
+        "south": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_2_3"
+      }
+    },
+    {
+      "when": {
+        "north": "3",
+        "south": "0"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_3_0"
+      }
+    },
+    {
+      "when": {
+        "north": "3",
+        "south": "1"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_3_1"
+      }
+    },
+    {
+      "when": {
+        "north": "3",
+        "south": "2"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_3_2"
+      }
+    },
+    {
+      "when": {
+        "north": "3",
+        "south": "3"
+      },
+      "apply": {
+        "model": "casinodeco:block/classic_dark_oak_pilaster_west_3_3"
+      }
+    }
+  ]
+}

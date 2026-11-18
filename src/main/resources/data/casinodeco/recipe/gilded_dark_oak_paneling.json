@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PNP",
+    "PPP"
+  ],
+  "key": {
+    "P": "casinodeco:dark_oak_paneling",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:gilded_dark_oak_paneling",
+    "count": 8
+  }
+}

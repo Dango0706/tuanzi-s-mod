@@ -1,0 +1,55 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingredient": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "#roulettecasino:derby_ducks"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipes": "roulettecasino:duck_derby_mechanism"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingredient",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "roulettecasino:duck_derby_mechanism",
+      "roulettecasino:duck_derby_mechanism_order_01",
+      "roulettecasino:duck_derby_mechanism_order_02",
+      "roulettecasino:duck_derby_mechanism_order_03",
+      "roulettecasino:duck_derby_mechanism_order_04",
+      "roulettecasino:duck_derby_mechanism_order_05",
+      "roulettecasino:duck_derby_mechanism_order_06",
+      "roulettecasino:duck_derby_mechanism_order_07",
+      "roulettecasino:duck_derby_mechanism_order_08",
+      "roulettecasino:duck_derby_mechanism_order_09",
+      "roulettecasino:duck_derby_mechanism_order_10",
+      "roulettecasino:duck_derby_mechanism_order_11",
+      "roulettecasino:duck_derby_mechanism_order_12",
+      "roulettecasino:duck_derby_mechanism_order_13",
+      "roulettecasino:duck_derby_mechanism_order_14",
+      "roulettecasino:duck_derby_mechanism_order_15",
+      "roulettecasino:duck_derby_mechanism_order_16",
+      "roulettecasino:duck_derby_mechanism_order_17",
+      "roulettecasino:duck_derby_mechanism_order_18",
+      "roulettecasino:duck_derby_mechanism_order_19",
+      "roulettecasino:duck_derby_mechanism_order_20",
+      "roulettecasino:duck_derby_mechanism_order_21",
+      "roulettecasino:duck_derby_mechanism_order_22",
+      "roulettecasino:duck_derby_mechanism_order_23"
+    ]
+  }
+}

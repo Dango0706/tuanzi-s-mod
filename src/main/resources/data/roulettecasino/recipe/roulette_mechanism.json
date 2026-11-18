@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "GDG",
+    " R "
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "D": "minecraft:diamond_block",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:roulette_mechanism"
+  }
+}

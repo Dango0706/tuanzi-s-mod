@@ -3,6 +3,7 @@ package me.tuanzi.mixin;
 import me.tuanzi.init.ModEnchantments;
 import me.tuanzi.util.DamageCalculator;
 import me.tuanzi.util.ModLog;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -31,18 +32,28 @@ public abstract class EnchantmentMixin {
     private static final Style TUANZIS_MOD$ANCIENT_SCROLL_STYLE = Style.EMPTY.withColor(TextColor.fromRgb(0x7F00FF));
 
     @Unique
+    private static final Style TUANZIS_MOD$ETERNAL_STYLE = Style.EMPTY.withColor(ChatFormatting.RED).withBold(true);
+
+    @Unique
     private static boolean tuanzis_mod$isCrossbow(ItemStack stack) {
         return stack.is(Items.CROSSBOW) || stack.getItem() instanceof CrossbowItem || stack.is(ItemTags.CROSSBOW_ENCHANTABLE);
     }
 
     @Inject(method = "getFullname", at = @At("HEAD"), cancellable = true)
     private static void tuanzis_mod$renderAncientScrollColor(Holder<Enchantment> enchantment, int level, CallbackInfoReturnable<Component> cir) {
+        Style customStyle = null;
         if (enchantment.is(ModEnchantments.ANCIENT_SCROLL)) {
+            customStyle = TUANZIS_MOD$ANCIENT_SCROLL_STYLE;
+        } else if (enchantment.is(ModEnchantments.ETERNAL)) {
+            customStyle = TUANZIS_MOD$ETERNAL_STYLE;
+        }
+
+        if (customStyle != null) {
             MutableComponent result = enchantment.value().description().copy();
-            result = ComponentUtils.mergeStyles(result, TUANZIS_MOD$ANCIENT_SCROLL_STYLE);
+            result = ComponentUtils.mergeStyles(result, customStyle);
 
             if (level != 1 || enchantment.value().getMaxLevel() != 1) {
-                result.append(CommonComponents.SPACE).append(Component.translatable("enchantment.level." + level).withStyle(TUANZIS_MOD$ANCIENT_SCROLL_STYLE));
+                result.append(CommonComponents.SPACE).append(Component.translatable("enchantment.level." + level).withStyle(customStyle));
             }
 
             cir.setReturnValue(result);
@@ -66,6 +77,14 @@ public abstract class EnchantmentMixin {
             return "enchantment.tuanzis_mod.tonghui".equals(tc.getKey());
         }
         return this.description().getString().contains("enchantment.tuanzis_mod.tonghui");
+    }
+
+    @Unique
+    private boolean tuanzis_mod$isEternalEnchantment() {
+        if (this.description().getContents() instanceof TranslatableContents tc) {
+            return "enchantment.tuanzis_mod.eternal".equals(tc.getKey());
+        }
+        return this.description().getString().contains("enchantment.tuanzis_mod.eternal");
     }
 
     /**
@@ -101,7 +120,7 @@ public abstract class EnchantmentMixin {
      */
     @Inject(method = "isPrimaryItem", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$allowCrossbowPowerIsPrimary(ItemStack item, CallbackInfoReturnable<Boolean> cir) {
-        if (tuanzis_mod$isTonghuiEnchantment()) {
+        if (tuanzis_mod$isTonghuiEnchantment() || tuanzis_mod$isEternalEnchantment()) {
             cir.setReturnValue(false);
             return;
         }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "casino_bar_counter",
+  "pattern": [
+    "III",
+    "PPP",
+    "NNN"
+  ],
+  "key": {
+    "I": "casinodeco:ivory_marble",
+    "P": "#minecraft:planks",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:ivory_marble_bar",
+    "count": 6
+  }
+}

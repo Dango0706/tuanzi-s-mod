@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "east=false,north=false,south=false,west=false": {
+      "model": "casinodeco:block/table_wood_low_0"
+    },
+    "east=false,north=true,south=false,west=false": {
+      "model": "casinodeco:block/table_wood_low_1"
+    },
+    "east=true,north=false,south=false,west=false": {
+      "model": "casinodeco:block/table_wood_low_2"
+    },
+    "east=true,north=true,south=false,west=false": {
+      "model": "casinodeco:block/table_wood_low_3"
+    },
+    "east=false,north=false,south=true,west=false": {
+      "model": "casinodeco:block/table_wood_low_4"
+    },
+    "east=false,north=true,south=true,west=false": {
+      "model": "casinodeco:block/table_wood_low_5"
+    },
+    "east=true,north=false,south=true,west=false": {
+      "model": "casinodeco:block/table_wood_low_6"
+    },
+    "east=true,north=true,south=true,west=false": {
+      "model": "casinodeco:block/table_wood_low_7"
+    },
+    "east=false,north=false,south=false,west=true": {
+      "model": "casinodeco:block/table_wood_low_8"
+    },
+    "east=false,north=true,south=false,west=true": {
+      "model": "casinodeco:block/table_wood_low_9"
+    },
+    "east=true,north=false,south=false,west=true": {
+      "model": "casinodeco:block/table_wood_low_a"
+    },
+    "east=true,north=true,south=false,west=true": {
+      "model": "casinodeco:block/table_wood_low_b"
+    },
+    "east=false,north=false,south=true,west=true": {
+      "model": "casinodeco:block/table_wood_low_c"
+    },
+    "east=false,north=true,south=true,west=true": {
+      "model": "casinodeco:block/table_wood_low_d"
+    },
+    "east=true,north=false,south=true,west=true": {
+      "model": "casinodeco:block/table_wood_low_e"
+    },
+    "east=true,north=true,south=true,west=true": {
+      "model": "casinodeco:block/table_wood_low_f"
+    }
+  }
+}

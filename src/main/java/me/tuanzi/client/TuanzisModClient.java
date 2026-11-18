@@ -558,8 +558,17 @@ public class TuanzisModClient implements ClientModInitializer {
                             payload.cannonPos(), payload.targetPos(), net.minecraft.world.item.ItemStack.EMPTY, state, null, payload.isDestroy()
                     ));
 
+                    if (cannonBe.firstRenderTick) {
+                        double[] initialAngles = me.tuanzi.block.entity.BlueprintCannonBlockEntity.computeTargetAngles(
+                                payload.cannonPos(), payload.targetPos(), cannonBe.defaultYaw
+                        );
+                        cannonBe.renderYaw = cannonBe.prevRenderYaw = (float) initialAngles[0];
+                        cannonBe.renderPitch = cannonBe.prevRenderPitch = (float) initialAngles[1];
+                        cannonBe.firstRenderTick = false;
+                    }
+
                     // 精准从模型炮口出膛截面喷涌推进浓烟与火花粒子
-                    double[] angles = me.tuanzi.client.renderer.BlueprintCannonRenderer.getCannonAngles(cannonBe, payload.cannonPos(), 0.0f);
+                    double[] angles = me.tuanzi.client.renderer.BlueprintCannonRenderer.getCannonAngles(cannonBe, payload.cannonPos(), 1.0f);
                     double yaw = angles[0];
                     double pitch = angles[1];
                     net.minecraft.world.phys.Vec3 muzzle = me.tuanzi.client.renderer.BlueprintCannonRenderer.getMuzzlePosition(payload.cannonPos(), yaw, pitch, 6.0);
@@ -959,5 +968,9 @@ public class TuanzisModClient implements ClientModInitializer {
                 });
             }
         });
+
+        // 初始化并入的 MineVegas Casino 客户端模块（界面、方块实体渲染器、赌场音效）
+        new fr.minevegas.casino.fabric.MineVegasFabricClient().onInitializeClient();
+        me.tuanzi.util.ModLog.debug("MineVegas Casino client module initialized.");
     }
 }

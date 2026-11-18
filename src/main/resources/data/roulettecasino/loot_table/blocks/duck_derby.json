@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "roulettecasino:duck_derby",
+            "state": {
+              "part": "10"
+            }
+          },
+          "name": "roulettecasino:duck_derby"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "roulettecasino:blocks/duck_derby"
+}

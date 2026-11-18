@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "RVN",
+    "GMG",
+    "PSP"
+  ],
+  "key": {
+    "R": "minecraft:red_wool",
+    "V": "minecraft:green_wool",
+    "N": "minecraft:black_wool",
+    "G": "minecraft:gold_block",
+    "M": "roulettecasino:roulette_mechanism",
+    "P": "#minecraft:planks",
+    "S": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:roulette_table"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "casino_starred_carpet",
+  "pattern": [
+    "VVV",
+    "VNV",
+    "VVV"
+  ],
+  "key": {
+    "V": "casinodeco:emerald_velvet",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:emerald_stars",
+    "count": 8
+  }
+}

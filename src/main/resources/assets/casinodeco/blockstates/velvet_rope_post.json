@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "east=false,north=false,south=false,west=false": {
+      "model": "casinodeco:block/rope_post_0"
+    },
+    "east=false,north=true,south=false,west=false": {
+      "model": "casinodeco:block/rope_post_1"
+    },
+    "east=true,north=false,south=false,west=false": {
+      "model": "casinodeco:block/rope_post_2"
+    },
+    "east=true,north=true,south=false,west=false": {
+      "model": "casinodeco:block/rope_post_3"
+    },
+    "east=false,north=false,south=true,west=false": {
+      "model": "casinodeco:block/rope_post_4"
+    },
+    "east=false,north=true,south=true,west=false": {
+      "model": "casinodeco:block/rope_post_5"
+    },
+    "east=true,north=false,south=true,west=false": {
+      "model": "casinodeco:block/rope_post_6"
+    },
+    "east=true,north=true,south=true,west=false": {
+      "model": "casinodeco:block/rope_post_7"
+    },
+    "east=false,north=false,south=false,west=true": {
+      "model": "casinodeco:block/rope_post_8"
+    },
+    "east=false,north=true,south=false,west=true": {
+      "model": "casinodeco:block/rope_post_9"
+    },
+    "east=true,north=false,south=false,west=true": {
+      "model": "casinodeco:block/rope_post_a"
+    },
+    "east=true,north=true,south=false,west=true": {
+      "model": "casinodeco:block/rope_post_b"
+    },
+    "east=false,north=false,south=true,west=true": {
+      "model": "casinodeco:block/rope_post_c"
+    },
+    "east=false,north=true,south=true,west=true": {
+      "model": "casinodeco:block/rope_post_d"
+    },
+    "east=true,north=false,south=true,west=true": {
+      "model": "casinodeco:block/rope_post_e"
+    },
+    "east=true,north=true,south=true,west=true": {
+      "model": "casinodeco:block/rope_post_f"
+    }
+  }
+}

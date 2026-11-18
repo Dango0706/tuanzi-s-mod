@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " C ",
+    "GDI",
+    " P "
+  ],
+  "key": {
+    "C": "minecraft:yellow_dye",
+    "G": "minecraft:gold_nugget",
+    "D": "minecraft:diamond",
+    "I": "minecraft:iron_ingot",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "roulettecasino:derby_duck_yellow",
+    "count": 1
+  }
+}

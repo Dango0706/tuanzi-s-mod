@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "nnn",
+    "nTn",
+    "nRn"
+  ],
+  "key": {
+    "n": "minecraft:iron_nugget",
+    "T": "minecraft:tinted_glass",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:casino_tv"
+  }
+}

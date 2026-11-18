@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RDV",
+    "GHG",
+    "PSP"
+  ],
+  "key": {
+    "R": "minecraft:red_wool",
+    "D": "minecraft:diamond_block",
+    "V": "minecraft:green_wool",
+    "G": "minecraft:gold_block",
+    "H": "minecraft:dropper",
+    "P": "#minecraft:planks",
+    "S": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:plinko",
+    "count": 1
+  }
+}

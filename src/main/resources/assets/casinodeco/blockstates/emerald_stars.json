@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "casinodeco:block/emerald_stars"
+    },
+    "facing=east": {
+      "model": "casinodeco:block/emerald_stars",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "casinodeco:block/emerald_stars",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "casinodeco:block/emerald_stars",
+      "y": 270
+    }
+  }
+}

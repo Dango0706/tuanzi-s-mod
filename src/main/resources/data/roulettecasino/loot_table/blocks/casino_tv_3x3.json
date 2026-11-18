@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "roulettecasino:casino_tv_3x3",
+            "state": {
+              "part": "0"
+            }
+          },
+          "name": "roulettecasino:casino_tv_3x3"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "roulettecasino:blocks/casino_tv_3x3"
+}

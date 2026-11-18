@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "casinodeco:block/small_sign",
+      "y": 0
+    },
+    "facing=west": {
+      "model": "casinodeco:block/small_sign",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "casinodeco:block/small_sign",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "casinodeco:block/small_sign",
+      "y": 270
+    }
+  }
+}

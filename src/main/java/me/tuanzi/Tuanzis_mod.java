@@ -28,6 +28,7 @@ public class Tuanzis_mod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        me.tuanzi.config.ModConfig.load();
         // 注册二段跳网络包
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.DoubleJumpC2SPacket.TYPE, me.tuanzi.network.DoubleJumpC2SPacket.CODEC);
         // 注册连锁采掘按键网络包
@@ -43,6 +44,7 @@ public class Tuanzis_mod implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlockBreakerToggleModePacket.TYPE, me.tuanzi.network.BlockBreakerToggleModePacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlockPlacerActionPacket.TYPE, me.tuanzi.network.BlockPlacerActionPacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostTransformPacket.TYPE, me.tuanzi.network.GhostTransformPacket.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostPlaceStructurePacket.TYPE, me.tuanzi.network.GhostPlaceStructurePacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.BlueprintCannonShootS2CPacket.TYPE, me.tuanzi.network.BlueprintCannonShootS2CPacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
@@ -282,6 +284,72 @@ public class Tuanzis_mod implements ModInitializer {
             });
         });
 
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.GhostPlaceStructurePacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (!player.canUseGameMasterBlocks()) {
+                    ModLog.warn("玩家 " + player.getName().getString() + " 尝试无权限直接放置蓝图建筑，已拦截");
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint.no_permission")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
+
+                CompoundTag blueprintTag = null;
+                if (payload.useHeldBlueprint()) {
+                    ItemStack stack = player.getMainHandItem();
+                    if (!stack.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
+                        stack = player.getOffhandItem();
+                    }
+                    if (stack.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
+                        net.minecraft.world.item.component.CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+                        if (customData != null) {
+                            blueprintTag = customData.copyTag();
+                        }
+                    }
+                } else if (payload.blueprintData() != null && !payload.blueprintData().isEmpty()) {
+                    blueprintTag = payload.blueprintData();
+                }
+
+                if (blueprintTag == null || !blueprintTag.contains("Width")) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint.invalid")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
+
+                int w = blueprintTag.getIntOr("Width", 0);
+                int h = blueprintTag.getIntOr("Height", 0);
+                int l = blueprintTag.getIntOr("Length", 0);
+                long volume = (long) w * h * l;
+                if (w <= 0 || h <= 0 || l <= 0 || volume > 524288L) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint.invalid")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
+
+                me.tuanzi.block.cannon.BlueprintDirectPlacer.PlaceResult result =
+                        me.tuanzi.block.cannon.BlueprintDirectPlacer.placeBlueprint(
+                                player.level(),
+                                blueprintTag,
+                                payload.basePos(),
+                                payload.offset(),
+                                payload.rotation(),
+                                payload.mirrored()
+                        );
+                ModLog.debug(player, null, "直接放置蓝图建筑完成：basePos=" + payload.basePos()
+                        + ", offset=" + payload.offset()
+                        + ", rot=" + payload.rotation()
+                        + ", mir=" + payload.mirrored()
+                        + ", placedBlocks=" + result.placedBlocks()
+                        + ", clearedAir=" + result.clearedAirBlocks()
+                        + ", spawnedEntities=" + result.spawnedEntities());
+                player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+                        "message.tuanzis_mod.blueprint.direct_placed",
+                        result.placedBlocks(),
+                        result.spawnedEntities()
+                ).withStyle(net.minecraft.ChatFormatting.GREEN));
+            });
+        });
+
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
@@ -414,7 +482,12 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.command.BlueprintCommand.register(dispatcher);
             me.tuanzi.command.CorridorCommand.register(dispatcher);
             me.tuanzi.command.WitherKillsCommand.register(dispatcher);
+            me.tuanzi.command.ModConfigCommand.register(dispatcher);
         });
+
+        // 初始化并入的 MineVegas Casino 模块（游戏机器、赌场装饰与赌场音响）
+        new fr.minevegas.casino.fabric.MineVegasFabric().onInitialize();
+        ModLog.debug("MineVegas Casino module initialized.");
 
         ModLog.debug("Mod initialization started in development mode!");
     }

@@ -76,46 +76,32 @@ public class BlueprintCannonRenderer implements BlockEntityRenderer<BlueprintCan
     }
 
     /**
-     * 偏航角 Yaw 与俯仰角 Pitch 解析几何解算
+     * 偏航角 Yaw 与俯仰角 Pitch 平滑插值解算（由 clientTick 推进，避免停火后在两目标间反复震荡）
      */
     public static double[] getCannonAngles(BlueprintCannonBlockEntity blockEntity, BlockPos pos, float partialTicks) {
-        double yaw;
-        double pitch;
-
-        BlockPos target = blockEntity.currentTarget;
-        if (target != null) {
-            Vec3 diff = Vec3.atLowerCornerOf(target.subtract(pos));
-            if (blockEntity.previousTarget != null) {
-                diff = (Vec3.atLowerCornerOf(blockEntity.previousTarget)
-                        .add(Vec3.atLowerCornerOf(target.subtract(blockEntity.previousTarget))
-                                .scale(partialTicks))).subtract(Vec3.atLowerCornerOf(pos));
-            }
-
-            double diffX = diff.x();
-            double diffZ = diff.z();
-            yaw = Mth.atan2(diffX, diffZ) / Math.PI * 180.0;
-
-            float distance = Mth.sqrt((float) (diffX * diffX + diffZ * diffZ));
-            // 真实抛物线动力学仰角：高度差 + 随距离提升的抛物线扬角补偿
-            double targetPitch = Math.toDegrees(Math.atan2(diff.y() + distance * 0.35, distance));
-            pitch = Mth.clamp(targetPitch, 10.0, 75.0);
-        } else {
-            yaw = blockEntity.defaultYaw;
-            pitch = 30.0;
+        if (blockEntity.firstRenderTick) {
+            double[] initial = BlueprintCannonBlockEntity.computeTargetAngles(pos, blockEntity.currentTarget, blockEntity.defaultYaw);
+            blockEntity.renderYaw = blockEntity.prevRenderYaw = (float) initial[0];
+            blockEntity.renderPitch = blockEntity.prevRenderPitch = (float) initial[1];
+            blockEntity.firstRenderTick = false;
+            return initial;
         }
-
+        double yaw = Mth.rotLerp(partialTicks, blockEntity.prevRenderYaw, blockEntity.renderYaw);
+        double pitch = Mth.lerp(partialTicks, blockEntity.prevRenderPitch, blockEntity.renderPitch);
         return new double[]{yaw, pitch};
     }
 
     /**
-     * 出膛前 10 ticks 线性后坐力衰减判定
+     * 出膛前 10 ticks 线性后坐力平滑衰减判定
      */
     public static double getRecoil(BlueprintCannonBlockEntity blockEntity, float partialTicks) {
         double recoil = 0.0;
         for (LaunchedItem launched : blockEntity.flyingBlocks) {
-            if (launched.ticksRemaining == 0) continue;
-            if ((launched.ticksRemaining + 1 - partialTicks) > launched.totalTicks - 10) {
-                recoil = Math.max(recoil, (launched.ticksRemaining + 1 - partialTicks) - launched.totalTicks + 10);
+            if (launched.ticksRemaining <= 0) continue;
+            double remaining = launched.ticksRemaining - partialTicks;
+            double threshold = launched.totalTicks - 10.0;
+            if (remaining > threshold) {
+                recoil = Math.max(recoil, remaining - threshold);
             }
         }
         return recoil;

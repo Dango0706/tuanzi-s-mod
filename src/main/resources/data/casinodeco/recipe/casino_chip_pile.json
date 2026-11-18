@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RGK",
+    "CCC"
+  ],
+  "key": {
+    "R": "minecraft:red_dye",
+    "G": "minecraft:green_dye",
+    "K": "minecraft:black_dye",
+    "C": "minecraft:clay_ball"
+  },
+  "result": {
+    "id": "casinodeco:casino_chip_pile",
+    "count": 2
+  }
+}

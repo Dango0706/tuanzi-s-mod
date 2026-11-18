@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "casinodeco:block/gold_veined_black_marble"
+      },
+      {
+        "model": "casinodeco:block/gold_veined_black_marble_v1"
+      },
+      {
+        "model": "casinodeco:block/gold_veined_black_marble_v2"
+      },
+      {
+        "model": "casinodeco:block/gold_veined_black_marble_v3"
+      }
+    ]
+  }
+}

@@ -83,5 +83,29 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
                 .addOptionalTag(ItemTags.SHOVELS)
                 .addOptionalTag(ItemTags.HOES)
                 .add(net.minecraft.world.item.Items.SHEARS.builtInRegistryHolder().key());
+
+        // 注册赌场可下注物品标签 (#roulettecasino:bets)：原模组默认矿物/矿物块 + 本模组全套筹码（不包含钱币）
+        var casinoBetsBuilder = builder(fr.minevegas.casino.CasinoBets.BETS)
+                .add(net.minecraft.world.item.Items.COAL.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.COAL_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.COPPER_INGOT.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.COPPER_BLOCK.weathering().unaffected().builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.IRON_INGOT.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.IRON_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.GOLD_INGOT.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.GOLD_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.REDSTONE.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.REDSTONE_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.LAPIS_LAZULI.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.LAPIS_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.EMERALD.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.EMERALD_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.DIAMOND.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.DIAMOND_BLOCK.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.NETHERITE_INGOT.builtInRegistryHolder().key())
+                .add(net.minecraft.world.item.Items.NETHERITE_BLOCK.builtInRegistryHolder().key());
+        for (net.minecraft.world.level.block.Block chip : me.tuanzi.init.ModBlocks.CHIPS) {
+            casinoBetsBuilder.add(chip.asItem().builtInRegistryHolder().key());
+        }
     }
 }

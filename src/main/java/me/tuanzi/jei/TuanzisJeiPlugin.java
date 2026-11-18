@@ -1328,6 +1328,9 @@ public class TuanzisJeiPlugin implements IModPlugin {
         // 注册隙间裁决附魔介绍页
         registerEnchantmentBookInfo(registration, ModEnchantments.GAP_VERDICT, "jei.tuanzis_mod.gap_verdict.description");
 
+        // 注册永恒附魔介绍页
+        registerEnchantmentBookInfo(registration, ModEnchantments.ETERNAL, "jei.tuanzis_mod.eternal.description");
+
         // 注册贯震铭刻附魔介绍页
         registerEnchantmentBookInfo(registration, ModEnchantments.PERVADING_VIBRATION, "jei.tuanzis_mod.pervading_vibration.description");
 
@@ -1344,6 +1347,34 @@ public class TuanzisJeiPlugin implements IModPlugin {
             registration.addIngredientInfo(new ItemStack(chip), VanillaTypes.ITEM_STACK,
                     Component.translatable("jei.tuanzis_mod." + chipId.getPath() + ".description"));
         }
+
+        // 注册并入的 MineVegas Casino 核心机器与道具 JEI 介绍页
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.CASINO_GUIDE), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.casino_guide.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.TABLE_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.roulette_table.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.BLACKJACK_TABLE_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.blackjack_table.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.POKER_TABLE_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.poker_table.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.DUCK_DERBY_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.duck_derby.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.SLOT_MACHINE_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.slot_machine.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.FORTUNE_WHEEL_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.fortune_wheel.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.PLINKO_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.plinko.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.DEALER_STATION_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.dealer_station.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.HIRING_CARD), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.croupier_hiring_card.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.RouletteMod.CROUPIER_BADGE), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.croupier_badge.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casino.CroupierHandItem.ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.croupier_hand.description"));
+        registration.addIngredientInfo(new ItemStack(fr.minevegas.casinosound.CasinoSoundMod.SPEAKER_ITEM), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.casino_speaker.description"));
     }
 
     @Override

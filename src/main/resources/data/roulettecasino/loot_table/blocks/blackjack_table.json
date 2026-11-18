@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "roulettecasino:blackjack_table",
+            "state": {
+              "part": "5"
+            }
+          },
+          "name": "roulettecasino:blackjack_table"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "roulettecasino:blocks/blackjack_table"
+}

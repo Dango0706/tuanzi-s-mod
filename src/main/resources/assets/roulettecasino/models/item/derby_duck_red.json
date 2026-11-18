@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "roulettecasino:item/derby_duck_red"
+  }
+}

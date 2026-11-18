@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B  ",
+    "BB ",
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:ivory_black_checkers"
+  },
+  "result": {
+    "id": "casinodeco:ivory_black_checkers_stairs",
+    "count": 4
+  }
+}

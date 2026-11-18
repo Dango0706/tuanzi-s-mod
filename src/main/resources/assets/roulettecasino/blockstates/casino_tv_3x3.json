@@ -1,0 +1,2596 @@
+{
+  "variants": {
+    "facing=south,on=false,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=0": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=1": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen1_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=2": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen2_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=3": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen3_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=4": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen4_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=5": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen5_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=6": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen6_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=7": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen7_8",
+      "y": 270
+    },
+    "facing=south,on=false,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 0
+    },
+    "facing=south,on=true,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_0",
+      "y": 0
+    },
+    "facing=west,on=false,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 90
+    },
+    "facing=west,on=true,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_0",
+      "y": 90
+    },
+    "facing=north,on=false,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 180
+    },
+    "facing=north,on=true,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_0",
+      "y": 180
+    },
+    "facing=east,on=false,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_0",
+      "y": 270
+    },
+    "facing=east,on=true,part=0,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_0",
+      "y": 270
+    },
+    "facing=south,on=false,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 0
+    },
+    "facing=south,on=true,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_1",
+      "y": 0
+    },
+    "facing=west,on=false,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 90
+    },
+    "facing=west,on=true,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_1",
+      "y": 90
+    },
+    "facing=north,on=false,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 180
+    },
+    "facing=north,on=true,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_1",
+      "y": 180
+    },
+    "facing=east,on=false,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_1",
+      "y": 270
+    },
+    "facing=east,on=true,part=1,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_1",
+      "y": 270
+    },
+    "facing=south,on=false,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 0
+    },
+    "facing=south,on=true,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_2",
+      "y": 0
+    },
+    "facing=west,on=false,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 90
+    },
+    "facing=west,on=true,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_2",
+      "y": 90
+    },
+    "facing=north,on=false,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 180
+    },
+    "facing=north,on=true,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_2",
+      "y": 180
+    },
+    "facing=east,on=false,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_2",
+      "y": 270
+    },
+    "facing=east,on=true,part=2,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_2",
+      "y": 270
+    },
+    "facing=south,on=false,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 0
+    },
+    "facing=south,on=true,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_3",
+      "y": 0
+    },
+    "facing=west,on=false,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 90
+    },
+    "facing=west,on=true,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_3",
+      "y": 90
+    },
+    "facing=north,on=false,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 180
+    },
+    "facing=north,on=true,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_3",
+      "y": 180
+    },
+    "facing=east,on=false,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_3",
+      "y": 270
+    },
+    "facing=east,on=true,part=3,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_3",
+      "y": 270
+    },
+    "facing=south,on=false,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 0
+    },
+    "facing=south,on=true,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_4",
+      "y": 0
+    },
+    "facing=west,on=false,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 90
+    },
+    "facing=west,on=true,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_4",
+      "y": 90
+    },
+    "facing=north,on=false,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 180
+    },
+    "facing=north,on=true,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_4",
+      "y": 180
+    },
+    "facing=east,on=false,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_4",
+      "y": 270
+    },
+    "facing=east,on=true,part=4,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_4",
+      "y": 270
+    },
+    "facing=south,on=false,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 0
+    },
+    "facing=south,on=true,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_5",
+      "y": 0
+    },
+    "facing=west,on=false,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 90
+    },
+    "facing=west,on=true,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_5",
+      "y": 90
+    },
+    "facing=north,on=false,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 180
+    },
+    "facing=north,on=true,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_5",
+      "y": 180
+    },
+    "facing=east,on=false,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_5",
+      "y": 270
+    },
+    "facing=east,on=true,part=5,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_5",
+      "y": 270
+    },
+    "facing=south,on=false,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 0
+    },
+    "facing=south,on=true,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_6",
+      "y": 0
+    },
+    "facing=west,on=false,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 90
+    },
+    "facing=west,on=true,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_6",
+      "y": 90
+    },
+    "facing=north,on=false,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 180
+    },
+    "facing=north,on=true,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_6",
+      "y": 180
+    },
+    "facing=east,on=false,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_6",
+      "y": 270
+    },
+    "facing=east,on=true,part=6,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_6",
+      "y": 270
+    },
+    "facing=south,on=false,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 0
+    },
+    "facing=south,on=true,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_7",
+      "y": 0
+    },
+    "facing=west,on=false,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 90
+    },
+    "facing=west,on=true,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_7",
+      "y": 90
+    },
+    "facing=north,on=false,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 180
+    },
+    "facing=north,on=true,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_7",
+      "y": 180
+    },
+    "facing=east,on=false,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_7",
+      "y": 270
+    },
+    "facing=east,on=true,part=7,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_7",
+      "y": 270
+    },
+    "facing=south,on=false,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 0
+    },
+    "facing=south,on=true,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_8",
+      "y": 0
+    },
+    "facing=west,on=false,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 90
+    },
+    "facing=west,on=true,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_8",
+      "y": 90
+    },
+    "facing=north,on=false,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 180
+    },
+    "facing=north,on=true,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_8",
+      "y": 180
+    },
+    "facing=east,on=false,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen0_8",
+      "y": 270
+    },
+    "facing=east,on=true,part=8,screen=8": {
+      "model": "roulettecasino:block/casino_tv_3x3_screen8_8",
+      "y": 270
+    }
+  }
+}

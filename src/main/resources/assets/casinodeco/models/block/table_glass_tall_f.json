@@ -1,0 +1,44 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "casinodeco:block/sofa_brass",
+    "wood": "casinodeco:block/sofa_walnut",
+    "gold": "casinodeco:block/sofa_brass",
+    "glass": "casinodeco:block/decor_glass"
+  },
+  "elements": [
+    {
+      "name": "glass_top",
+      "from": [
+        0.0,
+        15.3,
+        0.0
+      ],
+      "to": [
+        16.0,
+        15.9,
+        16.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#glass",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

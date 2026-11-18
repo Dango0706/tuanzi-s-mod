@@ -1,0 +1,256 @@
+{
+  "textures": {
+    "particle": "roulettecasino:block/bj_side",
+    "bj_side": "roulettecasino:block/bj_side",
+    "bj_back": "roulettecasino:block/bj_back",
+    "dd_top_1_0": "roulettecasino:block/dd_top_1_0",
+    "bj_rim": "roulettecasino:block/bj_rim",
+    "gold": "roulettecasino:block/gold",
+    "dd_signback": "roulettecasino:block/dd_signback",
+    "dd_sign": "roulettecasino:block/dd_sign"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        3
+      ],
+      "to": [
+        16,
+        1,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            3,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        1,
+        5
+      ],
+      "to": [
+        16,
+        10,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bj_back",
+          "uv": [
+            0,
+            6,
+            16,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        10,
+        0
+      ],
+      "to": [
+        16,
+        12,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#bj_side",
+          "uv": [
+            0,
+            4,
+            16,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        1
+      ],
+      "to": [
+        16,
+        12.5,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_1_0",
+          "uv": [
+            0,
+            1,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        0
+      ],
+      "to": [
+        16,
+        14,
+        1
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_1_0",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "north": {
+          "texture": "#bj_rim",
+          "uv": [
+            0,
+            1,
+            16,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#bj_rim",
+          "uv": [
+            0,
+            1,
+            16,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        12.5,
+        1
+      ],
+      "to": [
+        9,
+        14,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#dd_top_1_0",
+          "uv": [
+            7,
+            1,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            0,
+            1,
+            15,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            1,
+            1,
+            16,
+            2.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        17,
+        1
+      ],
+      "to": [
+        16,
+        31,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#gold",
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#gold",
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ]
+        },
+        "north": {
+          "texture": "#dd_signback",
+          "uv": [
+            4.8,
+            0,
+            11.2,
+            14
+          ]
+        },
+        "south": {
+          "texture": "#dd_sign",
+          "uv": [
+            4.8,
+            0,
+            11.2,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

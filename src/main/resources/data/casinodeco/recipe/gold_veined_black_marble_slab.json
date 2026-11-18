@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:gold_veined_black_marble"
+  },
+  "result": {
+    "id": "casinodeco:gold_veined_black_marble_slab",
+    "count": 6
+  }
+}

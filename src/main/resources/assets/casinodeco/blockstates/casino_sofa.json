@@ -1,0 +1,1732 @@
+{
+  "variants": {
+    "back=none,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a0"
+    },
+    "back=north,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a1"
+    },
+    "back=east,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a2"
+    },
+    "back=south,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a4"
+    },
+    "back=west,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a8"
+    },
+    "back=north_east,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a3"
+    },
+    "back=south_east,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a6"
+    },
+    "back=south_west,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_ac"
+    },
+    "back=north_west,facing=north,joins=0": {
+      "model": "casinodeco:block/sofa_a9"
+    },
+    "back=none,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_140"
+    },
+    "back=north,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_141"
+    },
+    "back=east,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_142"
+    },
+    "back=south,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_144"
+    },
+    "back=west,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_148"
+    },
+    "back=north_east,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_143"
+    },
+    "back=south_east,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_146"
+    },
+    "back=south_west,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_14c"
+    },
+    "back=north_west,facing=north,joins=1": {
+      "model": "casinodeco:block/sofa_149"
+    },
+    "back=none,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_280"
+    },
+    "back=north,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_281"
+    },
+    "back=east,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_282"
+    },
+    "back=south,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_284"
+    },
+    "back=west,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_288"
+    },
+    "back=north_east,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_283"
+    },
+    "back=south_east,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_286"
+    },
+    "back=south_west,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_28c"
+    },
+    "back=north_west,facing=north,joins=2": {
+      "model": "casinodeco:block/sofa_289"
+    },
+    "back=none,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_300"
+    },
+    "back=north,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_301"
+    },
+    "back=east,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_302"
+    },
+    "back=south,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_304"
+    },
+    "back=west,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_308"
+    },
+    "back=north_east,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_303"
+    },
+    "back=south_east,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_306"
+    },
+    "back=south_west,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_30c"
+    },
+    "back=north_west,facing=north,joins=3": {
+      "model": "casinodeco:block/sofa_309"
+    },
+    "back=none,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_410"
+    },
+    "back=north,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_411"
+    },
+    "back=east,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_412"
+    },
+    "back=south,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_414"
+    },
+    "back=west,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_418"
+    },
+    "back=north_east,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_413"
+    },
+    "back=south_east,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_416"
+    },
+    "back=south_west,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_41c"
+    },
+    "back=north_west,facing=north,joins=4": {
+      "model": "casinodeco:block/sofa_419"
+    },
+    "back=none,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_500"
+    },
+    "back=north,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_501"
+    },
+    "back=east,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_502"
+    },
+    "back=south,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_504"
+    },
+    "back=west,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_508"
+    },
+    "back=north_east,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_503"
+    },
+    "back=south_east,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_506"
+    },
+    "back=south_west,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_50c"
+    },
+    "back=north_west,facing=north,joins=5": {
+      "model": "casinodeco:block/sofa_509"
+    },
+    "back=none,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_600"
+    },
+    "back=north,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_601"
+    },
+    "back=east,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_602"
+    },
+    "back=south,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_604"
+    },
+    "back=west,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_608"
+    },
+    "back=north_east,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_603"
+    },
+    "back=south_east,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_606"
+    },
+    "back=south_west,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_60c"
+    },
+    "back=north_west,facing=north,joins=6": {
+      "model": "casinodeco:block/sofa_609"
+    },
+    "back=none,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_700"
+    },
+    "back=north,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_701"
+    },
+    "back=east,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_702"
+    },
+    "back=south,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_704"
+    },
+    "back=west,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_708"
+    },
+    "back=north_east,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_703"
+    },
+    "back=south_east,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_706"
+    },
+    "back=south_west,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_70c"
+    },
+    "back=north_west,facing=north,joins=7": {
+      "model": "casinodeco:block/sofa_709"
+    },
+    "back=none,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_820"
+    },
+    "back=north,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_821"
+    },
+    "back=east,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_822"
+    },
+    "back=south,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_824"
+    },
+    "back=west,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_828"
+    },
+    "back=north_east,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_823"
+    },
+    "back=south_east,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_826"
+    },
+    "back=south_west,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_82c"
+    },
+    "back=north_west,facing=north,joins=8": {
+      "model": "casinodeco:block/sofa_829"
+    },
+    "back=none,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_900"
+    },
+    "back=north,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_901"
+    },
+    "back=east,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_902"
+    },
+    "back=south,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_904"
+    },
+    "back=west,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_908"
+    },
+    "back=north_east,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_903"
+    },
+    "back=south_east,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_906"
+    },
+    "back=south_west,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_90c"
+    },
+    "back=north_west,facing=north,joins=9": {
+      "model": "casinodeco:block/sofa_909"
+    },
+    "back=none,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a00"
+    },
+    "back=north,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a01"
+    },
+    "back=east,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a02"
+    },
+    "back=south,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a04"
+    },
+    "back=west,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a08"
+    },
+    "back=north_east,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a03"
+    },
+    "back=south_east,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a06"
+    },
+    "back=south_west,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a0c"
+    },
+    "back=north_west,facing=north,joins=10": {
+      "model": "casinodeco:block/sofa_a09"
+    },
+    "back=none,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b00"
+    },
+    "back=north,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b01"
+    },
+    "back=east,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b02"
+    },
+    "back=south,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b04"
+    },
+    "back=west,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b08"
+    },
+    "back=north_east,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b03"
+    },
+    "back=south_east,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b06"
+    },
+    "back=south_west,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b0c"
+    },
+    "back=north_west,facing=north,joins=11": {
+      "model": "casinodeco:block/sofa_b09"
+    },
+    "back=none,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c00"
+    },
+    "back=north,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c01"
+    },
+    "back=east,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c02"
+    },
+    "back=south,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c04"
+    },
+    "back=west,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c08"
+    },
+    "back=north_east,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c03"
+    },
+    "back=south_east,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c06"
+    },
+    "back=south_west,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c0c"
+    },
+    "back=north_west,facing=north,joins=12": {
+      "model": "casinodeco:block/sofa_c09"
+    },
+    "back=none,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d00"
+    },
+    "back=north,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d01"
+    },
+    "back=east,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d02"
+    },
+    "back=south,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d04"
+    },
+    "back=west,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d08"
+    },
+    "back=north_east,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d03"
+    },
+    "back=south_east,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d06"
+    },
+    "back=south_west,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d0c"
+    },
+    "back=north_west,facing=north,joins=13": {
+      "model": "casinodeco:block/sofa_d09"
+    },
+    "back=none,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e00"
+    },
+    "back=north,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e01"
+    },
+    "back=east,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e02"
+    },
+    "back=south,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e04"
+    },
+    "back=west,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e08"
+    },
+    "back=north_east,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e03"
+    },
+    "back=south_east,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e06"
+    },
+    "back=south_west,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e0c"
+    },
+    "back=north_west,facing=north,joins=14": {
+      "model": "casinodeco:block/sofa_e09"
+    },
+    "back=none,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f00"
+    },
+    "back=north,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f01"
+    },
+    "back=east,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f02"
+    },
+    "back=south,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f04"
+    },
+    "back=west,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f08"
+    },
+    "back=north_east,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f03"
+    },
+    "back=south_east,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f06"
+    },
+    "back=south_west,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f0c"
+    },
+    "back=north_west,facing=north,joins=15": {
+      "model": "casinodeco:block/sofa_f09"
+    },
+    "back=none,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_50"
+    },
+    "back=north,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_51"
+    },
+    "back=east,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_52"
+    },
+    "back=south,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_54"
+    },
+    "back=west,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_58"
+    },
+    "back=north_east,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_53"
+    },
+    "back=south_east,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_56"
+    },
+    "back=south_west,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_5c"
+    },
+    "back=north_west,facing=east,joins=0": {
+      "model": "casinodeco:block/sofa_59"
+    },
+    "back=none,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_140"
+    },
+    "back=north,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_141"
+    },
+    "back=east,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_142"
+    },
+    "back=south,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_144"
+    },
+    "back=west,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_148"
+    },
+    "back=north_east,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_143"
+    },
+    "back=south_east,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_146"
+    },
+    "back=south_west,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_14c"
+    },
+    "back=north_west,facing=east,joins=1": {
+      "model": "casinodeco:block/sofa_149"
+    },
+    "back=none,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_280"
+    },
+    "back=north,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_281"
+    },
+    "back=east,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_282"
+    },
+    "back=south,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_284"
+    },
+    "back=west,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_288"
+    },
+    "back=north_east,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_283"
+    },
+    "back=south_east,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_286"
+    },
+    "back=south_west,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_28c"
+    },
+    "back=north_west,facing=east,joins=2": {
+      "model": "casinodeco:block/sofa_289"
+    },
+    "back=none,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_300"
+    },
+    "back=north,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_301"
+    },
+    "back=east,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_302"
+    },
+    "back=south,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_304"
+    },
+    "back=west,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_308"
+    },
+    "back=north_east,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_303"
+    },
+    "back=south_east,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_306"
+    },
+    "back=south_west,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_30c"
+    },
+    "back=north_west,facing=east,joins=3": {
+      "model": "casinodeco:block/sofa_309"
+    },
+    "back=none,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_410"
+    },
+    "back=north,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_411"
+    },
+    "back=east,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_412"
+    },
+    "back=south,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_414"
+    },
+    "back=west,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_418"
+    },
+    "back=north_east,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_413"
+    },
+    "back=south_east,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_416"
+    },
+    "back=south_west,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_41c"
+    },
+    "back=north_west,facing=east,joins=4": {
+      "model": "casinodeco:block/sofa_419"
+    },
+    "back=none,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_500"
+    },
+    "back=north,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_501"
+    },
+    "back=east,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_502"
+    },
+    "back=south,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_504"
+    },
+    "back=west,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_508"
+    },
+    "back=north_east,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_503"
+    },
+    "back=south_east,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_506"
+    },
+    "back=south_west,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_50c"
+    },
+    "back=north_west,facing=east,joins=5": {
+      "model": "casinodeco:block/sofa_509"
+    },
+    "back=none,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_600"
+    },
+    "back=north,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_601"
+    },
+    "back=east,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_602"
+    },
+    "back=south,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_604"
+    },
+    "back=west,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_608"
+    },
+    "back=north_east,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_603"
+    },
+    "back=south_east,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_606"
+    },
+    "back=south_west,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_60c"
+    },
+    "back=north_west,facing=east,joins=6": {
+      "model": "casinodeco:block/sofa_609"
+    },
+    "back=none,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_700"
+    },
+    "back=north,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_701"
+    },
+    "back=east,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_702"
+    },
+    "back=south,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_704"
+    },
+    "back=west,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_708"
+    },
+    "back=north_east,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_703"
+    },
+    "back=south_east,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_706"
+    },
+    "back=south_west,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_70c"
+    },
+    "back=north_west,facing=east,joins=7": {
+      "model": "casinodeco:block/sofa_709"
+    },
+    "back=none,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_820"
+    },
+    "back=north,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_821"
+    },
+    "back=east,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_822"
+    },
+    "back=south,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_824"
+    },
+    "back=west,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_828"
+    },
+    "back=north_east,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_823"
+    },
+    "back=south_east,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_826"
+    },
+    "back=south_west,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_82c"
+    },
+    "back=north_west,facing=east,joins=8": {
+      "model": "casinodeco:block/sofa_829"
+    },
+    "back=none,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_900"
+    },
+    "back=north,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_901"
+    },
+    "back=east,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_902"
+    },
+    "back=south,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_904"
+    },
+    "back=west,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_908"
+    },
+    "back=north_east,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_903"
+    },
+    "back=south_east,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_906"
+    },
+    "back=south_west,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_90c"
+    },
+    "back=north_west,facing=east,joins=9": {
+      "model": "casinodeco:block/sofa_909"
+    },
+    "back=none,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a00"
+    },
+    "back=north,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a01"
+    },
+    "back=east,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a02"
+    },
+    "back=south,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a04"
+    },
+    "back=west,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a08"
+    },
+    "back=north_east,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a03"
+    },
+    "back=south_east,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a06"
+    },
+    "back=south_west,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a0c"
+    },
+    "back=north_west,facing=east,joins=10": {
+      "model": "casinodeco:block/sofa_a09"
+    },
+    "back=none,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b00"
+    },
+    "back=north,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b01"
+    },
+    "back=east,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b02"
+    },
+    "back=south,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b04"
+    },
+    "back=west,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b08"
+    },
+    "back=north_east,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b03"
+    },
+    "back=south_east,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b06"
+    },
+    "back=south_west,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b0c"
+    },
+    "back=north_west,facing=east,joins=11": {
+      "model": "casinodeco:block/sofa_b09"
+    },
+    "back=none,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c00"
+    },
+    "back=north,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c01"
+    },
+    "back=east,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c02"
+    },
+    "back=south,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c04"
+    },
+    "back=west,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c08"
+    },
+    "back=north_east,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c03"
+    },
+    "back=south_east,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c06"
+    },
+    "back=south_west,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c0c"
+    },
+    "back=north_west,facing=east,joins=12": {
+      "model": "casinodeco:block/sofa_c09"
+    },
+    "back=none,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d00"
+    },
+    "back=north,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d01"
+    },
+    "back=east,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d02"
+    },
+    "back=south,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d04"
+    },
+    "back=west,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d08"
+    },
+    "back=north_east,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d03"
+    },
+    "back=south_east,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d06"
+    },
+    "back=south_west,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d0c"
+    },
+    "back=north_west,facing=east,joins=13": {
+      "model": "casinodeco:block/sofa_d09"
+    },
+    "back=none,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e00"
+    },
+    "back=north,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e01"
+    },
+    "back=east,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e02"
+    },
+    "back=south,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e04"
+    },
+    "back=west,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e08"
+    },
+    "back=north_east,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e03"
+    },
+    "back=south_east,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e06"
+    },
+    "back=south_west,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e0c"
+    },
+    "back=north_west,facing=east,joins=14": {
+      "model": "casinodeco:block/sofa_e09"
+    },
+    "back=none,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f00"
+    },
+    "back=north,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f01"
+    },
+    "back=east,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f02"
+    },
+    "back=south,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f04"
+    },
+    "back=west,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f08"
+    },
+    "back=north_east,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f03"
+    },
+    "back=south_east,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f06"
+    },
+    "back=south_west,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f0c"
+    },
+    "back=north_west,facing=east,joins=15": {
+      "model": "casinodeco:block/sofa_f09"
+    },
+    "back=none,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a0"
+    },
+    "back=north,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a1"
+    },
+    "back=east,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a2"
+    },
+    "back=south,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a4"
+    },
+    "back=west,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a8"
+    },
+    "back=north_east,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a3"
+    },
+    "back=south_east,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a6"
+    },
+    "back=south_west,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_ac"
+    },
+    "back=north_west,facing=south,joins=0": {
+      "model": "casinodeco:block/sofa_a9"
+    },
+    "back=none,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_140"
+    },
+    "back=north,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_141"
+    },
+    "back=east,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_142"
+    },
+    "back=south,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_144"
+    },
+    "back=west,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_148"
+    },
+    "back=north_east,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_143"
+    },
+    "back=south_east,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_146"
+    },
+    "back=south_west,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_14c"
+    },
+    "back=north_west,facing=south,joins=1": {
+      "model": "casinodeco:block/sofa_149"
+    },
+    "back=none,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_280"
+    },
+    "back=north,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_281"
+    },
+    "back=east,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_282"
+    },
+    "back=south,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_284"
+    },
+    "back=west,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_288"
+    },
+    "back=north_east,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_283"
+    },
+    "back=south_east,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_286"
+    },
+    "back=south_west,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_28c"
+    },
+    "back=north_west,facing=south,joins=2": {
+      "model": "casinodeco:block/sofa_289"
+    },
+    "back=none,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_300"
+    },
+    "back=north,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_301"
+    },
+    "back=east,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_302"
+    },
+    "back=south,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_304"
+    },
+    "back=west,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_308"
+    },
+    "back=north_east,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_303"
+    },
+    "back=south_east,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_306"
+    },
+    "back=south_west,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_30c"
+    },
+    "back=north_west,facing=south,joins=3": {
+      "model": "casinodeco:block/sofa_309"
+    },
+    "back=none,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_410"
+    },
+    "back=north,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_411"
+    },
+    "back=east,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_412"
+    },
+    "back=south,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_414"
+    },
+    "back=west,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_418"
+    },
+    "back=north_east,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_413"
+    },
+    "back=south_east,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_416"
+    },
+    "back=south_west,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_41c"
+    },
+    "back=north_west,facing=south,joins=4": {
+      "model": "casinodeco:block/sofa_419"
+    },
+    "back=none,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_500"
+    },
+    "back=north,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_501"
+    },
+    "back=east,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_502"
+    },
+    "back=south,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_504"
+    },
+    "back=west,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_508"
+    },
+    "back=north_east,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_503"
+    },
+    "back=south_east,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_506"
+    },
+    "back=south_west,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_50c"
+    },
+    "back=north_west,facing=south,joins=5": {
+      "model": "casinodeco:block/sofa_509"
+    },
+    "back=none,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_600"
+    },
+    "back=north,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_601"
+    },
+    "back=east,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_602"
+    },
+    "back=south,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_604"
+    },
+    "back=west,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_608"
+    },
+    "back=north_east,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_603"
+    },
+    "back=south_east,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_606"
+    },
+    "back=south_west,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_60c"
+    },
+    "back=north_west,facing=south,joins=6": {
+      "model": "casinodeco:block/sofa_609"
+    },
+    "back=none,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_700"
+    },
+    "back=north,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_701"
+    },
+    "back=east,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_702"
+    },
+    "back=south,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_704"
+    },
+    "back=west,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_708"
+    },
+    "back=north_east,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_703"
+    },
+    "back=south_east,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_706"
+    },
+    "back=south_west,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_70c"
+    },
+    "back=north_west,facing=south,joins=7": {
+      "model": "casinodeco:block/sofa_709"
+    },
+    "back=none,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_820"
+    },
+    "back=north,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_821"
+    },
+    "back=east,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_822"
+    },
+    "back=south,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_824"
+    },
+    "back=west,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_828"
+    },
+    "back=north_east,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_823"
+    },
+    "back=south_east,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_826"
+    },
+    "back=south_west,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_82c"
+    },
+    "back=north_west,facing=south,joins=8": {
+      "model": "casinodeco:block/sofa_829"
+    },
+    "back=none,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_900"
+    },
+    "back=north,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_901"
+    },
+    "back=east,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_902"
+    },
+    "back=south,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_904"
+    },
+    "back=west,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_908"
+    },
+    "back=north_east,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_903"
+    },
+    "back=south_east,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_906"
+    },
+    "back=south_west,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_90c"
+    },
+    "back=north_west,facing=south,joins=9": {
+      "model": "casinodeco:block/sofa_909"
+    },
+    "back=none,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a00"
+    },
+    "back=north,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a01"
+    },
+    "back=east,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a02"
+    },
+    "back=south,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a04"
+    },
+    "back=west,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a08"
+    },
+    "back=north_east,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a03"
+    },
+    "back=south_east,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a06"
+    },
+    "back=south_west,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a0c"
+    },
+    "back=north_west,facing=south,joins=10": {
+      "model": "casinodeco:block/sofa_a09"
+    },
+    "back=none,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b00"
+    },
+    "back=north,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b01"
+    },
+    "back=east,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b02"
+    },
+    "back=south,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b04"
+    },
+    "back=west,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b08"
+    },
+    "back=north_east,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b03"
+    },
+    "back=south_east,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b06"
+    },
+    "back=south_west,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b0c"
+    },
+    "back=north_west,facing=south,joins=11": {
+      "model": "casinodeco:block/sofa_b09"
+    },
+    "back=none,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c00"
+    },
+    "back=north,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c01"
+    },
+    "back=east,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c02"
+    },
+    "back=south,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c04"
+    },
+    "back=west,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c08"
+    },
+    "back=north_east,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c03"
+    },
+    "back=south_east,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c06"
+    },
+    "back=south_west,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c0c"
+    },
+    "back=north_west,facing=south,joins=12": {
+      "model": "casinodeco:block/sofa_c09"
+    },
+    "back=none,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d00"
+    },
+    "back=north,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d01"
+    },
+    "back=east,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d02"
+    },
+    "back=south,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d04"
+    },
+    "back=west,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d08"
+    },
+    "back=north_east,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d03"
+    },
+    "back=south_east,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d06"
+    },
+    "back=south_west,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d0c"
+    },
+    "back=north_west,facing=south,joins=13": {
+      "model": "casinodeco:block/sofa_d09"
+    },
+    "back=none,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e00"
+    },
+    "back=north,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e01"
+    },
+    "back=east,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e02"
+    },
+    "back=south,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e04"
+    },
+    "back=west,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e08"
+    },
+    "back=north_east,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e03"
+    },
+    "back=south_east,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e06"
+    },
+    "back=south_west,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e0c"
+    },
+    "back=north_west,facing=south,joins=14": {
+      "model": "casinodeco:block/sofa_e09"
+    },
+    "back=none,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f00"
+    },
+    "back=north,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f01"
+    },
+    "back=east,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f02"
+    },
+    "back=south,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f04"
+    },
+    "back=west,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f08"
+    },
+    "back=north_east,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f03"
+    },
+    "back=south_east,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f06"
+    },
+    "back=south_west,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f0c"
+    },
+    "back=north_west,facing=south,joins=15": {
+      "model": "casinodeco:block/sofa_f09"
+    },
+    "back=none,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_50"
+    },
+    "back=north,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_51"
+    },
+    "back=east,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_52"
+    },
+    "back=south,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_54"
+    },
+    "back=west,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_58"
+    },
+    "back=north_east,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_53"
+    },
+    "back=south_east,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_56"
+    },
+    "back=south_west,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_5c"
+    },
+    "back=north_west,facing=west,joins=0": {
+      "model": "casinodeco:block/sofa_59"
+    },
+    "back=none,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_140"
+    },
+    "back=north,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_141"
+    },
+    "back=east,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_142"
+    },
+    "back=south,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_144"
+    },
+    "back=west,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_148"
+    },
+    "back=north_east,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_143"
+    },
+    "back=south_east,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_146"
+    },
+    "back=south_west,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_14c"
+    },
+    "back=north_west,facing=west,joins=1": {
+      "model": "casinodeco:block/sofa_149"
+    },
+    "back=none,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_280"
+    },
+    "back=north,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_281"
+    },
+    "back=east,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_282"
+    },
+    "back=south,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_284"
+    },
+    "back=west,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_288"
+    },
+    "back=north_east,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_283"
+    },
+    "back=south_east,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_286"
+    },
+    "back=south_west,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_28c"
+    },
+    "back=north_west,facing=west,joins=2": {
+      "model": "casinodeco:block/sofa_289"
+    },
+    "back=none,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_300"
+    },
+    "back=north,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_301"
+    },
+    "back=east,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_302"
+    },
+    "back=south,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_304"
+    },
+    "back=west,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_308"
+    },
+    "back=north_east,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_303"
+    },
+    "back=south_east,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_306"
+    },
+    "back=south_west,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_30c"
+    },
+    "back=north_west,facing=west,joins=3": {
+      "model": "casinodeco:block/sofa_309"
+    },
+    "back=none,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_410"
+    },
+    "back=north,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_411"
+    },
+    "back=east,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_412"
+    },
+    "back=south,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_414"
+    },
+    "back=west,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_418"
+    },
+    "back=north_east,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_413"
+    },
+    "back=south_east,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_416"
+    },
+    "back=south_west,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_41c"
+    },
+    "back=north_west,facing=west,joins=4": {
+      "model": "casinodeco:block/sofa_419"
+    },
+    "back=none,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_500"
+    },
+    "back=north,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_501"
+    },
+    "back=east,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_502"
+    },
+    "back=south,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_504"
+    },
+    "back=west,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_508"
+    },
+    "back=north_east,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_503"
+    },
+    "back=south_east,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_506"
+    },
+    "back=south_west,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_50c"
+    },
+    "back=north_west,facing=west,joins=5": {
+      "model": "casinodeco:block/sofa_509"
+    },
+    "back=none,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_600"
+    },
+    "back=north,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_601"
+    },
+    "back=east,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_602"
+    },
+    "back=south,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_604"
+    },
+    "back=west,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_608"
+    },
+    "back=north_east,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_603"
+    },
+    "back=south_east,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_606"
+    },
+    "back=south_west,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_60c"
+    },
+    "back=north_west,facing=west,joins=6": {
+      "model": "casinodeco:block/sofa_609"
+    },
+    "back=none,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_700"
+    },
+    "back=north,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_701"
+    },
+    "back=east,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_702"
+    },
+    "back=south,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_704"
+    },
+    "back=west,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_708"
+    },
+    "back=north_east,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_703"
+    },
+    "back=south_east,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_706"
+    },
+    "back=south_west,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_70c"
+    },
+    "back=north_west,facing=west,joins=7": {
+      "model": "casinodeco:block/sofa_709"
+    },
+    "back=none,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_820"
+    },
+    "back=north,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_821"
+    },
+    "back=east,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_822"
+    },
+    "back=south,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_824"
+    },
+    "back=west,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_828"
+    },
+    "back=north_east,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_823"
+    },
+    "back=south_east,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_826"
+    },
+    "back=south_west,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_82c"
+    },
+    "back=north_west,facing=west,joins=8": {
+      "model": "casinodeco:block/sofa_829"
+    },
+    "back=none,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_900"
+    },
+    "back=north,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_901"
+    },
+    "back=east,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_902"
+    },
+    "back=south,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_904"
+    },
+    "back=west,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_908"
+    },
+    "back=north_east,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_903"
+    },
+    "back=south_east,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_906"
+    },
+    "back=south_west,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_90c"
+    },
+    "back=north_west,facing=west,joins=9": {
+      "model": "casinodeco:block/sofa_909"
+    },
+    "back=none,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a00"
+    },
+    "back=north,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a01"
+    },
+    "back=east,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a02"
+    },
+    "back=south,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a04"
+    },
+    "back=west,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a08"
+    },
+    "back=north_east,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a03"
+    },
+    "back=south_east,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a06"
+    },
+    "back=south_west,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a0c"
+    },
+    "back=north_west,facing=west,joins=10": {
+      "model": "casinodeco:block/sofa_a09"
+    },
+    "back=none,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b00"
+    },
+    "back=north,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b01"
+    },
+    "back=east,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b02"
+    },
+    "back=south,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b04"
+    },
+    "back=west,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b08"
+    },
+    "back=north_east,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b03"
+    },
+    "back=south_east,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b06"
+    },
+    "back=south_west,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b0c"
+    },
+    "back=north_west,facing=west,joins=11": {
+      "model": "casinodeco:block/sofa_b09"
+    },
+    "back=none,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c00"
+    },
+    "back=north,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c01"
+    },
+    "back=east,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c02"
+    },
+    "back=south,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c04"
+    },
+    "back=west,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c08"
+    },
+    "back=north_east,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c03"
+    },
+    "back=south_east,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c06"
+    },
+    "back=south_west,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c0c"
+    },
+    "back=north_west,facing=west,joins=12": {
+      "model": "casinodeco:block/sofa_c09"
+    },
+    "back=none,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d00"
+    },
+    "back=north,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d01"
+    },
+    "back=east,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d02"
+    },
+    "back=south,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d04"
+    },
+    "back=west,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d08"
+    },
+    "back=north_east,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d03"
+    },
+    "back=south_east,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d06"
+    },
+    "back=south_west,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d0c"
+    },
+    "back=north_west,facing=west,joins=13": {
+      "model": "casinodeco:block/sofa_d09"
+    },
+    "back=none,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e00"
+    },
+    "back=north,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e01"
+    },
+    "back=east,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e02"
+    },
+    "back=south,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e04"
+    },
+    "back=west,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e08"
+    },
+    "back=north_east,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e03"
+    },
+    "back=south_east,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e06"
+    },
+    "back=south_west,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e0c"
+    },
+    "back=north_west,facing=west,joins=14": {
+      "model": "casinodeco:block/sofa_e09"
+    },
+    "back=none,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f00"
+    },
+    "back=north,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f01"
+    },
+    "back=east,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f02"
+    },
+    "back=south,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f04"
+    },
+    "back=west,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f08"
+    },
+    "back=north_east,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f03"
+    },
+    "back=south_east,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f06"
+    },
+    "back=south_west,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f0c"
+    },
+    "back=north_west,facing=west,joins=15": {
+      "model": "casinodeco:block/sofa_f09"
+    }
+  }
+}

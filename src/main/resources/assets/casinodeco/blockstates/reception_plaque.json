@@ -1,0 +1,1 @@
+{"variants":{"facing=south":{"model":"casinodeco:block/reception_plaque"},"facing=west":{"model":"casinodeco:block/reception_plaque","y":90},"facing=north":{"model":"casinodeco:block/reception_plaque","y":180},"facing=east":{"model":"casinodeco:block/reception_plaque","y":270}}}

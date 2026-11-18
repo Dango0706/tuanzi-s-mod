@@ -1,5 +1,6 @@
 package me.tuanzi.client.gui.screens.inventory;
 
+import com.mojang.blaze3d.Blaze3D;
 import me.tuanzi.network.BlueprintTableImportPacket;
 import me.tuanzi.util.LitematicaParser;
 import me.tuanzi.util.ModLog;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
@@ -34,18 +36,20 @@ import java.util.concurrent.CompletableFuture;
 @Environment(EnvType.CLIENT)
 public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTableMenu> {
 
+    public static final String DEFAULT_BLUEPRINTS_FOLDER = "schematics";
     private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/dispenser.png");
     private static final int LIST_TOP_OFFSET = 36;
     private static final int LIST_BOTTOM_OFFSET = 158;
     private static final int LIST_ROW_HEIGHT = 12;
     private static final int VISIBLE_ITEMS = 10;
-    // blueprints 文件夹文件浏览
+    // schematics 文件夹文件浏览（与“投影”模组 Litematica 默认目录一致）
     private final List<String> fileList = new ArrayList<>();
     private final List<String> filteredList = new ArrayList<>();
     private Button importButton;
     private Button exportButton;
     private Button previewButton;
     private Button refreshButton;
+    private Button openFolderButton;
     private String selectedFile = null;
     private int listOffset = 0;
     private EditBox searchBox;
@@ -96,16 +100,38 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         }).bounds(x + 8, y + 53, 46, 16).build());
         this.previewButton.active = false;
 
-        // 加载 blueprints 文件夹中的文件
+        // 快速打开蓝图存放位置按钮（置于主 GUI 右侧空白操作区）
+        this.openFolderButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.tuanzis_mod.blueprint_table.open_folder_btn"), btn -> {
+            openBlueprintsFolder();
+        }).bounds(x + 120, y + 35, 48, 16)
+                .tooltip(Tooltip.create(Component.translatable("gui.tuanzis_mod.blueprint_table.open_folder_tooltip")))
+                .build());
+
+        // 加载 schematics 文件夹中的文件
         reloadFiles();
+    }
+
+    public static File resolveBlueprintsDir(File gameDirectory) {
+        return new File(gameDirectory, DEFAULT_BLUEPRINTS_FOLDER);
+    }
+
+    private static File getBlueprintsDir() {
+        File blueprintsDir = resolveBlueprintsDir(Minecraft.getInstance().gameDirectory);
+        if (!blueprintsDir.exists()) {
+            blueprintsDir.mkdirs();
+        }
+        return blueprintsDir;
+    }
+
+    private void openBlueprintsFolder() {
+        File blueprintsDir = getBlueprintsDir();
+        ModLog.debug("[BlueprintTableScreen] 打开蓝图存放位置: " + blueprintsDir.getAbsolutePath());
+        Blaze3D.openPath(blueprintsDir.toPath());
     }
 
     private void reloadFiles() {
         this.fileList.clear();
-        File blueprintsDir = new File(Minecraft.getInstance().gameDirectory, "blueprints");
-        if (!blueprintsDir.exists()) {
-            blueprintsDir.mkdirs();
-        }
+        File blueprintsDir = getBlueprintsDir();
         File[] files = blueprintsDir.listFiles();
         if (files != null) {
             Arrays.sort(files, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
@@ -175,7 +201,7 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         updateButtonStates();
 
         final String targetFileName = selectedFile;
-        File file = new File(Minecraft.getInstance().gameDirectory, "blueprints/" + targetFileName);
+        File file = new File(getBlueprintsDir(), targetFileName);
         CompletableFuture.supplyAsync(() -> {
             try (FileInputStream fis = new FileInputStream(file)) {
                 CompoundTag nbt = NbtIo.readCompressed(fis, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
@@ -212,7 +238,7 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
                 this.minecraft.player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint_table.import_success").withStyle(ChatFormatting.GREEN));
             }
         } else if (selectedFile != null) {
-            File file = new File(Minecraft.getInstance().gameDirectory, "blueprints/" + selectedFile);
+            File file = new File(getBlueprintsDir(), selectedFile);
             CompletableFuture.supplyAsync(() -> {
                 try (FileInputStream fis = new FileInputStream(file)) {
                     CompoundTag nbt = NbtIo.readCompressed(fis, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
@@ -257,10 +283,7 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String filename = name + "_" + sdf.format(new Date()) + ".litematic";
 
-        File blueprintsDir = new File(Minecraft.getInstance().gameDirectory, "blueprints");
-        if (!blueprintsDir.exists()) {
-            blueprintsDir.mkdirs();
-        }
+        File blueprintsDir = getBlueprintsDir();
 
         File outFile = new File(blueprintsDir, filename);
         try (FileOutputStream fos = new FileOutputStream(outFile)) {

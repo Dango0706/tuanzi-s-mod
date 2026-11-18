@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "casinodeco:block/emerald_velvet",
+    "top": "casinodeco:block/emerald_velvet",
+    "side": "casinodeco:block/emerald_velvet"
+  }
+}

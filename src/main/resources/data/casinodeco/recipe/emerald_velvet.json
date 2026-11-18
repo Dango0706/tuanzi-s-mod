@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "casino_velvet",
+  "pattern": [
+    "WWW",
+    "WDW",
+    "WWW"
+  ],
+  "key": {
+    "W": "minecraft:green_wool",
+    "D": "minecraft:black_dye"
+  },
+  "result": {
+    "id": "casinodeco:emerald_velvet",
+    "count": 8
+  }
+}

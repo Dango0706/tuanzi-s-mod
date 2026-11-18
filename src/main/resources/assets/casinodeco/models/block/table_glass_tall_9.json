@@ -1,0 +1,289 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "casinodeco:block/sofa_brass",
+    "wood": "casinodeco:block/sofa_walnut",
+    "gold": "casinodeco:block/sofa_brass",
+    "glass": "casinodeco:block/decor_glass"
+  },
+  "elements": [
+    {
+      "name": "brass_rim",
+      "from": [
+        15.5,
+        15.0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        16.0,
+        15.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            15.5,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            15.5,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            0.5,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            0.0,
+            15.5,
+            0.5
+          ],
+          "rotation": 90
+        },
+        "down": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            0.0,
+            15.5,
+            0.5
+          ],
+          "rotation": 90
+        }
+      }
+    },
+    {
+      "name": "leg_brass",
+      "from": [
+        14.8,
+        0.3,
+        14.8
+      ],
+      "to": [
+        16.0,
+        15.0,
+        16.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            14.8,
+            1.3,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            1.3,
+            1.2,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            14.8,
+            1.3,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            1.3,
+            1.2,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "name": "leg_foot",
+      "from": [
+        14.8,
+        0.0,
+        14.8
+      ],
+      "to": [
+        16.0,
+        0.3,
+        16.0
+      ],
+      "faces": {
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            14.8,
+            15.7,
+            16.0,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.7,
+            1.2,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            14.8,
+            15.7,
+            16.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.7,
+            1.2,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#gold",
+          "uv": [
+            14.8,
+            0.0,
+            16.0,
+            1.2
+          ],
+          "rotation": 90
+        }
+      }
+    },
+    {
+      "name": "brass_rim",
+      "from": [
+        0.0,
+        15.0,
+        15.5
+      ],
+      "to": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            0.5,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            16.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            15.0,
+            0.5,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            0.5
+          ],
+          "rotation": 180
+        },
+        "down": {
+          "texture": "#gold",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            0.5
+          ],
+          "rotation": 180
+        }
+      }
+    },
+    {
+      "name": "glass_top",
+      "from": [
+        0.0,
+        15.3,
+        0.0
+      ],
+      "to": [
+        15.5,
+        15.9,
+        15.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#glass",
+          "uv": [
+            0.0,
+            0.0,
+            15.5,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#glass",
+          "uv": [
+            0.0,
+            0.0,
+            15.5,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

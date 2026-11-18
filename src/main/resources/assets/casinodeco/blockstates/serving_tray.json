@@ -1,0 +1,1 @@
+{"variants":{"facing=south":{"model":"casinodeco:block/serving_tray"},"facing=west":{"model":"casinodeco:block/serving_tray","y":90},"facing=north":{"model":"casinodeco:block/serving_tray","y":180},"facing=east":{"model":"casinodeco:block/serving_tray","y":270}}}

@@ -1,0 +1,1 @@
+{"variants":{"facing=south":{"model":"casinodeco:block/cash_register"},"facing=west":{"model":"casinodeco:block/cash_register","y":90},"facing=north":{"model":"casinodeco:block/cash_register","y":180},"facing=east":{"model":"casinodeco:block/cash_register","y":270}}}

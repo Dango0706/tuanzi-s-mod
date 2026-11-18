@@ -65,6 +65,7 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> HUSBANDRY = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "husbandry"));
     public static final ResourceKey<Enchantment> METABOLISM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "metabolism"));
     public static final ResourceKey<Enchantment> GAP_VERDICT = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "gap_verdict"));
+    public static final ResourceKey<Enchantment> ETERNAL = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "eternal"));
 
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_WEATHER_BLADES = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_weather_blades"));

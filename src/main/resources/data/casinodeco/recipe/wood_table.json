@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "N N",
+    "N N"
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:wood_table",
+    "count": 2
+  }
+}

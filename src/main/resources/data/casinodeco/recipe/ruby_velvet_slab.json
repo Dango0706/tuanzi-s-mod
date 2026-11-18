@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:ruby_velvet"
+  },
+  "result": {
+    "id": "casinodeco:ruby_velvet_slab",
+    "count": 6
+  }
+}

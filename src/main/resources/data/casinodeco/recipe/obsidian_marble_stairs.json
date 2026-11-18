@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B  ",
+    "BB ",
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:obsidian_marble"
+  },
+  "result": {
+    "id": "casinodeco:obsidian_marble_stairs",
+    "count": 4
+  }
+}

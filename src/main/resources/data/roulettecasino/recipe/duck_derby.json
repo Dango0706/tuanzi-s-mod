@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WWW",
+    "GMG",
+    "PRP"
+  ],
+  "key": {
+    "W": "minecraft:green_wool",
+    "G": "minecraft:gold_block",
+    "M": "roulettecasino:duck_derby_mechanism",
+    "P": "#minecraft:planks",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:duck_derby",
+    "count": 1
+  }
+}

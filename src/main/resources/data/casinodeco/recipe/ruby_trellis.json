@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "casino_trellis_carpet",
+  "pattern": [
+    "VSV",
+    "SNS",
+    "VSV"
+  ],
+  "key": {
+    "V": "casinodeco:ruby_velvet",
+    "S": "casinodeco:ruby_stars",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:ruby_trellis",
+    "count": 8
+  }
+}

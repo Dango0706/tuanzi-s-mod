@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NCN",
+    "GAG",
+    "TTT"
+  ],
+  "key": {
+    "N": "minecraft:gold_nugget",
+    "C": "minecraft:iron_chain",
+    "G": "minecraft:gold_ingot",
+    "A": "minecraft:amethyst_shard",
+    "T": "minecraft:torch"
+  },
+  "result": {
+    "id": "casinodeco:casino_chandelier"
+  }
+}

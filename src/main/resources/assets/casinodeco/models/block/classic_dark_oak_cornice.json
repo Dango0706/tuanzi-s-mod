@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "casinodeco:block/classic_dark_oak_cornice",
+    "end": "minecraft:block/dark_oak_planks"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 24
+  },
+  "gives": {
+    "id": "roulettecasino:croupier_hiring_card"
+  },
+  "max_uses": 64,
+  "reputation_discount": 0.0,
+  "xp": 2
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GNG",
+    "NLN",
+    "GNG"
+  ],
+  "key": {
+    "G": "minecraft:gold_ingot",
+    "N": "minecraft:gold_nugget",
+    "L": "minecraft:glowstone"
+  },
+  "result": {
+    "id": "casinodeco:casino_sign"
+  }
+}

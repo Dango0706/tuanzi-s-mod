@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PNP",
+    "PJP"
+  ],
+  "key": {
+    "P": "#minecraft:planks",
+    "N": "minecraft:gold_nugget",
+    "J": "casinodeco:casino_chip_pile"
+  },
+  "result": {
+    "id": "casinodeco:chip_case"
+  }
+}

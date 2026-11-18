@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "casinodeco:casino_chandelier",
+            "state": {
+              "part": "4"
+            }
+          },
+          "name": "casinodeco:casino_chandelier"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "casinodeco:blocks/casino_chandelier"
+}

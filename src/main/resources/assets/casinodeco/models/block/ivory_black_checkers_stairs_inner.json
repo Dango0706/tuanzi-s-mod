@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "casinodeco:block/ivory_black_checkers",
+    "top": "casinodeco:block/ivory_black_checkers",
+    "side": "casinodeco:block/ivory_black_checkers"
+  }
+}

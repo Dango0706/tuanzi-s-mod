@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GGG",
+    "N N"
+  ],
+  "key": {
+    "G": "minecraft:glass",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:glass_coffee_table",
+    "count": 2
+  }
+}

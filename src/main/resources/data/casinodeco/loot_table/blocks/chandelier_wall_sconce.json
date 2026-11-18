@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "casinodeco:chandelier_wall_sconce"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "casinodeco:blocks/chandelier_wall_sconce"
+}

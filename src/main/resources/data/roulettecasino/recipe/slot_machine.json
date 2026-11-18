@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "VWV",
+    "GMG",
+    "PRP"
+  ],
+  "key": {
+    "V": "minecraft:glass",
+    "W": "minecraft:red_wool",
+    "G": "minecraft:gold_block",
+    "M": "roulettecasino:slot_machine_mechanism",
+    "P": "#minecraft:planks",
+    "R": "minecraft:redstone"
+  },
+  "result": {
+    "id": "roulettecasino:slot_machine",
+    "count": 1
+  }
+}

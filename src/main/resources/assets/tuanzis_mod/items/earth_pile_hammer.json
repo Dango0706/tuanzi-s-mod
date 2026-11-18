@@ -1,0 +1,48 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "entries": [
+      {
+        "threshold": 0.0001,
+        "model": {
+          "type": "minecraft:model",
+          "model": "tuanzis_mod:item/earth_pile_hammer_1"
+        }
+      },
+      {
+        "threshold": 0.2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "tuanzis_mod:item/earth_pile_hammer_2"
+        }
+      },
+      {
+        "threshold": 0.4,
+        "model": {
+          "type": "minecraft:model",
+          "model": "tuanzis_mod:item/earth_pile_hammer_3"
+        }
+      },
+      {
+        "threshold": 0.6,
+        "model": {
+          "type": "minecraft:model",
+          "model": "tuanzis_mod:item/earth_pile_hammer_4"
+        }
+      },
+      {
+        "threshold": 0.8,
+        "model": {
+          "type": "minecraft:model",
+          "model": "tuanzis_mod:item/earth_pile_hammer_5"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "tuanzis_mod:item/earth_pile_hammer_1"
+    }
+  }
+}

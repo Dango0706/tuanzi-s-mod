@@ -1,0 +1,441 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "#top"
+  },
+  "elements": [
+    {
+      "name": "chip1_core",
+      "from": [
+        6,
+        0,
+        5
+      ],
+      "to": [
+        10,
+        2,
+        11
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            2.667,
+            0,
+            13.333,
+            16
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            2.667,
+            0,
+            13.333,
+            16
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "chip1_west",
+      "from": [
+        5,
+        0,
+        6
+      ],
+      "to": [
+        6,
+        2,
+        10
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            14,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            0,
+            2.667,
+            2.667,
+            13.333
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            0,
+            2.667,
+            2.667,
+            13.333
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "chip1_east",
+      "from": [
+        10,
+        0,
+        6
+      ],
+      "to": [
+        11,
+        2,
+        10
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          8,
+          1,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            13.333,
+            2.667,
+            16,
+            13.333
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            13.333,
+            2.667,
+            16,
+            13.333
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "chip2_core",
+      "from": [
+        5.5,
+        2,
+        5.5
+      ],
+      "to": [
+        9.5,
+        4,
+        11.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          7.5,
+          3,
+          8.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            2,
+            0,
+            14,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            2.667,
+            0,
+            13.333,
+            16
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            2.667,
+            0,
+            13.333,
+            16
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "chip2_west",
+      "from": [
+        4.5,
+        2,
+        6.5
+      ],
+      "to": [
+        5.5,
+        4,
+        10.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          7.5,
+          3,
+          8.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            14,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            0,
+            2.667,
+            2.667,
+            13.333
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            0,
+            2.667,
+            2.667,
+            13.333
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "name": "chip2_east",
+      "from": [
+        9.5,
+        2,
+        6.5
+      ],
+      "to": [
+        10.5,
+        4,
+        10.5
+      ],
+      "rotation": {
+        "angle": 0,
+        "axis": "y",
+        "origin": [
+          7.5,
+          3,
+          8.5
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            14,
+            0,
+            16,
+            16
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            4,
+            0,
+            12,
+            16
+          ],
+          "texture": "#side"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            13.333,
+            2.667,
+            16,
+            13.333
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            13.333,
+            2.667,
+            16,
+            13.333
+          ],
+          "texture": "#top"
+        }
+      }
+    }
+  ]
+}

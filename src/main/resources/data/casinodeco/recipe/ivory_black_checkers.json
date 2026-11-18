@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "IBI",
+    "BNB",
+    "IBI"
+  ],
+  "key": {
+    "I": "casinodeco:ivory_marble",
+    "B": "casinodeco:obsidian_marble",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:ivory_black_checkers",
+    "count": 8
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "VVV",
+    "VEV",
+    "VVV"
+  ],
+  "key": {
+    "V": "casinodeco:emerald_velvet",
+    "E": "minecraft:emerald"
+  },
+  "result": {
+    "id": "casinodeco:jade_inlay",
+    "count": 8
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_polished_andesite": {
+      "conditions": {
+        "items": [
+          {
+            "items": "casinodeco:ruby_velvet"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipes": "casinodeco:ruby_velvet_slab"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_polished_andesite"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "casinodeco:ruby_velvet_slab"
+    ]
+  }
+}

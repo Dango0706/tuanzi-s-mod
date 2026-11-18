@@ -192,5 +192,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(Enchantments.MULTISHOT)
                 .addOptional(ModEnchantments.RANGER_RELOAD)
                 .addOptional(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER);
+
+        // 永恒 (Eternal) 属于诅咒标签：名称显示为红色 (&c) 且砂轮不可祛除；不加入任何生存战利品/附魔台/交易标签
+        builder(EnchantmentTags.CURSE)
+                .addOptional(ModEnchantments.ETERNAL);
     }
 }

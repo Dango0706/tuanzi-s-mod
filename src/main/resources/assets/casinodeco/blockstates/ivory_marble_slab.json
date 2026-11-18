@@ -1,0 +1,46 @@
+{
+  "variants": {
+    "type=bottom": [
+      {
+        "model": "casinodeco:block/ivory_marble_slab"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_v1"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_v2"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_v3"
+      }
+    ],
+    "type=double": [
+      {
+        "model": "casinodeco:block/ivory_marble"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v1"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v2"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_v3"
+      }
+    ],
+    "type=top": [
+      {
+        "model": "casinodeco:block/ivory_marble_slab_top"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_top_v1"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_top_v2"
+      },
+      {
+        "model": "casinodeco:block/ivory_marble_slab_top_v3"
+      }
+    ]
+  }
+}

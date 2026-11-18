@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "B  ",
+    "BB ",
+    "BBB"
+  ],
+  "key": {
+    "B": "casinodeco:sapphire_velvet"
+  },
+  "result": {
+    "id": "casinodeco:sapphire_velvet_stairs",
+    "count": 4
+  }
+}

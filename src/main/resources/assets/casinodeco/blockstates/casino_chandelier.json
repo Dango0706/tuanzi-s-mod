@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "part=0": {
+      "model": "casinodeco:block/chandelier_0"
+    },
+    "part=1": {
+      "model": "casinodeco:block/chandelier_1"
+    },
+    "part=2": {
+      "model": "casinodeco:block/chandelier_2"
+    },
+    "part=3": {
+      "model": "casinodeco:block/chandelier_3"
+    },
+    "part=4": {
+      "model": "casinodeco:block/chandelier_4"
+    },
+    "part=5": {
+      "model": "casinodeco:block/chandelier_5"
+    },
+    "part=6": {
+      "model": "casinodeco:block/chandelier_6"
+    },
+    "part=7": {
+      "model": "casinodeco:block/chandelier_7"
+    },
+    "part=8": {
+      "model": "casinodeco:block/chandelier_8"
+    },
+    "part=9": {
+      "model": "casinodeco:block/chandelier_9"
+    },
+    "part=10": {
+      "model": "casinodeco:block/chandelier_10"
+    }
+  }
+}

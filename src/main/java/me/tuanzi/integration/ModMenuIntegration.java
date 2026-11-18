@@ -1,7 +1,15 @@
 package me.tuanzi.integration;
 
+import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
+import me.tuanzi.client.gui.screens.ModConfigScreen;
 
+/**
+ * ModMenu 集成入口：提供模组全局配置界面。
+ */
 public class ModMenuIntegration implements ModMenuApi {
-    // 这里目前不需要实现任何方法，实现接口即可消除入口点报错
+    @Override
+    public ConfigScreenFactory<?> getModConfigScreenFactory() {
+        return ModConfigScreen::new;
+    }
 }

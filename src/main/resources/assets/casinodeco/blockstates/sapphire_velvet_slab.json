@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "casinodeco:block/sapphire_velvet_slab"
+    },
+    "type=double": {
+      "model": "casinodeco:block/sapphire_velvet"
+    },
+    "type=top": {
+      "model": "casinodeco:block/sapphire_velvet_slab_top"
+    }
+  }
+}

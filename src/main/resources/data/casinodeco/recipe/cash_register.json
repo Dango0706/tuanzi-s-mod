@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "NRN",
+    "PPP"
+  ],
+  "key": {
+    "S": "minecraft:green_stained_glass",
+    "N": "minecraft:gold_nugget",
+    "R": "minecraft:redstone",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "casinodeco:cash_register"
+  }
+}

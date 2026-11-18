@@ -21,6 +21,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(ModEnchantmentTagProvider::new);
         pack.addProvider(me.tuanzi.datagen.ModBlockTagProvider::new);
         pack.addProvider(me.tuanzi.datagen.ModItemTagProvider::new);
+        pack.addProvider(me.tuanzi.datagen.ModPoiTypeTagProvider::new);
         pack.addProvider(me.tuanzi.datagen.ModRecipeProvider::new);
         pack.addProvider(me.tuanzi.datagen.ModModelProvider::new);
         pack.addProvider(me.tuanzi.datagen.ModDimensionGenerator::new);
@@ -164,6 +165,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_x", "X 平移");
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_y", "Y 平移");
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_z", "Z 平移");
+            translationBuilder.add("gui.tuanzis_mod.ghost_control.place_building", "放置此建筑");
+            translationBuilder.add("gui.tuanzis_mod.ghost_control.place_building.tooltip", "直接将蓝图中的建筑放置到当前虚影位置（仅创造模式管理员可用，保留虚影）");
             translationBuilder.add("jei.tuanzis_mod.player_simulator.description", "【玩家模拟器】\n一个可以模拟真实玩家行为的高级红石方块，正面印有玩家面庞，侧面为红石管道。\n\n§e工作机制：\n1. §b3x3 快捷栏：内部可存放 9 个物品，充当模拟玩家的快捷栏。顶面/侧面输入，底面抽出。\n2. §b红石上升沿触发：每次接收到红石上升沿脉冲，按行优先顺序（轮流/Round-Robin）执行其中一个非空槽位内的假玩家交互。\n3. §b假玩家模拟：\n   - §6右键使用优先：尝试对朝向面进行 useOn（放置方块、使用骨粉、装水/放水、点火等），或 use（使用空气：食用食物、喝药水、蓄力射弓等）。\n   - §6左键攻击与挖掘：若右键无效，如有实体则执行物理攻击；如是可挖方块，则开始挖掘。\n4. §b持续阻塞与冷却：\n   - 如果挖掘需要时间或武器（弓/弩/三叉戟）需要蓄力，序列将阻塞挂起并花费实际游戏 tick 进行模拟，期间无视任何其他红石信号。\n   - 动作执行完或超时后，指针顺延移动，模拟器进入 2 ticks 冷却。");
 
             // 蓝图大炮 GUI 按钮
@@ -244,6 +247,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "尺寸: %s x %s x %s");
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "共 %d 个方块");
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.refresh", "刷新列表");
+            translationBuilder.add("gui.tuanzis_mod.blueprint_table.open_folder_btn", "打开目录");
+            translationBuilder.add("gui.tuanzis_mod.blueprint_table.open_folder_tooltip", "快速打开蓝图存放文件夹 (schematics)");
 
             // 3D 蓝图检视器 GUI
             translationBuilder.add("gui.tuanzis_mod.blueprint_inspector.title", "3D 蓝图检视器");
@@ -265,12 +270,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.incomplete_points", "设定不完整，请设定两个角点后再确认！");
             translationBuilder.add("message.tuanzis_mod.blueprint.too_large", "选择区域过大！体积上限为 262,144 格。");
             translationBuilder.add("message.tuanzis_mod.blueprint.record_success", "成功将 %s x %s x %s 区域录制为结构蓝图！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.direct_placed", "已将蓝图建筑直接放置到虚影位置（放置 %s 个方块，%s 个实体）。");
+            translationBuilder.add("message.tuanzis_mod.blueprint.no_permission", "只有创造模式且为服务器管理员才能执行此操作！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "当前没有激活的蓝图虚影！");
 
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n由 1 个烈焰粉、4 个红石粉、4 个砂砾无序合成。");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。");
-            translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【结构蓝图】\n记录了特定建筑三维结构的蓝图。\n\n§e功能机制：\n1. §b虚影预览§r：手持它右键地面，可在点击处上方产生透明虚影预览。再次右键可以清除虚影.按 V 键显示/隐藏虚影，按 G 键可以打开虚影控制悬浮面板。\n2. §b快捷键调整§r：手持它时，按 R 旋转虚影，按 F 水平镜像。按住 Ctrl 配合方向键平移，PageUp/PageDown 上下调整高度。\n3. §b大炮构建§r：将结构蓝图放入蓝图大炮中作为建造模板。");
+            translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【结构蓝图】\n记录了特定建筑三维结构的蓝图。\n\n§e功能机制：\n1. §b虚影预览§r：手持它右键地面，可在点击处上方产生透明虚影预览。再次右键可以清除虚影.按 V 键显示/隐藏虚影，按 G 键可以打开虚影控制悬浮面板。\n2. §b快捷键调整§r：手持它时，按 R 旋转虚影，按 F 水平镜像。按住 Ctrl 配合方向键平移，PageUp/PageDown 上下调整高度。\n3. §b大炮构建§r：将结构蓝图放入蓝图大炮中作为建造模板。\n4. §b管理员直放§r：当玩家处于创造模式且为服务器管理员时，虚影控制面板会额外显示「放置此建筑」按钮，可将蓝图建筑直接放置到虚影位置。");
             translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【蓝图大炮】\n自动且精准构筑建筑的机械方块。主要用于大中型建筑的后期自动化建造。\n\n§e工作流程：\n1. 放好蓝图大炮，将录制好的结构蓝图放入蓝图槽，自动锁定要建造的基准位置。\n2. 放入压缩建造浆料作为燃料（大炮工作 5 ticks/方块，每次放置/移除方块都消耗 1 点浆料耐久。创造模式免燃料）。\n3. 大炮会自动检索周围 5 格内的箱子/木桶/潜影盒中的物料并将其消耗以进行构筑。支持自动匹配与提取嵌套潜影盒里的物资。\n4. 打开 GUI，可以控制开始、暂停、终止，并支持“非匹配方块移除”和“精准NBT匹配”功能。");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在模组文件夹 `blueprints` 下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `blueprints` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b3D旋转预览§r：在导入和导出时，蓝图桌上方会自动产生缩小版的 3D 旋转方块虚影供您预览建筑外观。");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在游戏目录 `schematics`（与投影模组 Litematica 一致）下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `schematics` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b快速打开目录§r：点击界面右侧“打开目录”按钮，可快速打开 `schematics` 蓝图存放位置。\n4. §b3D旋转预览§r：在导入和导出时，可在预览检视器中查看建筑立体外观。");
 
             translationBuilder.add("jei.tuanzis_mod.smelting.description", "【熔炼附魔】\n省去回家烧炉子的繁琐步骤。使用该工具挖掘“可在熔炉中烧炼的方块”时，直接掉落其烧炼后的产物。\n\n§e功能：§r\n1. §b自动熔炼§r：挖掘矿石或原木等可熔炼方块时直接掉落成品。\n2. §b完美兼容§r：与 §b时运 (Fortune)§r 完美兼容，可以获得更多掉落物。\n\n§e限制与惩罚：§r\n1. §b互斥机制§r：与 §b精准采集 (Silk Touch)§r 互斥。\n2. §b耐久消耗§r：每挖掘一个可熔炼方块，额外消耗 §c1§r 点耐久（共计消耗 2 点）。\n\n§7获取方式：无法从附魔台中直接获得。属于“宝藏附魔”，仅能通过搜刮下界要塞遗迹箱子、沙漠神殿宝箱或高等级图书管理员村民交易（极罕见，需 40-64 绿宝石）获取。");
 
@@ -1205,7 +1213,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("tuanzis_mod.mode.semi_replace", "半替换");
             translationBuilder.add("tuanzis_mod.mode.replace_air_only", "仅替换空气");
             translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6塑世之笔切换为: %s 模式");
-            translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型（优先更换方块而非撤销），且自动记录方块的 face/facing 朝向，若为楼梯或半砖还会记录其 type、half、shape 状态。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒、黄金口袋中扣除。若填充双半砖 (type=double) 则每个方块按 2 个半砖精确扣除。若方块数量不足或笔耐久不够，操作将取消并提示。\n4. §b防刷撤销：在填充后 60 秒内，面对空气潜行 (Shift) + 右键可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块（双半砖精准返还 2 个）及扣除的笔耐久，防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
+            translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "【塑世之笔】\n一支由下界合金笔尖与紫水晶笔杆制成的奢华书写工具，笔身缠绕着幽匿脉络般的墨线。\n\n§e功能机制：\n1. §b批量填充：手持本笔并右键点击方块表面记录起点。在 64 格最大直线距离及 2048 个方块体积范围内，右键点击另一位置，即可瞬间在长方体区域填充选定方块。\n2. §b选定填充方块：按住 Shift + 右键点击任意方块，即可将其设为填充类型（优先更换方块而非撤销），且自动记录方块的 face/facing 朝向，若为楼梯或半砖还会记录其 type、half、shape 状态。选中的方块将显示在笔贴图的右下角。\n3. §b智能消耗：填充方块直接从主背包以及主背包中的潜影盒、黄金口袋中扣除。若填充双半砖 (type=double) 则每个方块按 2 个半砖精确扣除。若方块数量不足或笔耐久不够，操作将取消并提示。在创造模式下跳过物品与耐久检查且不消耗任何方块与耐久。\n4. §b防刷撤销：在填充后 60 秒内，面对空气潜行 (Shift) + 右键可撤销本次填充。仅还原并退回区域内“当前依然匹配的方块”，返还对应的方块（双半砖精准返还 2 个）及扣除的笔耐久（创造模式填充不返还），防范刷取漏洞！\n5. §b耐久与维护：拥有 8192 点高耐久。不支持附魔。可在铁砧中以单个虚空墨锭为材料修复其 1000 点耐久。");
             translationBuilder.add(ModItems.VOID_INK_INGOT, "虚空墨锭");
             translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "一方由龙息凝华与回响粉末压制的深紫色墨锭，");
             translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "表面流淌着末影虚空般的涡纹，边缘泛着下界合金粉末的暗金微光。");
@@ -1589,6 +1597,19 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                     "- 无任何生存获取方式，仅可在创造模式物品栏中获取。";
             translationBuilder.add("jei.tuanzis_mod.tonghui.description", tonghuiJeiDesc);
 
+            // 永恒 (Eternal)
+            translationBuilder.add("enchantment.tuanzis_mod.eternal", "永恒");
+            String eternalJeiDesc = "【永恒】\n" +
+                    "耐久物品特殊附魔。最高等级 I 级（名称显示为红色加粗）。\n" +
+                    "适用部位：任意有耐久的工具、武器、防具。附魔类型：特殊。\n\n" +
+                    "§e核心效果：§r\n" +
+                    "1. §b无法破坏§r：附魔后，该物品立刻获得“无法破坏”（Unbreakable=true）属性，不再消耗耐久度。\n" +
+                    "2. §c永久锁死附魔§r：获得“永恒”后，该物品将无法再次获得任何新附魔或升级现有附魔（例如 效率 III 无法升级为 效率 IV），且砂轮无法祛除。\n" +
+                    "3. §b铁砧经验消耗§r：在铁砧中附魔时，固定需要 物品原有附魔数量 × 8 级经验（最低 8 级）。\n\n" +
+                    "§e获取途径：§r\n" +
+                    "- 无任何生存模式获取途径（宝箱、村民交易、附魔台均不可获得），仅可在创造模式物品栏或通过指令获取。";
+            translationBuilder.add("jei.tuanzis_mod.eternal.description", eternalJeiDesc);
+
             // 药理 (Pharmacology)
             translationBuilder.add("enchantment.tuanzis_mod.pharmacology", "药理");
             String pharmacologyJeiDesc = "【药理】\n" +
@@ -1844,8 +1865,36 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                 translationBuilder.add(entry.block(), entry.zhName());
                 translationBuilder.add(entry.block().asItem(), entry.zhName());
                 translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
-                        "【" + entry.zhName() + "】\n可摆放在地面上作为装饰的筹码道具，面额为 " + entry.zhDenom() + "。\n\n§e特性说明：\n1. §b立体堆叠摆放：右键放置在稳固表面后，继续使用同款筹码右键即可在同格内逐步叠放，最多堆叠 8 枚（1~4 枚呈单摞，5~8 枚呈双摞错落摆放）；破坏时精确掉落已堆叠的全部筹码。\n2. §b统一配色与互换：全套共 8 种面额（50块至 100000块），采用统一像素筹码样式并以专属配色区分；可在合成格中与对应面额钱币 1:1 自由互换。");
+                        "【" + entry.zhName() + "】\n可摆放在地面上作为装饰的筹码道具，面额为 " + entry.zhDenom() + "。\n\n§e特性说明：\n1. §b立体堆叠摆放：右键放置在稳固表面后，继续使用同款筹码右键即可在同格内逐步叠放，最多堆叠 8 枚（1~4 枚呈单摞，5~8 枚呈双摞错落摆放）；破坏时精确掉落已堆叠的全部筹码。\n2. §b统一配色与互换：全套共 8 种面额（50块至 100000块），采用统一像素筹码样式并以专属配色区分；可在合成格中与对应面额钱币 1:1 自由互换。\n3. §b赌场下注：已默认纳入赌场可下注物品列表（#roulettecasino:bets），可直接用于所有赌场游戏机台下注。");
             }
+
+            // MineVegas 赌场系统 JEI 说明
+            translationBuilder.add("jei.tuanzis_mod.casino_guide.description", "【赌场指南】\n右键打开图文并茂的 3D 交互式赌场百科全书，内含全套 7 种赌场机器玩法、合成配方、荷官雇佣流程、装饰方块与「荷官之手」配置说明。");
+            translationBuilder.add("jei.tuanzis_mod.roulette_table.description", "【赌场轮盘】\n2×2 多方块赌场机台。支持在红、黑、绿三色区域中任选一区下注，红/黑常规赔率 2 倍，绿色赔率 36 倍。支持使用矿物、矿物块以及本模组全套筹码下注。");
+            translationBuilder.add("jei.tuanzis_mod.blackjack_table.description", "【二十一点桌】\n需要配合【荷官徽章】合成以赋予荷官形象。还原经典 Blackjack 规则，支持要牌（Hit）、停牌（Stand）与加倍（Double），首两张 21 点（Blackjack）享受 ×2.5 赔率。");
+            translationBuilder.add("jei.tuanzis_mod.poker_table.description", "【扑克桌】\n需要配合【荷官徽章】合成（支持直接从二十一点桌改制并继承荷官外观）。进行玩家对荷官的简化德州扑克（Casino Hold'em），支持跟注与弃牌，最高皇家同花顺赔率 ×100。");
+            translationBuilder.add("jei.tuanzis_mod.duck_derby.description", "【鸭子赛跑】\n4 只不同颜色赛鸭竞速的游戏机台，支持单人游玩或 10 秒倒计时多人组队同场下注。冠军获得 3 倍下注物品，亚军退还全部赌注。");
+            translationBuilder.add("jei.tuanzis_mod.slot_machine.description", "【老虎机】\n双格高发光立体机台（相邻两台之间需保留 1 格空位）。投入赌注拉动拉杆即可转动三轴转轮，最高头奖可达多倍派彩。");
+            translationBuilder.add("jei.tuanzis_mod.fortune_wheel.description", "【幸运转盘】\n3×3 立体转盘游戏机。投入赌注转动转盘，根据指针停靠扇区可获得 ×0 至 ×5 倍不等的回报。");
+            translationBuilder.add("jei.tuanzis_mod.plinko.description", "【赌场弹珠台】\n3×3 立式弹珠台，每次投放 1~3 颗弹珠沿钉阵随机弹落至底部倍率槽（×0.25 至 ×8）。");
+            translationBuilder.add("jei.tuanzis_mod.dealer_station.description", "【荷官柜台】\n村庄【荷官】职业工作站方块，村民认领后将转职为荷官，并固定提供【荷官雇佣卡】交易。");
+            translationBuilder.add("jei.tuanzis_mod.croupier_hiring_card.description", "【荷官雇佣卡】\n对荷官村民（或兼容的 Easy NPC）右键使用即可完成雇佣并获得对应的【荷官徽章】，用于制作二十一点桌与扑克桌。");
+            translationBuilder.add("jei.tuanzis_mod.croupier_badge.description", "【荷官徽章】\n记录了被雇佣荷官的外观身份数据，是合成【二十一点桌】和【扑克桌】的核心材料。");
+            translationBuilder.add("jei.tuanzis_mod.croupier_hand.description", "【荷官之手】\n创造模式专属赌场管理道具。\n1. 对空气右键：配置整个赌场的可下注物品、派彩转换规则、各游戏胜率/偏向及生存模式破坏保护。\n2. 对机器右键：为单台机器设置独立下注白名单、独立派彩或自定义名称。\n3. 复制/粘贴：在界面点击复制后，潜行+右键其他机器可直接粘贴配置；潜行+对空气右键忘记副本。");
+            translationBuilder.add("jei.tuanzis_mod.casino_speaker.description", "【赌场音箱】\n可贴墙、放地面或吊装在天花板的同步背景音乐音箱。右键开关播放，覆盖半径 48 格（12 格内全音量），多台音箱共享同一首曲目与时间轴，并在附近开启时自动静音原版背景音乐。");
+
+            // 模组配置界面与指令翻译
+            translationBuilder.add("gui.tuanzis_mod.config.title", "Tuanzi's Mod 配置");
+            translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes", "赌场核心合成与获取");
+            translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes.tooltip", "关闭后，生存模式下将无法合成赌场游戏机台、机械零件、荷官柜台及赌场指南，也无法通过荷官村民兑换雇佣卡。");
+            translationBuilder.add("gui.tuanzis_mod.config.casino_scope_note", "说明：关闭后仅禁用7种游戏机台、机械零件、荷官柜台、荷官雇佣卡交易与赌场指南；\n赌场座椅、电视、音箱、casinodeco装饰方块及筹码/钱币不受影响，已放置方块的挖掘掉落保持不变。");
+            translationBuilder.add("gui.tuanzis_mod.config.remote_server_note", "当前处于远程服务器：此处的修改仅保存至本地配置文件，服务器配方受服务端配置与 /tuanzis_mod config 指令控制。");
+            translationBuilder.add("gui.tuanzis_mod.config.save", "保存并应用");
+            translationBuilder.add("commands.tuanzis_mod.config.status_on", "§a开启 (true)");
+            translationBuilder.add("commands.tuanzis_mod.config.status_off", "§c关闭 (false)");
+            translationBuilder.add("commands.tuanzis_mod.config.query_casino_recipes", "§7[Tuanzi's Mod] §f赌场核心合成与获取 (enableCasinoRecipes) 当前状态: %s");
+            translationBuilder.add("commands.tuanzis_mod.config.set_casino_recipes", "§7[Tuanzi's Mod] §f已将赌场核心合成与获取 (enableCasinoRecipes) 设置为 %s§f，正在重载配方...");
+            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §f已从磁盘重载配置并同步配方 (enableCasinoRecipes: %s§f)。");
         }
     }
 
@@ -2038,6 +2087,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_x", "X Offset");
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_y", "Y Offset");
             translationBuilder.add("gui.tuanzis_mod.ghost_control.move_z", "Z Offset");
+            translationBuilder.add("gui.tuanzis_mod.ghost_control.place_building", "Place Building");
+            translationBuilder.add("gui.tuanzis_mod.ghost_control.place_building.tooltip", "Directly place the blueprint structure at the current ghost position (Creative + Admin only, keeps ghost)");
             translationBuilder.add("jei.tuanzis_mod.player_simulator.description", "【Player Simulator】\nAn advanced redstone block that simulates real player interactions. Features a player face on the front and redstone pipes on the sides.\n\n§eMechanics:\n1. §b3x3 Hotbar: Holds up to 9 items, acting as the simulated player's hotbar. Top/side input, bottom output.\n2. §bRedstone Pulse Trigger: Executes one non-empty slot operation per redstone rising-edge pulse in a round-robin manner.\n3. §bFake Player Simulation:\n   - §6Right-Click Priority: Performs block placing, bonemealing, bucketing, igniting (useOn), or using items like eating, drinking, drawing bows (use).\n   - §6Left-Click Attack & Mining: If right-click is invalid, attacks entities or mines block.\n4. §bBlock & Cooldown:\n   - Mining or drawing weapons (bow/trident/crossbow) will block and suspend the sequence, occupying actual game ticks. Additional redstone pulses are ignored during execution.\n   - Pointer increments to next slot upon action completion/timeout, and enters a 2-tick cooldown.");
 
             // Blueprint Cannon GUI buttons
@@ -2118,6 +2169,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.size_format", "Size: %s x %s x %s");
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.total_blocks_format", "%d Blocks Total");
             translationBuilder.add("gui.tuanzis_mod.blueprint_table.refresh", "Refresh");
+            translationBuilder.add("gui.tuanzis_mod.blueprint_table.open_folder_btn", "Folder");
+            translationBuilder.add("gui.tuanzis_mod.blueprint_table.open_folder_tooltip", "Open blueprint folder (schematics)");
 
             // 3D Blueprint Inspector GUI
             translationBuilder.add("gui.tuanzis_mod.blueprint_inspector.title", "3D Blueprint Inspector");
@@ -2139,12 +2192,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.incomplete_points", "Incomplete coordinates! Set both corners before confirming.");
             translationBuilder.add("message.tuanzis_mod.blueprint.too_large", "Selected region too large! Volume limit is 262,144 blocks.");
             translationBuilder.add("message.tuanzis_mod.blueprint.record_success", "Successfully recorded %s x %s x %s region to structure blueprint!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.direct_placed", "Placed blueprint structure directly at ghost position (%s blocks, %s entities).");
+            translationBuilder.add("message.tuanzis_mod.blueprint.no_permission", "Only Creative mode server administrators can perform this action!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "No active blueprint ghost found!");
 
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.");
-            translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【Structure Blueprint】\nContains the recorded three-dimensional block layouts.\n\n§eUsage:\n1. Right-click ground to place a 0.4 alpha transparent ghost preview. Right-click again to clear.\n2. Press V to toggle visibility. Press G to open the offset controller.\n3. Shortcut keys: R to rotate, F to mirror. Ctrl + Arrows to shift offset, PageUp/PageDown to adjust height.");
+            translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【Structure Blueprint】\nContains the recorded three-dimensional block layouts.\n\n§eUsage:\n1. Right-click ground to place a 0.4 alpha transparent ghost preview. Right-click again to clear.\n2. Press V to toggle visibility. Press G to open the offset controller.\n3. Shortcut keys: R to rotate, F to mirror. Ctrl + Arrows to shift offset, PageUp/PageDown to adjust height.\n4. Creative Admin Direct Place: When in Creative mode as a server admin, the Ghost Controller Panel provides a \"Place Building\" button to place the structure directly at the ghost position.");
             translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【Blueprint Cannon】\nAn automated block placing machine that automatically builds a structure based on a Blueprint.\n\n§eUsage:\n1. Place down the cannon, insert a recorded Structure Blueprint.\n2. Put Compressed Build Slurry into the fuel slot. The cannon processes at 5 ticks/block. Free in creative mode.\n3. The cannon scans chests, barrels, and shulkers within 5 blocks recursively (up to 3 levels deep) to consume items.\n4. GUI provides options to start, pause, terminate, toggle block destruction, and toggle exact NBT checks.");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `blueprints/`.\n2. Import: Put `.litematic` or `.schem` files in `blueprints/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. 3D Preview: The table displays a slowly rotating miniature preview of the structure when a blueprint is loaded.");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `schematics/` (matching Litematica).\n2. Import: Put `.litematic` or `.schem` files in `schematics/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. Open Folder: Click the Folder button on the right side of the GUI to quickly open the `schematics/` directory.\n4. 3D Preview: Inspect the structure in full 3D from the Blueprint Inspector.");
 
             // Rift Scar English translations
             translationBuilder.add(ModItems.RIFT_SCAR, "Fractured Void Scar");
@@ -2982,7 +3038,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("tuanzis_mod.mode.semi_replace", "Semi Replace");
             translationBuilder.add("tuanzis_mod.mode.replace_air_only", "Replace Air Only");
             translationBuilder.add("message.tuanzis_mod.world_sculptors_pen.mode_toggled", "§6World Sculptor's Pen toggled to: %s Mode");
-            translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it (prioritizes selecting/changing block over undo). Accurately records block face/facing, and stores type, half, shape states for stairs and slabs. The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory, shulker boxes, and golden pockets. Double slabs (type=double) strictly consume 2 slab items each. Cancelled if materials or durability are insufficient.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click in the air within 60 seconds to undo. Only returns blocks (2 items per double slab) and durability for blocks that are currently unchanged.\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
+            translationBuilder.add("jei.tuanzis_mod.world_sculptors_pen.description", "[World Sculptor's Pen]\nA luxury writing tool made of a netherite nib and an amethyst barrel, wrapped with glowing sculk-like fluorescent ink lines.\n\n§eMechanics:\n1. §bBatch Fill: Right-click a block to record start point. Right-click another block within 64 blocks distance and 2048 blocks volume to instantly fill the region.\n2. §bSelect Block Type: Sneak (Shift) + Right-click a block to select it (prioritizes selecting/changing block over undo). Accurately records block face/facing, and stores type, half, shape states for stairs and slabs. The selected block is rendered at the bottom-right of the pen's texture.\n3. §bSmart Consumption: Blocks are deducted from your inventory, shulker boxes, and golden pockets. Double slabs (type=double) strictly consume 2 slab items each. Cancelled if materials or durability are insufficient. Creative mode skips item and durability checks with zero consumption.\n4. §bAnti-Dupe Undo: Sneak (Shift) + Right-click in the air within 60 seconds to undo. Only returns blocks (2 items per double slab) and durability for blocks that are currently unchanged (creative fills grant no refunds).\n5. §bDurability & Repair: Has 8192 durability. Cannot be enchanted. Repaired by 1000 durability per Void Ink Ingot in an anvil.");
             translationBuilder.add(ModItems.VOID_INK_INGOT, "Void Ink Ingot");
             translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line1", "A deep purple ink ingot pressed from condensed dragon's breath and echo shards,");
             translationBuilder.add("tooltip.tuanzis_mod.void_ink_ingot.desc_line2", "with eddying patterns like the End void flowing on its surface, and dark gold glints of netherite scrap on the edges.");
@@ -3369,6 +3425,19 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                     "- No survival acquisition method; creative inventory only.";
             translationBuilder.add("jei.tuanzis_mod.tonghui.description", tonghuiJeiDescEn);
 
+            // 永恒 (Eternal)
+            translationBuilder.add("enchantment.tuanzis_mod.eternal", "Eternal");
+            String eternalJeiDescEn = "[Eternal]\n" +
+                    "Special durability-item enchantment. Max Level: I (displayed in bold red).\n" +
+                    "Applicable to: Any damageable tool, weapon, or armor. Type: Special.\n\n" +
+                    "§eCore Effects:§r\n" +
+                    "1. §bUnbreakable§r: Immediately grants the 'Unbreakable' attribute (Unbreakable=true), preventing all durability loss.\n" +
+                    "2. §cEnchantment Lock§r: Once applied, the item can never receive any new enchantments or upgrade existing enchantments (e.g., Efficiency III -> Efficiency IV), and cannot be removed by a Grindstone.\n" +
+                    "3. §bAnvil Cost§r: Requires a fixed experience cost of (existing enchantment count × 8) levels (minimum 8 levels) when applied on an anvil.\n\n" +
+                    "§eAcquisition:§r\n" +
+                    "- No survival acquisition method (unavailable from loot chests, villager trades, or enchanting tables); creative inventory or commands only.";
+            translationBuilder.add("jei.tuanzis_mod.eternal.description", eternalJeiDescEn);
+
             // 药理 (Pharmacology)
             translationBuilder.add("enchantment.tuanzis_mod.pharmacology", "Pharmacology");
             String pharmacologyJeiDescEn = "[Pharmacology]\n" +
@@ -3624,8 +3693,36 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                 translationBuilder.add(entry.block(), entry.enName());
                 translationBuilder.add(entry.block().asItem(), entry.enName());
                 translationBuilder.add("jei.tuanzis_mod." + entry.idPath() + ".description",
-                        "[" + entry.enName() + "]\nA placeable decorative casino chip with a face value of " + entry.enDenom() + ".\n\n§eDetails:\n1. §bStackable Display: Right-click on a solid surface to place, and right-click again with the same chip to stack up to 8 chips in one block (single stack for 1-4, dual stacks for 5-8). Breaking drops the exact stacked count.\n2. §bUnified Style & Exchange: Part of an 8-denomination series (50 to 100000 Yuan) with consistent pixel-art styling and distinct color themes; freely 1:1 craft-exchangeable with the matching denomination banknote.");
+                        "[" + entry.enName() + "]\nA placeable decorative casino chip with a face value of " + entry.enDenom() + ".\n\n§eDetails:\n1. §bStackable Display: Right-click on a solid surface to place, and right-click again with the same chip to stack up to 8 chips in one block (single stack for 1-4, dual stacks for 5-8). Breaking drops the exact stacked count.\n2. §bUnified Style & Exchange: Part of an 8-denomination series (50 to 100000 Yuan) with consistent pixel-art styling and distinct color themes; freely 1:1 craft-exchangeable with the matching denomination banknote.\n3. §bCasino Betting: Included in #roulettecasino:bets by default and can be wagered directly on all casino machines.");
             }
+
+            // MineVegas Casino JEI Descriptions
+            translationBuilder.add("jei.tuanzis_mod.casino_guide.description", "[Casino Guide]\nRight-click to open an interactive 3D illustrated guide covering all 7 casino machines, recipes, croupier hiring, decorative blocks, and the Croupier's Hand.");
+            translationBuilder.add("jei.tuanzis_mod.roulette_table.description", "[Roulette Table]\nA 2x2 casino table. Bet on Red, Black (2x), or Green (36x). Accepts ores/blocks in #roulettecasino:bets as well as all Tuanzi's Mod chips.");
+            translationBuilder.add("jei.tuanzis_mod.blackjack_table.description", "[Blackjack Table]\nCrafted with a Croupier Badge to assign the dealer's appearance. Classic Blackjack with Hit, Stand, Double Down, and 2.5x Blackjack payouts.");
+            translationBuilder.add("jei.tuanzis_mod.poker_table.description", "[Poker Table]\nCrafted with a Croupier Badge (or upgraded from a Blackjack Table while keeping its dealer). Plays Casino Hold'em against the dealer with payouts up to 100x for a Royal Flush.");
+            translationBuilder.add("jei.tuanzis_mod.duck_derby.description", "[Duck Derby]\n4-lane racing machine supporting both solo play and 10-second multiplayer group races. 1st place pays 3x; 2nd place returns your bet.");
+            translationBuilder.add("jei.tuanzis_mod.slot_machine.description", "[Slot Machine]\n2-block tall illuminated machine (leave 1 block spacing between adjacent machines). Place a bet and pull the lever to spin 3 reels.");
+            translationBuilder.add("jei.tuanzis_mod.fortune_wheel.description", "[Fortune Wheel]\n3x3 spinning wheel machine with sectors paying from 0x up to 5x.");
+            translationBuilder.add("jei.tuanzis_mod.plinko.description", "[Plinko]\n3x3 vertical pegboard game. Drop 1 to 3 balls per round into pockets paying 0.25x to 8x.");
+            translationBuilder.add("jei.tuanzis_mod.dealer_station.description", "[Dealer Station]\nJob site block for the Croupier villager profession, which offers Croupier Hiring Cards.");
+            translationBuilder.add("jei.tuanzis_mod.croupier_hiring_card.description", "[Croupier Hiring Card]\nRight-click a Croupier villager (or compatible Easy NPC) to hire them and receive a Croupier Badge for crafting Blackjack and Poker tables.");
+            translationBuilder.add("jei.tuanzis_mod.croupier_badge.description", "[Croupier Badge]\nStores a hired croupier's appearance and is used as the core ingredient for Blackjack and Poker tables.");
+            translationBuilder.add("jei.tuanzis_mod.croupier_hand.description", "[Croupier's Hand]\nCreative-only casino configuration tool. Right-click air for global casino rules (bets, payouts, odds/bias, survival break protection); right-click a machine for per-machine overrides; copy and sneak+right-click to paste settings.");
+            translationBuilder.add("jei.tuanzis_mod.casino_speaker.description", "[Casino Speaker]\nMountable on floors, walls, or ceilings. Right-click to toggle synchronized casino lounge music across a 48-block range while muting vanilla background music.");
+
+            // Mod Config Screen & Command Translations
+            translationBuilder.add("gui.tuanzis_mod.config.title", "Tuanzi's Mod Configuration");
+            translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes", "Casino Core Recipes & Acquisition");
+            translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes.tooltip", "When disabled, casino game machines, mechanisms, dealer stations, and casino guides cannot be crafted in survival, and croupier hiring card villager trades are disabled.");
+            translationBuilder.add("gui.tuanzis_mod.config.casino_scope_note", "Note: Disabling only affects the 7 game machines, their mechanisms, dealer station, croupier hiring card trade, and casino guide. Chairs, TVs, speakers, casinodeco decor blocks, and chips/coins remain unaffected, and placed blocks still drop normally.");
+            translationBuilder.add("gui.tuanzis_mod.config.remote_server_note", "Connected to a remote server: changes here only affect local config. Server recipes follow server config and /tuanzis_mod config.");
+            translationBuilder.add("gui.tuanzis_mod.config.save", "Save & Apply");
+            translationBuilder.add("commands.tuanzis_mod.config.status_on", "§aON (true)");
+            translationBuilder.add("commands.tuanzis_mod.config.status_off", "§cOFF (false)");
+            translationBuilder.add("commands.tuanzis_mod.config.query_casino_recipes", "§7[Tuanzi's Mod] §fCasino Core Recipes & Acquisition (enableCasinoRecipes): %s");
+            translationBuilder.add("commands.tuanzis_mod.config.set_casino_recipes", "§7[Tuanzi's Mod] §fSet enableCasinoRecipes to %s§f, reloading recipes...");
+            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §fReloaded config from disk and synced recipes (enableCasinoRecipes: %s§f).");
         }
     }
 }

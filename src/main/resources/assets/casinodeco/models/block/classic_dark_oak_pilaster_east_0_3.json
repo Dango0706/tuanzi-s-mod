@@ -1,0 +1,33 @@
+{
+  "textures": {
+    "side": "casinodeco:block/classic_dark_oak_pilaster_join_0_3",
+    "end": "minecraft:block/dark_oak_planks",
+    "particle": "casinodeco:block/classic_dark_oak_pilaster"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#side",
+          "cullface": "east",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

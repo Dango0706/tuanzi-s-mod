@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " W ",
+    " N ",
+    "PPP"
+  ],
+  "key": {
+    "W": "minecraft:red_wool",
+    "N": "minecraft:gold_nugget",
+    "P": "#minecraft:planks"
+  },
+  "result": {
+    "id": "roulettecasino:casino_stool",
+    "count": 2
+  }
+}

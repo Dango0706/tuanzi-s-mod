@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "T T",
+    "NNN",
+    " N "
+  ],
+  "key": {
+    "T": "minecraft:torch",
+    "N": "minecraft:gold_nugget"
+  },
+  "result": {
+    "id": "casinodeco:chandelier_wall_sconce",
+    "count": 2
+  }
+}

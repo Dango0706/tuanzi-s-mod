@@ -1,0 +1,184 @@
+{
+  "variants": {
+    "facing=south,part=0": {
+      "model": "roulettecasino:block/duck_derby_0"
+    },
+    "facing=west,part=0": {
+      "model": "roulettecasino:block/duck_derby_0",
+      "y": 90
+    },
+    "facing=north,part=0": {
+      "model": "roulettecasino:block/duck_derby_0",
+      "y": 180
+    },
+    "facing=east,part=0": {
+      "model": "roulettecasino:block/duck_derby_0",
+      "y": 270
+    },
+    "facing=south,part=1": {
+      "model": "roulettecasino:block/duck_derby_1"
+    },
+    "facing=west,part=1": {
+      "model": "roulettecasino:block/duck_derby_1",
+      "y": 90
+    },
+    "facing=north,part=1": {
+      "model": "roulettecasino:block/duck_derby_1",
+      "y": 180
+    },
+    "facing=east,part=1": {
+      "model": "roulettecasino:block/duck_derby_1",
+      "y": 270
+    },
+    "facing=south,part=2": {
+      "model": "roulettecasino:block/duck_derby_2"
+    },
+    "facing=west,part=2": {
+      "model": "roulettecasino:block/duck_derby_2",
+      "y": 90
+    },
+    "facing=north,part=2": {
+      "model": "roulettecasino:block/duck_derby_2",
+      "y": 180
+    },
+    "facing=east,part=2": {
+      "model": "roulettecasino:block/duck_derby_2",
+      "y": 270
+    },
+    "facing=south,part=3": {
+      "model": "roulettecasino:block/duck_derby_3"
+    },
+    "facing=west,part=3": {
+      "model": "roulettecasino:block/duck_derby_3",
+      "y": 90
+    },
+    "facing=north,part=3": {
+      "model": "roulettecasino:block/duck_derby_3",
+      "y": 180
+    },
+    "facing=east,part=3": {
+      "model": "roulettecasino:block/duck_derby_3",
+      "y": 270
+    },
+    "facing=south,part=4": {
+      "model": "roulettecasino:block/duck_derby_4"
+    },
+    "facing=west,part=4": {
+      "model": "roulettecasino:block/duck_derby_4",
+      "y": 90
+    },
+    "facing=north,part=4": {
+      "model": "roulettecasino:block/duck_derby_4",
+      "y": 180
+    },
+    "facing=east,part=4": {
+      "model": "roulettecasino:block/duck_derby_4",
+      "y": 270
+    },
+    "facing=south,part=5": {
+      "model": "roulettecasino:block/duck_derby_5"
+    },
+    "facing=west,part=5": {
+      "model": "roulettecasino:block/duck_derby_5",
+      "y": 90
+    },
+    "facing=north,part=5": {
+      "model": "roulettecasino:block/duck_derby_5",
+      "y": 180
+    },
+    "facing=east,part=5": {
+      "model": "roulettecasino:block/duck_derby_5",
+      "y": 270
+    },
+    "facing=south,part=6": {
+      "model": "roulettecasino:block/duck_derby_6"
+    },
+    "facing=west,part=6": {
+      "model": "roulettecasino:block/duck_derby_6",
+      "y": 90
+    },
+    "facing=north,part=6": {
+      "model": "roulettecasino:block/duck_derby_6",
+      "y": 180
+    },
+    "facing=east,part=6": {
+      "model": "roulettecasino:block/duck_derby_6",
+      "y": 270
+    },
+    "facing=south,part=7": {
+      "model": "roulettecasino:block/duck_derby_7"
+    },
+    "facing=west,part=7": {
+      "model": "roulettecasino:block/duck_derby_7",
+      "y": 90
+    },
+    "facing=north,part=7": {
+      "model": "roulettecasino:block/duck_derby_7",
+      "y": 180
+    },
+    "facing=east,part=7": {
+      "model": "roulettecasino:block/duck_derby_7",
+      "y": 270
+    },
+    "facing=south,part=8": {
+      "model": "roulettecasino:block/duck_derby_8"
+    },
+    "facing=west,part=8": {
+      "model": "roulettecasino:block/duck_derby_8",
+      "y": 90
+    },
+    "facing=north,part=8": {
+      "model": "roulettecasino:block/duck_derby_8",
+      "y": 180
+    },
+    "facing=east,part=8": {
+      "model": "roulettecasino:block/duck_derby_8",
+      "y": 270
+    },
+    "facing=south,part=9": {
+      "model": "roulettecasino:block/duck_derby_9"
+    },
+    "facing=west,part=9": {
+      "model": "roulettecasino:block/duck_derby_9",
+      "y": 90
+    },
+    "facing=north,part=9": {
+      "model": "roulettecasino:block/duck_derby_9",
+      "y": 180
+    },
+    "facing=east,part=9": {
+      "model": "roulettecasino:block/duck_derby_9",
+      "y": 270
+    },
+    "facing=south,part=10": {
+      "model": "roulettecasino:block/duck_derby_10"
+    },
+    "facing=west,part=10": {
+      "model": "roulettecasino:block/duck_derby_10",
+      "y": 90
+    },
+    "facing=north,part=10": {
+      "model": "roulettecasino:block/duck_derby_10",
+      "y": 180
+    },
+    "facing=east,part=10": {
+      "model": "roulettecasino:block/duck_derby_10",
+      "y": 270
+    },
+    "facing=south,part=11": {
+      "model": "roulettecasino:block/duck_derby_11"
+    },
+    "facing=west,part=11": {
+      "model": "roulettecasino:block/duck_derby_11",
+      "y": 90
+    },
+    "facing=north,part=11": {
+      "model": "roulettecasino:block/duck_derby_11",
+      "y": 180
+    },
+    "facing=east,part=11": {
+      "model": "roulettecasino:block/duck_derby_11",
+      "y": 270
+    }
+  }
+}

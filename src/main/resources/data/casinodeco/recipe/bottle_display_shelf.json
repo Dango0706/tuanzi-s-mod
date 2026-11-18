@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SSS",
+    "BBB",
+    "SSS"
+  ],
+  "key": {
+    "S": "#minecraft:wooden_slabs",
+    "B": "casinodeco:casino_bottles"
+  },
+  "result": {
+    "id": "casinodeco:bottle_display_shelf"
+  }
+}
