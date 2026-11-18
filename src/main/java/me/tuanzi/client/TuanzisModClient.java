@@ -248,6 +248,11 @@ public class TuanzisModClient implements ClientModInitializer {
                 me.tuanzi.client.renderer.BlueprintCannonRenderer::new
         );
 
+        // 注册蓝图检查器 3D PiP 预览渲染器
+        net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry.register(
+                context -> new me.tuanzi.client.renderer.blueprint.BlueprintPreviewRenderer()
+        );
+
         // 注册旅者手札存储界面 Screen
         net.minecraft.client.gui.screens.MenuScreens.register(
                 me.tuanzi.init.ModMenuTypes.TRAVELERS_NOTEBOOK,

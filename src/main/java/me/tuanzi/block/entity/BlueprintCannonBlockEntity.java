@@ -577,10 +577,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
     private LaunchOutcome tryLaunchSingleCell(Level level, BlockPos cannonPos, BlueprintCell cell, boolean forceKeepShape) {
         Item requiredItem = cell.state().getBlock().asItem();
+        int neededCount = BlueprintBuildPlanner.getSingleBlockItemCount(cell.state());
         boolean hasCreativeCore = ensureCreativeCoreOrRescan(level, cannonPos);
-        ContainerSource source = hasCreativeCore ? null : findItemOrRescan(level, cannonPos, requiredItem);
 
-        if (source == null && !hasCreativeCore) {
+        if (!hasCreativeCore && !hasItemCountOrRescan(level, cannonPos, requiredItem, neededCount)) {
             this.buildState = 2;
             this.pauseReason = 2;
             this.ticksToNextPlace = 0;
@@ -595,17 +595,14 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
 
         ItemStack placedStack;
-        if (source != null && !hasCreativeCore) {
-            ItemStack srcStack = source.container.getItem(source.slot);
-            placedStack = srcStack.copyWithCount(1);
-            srcStack.shrink(1);
-            source.markChanged();
+        if (!hasCreativeCore) {
+            placedStack = consumeItemCountFromSources(requiredItem, neededCount);
         } else {
             placedStack = new ItemStack(cell.state().getBlock());
             me.tuanzi.util.ModLog.debug("检测到创造核心: 无视材料缺失或不消耗材料直接放置方块: " + cell.state() + " at " + cell.pos());
         }
 
-        me.tuanzi.util.ModLog.debug("准备放置: " + cell.state() + " -> requiredItem: " + requiredItem + " at " + cell.pos() + ", forceKeepShape=" + forceKeepShape);
+        me.tuanzi.util.ModLog.debug("准备放置: " + cell.state() + " -> requiredItem: " + requiredItem + " x" + neededCount + " at " + cell.pos() + ", forceKeepShape=" + forceKeepShape);
         this.launchBlock(level, cell.pos(), placedStack, cell.state(), cell.teData(), false, forceKeepShape);
         return LaunchOutcome.LAUNCHED;
     }
@@ -708,6 +705,48 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
         this.scanNearbyContainers(level, cannonPos);
         return this.findItemInSources(item);
+    }
+
+    private boolean hasItemCountOrRescan(Level level, BlockPos cannonPos, Item item, int requiredCount) {
+        if (countItemInSources(item) >= requiredCount) {
+            return true;
+        }
+        this.scanNearbyContainers(level, cannonPos);
+        return countItemInSources(item) >= requiredCount;
+    }
+
+    private int countItemInSources(Item item) {
+        if (this.cachedSources == null) return 0;
+        int total = 0;
+        for (ContainerSource src : this.cachedSources) {
+            ItemStack stack = src.container.getItem(src.slot);
+            if (!stack.isEmpty() && stack.is(item)) {
+                total += stack.getCount();
+            }
+        }
+        return total;
+    }
+
+    private ItemStack consumeItemCountFromSources(Item item, int requiredCount) {
+        if (this.cachedSources == null || requiredCount <= 0) {
+            return new ItemStack(item);
+        }
+        ItemStack template = ItemStack.EMPTY;
+        int remaining = requiredCount;
+        for (ContainerSource src : this.cachedSources) {
+            if (remaining <= 0) break;
+            ItemStack stack = src.container.getItem(src.slot);
+            if (!stack.isEmpty() && stack.is(item)) {
+                if (template.isEmpty()) {
+                    template = stack.copyWithCount(1);
+                }
+                int take = Math.min(remaining, stack.getCount());
+                stack.shrink(take);
+                src.markChanged();
+                remaining -= take;
+            }
+        }
+        return template.isEmpty() ? new ItemStack(item) : template;
     }
 
     private EntityStepOutcome processEntityStep(
@@ -1081,7 +1120,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
             Item item = cell.state().getBlock().asItem();
             if (item == Items.AIR) continue;
-            totalNeeded.merge(item, 1, Integer::sum);
+            totalNeeded.merge(item, BlueprintBuildPlanner.getSingleBlockItemCount(cell.state()), Integer::sum);
         }
         for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
             if (group.requiredItem() != Items.AIR) {

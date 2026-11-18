@@ -3,13 +3,17 @@ package me.tuanzi.client.gui.screens.inventory;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import me.tuanzi.block.cannon.BlueprintBuildPlanner;
 import me.tuanzi.client.ClientGhostManager;
+import me.tuanzi.client.renderer.blueprint.BlueprintPreviewMath;
+import me.tuanzi.client.renderer.blueprint.BlueprintPreviewMesh;
+import me.tuanzi.client.renderer.blueprint.BlueprintPreviewRenderer;
 import me.tuanzi.util.ModLog;
+import net.minecraft.util.Mth;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -17,21 +21,13 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -45,46 +41,16 @@ import java.util.*;
 @Environment(EnvType.CLIENT)
 public class BlueprintInspectorScreen extends Screen {
 
-    private static final int TOP_BAR_HEIGHT = 26;
-    private static final int BOTTOM_BAR_HEIGHT = 24;
+    private static final int TOP_BAR_HEIGHT = BlueprintPreviewMath.TOP_BAR_HEIGHT;
+    private static final int BOTTOM_BAR_HEIGHT = BlueprintPreviewMath.BOTTOM_BAR_HEIGHT;
     private static final int SIDEBAR_WIDTH = 144;
     private static final int LIST_Y_START = 84;
     private static final int LIST_ROW_HEIGHT = 24;
 
-    // 6 个方向在单位立方体 [0,1]^3 上的 4 顶点偏移（从外侧观察均为逆时针，匹配 (u0,v0)->(u0,v1)->(u1,v1)->(u1,v0)）
-    private static final float[][][] FACE_VERTICES = new float[6][4][3];
-
-    static {
-        // DOWN (0, -1, 0)
-        FACE_VERTICES[Direction.DOWN.ordinal()] = new float[][]{
-                {0, 0, 1}, {0, 0, 0}, {1, 0, 0}, {1, 0, 1}
-        };
-        // UP (0, +1, 0)
-        FACE_VERTICES[Direction.UP.ordinal()] = new float[][]{
-                {0, 1, 0}, {0, 1, 1}, {1, 1, 1}, {1, 1, 0}
-        };
-        // NORTH (0, 0, -1)
-        FACE_VERTICES[Direction.NORTH.ordinal()] = new float[][]{
-                {1, 1, 0}, {1, 0, 0}, {0, 0, 0}, {0, 1, 0}
-        };
-        // SOUTH (0, 0, +1)
-        FACE_VERTICES[Direction.SOUTH.ordinal()] = new float[][]{
-                {0, 1, 1}, {0, 0, 1}, {1, 0, 1}, {1, 1, 1}
-        };
-        // WEST (-1, 0, 0)
-        FACE_VERTICES[Direction.WEST.ordinal()] = new float[][]{
-                {0, 1, 0}, {0, 0, 0}, {0, 0, 1}, {0, 1, 1}
-        };
-        // EAST (+1, 0, 0)
-        FACE_VERTICES[Direction.EAST.ordinal()] = new float[][]{
-                {1, 1, 1}, {1, 0, 1}, {1, 0, 0}, {1, 1, 0}
-        };
-    }
-
     private final Screen parentScreen;
     private final CompoundTag blueprintTag;
     private final String blueprintTitle;
-    private final List<CulledFace> culledFaces = new ArrayList<>();
+    private final Map<BlockPos, CompoundTag> teNbtMap = new HashMap<>();
     private final List<BlockStatEntry> allBlockStats = new ArrayList<>();
     private final List<BlockStatEntry> filteredBlockStats = new ArrayList<>();
     private final List<Button> presetButtons = new ArrayList<>();
@@ -94,8 +60,11 @@ public class BlueprintInspectorScreen extends Screen {
     private int structHeight = 0;
     private int structLength = 0;
     private int totalBlocks = 0;
+    private int totalRequiredItems = 0;
     private BlockState[] palette = new BlockState[0];
-    private FaceAppearance[][] paletteAppearances = new FaceAppearance[0][0];
+    private int[] blocks = new int[0];
+    private @Nullable BlueprintPreviewMesh previewMesh = null;
+    private boolean showBoundsAndAxes = true;
     // 交互相机参数
     private float yaw = 45.0F;
     private float pitch = 30.0F;
@@ -122,6 +91,7 @@ public class BlueprintInspectorScreen extends Screen {
     private Button layerMinusButton;
     private Button layerPlusButton;
     private Button modeButton;
+    private Button compassButton;
     private boolean sortByCount = true;
     public BlueprintInspectorScreen(Screen parentScreen, CompoundTag blueprintTag, String title) {
         super(Component.literal(title));
@@ -139,160 +109,69 @@ public class BlueprintInspectorScreen extends Screen {
         this.currentLayer = Math.max(0, this.structHeight - 1);
 
         ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
-        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
+        this.blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
 
-        if (paletteNbt.isEmpty() || blocks.length == 0 || structWidth <= 0 || structHeight <= 0 || structLength <= 0) {
+        if (paletteNbt.isEmpty() || this.blocks.length == 0 || structWidth <= 0 || structHeight <= 0 || structLength <= 0) {
             ModLog.debug("[BlueprintInspectorScreen] 蓝图数据为空或尺寸为 0: title=" + blueprintTitle);
             return;
         }
 
-        Minecraft mc = Minecraft.getInstance();
         this.palette = new BlockState[paletteNbt.size()];
-        this.paletteAppearances = new FaceAppearance[paletteNbt.size()][6];
         for (int i = 0; i < paletteNbt.size(); i++) {
-            BlockState st = ClientGhostManager.parseBlockStateFromTag(paletteNbt.get(i));
-            this.palette[i] = st;
-            if (!st.isAir() && !st.is(Blocks.BARRIER)) {
-                buildPaletteAppearances(mc, i, st);
+            this.palette[i] = ClientGhostManager.parseBlockStateFromTag(paletteNbt.get(i));
+        }
+
+        // 解析 BlockEntities 数据供模组多方块、告示牌等动态组件预览
+        this.teNbtMap.clear();
+        ListTag blockEntitiesNbt = blueprintTag.getListOrEmpty("BlockEntities");
+        for (int i = 0; i < blockEntitiesNbt.size(); i++) {
+            CompoundTag entry = blockEntitiesNbt.getCompound(i).orElse(null);
+            if (entry == null) continue;
+            int[] posArr = entry.getIntArray("pos").orElse(new int[0]);
+            if (posArr.length >= 3) {
+                CompoundTag nbt = entry.getCompound("nbt").orElse(new CompoundTag());
+                this.teNbtMap.put(new BlockPos(posArr[0], posArr[1], posArr[2]), nbt.copy());
             }
         }
 
-        // 按 Block 种类聚合统计数量（消除同一方块不同属性状态导致的重复条目）
-        Map<Block, Integer> countByBlock = new LinkedHashMap<>();
+        // 使用通用多方块与多消耗方块规划器统计真实需求数量与占用格数（1扇门=1、模组多方块整组=1、双半砖=2）
+        Minecraft mc = Minecraft.getInstance();
+        Map<Block, BlueprintBuildPlanner.MaterialStat> materialStats =
+                BlueprintBuildPlanner.collectMaterialStats(blueprintTag, mc != null ? mc.level : null);
+
         this.totalBlocks = 0;
-        int maxScan = Math.min(blocks.length, structWidth * structHeight * structLength);
-        for (int idx = 0; idx < maxScan; idx++) {
-            int pIdx = blocks[idx];
-            if (pIdx >= 0 && pIdx < palette.length) {
-                BlockState st = palette[pIdx];
-                if (!st.isAir() && !st.is(Blocks.BARRIER)) {
-                    countByBlock.merge(st.getBlock(), 1, Integer::sum);
-                    this.totalBlocks++;
-                }
-            }
-        }
-
+        this.totalRequiredItems = 0;
         allBlockStats.clear();
-        for (Map.Entry<Block, Integer> entry : countByBlock.entrySet()) {
+        for (Map.Entry<Block, BlueprintBuildPlanner.MaterialStat> entry : materialStats.entrySet()) {
             Block block = entry.getKey();
+            BlueprintBuildPlanner.MaterialStat stat = entry.getValue();
             ItemStack stack = block.asItem().getDefaultInstance();
             String locName = block.getName().getString();
             String regId = BuiltInRegistries.BLOCK.getKey(block).toString();
-            allBlockStats.add(new BlockStatEntry(block, stack, locName, regId, entry.getValue()));
+            allBlockStats.add(new BlockStatEntry(block, stack, locName, regId, stat.itemCount(), stat.voxelCount()));
+            this.totalRequiredItems += stat.itemCount();
+            this.totalBlocks += stat.voxelCount();
         }
         sortBlockStats();
 
-        // 构建面剔除优化体素网格（仅当相邻方块为完整不透明立方体 isSolidRender 时剔除，同时保留切层截面封顶面）
-        culledFaces.clear();
-        Direction[] dirs = Direction.values();
-        for (int y = 0; y < structHeight; y++) {
-            for (int z = 0; z < structLength; z++) {
-                for (int x = 0; x < structWidth; x++) {
-                    int idx = y * structWidth * structLength + z * structWidth + x;
-                    if (idx >= blocks.length) continue;
-                    int pIdx = blocks[idx];
-                    if (pIdx < 0 || pIdx >= palette.length) continue;
-
-                    BlockState st = palette[pIdx];
-                    if (st.isAir() || st.is(Blocks.BARRIER)) continue;
-
-                    for (Direction dir : dirs) {
-                        int nx = x + dir.getStepX();
-                        int ny = y + dir.getStepY();
-                        int nz = z + dir.getStepZ();
-
-                        boolean neighborFullOpaque = false;
-                        if (nx >= 0 && nx < structWidth && ny >= 0 && ny < structHeight && nz >= 0 && nz < structLength) {
-                            int nIdx = ny * structWidth * structLength + nz * structWidth + nx;
-                            if (nIdx < blocks.length) {
-                                int npIdx = blocks[nIdx];
-                                if (npIdx >= 0 && npIdx < palette.length) {
-                                    BlockState nState = palette[npIdx];
-                                    if (!nState.isAir() && !nState.is(Blocks.BARRIER)) {
-                                        if (nState.isSolidRender() || (nState.getBlock() == st.getBlock() && !st.canOcclude())) {
-                                            neighborFullOpaque = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (!neighborFullOpaque) {
-                            culledFaces.add(new CulledFace(x, y, z, dir, pIdx, (byte) 0));
-                        } else if (dir == Direction.UP) {
-                            culledFaces.add(new CulledFace(x, y, z, dir, pIdx, (byte) 1));
-                        } else if (dir == Direction.DOWN) {
-                            culledFaces.add(new CulledFace(x, y, z, dir, pIdx, (byte) 2));
-                        }
-                    }
-                }
-            }
-        }
-
+        rebuildPreviewMesh();
         ModLog.debug("[BlueprintInspectorScreen] 解析完成: title=" + blueprintTitle
                 + ", size=" + structWidth + "x" + structHeight + "x" + structLength
-                + ", totalBlocks=" + totalBlocks + ", uniqueBlocks=" + allBlockStats.size()
-                + ", culledFaces=" + culledFaces.size());
+                + ", totalVoxels=" + totalBlocks + ", totalItems=" + totalRequiredItems
+                + ", uniqueBlocks=" + allBlockStats.size()
+                + ", blockEntities=" + teNbtMap.size());
     }
 
-    private void buildPaletteAppearances(Minecraft mc, int paletteIdx, BlockState state) {
-        BlockStateModel model = mc.getModelManager().getBlockStateModelSet().get(state);
-        List<BlockStateModelPart> parts = new ArrayList<>();
-        model.collectParts(RandomSource.create(42L), parts);
-        TextureAtlasSprite particleSprite = model.particleMaterial().sprite();
-
-        for (Direction dir : Direction.values()) {
-            BakedQuad chosenQuad = null;
-            for (BlockStateModelPart part : parts) {
-                List<BakedQuad> dirQuads = part.getQuads(dir);
-                if (!dirQuads.isEmpty()) {
-                    chosenQuad = dirQuads.getFirst();
-                    break;
-                }
-            }
-            if (chosenQuad == null) {
-                for (BlockStateModelPart part : parts) {
-                    for (BakedQuad q : part.getQuads(null)) {
-                        if (q.direction() == dir) {
-                            chosenQuad = q;
-                            break;
-                        }
-                    }
-                    if (chosenQuad != null) break;
-                }
-            }
-            if (chosenQuad == null) {
-                for (BlockStateModelPart part : parts) {
-                    List<BakedQuad> unculled = part.getQuads(null);
-                    if (!unculled.isEmpty()) {
-                        chosenQuad = unculled.getFirst();
-                        break;
-                    }
-                }
-            }
-
-            TextureAtlasSprite sprite = chosenQuad != null ? chosenQuad.materialInfo().sprite() : particleSprite;
-            if (sprite == null || !TextureAtlas.LOCATION_BLOCKS.equals(sprite.atlasLocation())) {
-                sprite = particleSprite;
-            }
-
-            int tint = 0xFFFFFFFF;
-            if (chosenQuad != null && chosenQuad.materialInfo().isTinted()) {
-                BlockTintSource tintSource = mc.getBlockColors().getTintSource(state, chosenQuad.materialInfo().tintIndex());
-                if (tintSource != null) {
-                    tint = ARGB.opaque(tintSource.color(state));
-                }
-            } else if (chosenQuad == null) {
-                BlockTintSource tintSource = mc.getBlockColors().getTintSource(state, 0);
-                if (tintSource != null) {
-                    tint = ARGB.opaque(tintSource.color(state));
-                }
-            }
-
-            this.paletteAppearances[paletteIdx][dir.ordinal()] = new FaceAppearance(
-                    sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1(), tint
-            );
+    private void rebuildPreviewMesh() {
+        if (structWidth <= 0 || structHeight <= 0 || structLength <= 0 || palette.length == 0 || blocks.length == 0) {
+            this.previewMesh = null;
+            return;
         }
+        Minecraft mc = Minecraft.getInstance();
+        this.previewMesh = BlueprintPreviewMesh.build(
+                mc, structWidth, structHeight, structLength,
+                palette, blocks, teNbtMap, currentLayer, singleLayerMode
+        );
     }
 
     private void sortBlockStats() {
@@ -324,6 +203,8 @@ public class BlueprintInspectorScreen extends Screen {
     protected void init() {
         super.init();
         presetButtons.clear();
+        this.isDraggingOrbit = false;
+        this.isDraggingPan = false;
 
         int sbX = this.width - SIDEBAR_WIDTH + 6;
         this.searchBox = this.addRenderableWidget(new EditBox(this.font, sbX, 46, SIDEBAR_WIDTH - 12, 14, Component.translatable("gui.tuanzis_mod.inspector.search_hint")));
@@ -366,15 +247,22 @@ public class BlueprintInspectorScreen extends Screen {
         // 底栏切层与视角按钮
         int bY = this.height - 20;
         this.layerMinusButton = this.addRenderableWidget(Button.builder(Component.literal("-"), btn -> {
-            if (currentLayer > 0) currentLayer--;
+            if (currentLayer > 0) {
+                currentLayer--;
+                rebuildPreviewMesh();
+            }
         }).bounds(6, bY, 14, 16).build());
 
         this.layerPlusButton = this.addRenderableWidget(Button.builder(Component.literal("+"), btn -> {
-            if (currentLayer < structHeight - 1) currentLayer++;
+            if (currentLayer < structHeight - 1) {
+                currentLayer++;
+                rebuildPreviewMesh();
+            }
         }).bounds(54, bY, 14, 16).build());
 
         this.modeButton = this.addRenderableWidget(Button.builder(getModeButtonLabel(false), btn -> {
             this.singleLayerMode = !this.singleLayerMode;
+            rebuildPreviewMesh();
             updateResponsiveLayout();
         }).bounds(71, bY, 52, 16).build());
 
@@ -384,6 +272,19 @@ public class BlueprintInspectorScreen extends Screen {
                     .bounds(126 + i * 32, bY, 30, 16).build());
             presetButtons.add(pBtn);
         }
+
+        int compX = BlueprintPreviewMath.COMPASS_CENTER_X;
+        int compY = BlueprintPreviewMath.getCompassCenterY(this.height);
+        int compHalf = BlueprintPreviewMath.COMPASS_HALF_SIZE;
+        this.compassButton = this.addRenderableWidget(new CompassToggleButton(
+                compX - compHalf, compY - compHalf, compHalf * 2, compHalf * 2,
+                Component.literal(showBoundsAndAxes ? "外框:显" : "外框:隐"),
+                btn -> {
+                    this.showBoundsAndAxes = !this.showBoundsAndAxes;
+                    btn.setMessage(Component.literal(this.showBoundsAndAxes ? "外框:显" : "外框:隐"));
+                    ModLog.debug("[BlueprintInspectorScreen] 切换外框与XYZ显示: showBoundsAndAxes=" + this.showBoundsAndAxes);
+                }
+        ));
 
         updateResponsiveLayout();
         filterBlockStats();
@@ -435,6 +336,16 @@ public class BlueprintInspectorScreen extends Screen {
             btn.setWidth(presetW);
             btn.setMessage(Component.literal(compact ? compactPresetNames[i] : fullPresetNames[i]));
             btn.visible = (presetStartX + (i + 1) * presetStep - 2) <= (viewportW - 4);
+        }
+
+        if (compassButton != null) {
+            int compHalf = BlueprintPreviewMath.COMPASS_HALF_SIZE;
+            compassButton.setPosition(
+                    BlueprintPreviewMath.COMPASS_CENTER_X - compHalf,
+                    BlueprintPreviewMath.getCompassCenterY(this.height) - compHalf
+            );
+            compassButton.visible = (BlueprintPreviewMath.COMPASS_CENTER_X + compHalf) < viewportW
+                    && BlueprintPreviewMath.getCompassCenterY(this.height) - compHalf > TOP_BAR_HEIGHT;
         }
     }
 
@@ -498,12 +409,12 @@ public class BlueprintInspectorScreen extends Screen {
             }
         }
 
-        // 优先分发给所有按钮与输入框控件，彻底避免视口拖拽吞噬顶栏/底栏按钮点击
+        int viewportW = sidebarCollapsed ? this.width : (this.width - SIDEBAR_WIDTH);
+
+        // 优先分发给所有按钮（含左下角方位罗盘开关按钮）与输入框控件，彻底避免视口拖拽吞噬按钮点击
         if (super.mouseClicked(event, doubleClick)) {
             return true;
         }
-
-        int viewportW = sidebarCollapsed ? this.width : (this.width - SIDEBAR_WIDTH);
 
         // 点击侧边栏内的方块项进行按种类高亮过滤
         if (!sidebarCollapsed && mx >= this.width - SIDEBAR_WIDTH && mx <= this.width) {
@@ -522,13 +433,15 @@ public class BlueprintInspectorScreen extends Screen {
             return true;
         }
 
-        // 3D 视口空白区拖拽旋转/平移
+        // 3D 视口空白区拖拽旋转/平移（所有视角模式含等轴：左键旋转，右键/中键平移）
         if (mx < viewportW && my > TOP_BAR_HEIGHT && my < this.height - BOTTOM_BAR_HEIGHT) {
-            if (btn == 0) {
+            if (BlueprintPreviewMath.isOrbitDragButton(btn)) {
                 isDraggingOrbit = true;
+                isDraggingPan = false;
                 return true;
-            } else if (btn == 1 || btn == 2) {
+            } else if (BlueprintPreviewMath.isPanDragButton(btn)) {
                 isDraggingPan = true;
+                isDraggingOrbit = false;
                 return true;
             }
         }
@@ -538,24 +451,42 @@ public class BlueprintInspectorScreen extends Screen {
 
     @Override
     public boolean mouseReleased(net.minecraft.client.input.MouseButtonEvent event) {
-        if (event.button() == 0) isDraggingOrbit = false;
-        if (event.button() == 1 || event.button() == 2) isDraggingPan = false;
+        if (BlueprintPreviewMath.isOrbitDragButton(event.button())) isDraggingOrbit = false;
+        if (BlueprintPreviewMath.isPanDragButton(event.button())) isDraggingPan = false;
         return super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseDragged(net.minecraft.client.input.MouseButtonEvent event, double dx, double dy) {
+        if (!Double.isFinite(dx) || !Double.isFinite(dy)) {
+            return false;
+        }
+        double safeDx = Math.clamp(dx, -200.0, 200.0);
+        double safeDy = Math.clamp(dy, -200.0, 200.0);
         if (isDraggingOrbit) {
-            this.yaw += (float) dx * 0.6F;
-            this.pitch = Math.clamp(this.pitch - (float) dy * 0.6F, -89.0F, 89.0F);
+            this.yaw = Mth.wrapDegrees(this.yaw - (float) safeDx * 0.6F);
+            this.pitch = Math.clamp(this.pitch + (float) safeDy * 0.6F, -89.0F, 89.0F);
             return true;
         }
         if (isDraggingPan) {
-            this.panX += (float) dx;
-            this.panY += (float) dy;
+            this.panX += (float) safeDx;
+            this.panY += (float) safeDy;
+            clampCurrentPan();
             return true;
         }
         return super.mouseDragged(event, dx, dy);
+    }
+
+    private void clampCurrentPan() {
+        int viewportW = Math.max(40, sidebarCollapsed ? this.width : (this.width - SIDEBAR_WIDTH));
+        int usableH = Math.max(40, this.height - TOP_BAR_HEIGHT - BOTTOM_BAR_HEIGHT);
+        float baseScale = BlueprintPreviewMath.computeBaseScale(viewportW, this.height, Math.max(1, structWidth), Math.max(1, structHeight), Math.max(1, structLength), zoom);
+        float halfRadius = 0.5F * (float) Math.sqrt(
+                (double) structWidth * structWidth + (double) structHeight * structHeight + (double) structLength * structLength
+        );
+        float radiusPx = Math.max(16.0F, halfRadius * baseScale);
+        this.panX = BlueprintPreviewMath.clampPan(this.panX, viewportW, radiusPx);
+        this.panY = BlueprintPreviewMath.clampPan(this.panY, usableH, radiusPx);
     }
 
     @Override
@@ -576,6 +507,7 @@ public class BlueprintInspectorScreen extends Screen {
                 this.zoom /= 1.15F;
             }
             this.zoom = Math.clamp(this.zoom, 0.15F, 10.0F);
+            clampCurrentPan();
             return true;
         }
     }
@@ -609,6 +541,7 @@ public class BlueprintInspectorScreen extends Screen {
         }
         if (key == InputConstants.KEY_L) { // L 键切换单层/累计切层模式
             this.singleLayerMode = !this.singleLayerMode;
+            rebuildPreviewMesh();
             updateResponsiveLayout();
             return true;
         }
@@ -618,28 +551,35 @@ public class BlueprintInspectorScreen extends Screen {
             return true;
         }
         int maxLayerIdx = Math.max(0, structHeight - 1);
+        int prevLayer = currentLayer;
         if (key == InputConstants.KEY_LBRACKET || key == InputConstants.KEY_DOWN) { // [ 或 Down 降一层
             currentLayer = Math.max(0, currentLayer - 1);
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_RBRACKET || key == InputConstants.KEY_UP) { // ] 或 Up 升一层
             currentLayer = Math.min(maxLayerIdx, currentLayer + 1);
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_PAGEUP) { // PageUp 升 5 层
             currentLayer = Math.min(maxLayerIdx, currentLayer + 5);
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_PAGEDOWN) { // PageDown 降 5 层
             currentLayer = Math.max(0, currentLayer - 5);
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_HOME) { // Home 首层
             currentLayer = 0;
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_END) { // End 顶层
             currentLayer = maxLayerIdx;
+            if (currentLayer != prevLayer) rebuildPreviewMesh();
             return true;
         }
         if (key == InputConstants.KEY_0 || key == InputConstants.KEY_NUMPAD0) {
@@ -665,9 +605,9 @@ public class BlueprintInspectorScreen extends Screen {
 
         int viewportW = sidebarCollapsed ? this.width : (this.width - SIDEBAR_WIDTH);
 
-        // 2. 在视口裁剪区域内提交原生批量化 3D 贴图方块网格 + 3D 线框标尺 + 3D 方位罗盘
+        // 2. 在视口裁剪区域内提交原生 PiP 3D 蓝图预览渲染器 + 左下角方位罗盘
         graphics.enableScissor(0, TOP_BAR_HEIGHT, viewportW, this.height - BOTTOM_BAR_HEIGHT);
-        render3DViewportAndWireframe(graphics, viewportW, this.height);
+        submit3DPreviewAndCompass(graphics, viewportW, this.height, mouseX, mouseY);
         graphics.disableScissor();
 
         // 3. 顶栏与底栏 HUD 半透明底板（在按钮控件层之前绘制，确保按钮不发暗）
@@ -706,9 +646,12 @@ public class BlueprintInspectorScreen extends Screen {
 
         // 3. 顶栏标题与左上角完整规格胶囊文字
         int titleX = 172;
-        int availTitleW = viewportW - titleX - (sidebarCollapsed ? 26 : 6);
+        int availTitleW = viewportW - titleX - (sidebarCollapsed ? 26 : 10);
         if (availTitleW > 24) {
             String trimmedTitle = this.font.plainSubstrByWidth(blueprintTitle, availTitleW);
+            while (!trimmedTitle.isEmpty() && this.font.width(Component.literal(trimmedTitle).withStyle(ChatFormatting.BOLD)) > availTitleW) {
+                trimmedTitle = trimmedTitle.substring(0, trimmedTitle.length() - 1);
+            }
             graphics.text(this.font, Component.literal(trimmedTitle).withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD), titleX, 9, 0xFFFFFFFF, true);
         }
         String dimBadge = String.format("尺寸: %d × %d × %d  |  方块: %,d", structWidth, structHeight, structLength, totalBlocks);
@@ -736,17 +679,31 @@ public class BlueprintInspectorScreen extends Screen {
             graphics.text(this.font, hints, hintsStartX, this.height - 16, 0xFF99A0B0, false);
         }
 
-        // 5. 侧栏悬停详情 Tooltip
+        // 5. 左下角方位罗盘悬停提示
+        if (mouseX < viewportW && BlueprintPreviewMath.isPointInCompass(mouseX, mouseY, this.height)) {
+            List<Component> compassTip = List.of(
+                    Component.literal("方位罗盘 / 外框与 XYZ 坐标开关").withStyle(ChatFormatting.AQUA, ChatFormatting.BOLD),
+                    Component.literal("当前状态: " + (showBoundsAndAxes ? "显示外框与 XYZ" : "已隐藏外框与 XYZ"))
+                            .withStyle(showBoundsAndAxes ? ChatFormatting.GREEN : ChatFormatting.YELLOW),
+                    Component.literal("左键点击可切换显示/隐藏").withStyle(ChatFormatting.GRAY)
+            );
+            graphics.setComponentTooltipForNextFrame(this.font, compassTip, mouseX, mouseY);
+        }
+
+        // 6. 侧栏悬停详情 Tooltip
         if (!sidebarCollapsed && mouseX >= this.width - SIDEBAR_WIDTH + 4 && mouseX <= this.width - 4
                 && mouseY >= LIST_Y_START && mouseY <= this.height - 8) {
             int hoverIdx = listScrollOffset + (mouseY - LIST_Y_START) / LIST_ROW_HEIGHT;
             if (hoverIdx >= 0 && hoverIdx < filteredBlockStats.size()) {
                 BlockStatEntry entry = filteredBlockStats.get(hoverIdx);
-                double pct = totalBlocks > 0 ? (entry.count * 100.0 / totalBlocks) : 0.0;
+                double pct = totalRequiredItems > 0 ? (entry.count * 100.0 / totalRequiredItems) : 0.0;
+                String qtyLine = entry.count != entry.voxelCount
+                        ? String.format("需求数量: %,d 个 (占比 %.1f%% · 占用 %,d 格)", entry.count, pct, entry.voxelCount)
+                        : String.format("需求数量: %,d 个 (占比 %.1f%%)", entry.count, pct);
                 List<Component> tipLines = List.of(
                         Component.literal(entry.localizedName).withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD),
                         Component.literal(entry.registryId).withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal(String.format("数量: %,d 个 (占比 %.1f%%)", entry.count, pct)).withStyle(ChatFormatting.AQUA),
+                        Component.literal(qtyLine).withStyle(ChatFormatting.AQUA),
                         Component.literal("左键点击在 3D 视口中单独高亮该方块").withStyle(ChatFormatting.GRAY)
                 );
                 graphics.setComponentTooltipForNextFrame(this.font, tipLines, mouseX, mouseY);
@@ -754,8 +711,12 @@ public class BlueprintInspectorScreen extends Screen {
         }
     }
 
-    private void render3DViewportAndWireframe(GuiGraphicsExtractor graphics, int vpWidth, int vpHeight) {
-        int usableH = Math.max(40, vpHeight - TOP_BAR_HEIGHT - BOTTOM_BAR_HEIGHT);
+    private void submit3DPreviewAndCompass(GuiGraphicsExtractor graphics, int vpWidth, int vpHeight, int mouseX, int mouseY) {
+        int usableH = vpHeight - TOP_BAR_HEIGHT - BOTTOM_BAR_HEIGHT;
+        if (vpWidth <= 0 || usableH <= 0) {
+            return;
+        }
+        clampCurrentPan();
         float centerX = vpWidth / 2.0F + panX;
         float centerY = TOP_BAR_HEIGHT + usableH / 2.0F + panY;
 
@@ -766,171 +727,30 @@ public class BlueprintInspectorScreen extends Screen {
         float cosP = (float) Math.cos(radPitch);
         float sinP = (float) Math.sin(radPitch);
 
-        LineBatchBuilder lineBatch = new LineBatchBuilder(64);
-
-        if (!culledFaces.isEmpty() && structWidth > 0 && structHeight > 0 && structLength > 0 && this.minecraft != null) {
-            float halfW = structWidth / 2.0F;
-            float halfH = structHeight / 2.0F;
-            float halfL = structLength / 2.0F;
-
-            float maxDim = Math.max(structWidth, Math.max(structHeight, structLength));
-            float baseScale = (Math.min(vpWidth, usableH) * 0.62F / Math.max(1.0F, maxDim)) * zoom;
-
-            // 先绘制底层半透明三维边界线框（处于方块体素后方，起到空间参考作用）
-            appendBoundingBoxAndRulers(lineBatch, false, halfW, halfH, halfL, cosY, sinY, cosP, sinP, baseScale, centerX, centerY);
-
-            // 收集可见体素面并进行背面剔除 (Backface Culling) 与画家深度排序
-            int maxFaces = culledFaces.size();
-            long[] sortKeys = new long[maxFaces];
-            float[] quadCoords = new float[maxFaces * 8];
-            float[] quadUvs = new float[maxFaces * 4];
-            int[] quadColors = new int[maxFaces];
-            int visibleCount = 0;
-
-            for (int i = 0; i < maxFaces; i++) {
-                CulledFace f = culledFaces.get(i);
-                if (singleLayerMode) {
-                    if (f.y != currentLayer) continue;
-                } else {
-                    if (f.y > currentLayer) continue;
-                    if (f.sliceVisibility == 1 && f.y != currentLayer) continue;
-                    if (f.sliceVisibility == 2) continue;
-                }
-
-                int dirOrd = f.dir.ordinal();
-                float[][] verts = FACE_VERTICES[dirOrd];
-
-                float sx0 = 0, sy0 = 0, sx1 = 0, sy1 = 0, sx2 = 0, sy2 = 0, sx3 = 0, sy3 = 0;
-                float depthSum = 0.0F;
-
-                for (int v = 0; v < 4; v++) {
-                    float wx = f.x + verts[v][0] - halfW;
-                    float wy = f.y + verts[v][1] - halfH;
-                    float wz = f.z + verts[v][2] - halfL;
-
-                    float rx = wx * cosY - wz * sinY;
-                    float rz = wx * sinY + wz * cosY;
-                    float ry = wy * cosP - rz * sinP;
-                    float dz = wy * sinP + rz * cosP;
-
-                    float px = centerX + rx * baseScale;
-                    float py = centerY - ry * baseScale;
-                    depthSum += dz;
-
-                    switch (v) {
-                        case 0 -> {
-                            sx0 = px;
-                            sy0 = py;
-                        }
-                        case 1 -> {
-                            sx1 = px;
-                            sy1 = py;
-                        }
-                        case 2 -> {
-                            sx2 = px;
-                            sy2 = py;
-                        }
-                        case 3 -> {
-                            sx3 = px;
-                            sy3 = py;
-                        }
-                    }
-                }
-
-                // 屏幕空间背面剔除：正交投影下，正面在 Y 轴向下的屏幕坐标系中有向面积严格小于 0
-                float cross = (sx1 - sx0) * (sy2 - sy0) - (sy1 - sy0) * (sx2 - sx0);
-                if (cross >= -0.01F) {
-                    continue;
-                }
-
-                FaceAppearance app = paletteAppearances[f.paletteIdx][dirOrd];
-                if (app == null) continue;
-
-                BlockState st = palette[f.paletteIdx];
-                boolean isHighlighted = (selectedBlock == null || st.getBlock() == selectedBlock);
-
-                float shade = switch (f.dir) {
-                    case UP -> 1.0F;
-                    case NORTH, SOUTH -> 0.82F;
-                    case EAST, WEST -> 0.67F;
-                    case DOWN -> 0.52F;
-                };
-
-                int tint = app.tintColor();
-                int r = Math.min(255, Math.round(ARGB.red(tint) * shade));
-                int g = Math.min(255, Math.round(ARGB.green(tint) * shade));
-                int b = Math.min(255, Math.round(ARGB.blue(tint) * shade));
-                int a = isHighlighted ? 255 : 38;
-
-                if (selectedBlock != null && isHighlighted) {
-                    r = Math.min(255, r + 28);
-                    g = Math.min(255, g + 28);
-                    b = Math.min(255, b + 12);
-                }
-
-                int idx = visibleCount++;
-                int ci = idx * 8;
-                quadCoords[ci] = sx0;
-                quadCoords[ci + 1] = sy0;
-                quadCoords[ci + 2] = sx1;
-                quadCoords[ci + 3] = sy1;
-                quadCoords[ci + 4] = sx2;
-                quadCoords[ci + 5] = sy2;
-                quadCoords[ci + 6] = sx3;
-                quadCoords[ci + 7] = sy3;
-
-                int ui = idx * 4;
-                quadUvs[ui] = app.u0();
-                quadUvs[ui + 1] = app.v0();
-                quadUvs[ui + 2] = app.u1();
-                quadUvs[ui + 3] = app.v1();
-
-                quadColors[idx] = ARGB.color(a, r, g, b);
-
-                float avgDepth = depthSum * 0.25F;
-                int sortableDepth = Float.floatToRawIntBits(avgDepth);
-                sortableDepth ^= (sortableDepth >> 31) & 0x7FFFFFFF;
-                sortKeys[idx] = ((long) (sortableDepth ^ 0x80000000) << 32) | (idx & 0xFFFFFFFFL);
-            }
-
-            Matrix3x2f poseCopy = new Matrix3x2f(graphics.pose());
+        if (previewMesh != null && structWidth > 0 && structHeight > 0 && structLength > 0 && this.minecraft != null) {
+            float baseScale = BlueprintPreviewMath.computeBaseScale(vpWidth, vpHeight, structWidth, structHeight, structLength, zoom);
             ScreenRectangle scissor = graphics.scissorStack.peek();
-            ScreenRectangle vpRect = new ScreenRectangle(0, TOP_BAR_HEIGHT, vpWidth, usableH);
-            ScreenRectangle bounds = scissor != null ? scissor.intersection(vpRect) : vpRect;
+            ScreenRectangle bounds = PictureInPictureRenderState.getBounds(0, TOP_BAR_HEIGHT, vpWidth, vpHeight - BOTTOM_BAR_HEIGHT, scissor);
 
-            // 先提交后景参考框线
-            if (lineBatch.count > 0) {
-                graphics.guiRenderState.addGuiElement(lineBatch.toRenderState(poseCopy, scissor, bounds));
-                lineBatch = new LineBatchBuilder(48);
-            }
-
-            // 提交全部 3D 贴图方块面（单次 GuiElementRenderState 批量绘制！）
-            if (visibleCount > 0) {
-                Arrays.sort(sortKeys, 0, visibleCount);
-                float[] sortedCoords = new float[visibleCount * 8];
-                float[] sortedUvs = new float[visibleCount * 4];
-                int[] sortedColors = new int[visibleCount];
-
-                for (int i = 0; i < visibleCount; i++) {
-                    int src = (int) sortKeys[i];
-                    System.arraycopy(quadCoords, src * 8, sortedCoords, i * 8, 8);
-                    System.arraycopy(quadUvs, src * 4, sortedUvs, i * 4, 4);
-                    sortedColors[i] = quadColors[src];
-                }
-
-                AbstractTexture blockAtlas = this.minecraft.getTextureManager().getTexture(TextureAtlas.LOCATION_BLOCKS);
-                TextureSetup texSetup = TextureSetup.singleTexture(blockAtlas.getTextureView(), blockAtlas.getSampler());
-                graphics.guiRenderState.addGuiElement(new TexturedQuadBatchRenderState(
-                        RenderPipelines.GUI_TEXTURED, texSetup, poseCopy, sortedCoords, sortedUvs, sortedColors, visibleCount, scissor, bounds
+            if (bounds != null) {
+                graphics.guiRenderState.addPicturesInPictureState(new BlueprintPreviewRenderer.State(
+                        previewMesh,
+                        structWidth, structHeight, structLength,
+                        yaw, pitch, panX, panY, baseScale,
+                        currentLayer, singleLayerMode, showBoundsAndAxes, selectedBlock,
+                        0, TOP_BAR_HEIGHT, vpWidth, vpHeight - BOTTOM_BAR_HEIGHT,
+                        scissor, bounds
                 ));
             }
 
-            // 再叠加前景线框（三维外框、当前切层高亮框、X/Y/Z 尺寸测量标尺）
-            appendBoundingBoxAndRulers(lineBatch, true, halfW, halfH, halfL, cosY, sinY, cosP, sinP, baseScale, centerX, centerY);
+            if (showBoundsAndAxes) {
+                appendRulerLabels(baseScale, centerX, centerY, cosY, sinY, cosP, sinP);
+            }
         }
 
-        // 左下角 3D 方位罗盘 (东 / 南 / 上)
-        appendCompass(graphics, lineBatch, vpHeight, cosY, sinY, cosP, sinP);
+        // 左下角 3D 方位罗盘 (东 / 南 / 上)，点击可切换外框与 XYZ 显示状态
+        LineBatchBuilder lineBatch = new LineBatchBuilder(16);
+        appendCompass(graphics, lineBatch, vpWidth, vpHeight, mouseX, mouseY, cosY, sinY, cosP, sinP);
 
         if (lineBatch.count > 0) {
             Matrix3x2f poseCopy = new Matrix3x2f(graphics.pose());
@@ -941,120 +761,61 @@ public class BlueprintInspectorScreen extends Screen {
         }
     }
 
-    private void appendBoundingBoxAndRulers(
-            LineBatchBuilder lines,
-            boolean foreground,
-            float halfW, float halfH, float halfL,
-            float cosY, float sinY, float cosP, float sinP,
-            float scale, float cx, float cy
+    private void appendRulerLabels(
+            float scale, float cx, float cy,
+            float cosY, float sinY, float cosP, float sinP
     ) {
-        // 8 个包围盒顶点
-        float[][] corners = {
-                {-halfW, -halfH, -halfL}, {halfW, -halfH, -halfL},
-                {halfW, -halfH, halfL}, {-halfW, -halfH, halfL},
-                {-halfW, halfH, -halfL}, {halfW, halfH, -halfL},
-                {halfW, halfH, halfL}, {-halfW, halfH, halfL}
-        };
-        float[] sx = new float[8];
-        float[] sy = new float[8];
-        for (int i = 0; i < 8; i++) {
-            float rx = corners[i][0] * cosY - corners[i][2] * sinY;
-            float rz = corners[i][0] * sinY + corners[i][2] * cosY;
-            float ry = corners[i][1] * cosP - rz * sinP;
-            sx[i] = cx + rx * scale;
-            sy[i] = cy - ry * scale;
-        }
-
-        int[][] edges = {
-                {0, 1}, {1, 2}, {2, 3}, {3, 0},
-                {4, 5}, {5, 6}, {6, 7}, {7, 4},
-                {0, 4}, {1, 5}, {2, 6}, {3, 7}
-        };
-        int boxColor = foreground ? 0x5500E5FF : 0x3300E5FF;
-        float thickness = foreground ? 1.0F : 0.8F;
-        for (int[] e : edges) {
-            lines.addLine(sx[e[0]], sy[e[0]], sx[e[1]], sy[e[1]], thickness, boxColor);
-        }
-
-        if (!foreground) return;
-
-        // 若处于切层状态，绘制当前切层截面高亮黄框
-        if (singleLayerMode || currentLayer < structHeight - 1) {
-            float sliceY = (currentLayer + 1) - halfH;
-            float[][] slicePts = {
-                    {-halfW, sliceY, -halfL}, {halfW, sliceY, -halfL},
-                    {halfW, sliceY, halfL}, {-halfW, sliceY, halfL}
-            };
-            float[] slX = new float[4];
-            float[] slY = new float[4];
-            for (int i = 0; i < 4; i++) {
-                float rx = slicePts[i][0] * cosY - slicePts[i][2] * sinY;
-                float rz = slicePts[i][0] * sinY + slicePts[i][2] * cosY;
-                float ry = slicePts[i][1] * cosP - rz * sinP;
-                slX[i] = cx + rx * scale;
-                slY[i] = cy - ry * scale;
-            }
-            for (int i = 0; i < 4; i++) {
-                int next = (i + 1) % 4;
-                lines.addLine(slX[i], slY[i], slX[next], slY[next], 1.4F, 0xCCFFDD44);
-            }
-        }
-
-        // 三轴尺寸测量标尺 (X 宽 / Y 高 / Z 长)，贴靠包围盒外沿偏移 0.6 格
+        float halfW = structWidth / 2.0F;
+        float halfH = structHeight / 2.0F;
+        float halfL = structLength / 2.0F;
         float gap = Math.max(0.45F, 6.0F / Math.max(1.0F, scale));
-        // X 标尺 (沿前下边 y=-halfH, z=halfL+gap)
-        addRulerAxis(lines, -halfW, -halfH, halfL + gap, halfW, -halfH, halfL + gap,
+
+        projectRulerLabel(-halfW, -halfH, halfL + gap, halfW, -halfH, halfL + gap,
                 cosY, sinY, cosP, sinP, scale, cx, cy, 0xFFFF5555, "X:" + structWidth);
-        // Z 标尺 (沿右下边 x=halfW+gap, y=-halfH)
-        addRulerAxis(lines, halfW + gap, -halfH, -halfL, halfW + gap, -halfH, halfL,
+        projectRulerLabel(halfW + gap, -halfH, -halfL, halfW + gap, -halfH, halfL,
                 cosY, sinY, cosP, sinP, scale, cx, cy, 0xFF5599FF, "Z:" + structLength);
-        // Y 标尺 (沿前左边 x=-halfW-gap, z=halfL)
-        addRulerAxis(lines, -halfW - gap, -halfH, halfL, -halfW - gap, halfH, halfL,
+        projectRulerLabel(-halfW - gap, -halfH, halfL, -halfW - gap, halfH, halfL,
                 cosY, sinY, cosP, sinP, scale, cx, cy, 0xFF55FF55, "Y:" + structHeight);
     }
 
-    private void addRulerAxis(
-            LineBatchBuilder lines,
+    private void projectRulerLabel(
             float x0, float y0, float z0, float x1, float y1, float z1,
             float cosY, float sinY, float cosP, float sinP,
             float scale, float cx, float cy,
             int color, String label
     ) {
-        float rx0 = x0 * cosY - z0 * sinY;
-        float rz0 = x0 * sinY + z0 * cosY;
-        float ry0 = y0 * cosP - rz0 * sinP;
-        float sx0 = cx + rx0 * scale;
-        float sy0 = cy - ry0 * scale;
-
-        float rx1 = x1 * cosY - z1 * sinY;
-        float rz1 = x1 * sinY + z1 * cosY;
-        float ry1 = y1 * cosP - rz1 * sinP;
-        float sx1 = cx + rx1 * scale;
-        float sy1 = cy - ry1 * scale;
-
-        lines.addLine(sx0, sy0, sx1, sy1, 1.3F, color);
-        float dx = sx1 - sx0;
-        float dy = sy1 - sy0;
-        float len = (float) Math.hypot(dx, dy);
+        float[] p0 = new float[2];
+        float[] p1 = new float[2];
+        BlueprintPreviewMath.projectToScreen(x0, y0, z0, cosY, sinY, cosP, sinP, scale, cx, cy, p0);
+        BlueprintPreviewMath.projectToScreen(x1, y1, z1, cosY, sinY, cosP, sinP, scale, cx, cy, p1);
+        float len = (float) Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
         if (len > 14.0F) {
-            float nx = -dy / len * 3.5F;
-            float ny = dx / len * 3.5F;
-            lines.addLine(sx0 - nx, sy0 - ny, sx0 + nx, sy0 + ny, 1.2F, color);
-            lines.addLine(sx1 - nx, sy1 - ny, sx1 + nx, sy1 + ny, 1.2F, color);
-
-            int midX = Math.round((sx0 + sx1) * 0.5F - this.font.width(label) * 0.5F);
-            int midY = Math.round((sy0 + sy1) * 0.5F - 4.0F);
+            int midX = Math.round((p0[0] + p1[0]) * 0.5F - this.font.width(label) * 0.5F);
+            int midY = Math.round((p0[1] + p1[1]) * 0.5F - 4.0F);
             frameOverlayLabels.add(new ScreenLabel(label, midX, midY, color));
         }
     }
 
-    private void appendCompass(GuiGraphicsExtractor graphics, LineBatchBuilder lines, int vpHeight, float cosY, float sinY, float cosP, float sinP) {
-        int compX = 34;
-        int compY = vpHeight - BOTTOM_BAR_HEIGHT - 32;
-        graphics.fill(compX - 24, compY - 24, compX + 24, compY + 24, 0xAA161822);
-        graphics.outline(compX - 24, compY - 24, 48, 48, 0xFF32384E);
+    private void appendCompass(
+            GuiGraphicsExtractor graphics,
+            LineBatchBuilder lines,
+            int vpWidth,
+            int vpHeight,
+            int mouseX,
+            int mouseY,
+            float cosY, float sinY, float cosP, float sinP
+    ) {
+        int compX = BlueprintPreviewMath.COMPASS_CENTER_X;
+        int compY = BlueprintPreviewMath.getCompassCenterY(vpHeight);
+        int half = BlueprintPreviewMath.COMPASS_HALF_SIZE;
+        boolean hovered = mouseX < vpWidth && BlueprintPreviewMath.isPointInCompass(mouseX, mouseY, vpHeight);
 
-        float axisLen = 17.0F;
+        int bgColor = hovered ? 0xCC222636 : 0xAA161822;
+        int borderColor = hovered ? 0xFF66B2FF : (showBoundsAndAxes ? 0xFF32384E : 0xFF4B4230);
+        graphics.fill(compX - half, compY - half, compX + half, compY + half, bgColor);
+        graphics.outline(compX - half, compY - half, half * 2, half * 2, borderColor);
+
+        float axisLen = 15.0F;
         // X轴 (东) -> 红
         float ex = compX + axisLen * cosY;
         float ey = compY + axisLen * sinY * sinP;
@@ -1072,6 +833,11 @@ public class BlueprintInspectorScreen extends Screen {
         float uy = compY - axisLen * cosP;
         lines.addLine(compX, compY, ux, uy, 1.6F, 0xFF55FF55);
         frameOverlayLabels.add(new ScreenLabel("上", Math.round(ux) + 2, Math.round(uy) - 4, 0xFF66FF66));
+
+        String stateBadge = showBoundsAndAxes ? "外框:显" : "外框:隐";
+        int badgeColor = showBoundsAndAxes ? 0xFF77DDCC : 0xFFFFAA44;
+        int badgeX = compX - this.font.width(stateBadge) / 2;
+        frameOverlayLabels.add(new ScreenLabel(stateBadge, badgeX, compY - half - 10, badgeColor));
     }
 
     private void renderSidebarBackgroundAndRows(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
@@ -1080,7 +846,7 @@ public class BlueprintInspectorScreen extends Screen {
         graphics.fill(sbX, 0, sbX + 1, this.height, 0xFF35384A);
 
         graphics.text(this.font, Component.translatable("gui.tuanzis_mod.inspector.block_list_title").withStyle(ChatFormatting.BOLD), sbX + 8, 8, 0xFFFFFFFF, false);
-        String statSummary = String.format("%d 种材料 | 共 %,d 块", allBlockStats.size(), totalBlocks);
+        String statSummary = String.format("%d 种材料 | 共 %,d 个", allBlockStats.size(), totalRequiredItems);
         graphics.text(this.font, statSummary, sbX + 8, 22, 0xFFAAAAAA, false);
 
         int trackH = this.height - LIST_Y_START - 8;
@@ -1111,7 +877,7 @@ public class BlueprintInspectorScreen extends Screen {
                     graphics.item(entry.itemStack, sbX + 6, rowY + 3);
                 }
 
-                double pct = totalBlocks > 0 ? (entry.count * 100.0 / totalBlocks) : 0.0;
+                double pct = totalRequiredItems > 0 ? (entry.count * 100.0 / totalRequiredItems) : 0.0;
                 String countStr = String.format("%,d", entry.count);
                 String pctStr = pct >= 10.0 ? String.format("%.0f%%", pct) : String.format("%.1f%%", pct);
 
@@ -1145,19 +911,21 @@ public class BlueprintInspectorScreen extends Screen {
     }
 
     @Override
+    public void removed() {
+        this.isDraggingOrbit = false;
+        this.isDraggingPan = false;
+        super.removed();
+    }
+
+    @Override
     public void onClose() {
+        this.isDraggingOrbit = false;
+        this.isDraggingPan = false;
         if (this.parentScreen != null && this.minecraft != null) {
             this.minecraft.setScreenAndShow(this.parentScreen);
         } else {
             super.onClose();
         }
-    }
-
-    public record FaceAppearance(float u0, float v0, float u1, float v1, int tintColor) {
-    }
-
-    // sliceVisibility: 0 = 外部常驻可见面, 1 = 内部顶面(仅在 y == currentLayer 切层截面时封顶可见), 2 = 内部底面(仅在单层模式下可见)
-    public record CulledFace(int x, int y, int z, Direction dir, int paletteIdx, byte sliceVisibility) {
     }
 
     // 按 Block 聚合去重后的方块统计列表项
@@ -1167,13 +935,15 @@ public class BlueprintInspectorScreen extends Screen {
         public final String localizedName;
         public final String registryId;
         public int count;
+        public int voxelCount;
 
-        public BlockStatEntry(Block block, ItemStack itemStack, String localizedName, String registryId, int count) {
+        public BlockStatEntry(Block block, ItemStack itemStack, String localizedName, String registryId, int count, int voxelCount) {
             this.block = block;
             this.itemStack = itemStack;
             this.localizedName = localizedName;
             this.registryId = registryId;
             this.count = count;
+            this.voxelCount = voxelCount;
         }
     }
 
@@ -1235,32 +1005,14 @@ public class BlueprintInspectorScreen extends Screen {
         }
     }
 
-    private record TexturedQuadBatchRenderState(
-            RenderPipeline pipeline,
-            TextureSetup textureSetup,
-            Matrix3x2fc pose,
-            float[] coords,
-            float[] uvs,
-            int[] colors,
-            int quadCount,
-            @Nullable ScreenRectangle scissorArea,
-            @Nullable ScreenRectangle bounds
-    ) implements GuiElementRenderState {
+    private static final class CompassToggleButton extends Button {
+        CompassToggleButton(int x, int y, int width, int height, Component message, OnPress onPress) {
+            super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
+        }
+
         @Override
-        public void buildVertices(final VertexConsumer vc) {
-            for (int i = 0; i < quadCount; i++) {
-                int ci = i * 8;
-                int ui = i * 4;
-                int col = colors[i];
-                float u0 = uvs[ui];
-                float v0 = uvs[ui + 1];
-                float u1 = uvs[ui + 2];
-                float v1 = uvs[ui + 3];
-                vc.addVertexWith2DPose(pose, coords[ci], coords[ci + 1]).setUv(u0, v0).setColor(col);
-                vc.addVertexWith2DPose(pose, coords[ci + 2], coords[ci + 3]).setUv(u0, v1).setColor(col);
-                vc.addVertexWith2DPose(pose, coords[ci + 4], coords[ci + 5]).setUv(u1, v1).setColor(col);
-                vc.addVertexWith2DPose(pose, coords[ci + 6], coords[ci + 7]).setUv(u1, v0).setColor(col);
-            }
+        public void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float delta) {
+            // 外观由 appendCompass 与 frameOverlayLabels 统一绘制，此处仅保留原生 Button 命中与无障碍交互
         }
     }
 

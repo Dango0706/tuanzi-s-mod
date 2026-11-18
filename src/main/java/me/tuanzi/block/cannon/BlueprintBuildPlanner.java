@@ -31,6 +31,10 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -64,6 +68,22 @@ public class BlueprintBuildPlanner {
 
     public record MultiBlockGroup(List<BlueprintCell> parts, Item requiredItem) {
     }
+
+    public record MaterialStat(int itemCount, int voxelCount) {
+    }
+
+    private static final Set<String> IGNORED_NON_PART_PROPERTIES = Set.of(
+            "facing", "axis", "waterlogged", "lit", "open", "powered",
+            "joins", "back", "north", "south", "east", "west", "up", "down",
+            "shape", "type", "age", "level", "power", "distance", "stage",
+            "rotation", "frame", "layers", "candles", "pickles", "eggs",
+            "flower_amount", "moisture", "charges", "bites", "delay", "hatch",
+            "honey_level", "dusted", "note", "color", "variant", "style",
+            "hinge", "attached", "triggered", "inverted", "extended", "occupied",
+            "in_wall", "persistent", "unstable", "drag", "has_record", "has_book",
+            "conditional", "enabled", "locked", "eye", "disarmed", "mode",
+            "instrument", "signal_fire", "cracked", "ominous", "snowy"
+    );
 
     public record ParsedBlueprint(
             int width,
@@ -207,6 +227,7 @@ public class BlueprintBuildPlanner {
             List<BlueprintCell> component = new ArrayList<>();
             Deque<BlueprintCell> queue = new ArrayDeque<>();
             queue.add(seed);
+            boolean usedDeferredTick = false;
 
             while (!queue.isEmpty()) {
                 BlueprintCell current = queue.poll();
@@ -227,6 +248,10 @@ public class BlueprintBuildPlanner {
                     if (areMutuallyCoupled(current, neighbor, dir, blueprintStateOverlay, worldLevel, random)) {
                         visited.add(neighborPos);
                         queue.add(neighbor);
+                    } else if (areDeferredTickMultiblockCoupled(current, neighbor, dir, blueprintStateOverlay, worldLevel, random)) {
+                        usedDeferredTick = true;
+                        visited.add(neighborPos);
+                        queue.add(neighbor);
                     }
                 }
             }
@@ -234,20 +259,34 @@ public class BlueprintBuildPlanner {
             if (component.size() == 1) {
                 singleCells.add(seed);
             } else {
-                component.sort(Comparator
-                        .comparingInt((BlueprintCell c) -> c.pos().getY())
-                        .thenComparingInt(c -> c.pos().getZ())
-                        .thenComparingInt(c -> c.pos().getX()));
-                Item requiredItem = Items.AIR;
-                for (BlueprintCell part : component) {
-                    Item candidate = part.state().getBlock().asItem();
-                    if (candidate != Items.AIR) {
-                        requiredItem = candidate;
-                        break;
-                    }
+                List<List<BlueprintCell>> splitInstances;
+                if (usedDeferredTick) {
+                    Property<?> partProp = findPartProperty(seed.state().getBlock());
+                    splitInstances = splitMultiBlockInstances(component, partProp);
+                } else {
+                    splitInstances = List.of(component);
                 }
-                if (requiredItem != Items.AIR) {
-                    multiGroups.add(new MultiBlockGroup(List.copyOf(component), requiredItem));
+                for (List<BlueprintCell> instance : splitInstances) {
+                    if (instance.size() == 1) {
+                        singleCells.add(instance.getFirst());
+                        continue;
+                    }
+                    List<BlueprintCell> sortedInstance = new ArrayList<>(instance);
+                    sortedInstance.sort(Comparator
+                            .comparingInt((BlueprintCell c) -> c.pos().getY())
+                            .thenComparingInt(c -> c.pos().getZ())
+                            .thenComparingInt(c -> c.pos().getX()));
+                    Item requiredItem = Items.AIR;
+                    for (BlueprintCell part : sortedInstance) {
+                        Item candidate = part.state().getBlock().asItem();
+                        if (candidate != Items.AIR) {
+                            requiredItem = candidate;
+                            break;
+                        }
+                    }
+                    if (requiredItem != Items.AIR) {
+                        multiGroups.add(new MultiBlockGroup(List.copyOf(sortedInstance), requiredItem));
+                    }
                 }
             }
         }
@@ -329,6 +368,277 @@ public class BlueprintBuildPlanner {
     }
 
     /**
+     * 通用识别采用延迟 1-tick 自检（updateShape 中调用 scheduleTick 而非同步返回 AIR）的模组多方块结构：
+     * 要求方块具有多部件索引属性（排除连接掩码/堆叠数量等通用属性）、相邻格朝向一致，且移除邻居时双方均调度了自检 tick。
+     */
+    public static boolean areDeferredTickMultiblockCoupled(
+            BlueprintCell a,
+            BlueprintCell b,
+            Direction dirFromAToB,
+            Map<BlockPos, BlockState> blueprintOverlay,
+            @Nullable LevelReader worldLevel,
+            RandomSource random
+    ) {
+        Block block = a.state().getBlock();
+        Property<?> partProp = findPartProperty(block);
+        if (partProp == null || !haveCompatibleFacing(a.state(), b.state())) {
+            return false;
+        }
+        try {
+            BlueprintLevelReader readerWithoutB = new BlueprintLevelReader(worldLevel, blueprintOverlay, b.pos(), Blocks.AIR.defaultBlockState());
+            a.state().updateShape(readerWithoutB, readerWithoutB, a.pos(), dirFromAToB, b.pos(), Blocks.AIR.defaultBlockState(), random);
+            if (!readerWithoutB.wasTickScheduled()) {
+                return false;
+            }
+
+            BlueprintLevelReader readerWithoutA = new BlueprintLevelReader(worldLevel, blueprintOverlay, a.pos(), Blocks.AIR.defaultBlockState());
+            b.state().updateShape(readerWithoutA, readerWithoutA, b.pos(), dirFromAToB.getOpposite(), a.pos(), Blocks.AIR.defaultBlockState(), random);
+            return readerWithoutA.wasTickScheduled();
+        } catch (Exception e) {
+            ModLog.debug("BlueprintBuildPlanner: 延迟 tick 多方块耦合判定异常: " + a.state() + " <-> " + b.state() + ", err=" + e.getMessage());
+            return false;
+        }
+    }
+
+    public static @Nullable Property<?> findPartProperty(Block block) {
+        Property<?> fallbackInt = null;
+        for (Property<?> prop : block.getStateDefinition().getProperties()) {
+            String name = prop.getName().toLowerCase(Locale.ROOT);
+            if (IGNORED_NON_PART_PROPERTIES.contains(name)) {
+                continue;
+            }
+            if (name.equals("part") || name.endsWith("_part")
+                    || name.equals("half") || name.endsWith("_half")
+                    || name.equals("section") || name.equals("segment")
+                    || name.equals("piece") || name.contains("multiblock")
+                    || name.contains("subblock")) {
+                return prop;
+            }
+            if (fallbackInt == null && prop instanceof IntegerProperty intProp
+                    && intProp.getPossibleValues().contains(0) && intProp.getPossibleValues().size() >= 2) {
+                fallbackInt = prop;
+            }
+        }
+        return fallbackInt;
+    }
+
+    private static boolean haveCompatibleFacing(BlockState a, BlockState b) {
+        if (a.hasProperty(BlockStateProperties.HORIZONTAL_FACING)
+                && !a.getValue(BlockStateProperties.HORIZONTAL_FACING).equals(b.getValue(BlockStateProperties.HORIZONTAL_FACING))) {
+            return false;
+        }
+        if (a.hasProperty(BlockStateProperties.FACING)
+                && !a.getValue(BlockStateProperties.FACING).equals(b.getValue(BlockStateProperties.FACING))) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 将紧贴摆放在一起的多台相同模组多方块实例按锚点与相对偏移一致性精确拆分为独立 MultiBlockGroup。
+     */
+    private static List<List<BlueprintCell>> splitMultiBlockInstances(
+            List<BlueprintCell> component,
+            @Nullable Property<?> partProp
+    ) {
+        if (component.size() <= 1 || partProp == null) {
+            return List.of(component);
+        }
+        Block block = component.getFirst().state().getBlock();
+        Comparable<?> anchorVal = block.defaultBlockState().getValue(partProp);
+
+        List<BlueprintCell> anchors = new ArrayList<>();
+        Map<Comparable<?>, Integer> partFreq = new HashMap<>();
+        Map<BlockPos, Comparable<?>> posToPart = new HashMap<>(component.size());
+        for (BlueprintCell cell : component) {
+            Comparable<?> val = cell.state().getValue(partProp);
+            partFreq.merge(val, 1, Integer::sum);
+            posToPart.put(cell.pos(), val);
+            if (val.equals(anchorVal)) {
+                anchors.add(cell);
+            }
+        }
+
+        int k = anchors.size();
+        if (k <= 1) {
+            return List.of(component);
+        }
+
+        anchors.sort(Comparator
+                .comparingInt((BlueprintCell c) -> c.pos().getY())
+                .thenComparingInt(c -> c.pos().getZ())
+                .thenComparingInt(c -> c.pos().getX()));
+
+        List<List<BlueprintCell>> groups = new ArrayList<>(k);
+        List<Set<Comparable<?>>> usedUniqueParts = new ArrayList<>(k);
+        for (int i = 0; i < k; i++) {
+            List<BlueprintCell> list = new ArrayList<>();
+            list.add(anchors.get(i));
+            groups.add(list);
+            Set<Comparable<?>> used = new HashSet<>();
+            used.add(anchorVal);
+            usedUniqueParts.add(used);
+        }
+
+        List<BlueprintCell> nonAnchors = new ArrayList<>(component.size() - k);
+        for (BlueprintCell cell : component) {
+            if (!cell.state().getValue(partProp).equals(anchorVal)) {
+                nonAnchors.add(cell);
+            }
+        }
+
+        // 优先分配锚点相对偏移共识度最高的部件（使并排 3x3 电视、转盘等边界绝不互抢）
+        Map<BlueprintCell, Integer> maxConsensusCache = new HashMap<>(nonAnchors.size());
+        for (BlueprintCell cell : nonAnchors) {
+            Comparable<?> partVal = cell.state().getValue(partProp);
+            int maxConsensus = 0;
+            for (BlueprintCell anchor : anchors) {
+                BlockPos delta = cell.pos().subtract(anchor.pos());
+                int consensus = countOffsetConsensus(anchors, posToPart, delta, partVal);
+                if (consensus > maxConsensus) {
+                    maxConsensus = consensus;
+                }
+            }
+            maxConsensusCache.put(cell, maxConsensus);
+        }
+
+        nonAnchors.sort((c1, c2) -> {
+            int cmpConsensus = Integer.compare(maxConsensusCache.get(c2), maxConsensusCache.get(c1));
+            if (cmpConsensus != 0) return cmpConsensus;
+            int d1 = minManhattanToAnchors(c1.pos(), anchors);
+            int d2 = minManhattanToAnchors(c2.pos(), anchors);
+            return Integer.compare(d1, d2);
+        });
+
+        for (BlueprintCell cell : nonAnchors) {
+            Comparable<?> partVal = cell.state().getValue(partProp);
+            boolean repeatable = partFreq.getOrDefault(partVal, 0) > k;
+
+            int bestIdx = -1;
+            int bestConsensus = -1;
+            int bestDist = Integer.MAX_VALUE;
+
+            for (int i = 0; i < k; i++) {
+                if (!repeatable && usedUniqueParts.get(i).contains(partVal)) {
+                    continue;
+                }
+                BlockPos delta = cell.pos().subtract(anchors.get(i).pos());
+                int consensus = countOffsetConsensus(anchors, posToPart, delta, partVal);
+                int dist = cell.pos().distManhattan(anchors.get(i).pos());
+                if (consensus > bestConsensus || (consensus == bestConsensus && dist < bestDist)) {
+                    bestConsensus = consensus;
+                    bestDist = dist;
+                    bestIdx = i;
+                }
+            }
+
+            if (bestIdx < 0) {
+                // 回退：若该部位已超出各组上限，按最近曼哈顿距离归属
+                for (int i = 0; i < k; i++) {
+                    int dist = cell.pos().distManhattan(anchors.get(i).pos());
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        bestIdx = i;
+                    }
+                }
+            }
+
+            if (bestIdx >= 0) {
+                groups.get(bestIdx).add(cell);
+                if (!repeatable) {
+                    usedUniqueParts.get(bestIdx).add(partVal);
+                }
+            }
+        }
+
+        return groups;
+    }
+
+    private static int countOffsetConsensus(
+            List<BlueprintCell> anchors,
+            Map<BlockPos, Comparable<?>> posToPart,
+            BlockPos delta,
+            Comparable<?> expectedPart
+    ) {
+        int count = 0;
+        for (BlueprintCell anchor : anchors) {
+            Comparable<?> p = posToPart.get(anchor.pos().offset(delta));
+            if (expectedPart.equals(p)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private static int minManhattanToAnchors(BlockPos pos, List<BlueprintCell> anchors) {
+        int min = Integer.MAX_VALUE;
+        for (BlueprintCell a : anchors) {
+            int d = pos.distManhattan(a.pos());
+            if (d < min) min = d;
+        }
+        return min;
+    }
+
+    /**
+     * 通用计算单个方块格所需物品数量（如双半砖计 2、蜡烛/海泡菜/粉红花瓣/海龟蛋/雪层按堆叠属性计数）。
+     */
+    public static int getSingleBlockItemCount(BlockState state) {
+        if (state.hasProperty(BlockStateProperties.SLAB_TYPE)
+                && state.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.DOUBLE) {
+            return 2;
+        }
+        if (state.hasProperty(BlockStateProperties.CANDLES)) {
+            return state.getValue(BlockStateProperties.CANDLES);
+        }
+        if (state.hasProperty(BlockStateProperties.PICKLES)) {
+            return state.getValue(BlockStateProperties.PICKLES);
+        }
+        if (state.hasProperty(BlockStateProperties.FLOWER_AMOUNT)) {
+            return state.getValue(BlockStateProperties.FLOWER_AMOUNT);
+        }
+        if (state.hasProperty(BlockStateProperties.EGGS)) {
+            return state.getValue(BlockStateProperties.EGGS);
+        }
+        if (state.hasProperty(BlockStateProperties.LAYERS)) {
+            return state.getValue(BlockStateProperties.LAYERS);
+        }
+        return 1;
+    }
+
+    /**
+     * 按方块类型统计蓝图真实材料需求量与占用体素格数（多方块整组计 1，双半砖等按实际消耗计 N）。
+     */
+    public static Map<Block, MaterialStat> collectMaterialStats(CompoundTag blueprintTag, @Nullable LevelReader worldLevel) {
+        ParsedBlueprint parsed = parseBlueprint(blueprintTag, worldLevel);
+        Map<Block, Integer> voxelCounts = new LinkedHashMap<>();
+        for (BlueprintCell cell : parsed.cellMap().values()) {
+            voxelCounts.merge(cell.state().getBlock(), 1, Integer::sum);
+        }
+
+        Map<Block, Integer> itemCounts = new LinkedHashMap<>();
+        for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
+            Block b = cell.state().getBlock();
+            int needed = (b.asItem() == Items.AIR) ? 1 : getSingleBlockItemCount(cell.state());
+            itemCounts.merge(b, needed, Integer::sum);
+        }
+        for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
+            if (!group.parts().isEmpty()) {
+                Block b = group.parts().getFirst().state().getBlock();
+                itemCounts.merge(b, 1, Integer::sum);
+            }
+        }
+
+        Map<Block, MaterialStat> result = new LinkedHashMap<>();
+        for (Map.Entry<Block, Integer> entry : voxelCounts.entrySet()) {
+            Block b = entry.getKey();
+            int voxels = entry.getValue();
+            int items = itemCounts.getOrDefault(b, voxels);
+            result.put(b, new MaterialStat(items, voxels));
+        }
+        return result;
+    }
+
+    /**
      * 检查单个方块当前在真实世界中是否已具备放置/存活前置条件（通用依附检测）。
      */
     public static boolean isSingleBlockReady(
@@ -389,6 +699,7 @@ public class BlueprintBuildPlanner {
         private final Map<BlockPos, BlockState> overlay;
         private final @Nullable BlockPos overridePos;
         private final @Nullable BlockState overrideState;
+        private boolean scheduledTick = false;
 
         public BlueprintLevelReader(@Nullable LevelReader delegate, Map<BlockPos, BlockState> overlay) {
             this(delegate, overlay, null, null);
@@ -404,6 +715,10 @@ public class BlueprintBuildPlanner {
             this.overlay = overlay;
             this.overridePos = overridePos;
             this.overrideState = overrideState;
+        }
+
+        public boolean wasTickScheduled() {
+            return this.scheduledTick;
         }
 
         @Override
@@ -519,11 +834,13 @@ public class BlueprintBuildPlanner {
 
         @Override
         public <T> ScheduledTick<T> createTick(BlockPos pos, T type, int tickDelay, TickPriority priority) {
+            this.scheduledTick = true;
             return new ScheduledTick<>(type, pos, 0L, priority, 0L);
         }
 
         @Override
         public <T> ScheduledTick<T> createTick(BlockPos pos, T type, int tickDelay) {
+            this.scheduledTick = true;
             return new ScheduledTick<>(type, pos, 0L, TickPriority.NORMAL, 0L);
         }
 
