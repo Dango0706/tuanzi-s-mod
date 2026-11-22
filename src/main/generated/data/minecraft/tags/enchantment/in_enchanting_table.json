@@ -135,6 +135,14 @@
     {
       "id": "tuanzis_mod:pervading_vibration",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:auspicious",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:ill_omen",
+      "required": false
     }
   ]
 }

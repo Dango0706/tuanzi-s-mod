@@ -48,12 +48,14 @@ public abstract class BloodRageEffectMixin {
                                 .getOrThrow(DamageTypes.GENERIC);
                         BloodRageDamageSource src = new BloodRageDamageSource(typeHolder);
 
-                        // 绝对扣减生命值，以绝对无视护甲与任何效果减免
-                        float newHealth = player.getHealth() - 2.0F;
-                        player.setHealth(Math.max(0.0F, newHealth));
+                        // 绝对扣减生命值，以绝对无视护甲与任何效果减免（背水一战期间记入创伤值）
+                        if (!me.tuanzi.util.DesperateStandHelper.tryDeferDirectDamage(player, 2.0F)) {
+                            float newHealth = player.getHealth() - 2.0F;
+                            player.setHealth(Math.max(0.0F, newHealth));
 
-                        if (newHealth <= 0.0F) {
-                            player.die(src);
+                            if (newHealth <= 0.0F) {
+                                player.die(src);
+                            }
                         }
                     }
                     // 重置所有标志

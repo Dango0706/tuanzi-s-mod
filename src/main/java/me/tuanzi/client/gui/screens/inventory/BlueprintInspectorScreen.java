@@ -37,19 +37,21 @@ import org.joml.Matrix3x2fc;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class BlueprintInspectorScreen extends Screen {
 
     private static final int TOP_BAR_HEIGHT = BlueprintPreviewMath.TOP_BAR_HEIGHT;
     private static final int BOTTOM_BAR_HEIGHT = BlueprintPreviewMath.BOTTOM_BAR_HEIGHT;
-    private static final int SIDEBAR_WIDTH = 144;
+    private static final int SIDEBAR_WIDTH = 158;
     private static final int LIST_Y_START = 84;
     private static final int LIST_ROW_HEIGHT = 24;
 
     private final Screen parentScreen;
     private final CompoundTag blueprintTag;
     private final String blueprintTitle;
+    private final @Nullable Consumer<CompoundTag> onBlueprintModified;
     private final Map<BlockPos, CompoundTag> teNbtMap = new HashMap<>();
     private final List<BlockStatEntry> allBlockStats = new ArrayList<>();
     private final List<BlockStatEntry> filteredBlockStats = new ArrayList<>();
@@ -93,20 +95,37 @@ public class BlueprintInspectorScreen extends Screen {
     private Button modeButton;
     private Button compassButton;
     private boolean sortByCount = true;
+    private @Nullable Block lastClickedListBlock = null;
+    private long lastClickedListTimeMs = 0L;
+
     public BlueprintInspectorScreen(Screen parentScreen, CompoundTag blueprintTag, String title) {
+        this(parentScreen, blueprintTag, title, null);
+    }
+
+    public BlueprintInspectorScreen(
+            Screen parentScreen,
+            CompoundTag blueprintTag,
+            String title,
+            @Nullable Consumer<CompoundTag> onBlueprintModified
+    ) {
         super(Component.literal(title));
         this.parentScreen = parentScreen;
         this.blueprintTag = blueprintTag;
         this.blueprintTitle = title;
-        initBlueprintData();
+        this.onBlueprintModified = onBlueprintModified;
+        initBlueprintData(true);
     }
 
-    private void initBlueprintData() {
+    private void initBlueprintData(boolean resetCurrentLayer) {
         if (blueprintTag == null) return;
         this.structWidth = blueprintTag.getIntOr("Width", 0);
         this.structHeight = blueprintTag.getIntOr("Height", 0);
         this.structLength = blueprintTag.getIntOr("Length", 0);
-        this.currentLayer = Math.max(0, this.structHeight - 1);
+        if (resetCurrentLayer) {
+            this.currentLayer = Math.max(0, this.structHeight - 1);
+        } else {
+            this.currentLayer = Math.clamp(this.currentLayer, 0, Math.max(0, this.structHeight - 1));
+        }
 
         ListTag paletteNbt = blueprintTag.getListOrEmpty("Palette");
         this.blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
@@ -134,7 +153,7 @@ public class BlueprintInspectorScreen extends Screen {
             }
         }
 
-        // 使用通用多方块与多消耗方块规划器统计真实需求数量与占用格数（1扇门=1、模组多方块整组=1、双半砖=2）
+        // 使用通用多方块与多消耗方块规划器统计真实需求数量与占用格数（1扇门=1、模组多方块整组=1、双半砖=2；液体仅算源头）
         Minecraft mc = Minecraft.getInstance();
         Map<Block, BlueprintBuildPlanner.MaterialStat> materialStats =
                 BlueprintBuildPlanner.collectMaterialStats(blueprintTag, mc != null ? mc.level : null);
@@ -145,7 +164,7 @@ public class BlueprintInspectorScreen extends Screen {
         for (Map.Entry<Block, BlueprintBuildPlanner.MaterialStat> entry : materialStats.entrySet()) {
             Block block = entry.getKey();
             BlueprintBuildPlanner.MaterialStat stat = entry.getValue();
-            ItemStack stack = block.asItem().getDefaultInstance();
+            ItemStack stack = BlueprintBlockReplaceScreen.resolveDisplayStack(block);
             String locName = block.getName().getString();
             String regId = BuiltInRegistries.BLOCK.getKey(block).toString();
             allBlockStats.add(new BlockStatEntry(block, stack, locName, regId, stat.itemCount(), stat.voxelCount()));
@@ -231,12 +250,12 @@ public class BlueprintInspectorScreen extends Screen {
             this.sortByCount = !this.sortByCount;
             btn.setMessage(getSortButtonLabel());
             sortBlockStats();
-        }).bounds(sbX, 64, 68, 16).build());
+        }).bounds(sbX, 64, 72, 16).build());
 
         this.resetFilterButton = this.addRenderableWidget(Button.builder(Component.literal("重置视角"), btn -> {
             this.selectedBlock = null;
             resetCamera();
-        }).bounds(sbX + 72, 64, 60, 16).build());
+        }).bounds(sbX + 76, 64, SIDEBAR_WIDTH - 88, 16).build());
 
         // 侧栏折叠/展开按钮
         this.sidebarToggleButton = this.addRenderableWidget(Button.builder(Component.literal("≡"), btn -> {
@@ -396,6 +415,52 @@ public class BlueprintInspectorScreen extends Screen {
         }
     }
 
+    private void openBlockReplaceScreen(BlockStatEntry entry) {
+        if (this.minecraft == null) {
+            return;
+        }
+        ModLog.debug("[BlueprintInspectorScreen] 双击打开方块替换界面: source=" + entry.registryId);
+        this.minecraft.setScreenAndShow(new BlueprintBlockReplaceScreen(
+                this,
+                entry.block,
+                entry.itemStack,
+                targetBlock -> applyBlockReplacement(entry.block, targetBlock)
+        ));
+    }
+
+    private void applyBlockReplacement(Block sourceBlock, Block targetBlock) {
+        BlueprintBuildPlanner.ReplaceResult result =
+                BlueprintBuildPlanner.replaceBlockInBlueprint(this.blueprintTag, sourceBlock, targetBlock);
+        if (!result.success()) {
+            if (this.minecraft != null && this.minecraft.player != null) {
+                this.minecraft.player.sendSystemMessage(result.message().copy().withStyle(ChatFormatting.RED));
+            }
+            return;
+        }
+
+        this.selectedBlock = null;
+        initBlueprintData(false);
+
+        if (ClientGhostManager.hasActiveGhost()) {
+            ClientGhostManager.setGhost(
+                    this.blueprintTag,
+                    ClientGhostManager.getBasePos(),
+                    ClientGhostManager.getOffset(),
+                    ClientGhostManager.getRotationIdx(),
+                    ClientGhostManager.isMirrored()
+            );
+            ClientGhostManager.setLayerSlicing(this.currentLayer, this.singleLayerMode);
+        }
+
+        if (this.onBlueprintModified != null) {
+            this.onBlueprintModified.accept(this.blueprintTag.copy());
+        }
+
+        if (this.minecraft != null && this.minecraft.player != null) {
+            this.minecraft.player.sendSystemMessage(result.message().copy().withStyle(ChatFormatting.GREEN));
+        }
+    }
+
     @Override
     public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
         double mx = event.x();
@@ -416,12 +481,25 @@ public class BlueprintInspectorScreen extends Screen {
             return true;
         }
 
-        // 点击侧边栏内的方块项进行按种类高亮过滤
+        // 点击侧边栏内的方块项：左键单击高亮过滤，左键双击打开替换方块界面
         if (!sidebarCollapsed && mx >= this.width - SIDEBAR_WIDTH && mx <= this.width) {
             if (my >= LIST_Y_START && my <= this.height - 8) {
                 int itemIdx = listScrollOffset + (int) ((my - LIST_Y_START) / LIST_ROW_HEIGHT);
                 if (itemIdx >= 0 && itemIdx < filteredBlockStats.size()) {
                     BlockStatEntry selected = filteredBlockStats.get(itemIdx);
+                    if (btn == InputConstants.MOUSE_BUTTON_LEFT || btn == 0) {
+                        long now = System.currentTimeMillis();
+                        boolean isDoubleClick = doubleClick
+                                || (this.lastClickedListBlock == selected.block && (now - this.lastClickedListTimeMs) <= 600L);
+                        this.lastClickedListBlock = selected.block;
+                        this.lastClickedListTimeMs = now;
+                        if (isDoubleClick) {
+                            this.lastClickedListBlock = null;
+                            this.lastClickedListTimeMs = 0L;
+                            openBlockReplaceScreen(selected);
+                            return true;
+                        }
+                    }
                     if (this.selectedBlock == selected.block) {
                         this.selectedBlock = null;
                     } else {
@@ -533,6 +611,14 @@ public class BlueprintInspectorScreen extends Screen {
         if (event.isEscape()) { // ESC
             this.onClose();
             return true;
+        }
+        if ((key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) && this.selectedBlock != null) {
+            for (BlockStatEntry entry : this.allBlockStats) {
+                if (entry.block == this.selectedBlock) {
+                    openBlockReplaceScreen(entry);
+                    return true;
+                }
+            }
         }
         if (key == InputConstants.KEY_B) { // B 键折叠/展开方块清单
             this.sidebarCollapsed = !this.sidebarCollapsed;
@@ -704,7 +790,7 @@ public class BlueprintInspectorScreen extends Screen {
                         Component.literal(entry.localizedName).withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD),
                         Component.literal(entry.registryId).withStyle(ChatFormatting.DARK_GRAY),
                         Component.literal(qtyLine).withStyle(ChatFormatting.AQUA),
-                        Component.literal("左键点击在 3D 视口中单独高亮该方块").withStyle(ChatFormatting.GRAY)
+                        Component.translatable("gui.tuanzis_mod.inspector.list_item_hint").withStyle(ChatFormatting.GRAY)
                 );
                 graphics.setComponentTooltipForNextFrame(this.font, tipLines, mouseX, mouseY);
             }
@@ -845,9 +931,15 @@ public class BlueprintInspectorScreen extends Screen {
         graphics.fill(sbX, 0, this.width, this.height, 0xF2181A24);
         graphics.fill(sbX, 0, sbX + 1, this.height, 0xFF35384A);
 
-        graphics.text(this.font, Component.translatable("gui.tuanzis_mod.inspector.block_list_title").withStyle(ChatFormatting.BOLD), sbX + 8, 8, 0xFFFFFFFF, false);
+        Component titleComp = Component.translatable("gui.tuanzis_mod.inspector.block_list_title").withStyle(ChatFormatting.BOLD);
+        int maxTitleW = Math.max(40, SIDEBAR_WIDTH - 28);
+        String titleStr = titleComp.getString();
+        if (this.font.width(titleComp) > maxTitleW) {
+            titleStr = this.font.plainSubstrByWidth(titleStr, maxTitleW);
+        }
+        graphics.text(this.font, Component.literal(titleStr).withStyle(ChatFormatting.BOLD), sbX + 6, 8, 0xFFFFFFFF, false);
         String statSummary = String.format("%d 种材料 | 共 %,d 个", allBlockStats.size(), totalRequiredItems);
-        graphics.text(this.font, statSummary, sbX + 8, 22, 0xFFAAAAAA, false);
+        graphics.text(this.font, statSummary, sbX + 6, 22, 0xFFAAAAAA, false);
 
         int trackH = this.height - LIST_Y_START - 8;
         int visibleCount = Math.max(1, trackH / LIST_ROW_HEIGHT);

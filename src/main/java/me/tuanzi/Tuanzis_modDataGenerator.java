@@ -259,7 +259,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.inspector.sort", "切换排序");
             translationBuilder.add("gui.tuanzis_mod.inspector.mode_single", "单层剖析");
             translationBuilder.add("gui.tuanzis_mod.inspector.mode_all", "累计切层");
-            translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "方块清单");
+            translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "方块清单(双击可替换方块)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.list_item_hint", "左键单击高亮 | 左键双击替换该方块");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_title", "替换蓝图方块");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_confirm", "确定");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_cancel", "取消");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_select_hint", "请选择目标方块");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_click_select", "左键点击选择该方块");
+            translationBuilder.add("gui.tuanzis_mod.inspector.tab_all_blocks", "全部方块");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_air", "空气 (清除该方块)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_water_source", "水 (水源)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_lava_source", "熔岩 (岩浆源)");
 
             // 实体捕获的 Tooltip
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "包含生物 (数量: %s):");
@@ -273,6 +283,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.direct_placed", "已将蓝图建筑直接放置到虚影位置（放置 %s 个方块，%s 个实体）。");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_permission", "只有创造模式且为服务器管理员才能执行此操作！");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "当前没有激活的蓝图虚影！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_invalid", "无效的方块替换请求！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_block", "目标方块与原方块相同！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_to_single", "无法将多格方块 [%s] 替换为普通单格方块 [%s]！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_single_to_multiblock", "无法将普通单格方块 [%s] 替换为多格方块 [%s]！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_mismatch", "多格方块 [%s] 与 [%s] 的结构部件不兼容，无法直接替换！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_success", "已将蓝图中的 [%s] 替换为 [%s]（共替换 %s 格）");
 
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n由 1 个烈焰粉、4 个红石粉、4 个砂砾无序合成。");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。");
@@ -484,6 +500,32 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("item.minecraft.tipped_arrow.effect.long_adrenaline", "肾上腺素药箭 (延长)");
 
             translationBuilder.add("jei.tuanzis_mod.adrenaline_potion.description", "【肾上腺素药水】\n一种能瞬间激发潜能、大幅提升行动与攻击速度的强效药剂，但会导致严重的透支反噬。\n\n§e饮用效果：§r\n1. §b极限加成§r：饮用后攻击速度提升 §a15% * 等级§r，移动速度提升 §a7.5% * 等级§r。\n2. §b持续时间§r：普通版 45 秒，增强版 II 级 30 秒，延长版 1 分 30 秒。\n\n§e透支与惩罚机制：§r\n1. §b立即透支§r：饮用时立即获得一层§c“肾上腺素透支”§r效果（持续至药水Buff结束）。\n2. §b无法消除§r：透支效果§e无法被牛奶清除§r。如果在药水Buff结束时仍处于透支状态，将触发透支副作用。\n3. §b副作用表现§r：每级透支给予 §c30 秒的虚弱 I + 挖掘疲劳 I§r。\n4. §b连续饮用叠加§r：若在透支效果未结束时连续饮用，会§6叠加透支效果的等级与时间§r。每多喝一瓶，透支等级提升 1 级（最高 IV 级），结束时的副作用持续时间也随之线性叠加（I级30秒，II级60秒，III级90秒，IV级120秒）。");
+
+            // 净化药水与背水药水中文翻译
+            translationBuilder.add(ModStatusEffects.PURIFYING_PULSE.value(), "净化脉冲");
+            translationBuilder.add(ModStatusEffects.DESPERATE_STAND.value(), "背水一战");
+
+            translationBuilder.add("item.minecraft.potion.effect.purifying", "净化药水");
+            translationBuilder.add("item.minecraft.splash_potion.effect.purifying", "喷溅型净化药水");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.purifying", "滞留型净化药水");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.purifying", "净化药箭");
+
+            translationBuilder.add("item.minecraft.potion.effect.long_purifying", "净化药水 (延长)");
+            translationBuilder.add("item.minecraft.splash_potion.effect.long_purifying", "喷溅型净化药水 (延长)");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.long_purifying", "滞留型净化药水 (延长)");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.long_purifying", "净化药箭 (延长)");
+
+            translationBuilder.add("item.minecraft.potion.effect.desperate_stand", "背水药水");
+            translationBuilder.add("item.minecraft.splash_potion.effect.desperate_stand", "喷溅型背水药水");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.desperate_stand", "滞留型背水药水");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.desperate_stand", "背水药箭");
+
+            translationBuilder.add("death.attack.tuanzis_mod.desperate_stand", "%1$s 在背水一战后因积攒的创伤爆发而亡");
+            translationBuilder.add("death.attack.tuanzis_mod.desperate_stand.player", "%1$s 在与 %2$s 战斗后的背水一战创伤结算中倒下了");
+            translationBuilder.add("hud.tuanzis_mod.trauma_bar", "创伤 %s | %ss");
+
+            translationBuilder.add("jei.tuanzis_mod.purifying_potion.description", "【净化药水】\n能够持续驱散负面侵蚀并保留正面增益的净化药剂。\n\n§e状态效果 - 净化脉冲：§r\n1. §b瞬间净化§r：饮用瞬间立即清除身上所有§a牛奶可清除的负面状态§r（保留全部正面与中性状态）。\n2. §b周期驱散§r：普通版持续 45 秒，延长版持续 90 秒。持续期间每 §e5 秒§r 自动清除 1 个当前负面状态。\n3. §b负面抗性§r：持续期间新获得的牛奶可清除的负面状态，其持续时间 §a-50%§r。\n4. §c特殊限制§r：对「肾上腺素透支」无效，且无法清除 Boss 过热条等非状态效果机制。\n5. §7与牛奶区别§r：牛奶会一次性清除所有状态，净化药水只清理负面并完整保留正面状态。");
+            translationBuilder.add("jei.tuanzis_mod.desperate_stand_potion.description", "【背水药水】\n将痛苦记账延后、以杀敌消账的高风险战斗药剂（持续 30 秒，无延长版本）。\n\n§e状态效果 - 背水一战：§r\n1. §b伤害延后§r：效果期间受到的常规伤害不会立即扣减生命，而是以§f“创伤值”§r形式记账延后。\n2. §b杀敌消账§r：延迟期间每击杀 1 个敌对生物，创伤值减少该生物§a最大生命值 × 10%§r。\n3. §b近战增伤§r：效果期间造成的近战伤害 §a+10%§r。\n4. §b最终结算§r：效果结束后的 1 tick 统一结算（提前清除仍会结算）。若剩余创伤值大于 0，受到等同于剩余创伤值的§c真实伤害§r（无视护甲、抗性、伤害吸收），可致死（不死图腾/不死药水可触发免死）。\n5. §b创伤 HUD§r：生命条上方显示白色心形创伤条与倒计时，可在模组配置中调整冲突显示位置。");
 
             String wolfCommandDesc = "【战狼护符】\n" +
                     "一个能够赐予驯养战狼无穷威能与生命力的护符。\n\n" +
@@ -1202,7 +1244,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.tidal_weave_boots.description", "【潮汐织靴】\n一双由海晶砂与幻翼膜编织的轻盈长靴，靴面流淌着海洋之心的脉动光晕。\n\n§e功能与效果：\n1. §b凌波微步：装备在靴子栏时，能如踩在陆地上一般在水面上自由行走、疾跑和跳跃。\n2. §b潜水切换：在水面行走时，按住潜行键（Shift）可主动沉入水中进行游泳.放开并游回水面后，会自动重新恢复在水面行走的能力。\n3. §b摔落免伤：从高空落下触及水面时，免受所有摔落伤害。");
 
             // 不死药水翻译
-            translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "【不死药水】\n赋予“不死”状态效果的药水，拥有普通与延长版变体。\n\n§e1.0.3 更新说明：§r\n现在“不死”状态效果仅对 §b玩家§r 以及 §b被玩家驯服的生物§r（如驯服后的狼、猫等）生效。对其它野生生物或敌对生物不再起作用，防止意外“保护”了敌人。");
+            translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "【不死药水】\n赋予“不死”状态效果的药水，拥有普通与延长版变体。\n\n§e1.0.8-beta3 优化：§r\n普通饮用型、喷溅型与滞留型不死药水（含延长版）的最大堆叠上限已提升至 §a16§r。\n\n§e1.0.3 更新说明：§r\n现在“不死”状态效果仅对 §b玩家§r 以及 §b被玩家驯服的生物§r（如驯服后的狼、猫等）生效。对其它野生生物或敌对生物不再起作用，防止意外“保护”了敌人。");
 
             // 物品标签翻译
             translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "潮汐织靴修补材料");
@@ -1666,6 +1708,32 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                     "- 不进入附魔台与村民交易。";
             translationBuilder.add("jei.tuanzis_mod.metabolism.description", metabolismJeiDesc);
 
+            // 祥瑞 (Auspicious)
+            translationBuilder.add("enchantment.tuanzis_mod.auspicious", "祥瑞");
+            String auspiciousJeiDesc = "【祥瑞】\n" +
+                    "头盔专属附魔。最高等级 IV 级，稀有度为少见（UNCOMMON）。\n" +
+                    "适用部位：头盔。附魔类型：非宝藏（与“厄兆”互斥）。\n\n" +
+                    "§e核心效果：§r\n" +
+                    "1. §b幸运提升§r：佩戴头盔时，每级增加 §a+0.5§r 点玩家幸运值（IV 级提供 +2.0 幸运）。\n" +
+                    "2. §b赌场联动§r：在赌场玩法中，每 1 点幸运可提升 §a0.5%§r 胜率。\n\n" +
+                    "§e获取途径：§r\n" +
+                    "- 附魔台直接附魔；\n" +
+                    "- 战利品宝箱与图书管理员村民交易。";
+            translationBuilder.add("jei.tuanzis_mod.auspicious.description", auspiciousJeiDesc);
+
+            // 厄兆 (Ill Omen)
+            translationBuilder.add("enchantment.tuanzis_mod.ill_omen", "厄兆");
+            String illOmenJeiDesc = "【厄兆】\n" +
+                    "头盔专属诅咒附魔。最高等级 IV 级，稀有度为少见（UNCOMMON）。\n" +
+                    "适用部位：头盔。附魔类型：诅咒（可在附魔台获得，与“祥瑞”互斥，砂轮不可祛除）。\n\n" +
+                    "§e核心效果：§r\n" +
+                    "1. §c幸运削减§r：佩戴头盔时，每级降低 §c0.5§r 点玩家幸运值（IV 级降低 2.0 幸运）。\n" +
+                    "2. §c赌场联动§r：在赌场玩法中，每 1 点霉运（负幸运）会减少 §c0.5%§r 胜率。\n\n" +
+                    "§e获取途径：§r\n" +
+                    "- 附魔台直接附魔；\n" +
+                    "- 战利品宝箱与图书管理员村民交易。";
+            translationBuilder.add("jei.tuanzis_mod.ill_omen.description", illOmenJeiDesc);
+
             translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "日冕核心 · 烈焰统领");
             translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "日冕黑石重盾");
             translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "日冕烈焰棒");
@@ -1887,6 +1955,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.config.title", "Tuanzi's Mod 配置");
             translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes", "赌场核心合成与获取");
             translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes.tooltip", "关闭后，生存模式下将无法合成赌场游戏机台、机械零件、荷官柜台及赌场指南，也无法通过荷官村民兑换雇佣卡。");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode", "背水创伤条 HUD 冲突位置");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.tooltip", "当生命条上方区域与过热仪表盘等其他快捷栏 HUD 发生位置冲突时，选择创伤条的避让位置。");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.above_conflict", "冲突 HUD 上方 2px");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.right_center", "屏幕右侧中部");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height", "主世界最大建筑高度");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height.label", "主世界建筑高度上限 (%d ~ %d，对应最高 Y=height-1)：");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height.tooltip", "设置主世界建筑高度上界（范围 %d ~ %d）。例如 320 对应原版最高可放置 Y=319；2032 对应最高可放置 Y=2031。支持热加载生效。");
+            translationBuilder.add("gui.tuanzis_mod.config.preset_vanilla", "原版 %d");
+            translationBuilder.add("gui.tuanzis_mod.config.preset_max", "最大 %d");
             translationBuilder.add("gui.tuanzis_mod.config.casino_scope_note", "说明：关闭后仅禁用7种游戏机台、机械零件、荷官柜台、荷官雇佣卡交易与赌场指南；\n赌场座椅、电视、音箱、casinodeco装饰方块及筹码/钱币不受影响，已放置方块的挖掘掉落保持不变。");
             translationBuilder.add("gui.tuanzis_mod.config.remote_server_note", "当前处于远程服务器：此处的修改仅保存至本地配置文件，服务器配方受服务端配置与 /tuanzis_mod config 指令控制。");
             translationBuilder.add("gui.tuanzis_mod.config.save", "保存并应用");
@@ -1894,7 +1971,11 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.config.status_off", "§c关闭 (false)");
             translationBuilder.add("commands.tuanzis_mod.config.query_casino_recipes", "§7[Tuanzi's Mod] §f赌场核心合成与获取 (enableCasinoRecipes) 当前状态: %s");
             translationBuilder.add("commands.tuanzis_mod.config.set_casino_recipes", "§7[Tuanzi's Mod] §f已将赌场核心合成与获取 (enableCasinoRecipes) 设置为 %s§f，正在重载配方...");
-            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §f已从磁盘重载配置并同步配方 (enableCasinoRecipes: %s§f)。");
+            translationBuilder.add("commands.tuanzis_mod.config.query_trauma_hud_mode", "§7[Tuanzi's Mod] §f背水创伤条 HUD 冲突避让模式 (traumaHudConflictMode) 当前为: §b%s");
+            translationBuilder.add("commands.tuanzis_mod.config.set_trauma_hud_mode", "§7[Tuanzi's Mod] §f已将背水创伤条 HUD 冲突避让模式设置为: §b%s");
+            translationBuilder.add("commands.tuanzis_mod.config.query_overworld_max_build_height", "§7[Tuanzi's Mod] §f主世界建筑高度上限 (overworldMaxBuildHeight) 当前为: §b%s §7(最大可放置 Y=%s)");
+            translationBuilder.add("commands.tuanzis_mod.config.set_overworld_max_build_height", "§7[Tuanzi's Mod] §f已将主世界建筑高度上限设置为: §b%s §7(最大可放置 Y=%s)§f，已同步并热加载生效。");
+            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §f已从磁盘重载配置并同步状态 (enableCasinoRecipes: %s§f, overworldMaxBuildHeight: §b%s §7[最大 Y=%s]§f)。");
         }
     }
 
@@ -2181,7 +2262,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.inspector.sort", "Sort");
             translationBuilder.add("gui.tuanzis_mod.inspector.mode_single", "Single Layer");
             translationBuilder.add("gui.tuanzis_mod.inspector.mode_all", "Cumulative");
-            translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "Block List");
+            translationBuilder.add("gui.tuanzis_mod.inspector.block_list_title", "Block List (Double-click to Replace)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.list_item_hint", "Left-click to highlight | Double-click to replace block");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_title", "Replace Blueprint Block");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_confirm", "Confirm");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_cancel", "Cancel");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_select_hint", "Select target block");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_click_select", "Left-click to select this block");
+            translationBuilder.add("gui.tuanzis_mod.inspector.tab_all_blocks", "All Blocks");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_air", "Air (Clear Block)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_water_source", "Water (Source)");
+            translationBuilder.add("gui.tuanzis_mod.inspector.special_lava_source", "Lava (Source)");
 
             // Entity capture Tooltip
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "Contains Entities (Count: %s):");
@@ -2195,6 +2286,12 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.direct_placed", "Placed blueprint structure directly at ghost position (%s blocks, %s entities).");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_permission", "Only Creative mode server administrators can perform this action!");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "No active blueprint ghost found!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_invalid", "Invalid block replacement request!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_block", "Target block is the same as the source block!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_to_single", "Cannot replace multi-block [%s] with single block [%s]!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_single_to_multiblock", "Cannot replace single block [%s] with multi-block [%s]!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_mismatch", "Multi-block [%s] and [%s] have incompatible parts and cannot be replaced!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_success", "Replaced [%s] with [%s] in blueprint (%s blocks replaced)");
 
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.");
@@ -2904,6 +3001,32 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
 
             translationBuilder.add("jei.tuanzis_mod.adrenaline_potion.description", "[Potion of Adrenaline]\nA powerful potion that instantly unleashes potential, boosting attack speed and movement speed at the cost of a severe overdraw backlash.\n\n§eDrink Effects:§r\n1. §bExtreme Boost:§r Attack Speed is increased by §a15% * Level§r, and Movement Speed is increased by §a7.5% * Level§r.\n2. §bDurability:§r Normal version lasts 45 seconds, Strong (II) version lasts 30 seconds, and Extended version lasts 1 min 30 seconds.\n\n§eOverdraw & Penalties:§r\n1. §bMilk Immunity:§r The overdraw effect §ecannot be cleared by milk§r. If it remains when the Adrenaline buff ends, the overdraw side effects are triggered.\n2. §bSide Effects:§r Grants §c30 seconds of Weakness I + Mining Fatigue I§r per overdraw level.\n3. §bStacking Rule:§r Drinking while overdrawn §6stacks both the overdraw level and its duration§r. Each additional drink raises the overdraw level by 1 (max level IV), and the final side effect duration stacks linearly (30s for Level I, 60s for II, 90s for III, 120s for IV).");
 
+            // Purifying & Desperate Stand Potion Translations
+            translationBuilder.add(ModStatusEffects.PURIFYING_PULSE.value(), "Purifying Pulse");
+            translationBuilder.add(ModStatusEffects.DESPERATE_STAND.value(), "Desperate Stand");
+
+            translationBuilder.add("item.minecraft.potion.effect.purifying", "Potion of Purifying");
+            translationBuilder.add("item.minecraft.splash_potion.effect.purifying", "Splash Potion of Purifying");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.purifying", "Lingering Potion of Purifying");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.purifying", "Arrow of Purifying");
+
+            translationBuilder.add("item.minecraft.potion.effect.long_purifying", "Potion of Purifying (Extended)");
+            translationBuilder.add("item.minecraft.splash_potion.effect.long_purifying", "Splash Potion of Purifying (Extended)");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.long_purifying", "Lingering Potion of Purifying (Extended)");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.long_purifying", "Arrow of Purifying (Extended)");
+
+            translationBuilder.add("item.minecraft.potion.effect.desperate_stand", "Potion of Desperate Stand");
+            translationBuilder.add("item.minecraft.splash_potion.effect.desperate_stand", "Splash Potion of Desperate Stand");
+            translationBuilder.add("item.minecraft.lingering_potion.effect.desperate_stand", "Lingering Potion of Desperate Stand");
+            translationBuilder.add("item.minecraft.tipped_arrow.effect.desperate_stand", "Arrow of Desperate Stand");
+
+            translationBuilder.add("death.attack.tuanzis_mod.desperate_stand", "%1$s succumbed to deferred trauma after Desperate Stand");
+            translationBuilder.add("death.attack.tuanzis_mod.desperate_stand.player", "%1$s succumbed to deferred trauma from Desperate Stand while fighting %2$s");
+            translationBuilder.add("hud.tuanzis_mod.trauma_bar", "Trauma %s | %ss");
+
+            translationBuilder.add("jei.tuanzis_mod.purifying_potion.description", "[Potion of Purifying]\nA cleansing potion that continuously purges harmful effects while preserving beneficial buffs.\n\n§eStatus Effect - Purifying Pulse:§r\n1. §bInstant Cleanse:§r Immediately removes all §amilk-clearable harmful status effects§r upon application while keeping beneficial and neutral effects.\n2. §bPeriodic Purge:§r Normal lasts 45s, Extended lasts 90s. Automatically removes 1 active harmful effect every §e5 seconds§r.\n3. §bDebuff Reduction:§r Newly acquired milk-clearable harmful effects have their duration reduced by §a-50%§r while active.\n4. §cRestrictions:§r Cannot remove Adrenaline Overdraw or non-effect mechanics such as Boss Overheat gauges.");
+            translationBuilder.add("jei.tuanzis_mod.desperate_stand_potion.description", "[Potion of Desperate Stand]\nA high-risk combat potion that defers incoming damage as Trauma and lets you pay off the debt through kills (30s, no extended variant).\n\n§eStatus Effect - Desperate Stand:§r\n1. §bDamage Deferral:§r Incoming damage is not deducted immediately; instead, it accumulates as §fTrauma§r.\n2. §bKill Reduction:§r Each hostile mob killed reduces Trauma by §a10% of the mob's max health§r.\n3. §bMelee Boost:§r Deals §a+10% melee damage§r while active.\n4. §bFinal Settlement:§r 1 tick after the effect ends (even if cleared early), remaining Trauma > 0 deals equal §ctrue damage§r (bypasses armor, resistance, and absorption; can be lethal, though Totems/Undying still trigger).\n5. §bTrauma HUD:§r Displays white heart containers and countdown above the health bar, configurable when overlapping other hotbar HUDs.");
+
             String wolfCommandDescEn = "[Wolf Command]\n" +
                     "A charm that bestows infinite power and vitality to tamed wolves.\n\n" +
                     "§eEquipped Effects (Must be in off-hand):§r\n" +
@@ -3027,7 +3150,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.tidal_weave_boots.description", "[Tidal Weave Boots]\nA pair of lightweight boots woven from prismarine crystals and phantom membranes. The surface flows with a pulsing aura of the heart of the sea.\n\n§eEffects & Mechanics:\n1. §bWater Walking: Walk, sprint, and jump freely on the surface of water as if it were a solid block when equipped in the feet slot.\n2. §bDiving Toggle: Press the sneak key (Shift) while walking on water to submerge into swimming. Release and swim back to the surface to automatically resume water walking.\n3. §bFall Damage Mitigation: Immune to all fall damage when falling onto the surface of water.");
 
             // Undying Potion translations
-            translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "[Undying Potion]\nPotions granting the \"Undying\" status effect, available in normal and extended variants.\n\n§e1.0.3 Update Notes:§r\nThe \"Undying\" status effect now only applies to §bPlayers§r and §bTamed Mobs§r (e.g., tamed wolves, cats). It no longer works on wild or hostile mobs, preventing accidental protection of enemies.");
+            translationBuilder.add("jei.tuanzis_mod.undying_potion.update_103", "[Undying Potion]\nPotions granting the \"Undying\" status effect, available in normal and extended variants.\n\n§e1.0.8-beta3 Optimization:§r\nMax stack size of normal, splash, and lingering Potions of Undying (including extended variants) is increased to §a16§r.\n\n§e1.0.3 Update Notes:§r\nThe \"Undying\" status effect now only applies to §bPlayers§r and §bTamed Mobs§r (e.g., tamed wolves, cats). It no longer works on wild or hostile mobs, preventing accidental protection of enemies.");
 
             // Item Tag translations
             translationBuilder.add("tag.item.tuanzis_mod.repairs_tidal_weave_boots", "Tidal Weave Boots Repair Materials");
@@ -3494,6 +3617,32 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
                     "- Excluded from Enchanting Tables and Villager Trades.";
             translationBuilder.add("jei.tuanzis_mod.metabolism.description", metabolismJeiDescEn);
 
+            // 祥瑞 (Auspicious)
+            translationBuilder.add("enchantment.tuanzis_mod.auspicious", "Auspicious");
+            String auspiciousJeiDescEn = "[Auspicious]\n" +
+                    "Helmet enchantment. Max Level: IV. Rarity: Uncommon.\n" +
+                    "Applicable to: Helmet. Type: Non-treasure (mutually exclusive with Ill Omen).\n\n" +
+                    "§eCore Effects:§r\n" +
+                    "1. §bLuck Boost§r: While worn on the head, increases player Luck by §a+0.5§r per level (+2.0 at Level IV).\n" +
+                    "2. §bCasino Synergy§r: Each point of Luck increases Casino win rate by §a+0.5%§r.\n\n" +
+                    "§eAcquisition:§r\n" +
+                    "- Enchanting Table;\n" +
+                    "- Loot chests and Librarian villager trades.";
+            translationBuilder.add("jei.tuanzis_mod.auspicious.description", auspiciousJeiDescEn);
+
+            // 厄兆 (Ill Omen)
+            translationBuilder.add("enchantment.tuanzis_mod.ill_omen", "Ill Omen");
+            String illOmenJeiDescEn = "[Ill Omen]\n" +
+                    "Helmet curse enchantment. Max Level: IV. Rarity: Uncommon.\n" +
+                    "Applicable to: Helmet. Type: Curse (available in Enchanting Tables, mutually exclusive with Auspicious, cannot be removed by Grindstones).\n\n" +
+                    "§eCore Effects:§r\n" +
+                    "1. §cLuck Penalty§r: While worn on the head, reduces player Luck by §c-0.5§r per level (-2.0 at Level IV).\n" +
+                    "2. §cCasino Synergy§r: Each point of negative Luck decreases Casino win rate by §c-0.5%§r.\n\n" +
+                    "§eAcquisition:§r\n" +
+                    "- Enchanting Table;\n" +
+                    "- Loot chests and Librarian villager trades.";
+            translationBuilder.add("jei.tuanzis_mod.ill_omen.description", illOmenJeiDescEn);
+
             translationBuilder.add("entity.tuanzis_mod.cinder_sovereign", "The Cinder Sovereign");
             translationBuilder.add("entity.tuanzis_mod.cinder_shield_part", "Corona Blackstone Shield");
             translationBuilder.add("entity.tuanzis_mod.cinder_blaze_rod_part", "Corona Blaze Rod");
@@ -3715,6 +3864,15 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.config.title", "Tuanzi's Mod Configuration");
             translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes", "Casino Core Recipes & Acquisition");
             translationBuilder.add("gui.tuanzis_mod.config.enable_casino_recipes.tooltip", "When disabled, casino game machines, mechanisms, dealer stations, and casino guides cannot be crafted in survival, and croupier hiring card villager trades are disabled.");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode", "Trauma Bar HUD Conflict Placement");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.tooltip", "Choose where to place the Desperate Stand Trauma Bar when it overlaps with another hotbar HUD such as the Heat Gauge.");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.above_conflict", "2px Above Conflicting HUD");
+            translationBuilder.add("gui.tuanzis_mod.config.trauma_hud_conflict_mode.right_center", "Right Middle of Screen");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height", "Overworld Max Build Height");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height.label", "Overworld Build Height Limit (%d ~ %d, max Y = height - 1):");
+            translationBuilder.add("gui.tuanzis_mod.config.overworld_max_build_height.tooltip", "Set the Overworld build height upper bound (%d ~ %d). For example, 320 allows building up to Y=319 (vanilla), and 2032 allows up to Y=2031. Supports hot-reload.");
+            translationBuilder.add("gui.tuanzis_mod.config.preset_vanilla", "Min %d");
+            translationBuilder.add("gui.tuanzis_mod.config.preset_max", "Max %d");
             translationBuilder.add("gui.tuanzis_mod.config.casino_scope_note", "Note: Disabling only affects the 7 game machines, their mechanisms, dealer station, croupier hiring card trade, and casino guide. Chairs, TVs, speakers, casinodeco decor blocks, and chips/coins remain unaffected, and placed blocks still drop normally.");
             translationBuilder.add("gui.tuanzis_mod.config.remote_server_note", "Connected to a remote server: changes here only affect local config. Server recipes follow server config and /tuanzis_mod config.");
             translationBuilder.add("gui.tuanzis_mod.config.save", "Save & Apply");
@@ -3722,7 +3880,11 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.config.status_off", "§cOFF (false)");
             translationBuilder.add("commands.tuanzis_mod.config.query_casino_recipes", "§7[Tuanzi's Mod] §fCasino Core Recipes & Acquisition (enableCasinoRecipes): %s");
             translationBuilder.add("commands.tuanzis_mod.config.set_casino_recipes", "§7[Tuanzi's Mod] §fSet enableCasinoRecipes to %s§f, reloading recipes...");
-            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §fReloaded config from disk and synced recipes (enableCasinoRecipes: %s§f).");
+            translationBuilder.add("commands.tuanzis_mod.config.query_trauma_hud_mode", "§7[Tuanzi's Mod] §fTrauma Bar HUD Conflict Placement (traumaHudConflictMode): §b%s");
+            translationBuilder.add("commands.tuanzis_mod.config.set_trauma_hud_mode", "§7[Tuanzi's Mod] §fSet traumaHudConflictMode to: §b%s");
+            translationBuilder.add("commands.tuanzis_mod.config.query_overworld_max_build_height", "§7[Tuanzi's Mod] §fOverworld Max Build Height (overworldMaxBuildHeight): §b%s §7(max placeable Y=%s)");
+            translationBuilder.add("commands.tuanzis_mod.config.set_overworld_max_build_height", "§7[Tuanzi's Mod] §fSet overworldMaxBuildHeight to §b%s §7(max placeable Y=%s)§f, synced and hot-reloaded.");
+            translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §fReloaded config from disk and synced settings (enableCasinoRecipes: %s§f, overworldMaxBuildHeight: §b%s §7[max Y=%s]§f).");
         }
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
@@ -15,7 +16,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-public record BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprintData) implements CustomPacketPayload {
+public record BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprintData, boolean updateExportSlot) implements CustomPacketPayload {
+    public BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprintData) {
+        this(tablePos, blueprintData, false);
+    }
+
     public static final int MAX_COMPRESSED_BYTES = 8 * 1024 * 1024;
     public static final long MAX_UNCOMPRESSED_NBT_BYTES = 32L * 1024 * 1024;
 
@@ -51,6 +56,7 @@ public record BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprin
     public static final StreamCodec<FriendlyByteBuf, BlueprintTableImportPacket> CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, BlueprintTableImportPacket::tablePos,
             COMPRESSED_COMPOUND_TAG, BlueprintTableImportPacket::blueprintData,
+            ByteBufCodecs.BOOL, BlueprintTableImportPacket::updateExportSlot,
             BlueprintTableImportPacket::new
     );
 

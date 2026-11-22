@@ -42,6 +42,26 @@ public class CinderHeatHud {
         return clientInArena;
     }
 
+    public static boolean isVisible() {
+        return clientInArena || clientHeat > 0 || displayHeat >= 0.5F;
+    }
+
+    public static int getHudLeftX(int screenWidth) {
+        return screenWidth / 2 - 64;
+    }
+
+    public static int getHudRightX(int screenWidth) {
+        return screenWidth / 2 + 64;
+    }
+
+    public static int getHudTopY(int screenHeight) {
+        return screenHeight - 58;
+    }
+
+    public static int getHudBottomY(int screenHeight) {
+        return screenHeight - 42;
+    }
+
     public static void render(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, Player player, Font font) {
         // 离场主动衰减保底：脱离领域且超过 1.2 秒未收到服务端新包时，平滑递减归零
         if (!clientInArena && clientHeat > 0) {

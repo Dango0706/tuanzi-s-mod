@@ -416,7 +416,14 @@ public final class PokerTableBlockEntity extends BlockEntity implements MenuProv
             this.computeAim(player, seat);
             this.view = new PokerTableState(server.getGameTime(), seat);
             this.view.phaseChanged(PokerRound.Phase.DEALING, 0);
-            this.round = new PokerRound(this.shoe, this.events, CasinoSettings.bias(this));
+            int baseBias = CasinoSettings.bias(this);
+            double luck = CasinoSettings.playerLuck(player);
+            double effectiveBias = PokerBias.effectiveBias(baseBias, luck);
+            if (luck != 0.0D) {
+               me.tuanzi.util.ModLog.debug(player, "【赌场-德州扑克】基础偏向=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%, 生效偏向=%.2f",
+                       baseBias, luck, luck * 0.5D, effectiveBias);
+            }
+            this.round = new PokerRound(this.shoe, this.events, effectiveBias);
             menu.showWager(this.anteStakes());
             this.setChanged();
             this.sync();

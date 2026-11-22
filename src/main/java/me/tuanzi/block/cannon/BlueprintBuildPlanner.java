@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.attribute.EnvironmentAttributeReader;
 import net.minecraft.world.entity.Entity;
@@ -25,11 +26,13 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeManager;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
@@ -72,6 +75,15 @@ public class BlueprintBuildPlanner {
     public record MaterialStat(int itemCount, int voxelCount) {
     }
 
+    public record ReplaceResult(
+            boolean success,
+            int replacedVoxels,
+            int clearedFlowingVoxels,
+            int removedBlockEntities,
+            Component message
+    ) {
+    }
+
     private static final Set<String> IGNORED_NON_PART_PROPERTIES = Set.of(
             "facing", "axis", "waterlogged", "lit", "open", "powered",
             "joins", "back", "north", "south", "east", "west", "up", "down",
@@ -98,8 +110,46 @@ public class BlueprintBuildPlanner {
     ) {
     }
 
+    public static final int MAX_CANNON_RANGE = 256;
+
+    public static boolean isValidDimensionsAndBlocks(int width, int height, int length, int blocksLength) {
+        if (width <= 0 || height <= 0 || length <= 0 || blocksLength <= 0) {
+            return false;
+        }
+        long layerSize = (long) width * (long) length;
+        return layerSize > 0 && layerSize <= Integer.MAX_VALUE;
+    }
+
+    public static boolean isWithinCannonRange(@Nullable BlockPos cannonPos, @Nullable BlockPos targetPos) {
+        return cannonPos != null && targetPos != null && targetPos.closerThan(cannonPos, MAX_CANNON_RANGE);
+    }
+
+    public static boolean isValidWorldTarget(Level level, @Nullable BlockPos cannonPos, @Nullable BlockPos targetPos) {
+        return targetPos != null && level.isInValidBounds(targetPos) && isWithinCannonRange(cannonPos, targetPos);
+    }
+
     public static boolean isBlueprintAir(BlockState state) {
         return state.isAir() || state.is(Blocks.STRUCTURE_VOID) || state.is(Blocks.BARRIER);
+    }
+
+    /**
+     * 通用判定是否为纯流体方块（排除含水方块如 waterlogged 台阶/楼梯）。
+     */
+    public static boolean isPureFluidBlock(BlockState state) {
+        FluidState fluidState = state.getFluidState();
+        if (fluidState.isEmpty()) {
+            return false;
+        }
+        return state.getBlock() instanceof LiquidBlock
+                || fluidState.createLegacyBlock().getBlock() == state.getBlock();
+    }
+
+    /**
+     * 通用判定是否为流动液体格（非源头流体格）。
+     */
+    public static boolean isFlowingFluid(BlockState state) {
+        FluidState fluidState = state.getFluidState();
+        return !fluidState.isEmpty() && !fluidState.isSource();
     }
 
     public static boolean isBreakableBlock(Level level, BlockPos pos, BlockState state) {
@@ -129,10 +179,16 @@ public class BlueprintBuildPlanner {
         int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
         ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
 
-        if (width <= 0 || height <= 0 || length <= 0 || blocks.length == 0) {
+        if (!isValidDimensionsAndBlocks(width, height, length, blocks.length)) {
+            ModLog.debug("BlueprintBuildPlanner.parseBlueprint: 非法蓝图尺寸或数组长度 width=" + width
+                    + ", height=" + height + ", length=" + length + ", blocksLength=" + blocks.length);
             return new ParsedBlueprint(width, height, length, blocks.length, entitiesTag.size(),
                     List.of(), Map.of(), List.of(), List.of());
         }
+
+        long layerSize = (long) width * (long) length;
+        long maxVolume = layerSize * (long) height;
+        int effectiveLength = (int) Math.min((long) blocks.length, maxVolume);
 
         BlockPos basePos = new BlockPos(
                 blueprintTag.getIntOr("GhostX", 0),
@@ -171,11 +227,14 @@ public class BlueprintBuildPlanner {
         }
 
         Map<BlockPos, BlueprintCell> cellMap = new LinkedHashMap<>();
-        List<BlockPos> allWorldPositions = new ArrayList<>(blocks.length);
+        List<BlockPos> allWorldPositions = new ArrayList<>(effectiveLength);
 
-        for (int idx = 0; idx < blocks.length; idx++) {
-            int y = idx / (width * length);
-            int rem = idx % (width * length);
+        for (int idx = 0; idx < effectiveLength; idx++) {
+            int y = (int) ((long) idx / layerSize);
+            if (y >= height) {
+                break;
+            }
+            int rem = (int) ((long) idx % layerSize);
             int z = rem / width;
             int x = rem % width;
 
@@ -187,7 +246,7 @@ public class BlueprintBuildPlanner {
                 continue;
             }
             BlockState transformedState = decodedPalette[paletteIdx];
-            if (isBlueprintAir(transformedState)) {
+            if (isBlueprintAir(transformedState) || isFlowingFluid(transformedState)) {
                 continue;
             }
 
@@ -635,7 +694,254 @@ public class BlueprintBuildPlanner {
             int items = itemCounts.getOrDefault(b, voxels);
             result.put(b, new MaterialStat(items, voxels));
         }
+        ModLog.debug("BlueprintBuildPlanner.collectMaterialStats: 统计材料种类=" + result.size());
         return result;
+    }
+
+    /**
+     * 校验将原方块替换为目标方块是否合法（禁止多格与单格互替或不同多方块体系互替；允许替换为空气清除）。
+     */
+    public static @Nullable Component checkReplacementCompatibility(Block sourceBlock, Block targetBlock) {
+        if (sourceBlock == null || targetBlock == null) {
+            return Component.translatable("message.tuanzis_mod.blueprint.replace_invalid");
+        }
+        if (sourceBlock == targetBlock) {
+            return Component.translatable("message.tuanzis_mod.blueprint.replace_same_block");
+        }
+        if (targetBlock == Blocks.AIR) {
+            return null;
+        }
+        Property<?> srcPart = findPartProperty(sourceBlock);
+        Property<?> dstPart = findPartProperty(targetBlock);
+        if (srcPart != null && dstPart == null) {
+            return Component.translatable(
+                    "message.tuanzis_mod.blueprint.replace_multiblock_to_single",
+                    sourceBlock.getName(),
+                    targetBlock.getName()
+            );
+        }
+        if (srcPart == null && dstPart != null) {
+            return Component.translatable(
+                    "message.tuanzis_mod.blueprint.replace_single_to_multiblock",
+                    sourceBlock.getName(),
+                    targetBlock.getName()
+            );
+        }
+        if (srcPart != null && dstPart != null) {
+            if (!srcPart.getName().equals(dstPart.getName())
+                    || !new HashSet<>(srcPart.getPossibleValues()).equals(new HashSet<>(dstPart.getPossibleValues()))) {
+                return Component.translatable(
+                        "message.tuanzis_mod.blueprint.replace_multiblock_mismatch",
+                        sourceBlock.getName(),
+                        targetBlock.getName()
+                );
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 通用保留原方块状态中与目标方块同名的兼容属性（如朝向、上下半、含水等）。
+     * 若目标方块为纯流体则统一返回默认源头状态；若原方块为纯流体则不复制流体的 level 属性。
+     */
+    public static BlockState transferCompatibleProperties(BlockState oldState, Block targetBlock) {
+        BlockState targetDefault = targetBlock.defaultBlockState();
+        if (targetBlock == Blocks.AIR || isPureFluidBlock(targetDefault)) {
+            return targetDefault;
+        }
+        boolean oldIsPureFluid = isPureFluidBlock(oldState);
+        var targetDefinition = targetBlock.getStateDefinition();
+        BlockState result = targetDefault;
+        for (Property<?> oldProp : oldState.getProperties()) {
+            String propName = oldProp.getName();
+            if (oldIsPureFluid && "level".equals(propName)) {
+                continue;
+            }
+            Property<?> targetProp = targetDefinition.getProperty(propName);
+            if (targetProp == null) {
+                continue;
+            }
+            result = copyNamedProperty(oldState, oldProp, result, targetProp);
+        }
+        return result;
+    }
+
+    private static <S extends Comparable<S>, T extends Comparable<T>> BlockState copyNamedProperty(
+            BlockState oldState,
+            Property<S> oldProp,
+            BlockState targetState,
+            Property<T> targetProp
+    ) {
+        S oldVal = oldState.getValue(oldProp);
+        String valName = oldProp.getName(oldVal);
+        Optional<T> parsed = targetProp.getValue(valName);
+        return parsed.map(t -> targetState.setValue(targetProp, t)).orElse(targetState);
+    }
+
+    /**
+     * 将蓝图 NBT 中指定的原方块全部替换为目标方块：
+     * - 校验多格/单格兼容性；
+     * - 保留兼容的方块状态属性；
+     * - 若原方块为纯流体，仅将源头格替换为目标方块，流动格自动清理为空气；
+     * - 自动清理已修改格上类型不再匹配的旧 BlockEntities NBT；
+     * - 对 Palette 执行压缩去重并回写 Palette / Blocks / BlockEntities。
+     */
+    public static ReplaceResult replaceBlockInBlueprint(CompoundTag blueprintTag, Block sourceBlock, Block targetBlock) {
+        if (blueprintTag == null) {
+            return new ReplaceResult(false, 0, 0, 0, Component.translatable("message.tuanzis_mod.blueprint.replace_invalid"));
+        }
+        Component incompatError = checkReplacementCompatibility(sourceBlock, targetBlock);
+        if (incompatError != null) {
+            ModLog.debug("BlueprintBuildPlanner.replaceBlockInBlueprint: 兼容性校验拦截 "
+                    + sourceBlock.getName().getString() + " -> " + targetBlock.getName().getString()
+                    + ", reason=" + incompatError.getString());
+            return new ReplaceResult(false, 0, 0, 0, incompatError);
+        }
+
+        int width = blueprintTag.getIntOr("Width", 0);
+        int height = blueprintTag.getIntOr("Height", 0);
+        int length = blueprintTag.getIntOr("Length", 0);
+        ListTag oldPaletteNbt = blueprintTag.getListOrEmpty("Palette");
+        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
+        if (width <= 0 || height <= 0 || length <= 0 || oldPaletteNbt.isEmpty() || blocks.length == 0) {
+            return new ReplaceResult(false, 0, 0, 0, Component.translatable("message.tuanzis_mod.blueprint.replace_invalid"));
+        }
+
+        BlockState[] oldStates = new BlockState[oldPaletteNbt.size()];
+        BlockState[] newStates = new BlockState[oldPaletteNbt.size()];
+        boolean[] replacedPaletteSlot = new boolean[oldPaletteNbt.size()];
+        boolean[] clearedFlowingSlot = new boolean[oldPaletteNbt.size()];
+
+        for (int i = 0; i < oldPaletteNbt.size(); i++) {
+            BlockState st = LitematicaParser.parseBlockStateFromTag(oldPaletteNbt.get(i));
+            oldStates[i] = st;
+            if (st.getBlock() == sourceBlock) {
+                if (isPureFluidBlock(st) && isFlowingFluid(st)) {
+                    newStates[i] = Blocks.AIR.defaultBlockState();
+                    clearedFlowingSlot[i] = true;
+                } else {
+                    newStates[i] = transferCompatibleProperties(st, targetBlock);
+                    replacedPaletteSlot[i] = true;
+                }
+            } else {
+                newStates[i] = st;
+            }
+        }
+
+        // 统计受影响格数与重构去重后的调色板
+        int replacedVoxels = 0;
+        int clearedFlowingVoxels = 0;
+        List<BlockState> compactPalette = new ArrayList<>();
+        compactPalette.add(Blocks.AIR.defaultBlockState());
+        Map<BlockState, Integer> stateToCompactIdx = new HashMap<>();
+        stateToCompactIdx.put(Blocks.AIR.defaultBlockState(), 0);
+
+        int[] oldIdxToNewIdx = new int[oldStates.length];
+        for (int i = 0; i < newStates.length; i++) {
+            BlockState ns = newStates[i];
+            Integer mapped = stateToCompactIdx.get(ns);
+            if (mapped == null) {
+                mapped = compactPalette.size();
+                compactPalette.add(ns);
+                stateToCompactIdx.put(ns, mapped);
+            }
+            oldIdxToNewIdx[i] = mapped;
+        }
+
+        int[] updatedBlocks = new int[blocks.length];
+        for (int i = 0; i < blocks.length; i++) {
+            int pIdx = blocks[i];
+            if (pIdx < 0 || pIdx >= oldIdxToNewIdx.length) {
+                updatedBlocks[i] = 0;
+                continue;
+            }
+            if (replacedPaletteSlot[pIdx]) {
+                replacedVoxels++;
+            } else if (clearedFlowingSlot[pIdx]) {
+                clearedFlowingVoxels++;
+            }
+            updatedBlocks[i] = oldIdxToNewIdx[pIdx];
+        }
+
+        ListTag encodedPalette = new ListTag();
+        for (BlockState state : compactPalette) {
+            encodedPalette.add(BlockState.CODEC.encodeStart(NbtOps.INSTANCE, state)
+                    .result()
+                    .orElseGet(() -> LitematicaParser.parseBlockStateFromTag(null).isAir()
+                            ? net.minecraft.nbt.StringTag.valueOf("minecraft:air")
+                            : net.minecraft.nbt.StringTag.valueOf("minecraft:stone")));
+        }
+        blueprintTag.put("Palette", encodedPalette);
+        blueprintTag.putIntArray("Blocks", updatedBlocks);
+
+        // 清理已替换格上类型不匹配的旧 BlockEntities NBT
+        int removedBlockEntities = 0;
+        if (blueprintTag.contains("BlockEntities")) {
+            ListTag oldBes = blueprintTag.getListOrEmpty("BlockEntities");
+            ListTag keptBes = new ListTag();
+            for (int i = 0; i < oldBes.size(); i++) {
+                CompoundTag entry = oldBes.getCompoundOrEmpty(i);
+                int[] posArr = entry.getIntArray("pos").orElse(new int[0]);
+                boolean keep = true;
+                if (posArr.length >= 3) {
+                    int bx = posArr[0];
+                    int by = posArr[1];
+                    int bz = posArr[2];
+                    if (bx >= 0 && bx < width && by >= 0 && by < height && bz >= 0 && bz < length) {
+                        long bIdxLong = (long) by * (long) width * (long) length + (long) bz * (long) width + (long) bx;
+                        if (bIdxLong >= 0 && bIdxLong < blocks.length) {
+                            int bIdx = (int) bIdxLong;
+                            int oldPIdx = blocks[bIdx];
+                            if (oldPIdx >= 0 && oldPIdx < oldStates.length
+                                    && (replacedPaletteSlot[oldPIdx] || clearedFlowingSlot[oldPIdx])) {
+                                BlockState oldState = oldStates[oldPIdx];
+                                BlockState newState = newStates[oldPIdx];
+                                if (!hasSameBlockEntityType(oldState, newState, new BlockPos(bx, by, bz))) {
+                                    keep = false;
+                                    removedBlockEntities++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (keep) {
+                    keptBes.add(entry.copy());
+                }
+            }
+            blueprintTag.put("BlockEntities", keptBes);
+        }
+
+        ModLog.debug("BlueprintBuildPlanner.replaceBlockInBlueprint 完成: "
+                + sourceBlock.getName().getString() + " -> " + targetBlock.getName().getString()
+                + ", replacedVoxels=" + replacedVoxels
+                + ", clearedFlowingVoxels=" + clearedFlowingVoxels
+                + ", removedBlockEntities=" + removedBlockEntities);
+
+        Component msg = Component.translatable(
+                "message.tuanzis_mod.blueprint.replace_success",
+                sourceBlock.getName(),
+                targetBlock.getName(),
+                replacedVoxels
+        );
+        return new ReplaceResult(true, replacedVoxels, clearedFlowingVoxels, removedBlockEntities, msg);
+    }
+
+    private static boolean hasSameBlockEntityType(BlockState oldState, BlockState newState, BlockPos pos) {
+        if (!(oldState.getBlock() instanceof EntityBlock oldEb) || !(newState.getBlock() instanceof EntityBlock newEb)) {
+            return false;
+        }
+        try {
+            BlockEntity oldBe = oldEb.newBlockEntity(pos, oldState);
+            BlockEntity newBe = newEb.newBlockEntity(pos, newState);
+            if (oldBe == null || newBe == null) {
+                return false;
+            }
+            BlockEntityType<?> oldType = oldBe.getType();
+            BlockEntityType<?> newType = newBe.getType();
+            return oldType != null && oldType == newType && newType.isValid(newState);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -647,13 +953,16 @@ public class BlueprintBuildPlanner {
             BlockState state,
             Map<BlockPos, BlueprintCell> cellMap
     ) {
-        if (!state.canSurvive(level, pos)) {
+        BlueprintLevelReader safeReader = level instanceof BlueprintLevelReader reader
+                ? reader
+                : new BlueprintLevelReader(level, Map.of());
+        if (!state.canSurvive(safeReader, pos)) {
             return false;
         }
         // 下落方块（沙子、砂砾、铁砧、混凝土粉末等）：若下方在蓝图中存在待放置方块且当前世界仍为空，需等待下方先落地
         if (state.getBlock() instanceof FallingBlock) {
             BlockPos below = pos.below();
-            if (FallingBlock.isFree(level.getBlockState(below)) && cellMap.containsKey(below)) {
+            if (FallingBlock.isFree(safeReader.getBlockState(below)) && cellMap.containsKey(below)) {
                 return false;
             }
         }
@@ -681,7 +990,7 @@ public class BlueprintBuildPlanner {
             if (part.state().getBlock() instanceof FallingBlock) {
                 BlockPos below = part.pos().below();
                 if (!groupOverlay.containsKey(below)
-                        && FallingBlock.isFree(level.getBlockState(below))
+                        && FallingBlock.isFree(overlayReader.getBlockState(below))
                         && cellMap.containsKey(below)) {
                     return false;
                 }
@@ -721,6 +1030,19 @@ public class BlueprintBuildPlanner {
             return this.scheduledTick;
         }
 
+        private boolean isDelegatePosAccessible(BlockPos pos) {
+            if (delegate == null) {
+                return false;
+            }
+            if (delegate instanceof BlueprintLevelReader) {
+                return true;
+            }
+            if (delegate instanceof Level level && !level.isInValidBounds(pos)) {
+                return false;
+            }
+            return delegate.hasChunkAt(pos);
+        }
+
         @Override
         public BlockState getBlockState(BlockPos pos) {
             if (overridePos != null && overrideState != null && overridePos.equals(pos)) {
@@ -730,7 +1052,7 @@ public class BlueprintBuildPlanner {
             if (overlaid != null) {
                 return overlaid;
             }
-            return delegate != null ? delegate.getBlockState(pos) : Blocks.AIR.defaultBlockState();
+            return isDelegatePosAccessible(pos) ? delegate.getBlockState(pos) : Blocks.AIR.defaultBlockState();
         }
 
         @Override
@@ -739,12 +1061,12 @@ public class BlueprintBuildPlanner {
             if (state != Blocks.AIR.defaultBlockState() || (overridePos != null && overridePos.equals(pos)) || overlay.containsKey(pos)) {
                 return state.getFluidState();
             }
-            return delegate != null ? delegate.getFluidState(pos) : Fluids.EMPTY.defaultFluidState();
+            return isDelegatePosAccessible(pos) ? delegate.getFluidState(pos) : Fluids.EMPTY.defaultFluidState();
         }
 
         @Override
         public @Nullable BlockEntity getBlockEntity(BlockPos pos) {
-            return delegate != null ? delegate.getBlockEntity(pos) : null;
+            return isDelegatePosAccessible(pos) ? delegate.getBlockEntity(pos) : null;
         }
 
         @Override

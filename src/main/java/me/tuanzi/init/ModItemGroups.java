@@ -79,6 +79,8 @@ public class ModItemGroups {
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.METABOLISM), 3);
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.GAP_VERDICT), 4);
                         addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ETERNAL), 1);
+                        addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.AUSPICIOUS), 4);
+                        addEnchantmentBooks(entries, enchantmentRegistry.getOrThrow(ModEnchantments.ILL_OMEN), 4);
 
                         // 加入彩虹海绵
                         entries.accept(ModItems.RAINBOW_SPONGE);
@@ -194,6 +196,13 @@ public class ModItemGroups {
                         addPotionVariants(entries, ModPotions.ADRENALINE_POTION);
                         addPotionVariants(entries, ModPotions.ADRENALINE_POTION_II);
                         addPotionVariants(entries, ModPotions.LONG_ADRENALINE_POTION);
+
+                        // 加入净化药水及其变体
+                        addPotionVariants(entries, ModPotions.PURIFYING_POTION);
+                        addPotionVariants(entries, ModPotions.LONG_PURIFYING_POTION);
+
+                        // 加入背水药水及其变体（无延长版本）
+                        addPotionVariants(entries, ModPotions.DESPERATE_STAND_POTION);
                     })
                     .build()
     );

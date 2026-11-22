@@ -127,18 +127,19 @@ public final class PokerBias {
    }
 
    public static double estimatedWins(int bias) {
-      return interpolate(WON, bias);
+      return CasinoOdds.interpolateBiasTable(WON, bias);
+   }
+
+   public static double estimatedWins(double bias) {
+      return CasinoOdds.interpolateBiasTable(WON, bias);
+   }
+
+   public static double effectiveBias(int baseBias, double luck) {
+      return CasinoOdds.effectiveBias(WON, baseBias, luck);
    }
 
    public static double estimatedReturn(int bias) {
-      return interpolate(RETURN, bias);
-   }
-
-   private static double interpolate(int[] table, int bias) {
-      double at = (double)(Math.max(-100, Math.min(100, bias)) + 100) / (double)5.0F;
-      int low = (int)Math.floor(at);
-      int high = Math.min(table.length - 1, low + 1);
-      return ((double)table[low] + (double)(table[high] - table[low]) * (at - (double)low)) / (double)1000.0F;
+      return CasinoOdds.interpolateBiasTable(RETURN, bias);
    }
 
    public static boolean simpleCall(List<Integer> own, List<Integer> flop) {

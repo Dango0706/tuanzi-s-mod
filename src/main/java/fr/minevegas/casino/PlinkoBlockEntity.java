@@ -226,7 +226,9 @@ public final class PlinkoBlockEntity extends BlockEntity implements MenuProvider
             }
 
             int chance = CasinoSettings.chance(this);
+            double luck = CasinoSettings.playerLuck(initiator);
             this.seed = server.getRandom().nextLong();
+            boolean loggedLuck = false;
 
             for(List<ItemStack> list : this.payouts) {
                list.clear();
@@ -244,10 +246,14 @@ public final class PlinkoBlockEntity extends BlockEntity implements MenuProvider
                   int var10002;
                   if (forced != null && b < forced.length) {
                      var10002 = Math.floorMod(forced[b], 256);
-                  } else if (chance >= 0) {
-                     RandomSource var10003 = server.getRandom();
-                     Objects.requireNonNull(var10003);
-                     var10002 = CasinoOdds.plinko(chance, var10003::nextInt);
+                  } else if (chance >= 0 || luck != 0.0D) {
+                     RandomSource random = server.getRandom();
+                     var10002 = CasinoOdds.plinko(chance, luck, random::nextDouble, random::nextInt);
+                     if (!loggedLuck) {
+                        loggedLuck = true;
+                        me.tuanzi.util.ModLog.debug(initiator, "【赌场-弹珠台】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                                chance, luck, luck * 0.5D);
+                     }
                   } else {
                      var10002 = server.getRandom().nextInt(256);
                   }

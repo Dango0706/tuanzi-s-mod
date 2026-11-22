@@ -182,6 +182,10 @@ public abstract class LaunchedItem {
 
         @Override
         public void place(Level world) {
+            if (!world.isInValidBounds(target) || !world.isLoaded(target)) {
+                ModLog.debug("LaunchedItem.ForBlockState 跳过越界或未加载目标: " + target);
+                return;
+            }
             ModLog.debug("LaunchedItem.ForBlockState 落地触发: " + target + ", isDestroy=" + isDestroy + ", state=" + state);
             if (isDestroy) {
                 BlockState current = world.getBlockState(target);
@@ -280,6 +284,12 @@ public abstract class LaunchedItem {
         @Override
         public void place(Level world) {
             if (parts.isEmpty()) return;
+            for (Part part : parts) {
+                if (!world.isInValidBounds(part.pos()) || !world.isLoaded(part.pos())) {
+                    ModLog.debug("LaunchedItem.ForMultiBlock 跳过含越界或未加载组件的多方块: target=" + target + ", part=" + part.pos());
+                    return;
+                }
+            }
             ModLog.debug("LaunchedItem.ForMultiBlock 整体落地触发: target=" + target + ", parts=" + parts.size());
 
             // 1. 原子化写入所有组成方块并跳过中途形变更新，避免仅放置一半时被邻居更新拆毁
@@ -368,6 +378,10 @@ public abstract class LaunchedItem {
 
         @Override
         public void place(Level world) {
+            if (!world.isInValidBounds(target) || !world.isLoaded(target)) {
+                ModLog.debug("LaunchedItem.ForEntity 跳过越界或未加载目标: " + target);
+                return;
+            }
             ModLog.debug("LaunchedItem.ForEntity 落地触发: target=" + target + ", exactTarget=" + exactTarget + ", entityId=" + entityId);
             spawnEntity(world, target, exactTarget, entityId, entityNbt);
         }
@@ -382,6 +396,9 @@ public abstract class LaunchedItem {
                 String entityId,
                 @Nullable CompoundTag entityNbt
         ) {
+            if (!world.isInValidBounds(target)) {
+                return false;
+            }
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(entityId)).orElse(null);
             if (type == null) return false;
 

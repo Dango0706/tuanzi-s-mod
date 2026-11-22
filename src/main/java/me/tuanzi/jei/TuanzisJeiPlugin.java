@@ -518,6 +518,46 @@ public class TuanzisJeiPlugin implements IModPlugin {
                     Component.translatable("jei.tuanzis_mod.adrenaline_potion.description"));
         }
 
+        // 注册净化药水介绍页
+        List<ItemStack> purifyingPotions = registration.getIngredientManager()
+                .getAllIngredients(VanillaTypes.ITEM_STACK)
+                .stream()
+                .filter(stack -> {
+                    var potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                    if (potionContents != null && potionContents.potion().isPresent()) {
+                        var potion = potionContents.potion().get().value();
+                        var id = BuiltInRegistries.POTION.getKey(potion);
+                        return id != null && id.getPath().contains("purifying");
+                    }
+                    return false;
+                })
+                .toList();
+
+        if (!purifyingPotions.isEmpty()) {
+            registration.addIngredientInfo(purifyingPotions, VanillaTypes.ITEM_STACK,
+                    Component.translatable("jei.tuanzis_mod.purifying_potion.description"));
+        }
+
+        // 注册背水药水介绍页
+        List<ItemStack> desperateStandPotions = registration.getIngredientManager()
+                .getAllIngredients(VanillaTypes.ITEM_STACK)
+                .stream()
+                .filter(stack -> {
+                    var potionContents = stack.get(DataComponents.POTION_CONTENTS);
+                    if (potionContents != null && potionContents.potion().isPresent()) {
+                        var potion = potionContents.potion().get().value();
+                        var id = BuiltInRegistries.POTION.getKey(potion);
+                        return id != null && id.getPath().contains("desperate_stand");
+                    }
+                    return false;
+                })
+                .toList();
+
+        if (!desperateStandPotions.isEmpty()) {
+            registration.addIngredientInfo(desperateStandPotions, VanillaTypes.ITEM_STACK,
+                    Component.translatable("jei.tuanzis_mod.desperate_stand_potion.description"));
+        }
+
         // 注册蜂刺余响介绍页
         registration.addIngredientInfo(new ItemStack(ModItems.BEE_STING_ECHO), VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.bee_sting_echo.description"));
@@ -1358,6 +1398,10 @@ public class TuanzisJeiPlugin implements IModPlugin {
 
         // 注册贯震铭刻附魔介绍页
         registerEnchantmentBookInfo(registration, ModEnchantments.PERVADING_VIBRATION, "jei.tuanzis_mod.pervading_vibration.description");
+
+        // 注册祥瑞与厄兆附魔介绍页
+        registerEnchantmentBookInfo(registration, ModEnchantments.AUSPICIOUS, "jei.tuanzis_mod.auspicious.description");
+        registerEnchantmentBookInfo(registration, ModEnchantments.ILL_OMEN, "jei.tuanzis_mod.ill_omen.description");
 
         // 注册装饰性钱币系列 JEI 介绍页
         for (var coin : ModItems.COINS) {

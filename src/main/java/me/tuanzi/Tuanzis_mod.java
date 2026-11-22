@@ -21,6 +21,8 @@ import java.util.WeakHashMap;
 public class Tuanzis_mod implements ModInitializer {
     public static final String MOD_ID = "tuanzis_mod";
     private static final Map<ServerPlayer, Boolean> playerKeyStates = Collections.synchronizedMap(new WeakHashMap<>());
+    private static volatile net.minecraft.server.MinecraftServer activeServer;
+    private static me.tuanzi.config.ModConfigWatcher configWatcher;
 
     public static boolean isHoldingChainMiningKey(ServerPlayer player) {
         return playerKeyStates.getOrDefault(player, false);
@@ -29,6 +31,17 @@ public class Tuanzis_mod implements ModInitializer {
     @Override
     public void onInitialize() {
         me.tuanzi.config.ModConfig.load();
+        configWatcher = new me.tuanzi.config.ModConfigWatcher(me.tuanzi.config.ModConfig.getConfigPath(), path -> {
+            boolean previousCasinoEnabled = me.tuanzi.config.ModConfig.isCasinoRecipesEnabled();
+            me.tuanzi.config.ModConfig.load(path);
+            me.tuanzi.config.OverworldBuildHeightControl.handleHotReload(activeServer, previousCasinoEnabled);
+        });
+        configWatcher.start();
+        // 注册主世界建筑高度热更新同步网络包
+        PayloadTypeRegistry.clientboundPlay().register(
+                me.tuanzi.network.OverworldBuildHeightSyncS2CPacket.TYPE,
+                me.tuanzi.network.OverworldBuildHeightSyncS2CPacket.CODEC
+        );
         // 注册二段跳网络包
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.DoubleJumpC2SPacket.TYPE, me.tuanzi.network.DoubleJumpC2SPacket.CODEC);
         // 注册连锁采掘按键网络包
@@ -60,6 +73,8 @@ public class Tuanzis_mod implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.NodachiBeatPacket.TYPE, me.tuanzi.network.NodachiBeatPacket.CODEC);
         // 注册日冕过热状态同步网络包
         PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.CinderHeatSyncPacket.TYPE, me.tuanzi.network.CinderHeatSyncPacket.CODEC);
+        // 注册背水一战创伤值同步网络包
+        PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.DesperateStandSyncPacket.TYPE, me.tuanzi.network.DesperateStandSyncPacket.CODEC);
         // 注册拾荒回廊队伍状态同步网络包
         PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.ScavengerTeamSyncPacket.TYPE, me.tuanzi.network.ScavengerTeamSyncPacket.CODEC);
         // 注册拾荒回廊专属饰品槽同步与信标激活网络包
@@ -386,8 +401,20 @@ public class Tuanzis_mod implements ModInitializer {
                 }
                 CompoundTag blueprintData = payload.blueprintData();
                 if (blueprintData == null || !blueprintData.contains("Width")) {
-                    me.tuanzi.util.ModLog.debug(player, null, "蓝图桌导入失败：蓝图数据无效");
+                    me.tuanzi.util.ModLog.debug(player, null, "蓝图桌导入/更新失败：蓝图数据无效");
                     player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint_table.parse_fail").withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
+                if (payload.updateExportSlot()) {
+                    ItemStack slot0 = tableBe.getItems().get(0);
+                    if (slot0.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
+                        slot0.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(blueprintData.copy()));
+                        tableBe.setChanged();
+                        player.containerMenu.broadcastChanges();
+                        me.tuanzi.util.ModLog.debug(player, null, "成功同步更新蓝图桌槽位 0 结构蓝图数据！");
+                    } else {
+                        me.tuanzi.util.ModLog.debug(player, null, "蓝图桌槽位 0 更新被忽略：槽位 0 不是结构蓝图");
+                    }
                     return;
                 }
                 net.minecraft.world.item.ItemStack inputStack = tableBe.getItems().get(1);
@@ -440,9 +467,10 @@ public class Tuanzis_mod implements ModInitializer {
             });
         });
 
-        // 注册击杀生物获得血怒状态效果的监听
+        // 注册击杀生物获得血怒状态效果的监听与背水一战创伤消减
         net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, killer, killedEntity, damageSource) -> {
             if (killer instanceof Player player) {
+                me.tuanzi.util.DesperateStandHelper.onPlayerKilledEntity(player, killedEntity);
                 var registry = world.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
                 var enchantmentHolder = registry.getOrThrow(ModEnchantments.BLOOD_RAGE);
                 int level = EnchantmentHelper.getItemEnchantmentLevel(enchantmentHolder, player.getMainHandItem());
@@ -474,15 +502,22 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.closeSession(handler.getPlayer().getUUID(), "玩家断开连接");
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            activeServer = server;
             me.tuanzi.gacha.PoolManager.loadAllPools(server.registryAccess());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
             me.tuanzi.gacha.PlayerGachaManager.shutdown();
             me.tuanzi.gacha.PoolManager.shutdown(server.registryAccess());
         });
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            if (activeServer == server) {
+                activeServer = null;
+            }
+        });
 
         // 初始化拾荒回廊搜刮元数据加载、/reload 热更新广播与进服同步
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            activeServer = server;
             me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.reloadServerData(server.getResourceManager());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resourceManager, success) -> {
@@ -497,7 +532,11 @@ public class Tuanzis_mod implements ModInitializer {
             }
         });
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            me.tuanzi.config.OverworldBuildHeightControl.syncToPlayer(handler.getPlayer());
             me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.syncToPlayer(handler.getPlayer());
+            if (handler.getPlayer() instanceof me.tuanzi.util.DesperateStandTracker tracker) {
+                me.tuanzi.util.DesperateStandHelper.syncToClient(handler.getPlayer(), tracker.tuanzis_mod$getDesperateStandTrauma());
+            }
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.tickAllSessions(server);

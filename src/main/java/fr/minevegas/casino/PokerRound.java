@@ -11,7 +11,7 @@ public final class PokerRound {
    public static final int TURN_TIMEOUT = 600;
    private final BlackjackShoe shoe;
    private final Listener listener;
-   private final int bias;
+   private final double bias;
    private final List<Integer> player;
    private final List<Integer> dealer;
    private final List<Integer> board;
@@ -31,6 +31,10 @@ public final class PokerRound {
    }
 
    public PokerRound(BlackjackShoe shoe, Listener listener, int bias) {
+      this(shoe, listener, (double) bias);
+   }
+
+   public PokerRound(BlackjackShoe shoe, Listener listener, double bias) {
       this.player = new ArrayList();
       this.dealer = new ArrayList();
       this.board = new ArrayList();
@@ -42,7 +46,7 @@ public final class PokerRound {
       this.dealerScore = -1;
       this.shoe = shoe;
       this.listener = listener;
-      this.bias = Math.max(-100, Math.min(100, bias));
+      this.bias = Math.max(-100.0D, Math.min(100.0D, bias));
       int t = 0;
       if (shoe.needsShuffle()) {
          shoe.shuffle();

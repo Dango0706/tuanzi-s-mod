@@ -19,7 +19,7 @@ public final class BlackjackRound {
    public static final int REACTION = 34;
    private final BlackjackShoe shoe;
    private final Listener listener;
-   private final int bias;
+   private final double bias;
    private final List<Integer> player;
    private final List<Integer> dealer;
    private final List<Step> steps;
@@ -50,6 +50,10 @@ public final class BlackjackRound {
    }
 
    public BlackjackRound(BlackjackShoe shoe, Listener listener, int bias) {
+      this(shoe, listener, (double) bias);
+   }
+
+   public BlackjackRound(BlackjackShoe shoe, Listener listener, double bias) {
       this.player = new ArrayList();
       this.dealer = new ArrayList();
       this.steps = new ArrayList();
@@ -57,7 +61,7 @@ public final class BlackjackRound {
       this.result = BlackjackRound.Result.NONE;
       this.shoe = shoe;
       this.listener = listener;
-      this.bias = Math.max(-100, Math.min(100, bias));
+      this.bias = Math.max(-100.0D, Math.min(100.0D, bias));
       int t = 0;
       if (shoe.needsShuffle()) {
          shoe.shuffle();

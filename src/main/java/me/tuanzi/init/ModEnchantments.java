@@ -66,12 +66,15 @@ public class ModEnchantments {
     public static final ResourceKey<Enchantment> METABOLISM = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "metabolism"));
     public static final ResourceKey<Enchantment> GAP_VERDICT = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "gap_verdict"));
     public static final ResourceKey<Enchantment> ETERNAL = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "eternal"));
+    public static final ResourceKey<Enchantment> AUSPICIOUS = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "auspicious"));
+    public static final ResourceKey<Enchantment> ILL_OMEN = ResourceKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ill_omen"));
 
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_NORMALIZATION = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_normalization"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_WEATHER_BLADES = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_weather_blades"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_DAY_NIGHT_BLADES = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_day_night_blades"));
     public static final net.minecraft.tags.TagKey<Enchantment> ANCIENT_SCROLL = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "ancient_scroll"));
     public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_RESERVED_CHAMBER = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_reserved_chamber"));
+    public static final net.minecraft.tags.TagKey<Enchantment> EXCLUSIVE_LUCK_OMEN = net.minecraft.tags.TagKey.create(Registries.ENCHANTMENT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "exclusive_luck_omen"));
 
     public static void initialize() {
         // 仅用于加载此类

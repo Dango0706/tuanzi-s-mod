@@ -2,10 +2,12 @@ package fr.minevegas.casino;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.DoubleSupplier;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 
 public final class CasinoOdds {
+   public static final double LUCK_WIN_CHANCE_PER_POINT = 0.005D;
    private static final Pool[] ROULETTE = new Pool[3];
    private static final Pool SLOTS;
    private static final Pool WHEEL;
@@ -14,9 +16,60 @@ public final class CasinoOdds {
    private CasinoOdds() {
    }
 
+   public static double applyLuck(double baseProbability, double luck) {
+      return Math.max(0.0D, Math.min(1.0D, baseProbability + luck * LUCK_WIN_CHANCE_PER_POINT));
+   }
+
+   public static double interpolateBiasTable(int[] table, double bias) {
+      double clamped = Math.max(-100.0D, Math.min(100.0D, bias));
+      double at = (clamped + 100.0D) / 5.0D;
+      int low = (int) Math.floor(at);
+      int high = Math.min(table.length - 1, low + 1);
+      return ((double) table[low] + (double) (table[high] - table[low]) * (at - (double) low)) / 1000.0D;
+   }
+
+   public static double effectiveBias(int[] winTable, int baseBias, double luck) {
+      int clampedBase = Math.max(-100, Math.min(100, baseBias));
+      if (luck == 0.0D) {
+         return clampedBase;
+      }
+      double baseWins = interpolateBiasTable(winTable, clampedBase);
+      double targetWins = applyLuck(baseWins, luck);
+      double targetScaled = targetWins * 1000.0D;
+      if (targetScaled <= (double) winTable[0]) {
+         return -100.0D;
+      }
+      int last = winTable.length - 1;
+      if (targetScaled >= (double) winTable[last]) {
+         return 100.0D;
+      }
+      for (int i = 0; i < last; ++i) {
+         if (targetScaled <= (double) winTable[i + 1]) {
+            double span = (double) (winTable[i + 1] - winTable[i]);
+            double frac = span <= 0.0D ? 0.0D : (targetScaled - (double) winTable[i]) / span;
+            return -100.0D + ((double) i + frac) * 5.0D;
+         }
+      }
+      return 100.0D;
+   }
+
    public static int roulette(int color, int percent, IntUnaryOperator nextInt) {
       if (color >= 0 && color <= 2) {
          return draw(ROULETTE[color], percent, color == 2 ? 1800 : 100, nextInt);
+      } else {
+         throw new IllegalArgumentException("Invalid roulette color: " + color);
+      }
+   }
+
+   public static int roulette(int color, int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      if (color >= 0 && color <= 2) {
+         if (configuredPercent > 100) {
+            throw new IllegalArgumentException("Win chance outside 0..100: " + configuredPercent);
+         }
+         double baseProbability = configuredPercent >= 0
+                 ? (double) configuredPercent / (double) (color == 2 ? 1800 : 100)
+                 : ROULETTE[color].naturalChance();
+         return draw(ROULETTE[color], applyLuck(baseProbability, luck), nextDouble, nextInt);
       } else {
          throw new IllegalArgumentException("Invalid roulette color: " + color);
       }
@@ -37,16 +90,48 @@ public final class CasinoOdds {
       }
    }
 
+   public static int derby(int lane, int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      if (lane >= 0 && lane < 4) {
+         if (configuredPercent > 100) {
+            throw new IllegalArgumentException("Win chance outside 0..100: " + configuredPercent);
+         }
+         Objects.requireNonNull(nextDouble, "nextDouble");
+         Objects.requireNonNull(nextInt, "nextInt");
+         double baseProbability = configuredPercent >= 0 ? (double) configuredPercent / 100.0D : 0.25D;
+         double winProbability = applyLuck(baseProbability, luck);
+         if (rollDouble(nextDouble) < winProbability) {
+            return lane;
+         } else {
+            int other = roll(nextInt, 3);
+            return other < lane ? other : other + 1;
+         }
+      } else {
+         throw new IllegalArgumentException("Invalid derby lane: " + lane);
+      }
+   }
+
    public static int[] slots(int percent, IntUnaryOperator nextInt) {
       return stops(draw(SLOTS, percent, 100, nextInt));
+   }
+
+   public static int[] slots(int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      return stops(drawWithLuck(SLOTS, configuredPercent, luck, nextDouble, nextInt));
    }
 
    public static int wheel(int percent, IntUnaryOperator nextInt) {
       return draw(WHEEL, percent, 100, nextInt);
    }
 
+   public static int wheel(int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      return drawWithLuck(WHEEL, configuredPercent, luck, nextDouble, nextInt);
+   }
+
    public static int plinko(int percent, IntUnaryOperator nextInt) {
       return draw(PLINKO, percent, 100, nextInt);
+   }
+
+   public static int plinko(int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      return drawWithLuck(PLINKO, configuredPercent, luck, nextDouble, nextInt);
    }
 
    public static double expectedReturn(String type, int percent) {
@@ -77,6 +162,30 @@ public final class CasinoOdds {
       }
 
       return var10000;
+   }
+
+   private static int drawWithLuck(Pool pool, int configuredPercent, double luck, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      if (configuredPercent > 100) {
+         throw new IllegalArgumentException("Win chance outside 0..100: " + configuredPercent);
+      }
+      double baseProbability = configuredPercent >= 0 ? (double) configuredPercent / 100.0D : pool.naturalChance();
+      return draw(pool, applyLuck(baseProbability, luck), nextDouble, nextInt);
+   }
+
+   private static int draw(Pool pool, double winProbability, DoubleSupplier nextDouble, IntUnaryOperator nextInt) {
+      Objects.requireNonNull(nextDouble, "nextDouble");
+      Objects.requireNonNull(nextInt, "nextInt");
+      int[] outcomes = rollDouble(nextDouble) < winProbability ? pool.wins : pool.losses;
+      return outcomes[roll(nextInt, outcomes.length)];
+   }
+
+   private static double rollDouble(DoubleSupplier nextDouble) {
+      double result = nextDouble.getAsDouble();
+      if (result >= 0.0D && result < 1.0D) {
+         return result;
+      } else {
+         throw new IllegalArgumentException("Random double outside [0, 1): " + result);
+      }
    }
 
    private static int draw(Pool pool, int percent, int chanceParts, IntUnaryOperator nextInt) {
@@ -157,6 +266,10 @@ public final class CasinoOdds {
    private static record Pool(int[] wins, int[] losses, double winningReturn, double losingReturn) {
       double expected(double chance) {
          return chance * this.winningReturn + ((double)1.0F - chance) * this.losingReturn;
+      }
+
+      double naturalChance() {
+         return (double) this.wins.length / (double) (this.wins.length + this.losses.length);
       }
    }
 }

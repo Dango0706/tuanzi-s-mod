@@ -53,6 +53,11 @@ public class DamageCalculator {
      * @return 调整后的最终伤害值
      */
     public static float calculateDamage(float amount, DamageSource source, LivingEntity target) {
+        if (source instanceof DesperateStandDamageSource) {
+            ModLog.debug(source.getEntity(), target, "【背水一战】创伤结算真实伤害直出，跳过全部伤害修改逻辑: " + String.format("%.2f", amount));
+            return amount;
+        }
+
         float initialDamage = amount;
 
         // 0.0 拾荒回廊队友全方位友伤免疫
@@ -122,6 +127,10 @@ public class DamageCalculator {
                     || source.is(DamageTypes.MACE_SMASH))
                     && !IS_SHOCKWAVE_ATTACK.get();
             if (isMelee) {
+                if (attacker.hasEffect(ModStatusEffects.DESPERATE_STAND)) {
+                    attackerMultiplier += DesperateStandHelper.MELEE_DAMAGE_BONUS;
+                    me.tuanzi.util.ModLog.debug(attacker, target, "伤害更改触发：攻击者拥有【背水一战】效果，近战伤害提升 10% (当前攻击乘数累加值: " + String.format("%.2f", attackerMultiplier) + ")。");
+                }
                 // 天气附魔逻辑：玄冥雨刃 (Rain Blade)、青女霜刃 (Frost Blade)、雷公霆刃 (Thunder Blade)、金乌炽刃 (Sun Blade)
                 ItemStack mainHandWeapon = attacker.getMainHandItem();
                 if (!mainHandWeapon.isEmpty()) {
@@ -788,10 +797,12 @@ public class DamageCalculator {
                                     .getOrThrow(DamageTypes.GENERIC);
                             me.tuanzi.util.ExecuteBacklashDamageSource backlashSrc = new me.tuanzi.util.ExecuteBacklashDamageSource(typeHolder);
 
-                            float newHealth = attacker.getHealth() - backlashDamage;
-                            attacker.setHealth(Math.max(0.0f, newHealth));
-                            if (newHealth <= 0.0f) {
-                                attacker.die(backlashSrc);
+                            if (!DesperateStandHelper.tryDeferDirectDamage(attacker, backlashDamage)) {
+                                float newHealth = attacker.getHealth() - backlashDamage;
+                                attacker.setHealth(Math.max(0.0f, newHealth));
+                                if (newHealth <= 0.0f) {
+                                    attacker.die(backlashSrc);
+                                }
                             }
                         }
                     }

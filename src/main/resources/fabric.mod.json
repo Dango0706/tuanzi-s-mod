@@ -34,7 +34,11 @@
       "me.tuanzi.gametest.BlueprintCannonGameTest",
       "me.tuanzi.gametest.BlueprintDirectPlaceGameTest",
       "me.tuanzi.gametest.EternalEnchantmentGameTest",
-      "me.tuanzi.gametest.RiftScarGameTest"
+      "me.tuanzi.gametest.RiftScarGameTest",
+      "me.tuanzi.gametest.PurifyingAndDesperateStandGameTest",
+      "me.tuanzi.gametest.LuckCasinoUndyingGameTest",
+      "me.tuanzi.gametest.LeaderZombieXpGameTest",
+      "me.tuanzi.gametest.OverworldBuildHeightGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"

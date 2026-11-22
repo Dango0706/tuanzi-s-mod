@@ -31,6 +31,8 @@ public class ModStatusEffects {
     public static final Holder<MobEffect> EARTH_PULSE_SLOW = register("earth_pulse_slow", new me.tuanzi.effect.EarthPulseSlowStatusEffect());
     public static final Holder<MobEffect> EARTH_ECHO = register("earth_echo", new me.tuanzi.effect.EarthEchoStatusEffect());
     public static final Holder<MobEffect> PERVADING_VIBRATION = register("pervading_vibration", new me.tuanzi.effect.PervadingVibrationStatusEffect());
+    public static final Holder<MobEffect> PURIFYING_PULSE = register("purifying_pulse", new me.tuanzi.effect.PurifyingPulseStatusEffect());
+    public static final Holder<MobEffect> DESPERATE_STAND = register("desperate_stand", new me.tuanzi.effect.DesperateStandStatusEffect());
 
     private static Holder<MobEffect> register(String name, MobEffect effect) {
         return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, name), effect);

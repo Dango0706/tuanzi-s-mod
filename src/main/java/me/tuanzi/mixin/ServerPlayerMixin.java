@@ -179,6 +179,17 @@ public class ServerPlayerMixin implements WitherKillTracker {
             this.tuanzis_mod$witherKills = me.tuanzi.util.WitherKillManager.getKills(oldPlayer);
         }
         me.tuanzi.util.WitherKillManager.setKills((ServerPlayer) (Object) this, this.tuanzis_mod$witherKills);
+
+        if (this instanceof me.tuanzi.util.DesperateStandTracker newTracker && oldPlayer instanceof me.tuanzi.util.DesperateStandTracker oldTracker) {
+            if (wonGame) {
+                newTracker.tuanzis_mod$setDesperateStandTrauma(oldTracker.tuanzis_mod$getDesperateStandTrauma());
+                newTracker.tuanzis_mod$setDesperateStandSettleTicks(oldTracker.tuanzis_mod$getDesperateStandSettleTicks());
+            } else {
+                newTracker.tuanzis_mod$setDesperateStandTrauma(0.0f);
+                newTracker.tuanzis_mod$setDesperateStandSettleTicks(0);
+            }
+            me.tuanzi.util.DesperateStandHelper.syncToClient((ServerPlayer) (Object) this, newTracker.tuanzis_mod$getDesperateStandTrauma());
+        }
     }
 
     @org.spongepowered.asm.mixin.Unique

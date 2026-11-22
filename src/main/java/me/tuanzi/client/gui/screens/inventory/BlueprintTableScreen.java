@@ -222,7 +222,15 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
                 if (tag.contains("Width")) {
                     String title = exportBp.getHoverName().getString();
                     ModLog.debug("[BlueprintTableScreen] 打开槽位蓝图 3D 检视器: " + title);
-                    this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, tag, title));
+                    this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, tag, title, updatedTag -> {
+                        ItemStack currentSlot0 = menu.getExportBlueprint();
+                        if (!currentSlot0.isEmpty()) {
+                            currentSlot0.set(DataComponents.CUSTOM_DATA, CustomData.of(updatedTag.copy()));
+                        }
+                        if (this.minecraft != null && this.minecraft.getConnection() != null) {
+                            ClientPlayNetworking.send(new BlueprintTableImportPacket(menu.getTablePos(), updatedTag.copy(), true));
+                        }
+                    }));
                     return;
                 }
             }
@@ -231,7 +239,9 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         if (selectedFile == null) return;
 
         if (parsedBlueprintData != null) {
-            this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, parsedBlueprintData, selectedFile));
+            this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, parsedBlueprintData, selectedFile, updatedTag -> {
+                this.parsedBlueprintData = updatedTag.copy();
+            }));
             return;
         }
 
@@ -258,7 +268,9 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
             if (result != null) {
                 this.parsedBlueprintData = result;
                 if (this.minecraft != null) {
-                    this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, result, targetFileName));
+                    this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, result, targetFileName, updatedTag -> {
+                        this.parsedBlueprintData = updatedTag.copy();
+                    }));
                 }
             } else {
                 if (this.minecraft != null && this.minecraft.player != null) {

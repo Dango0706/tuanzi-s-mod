@@ -20,11 +20,13 @@ public class HydrophobiaStatusEffect extends MobEffect {
                     .getOrThrow(DamageTypes.GENERIC);
             HydrophobiaDamageSource src = new HydrophobiaDamageSource(typeHolder);
 
-            // 绝对扣减生命值，以绝对无视护甲与任何效果减免
-            float newHealth = mob.getHealth() - 2.0F;
-            mob.setHealth(Math.max(0.0F, newHealth));
-            if (newHealth <= 0.0F) {
-                mob.die(src);
+            // 绝对扣减生命值，以绝对无视护甲与任何效果减免（背水一战期间记入创伤值）
+            if (!me.tuanzi.util.DesperateStandHelper.tryDeferDirectDamage(mob, 2.0F)) {
+                float newHealth = mob.getHealth() - 2.0F;
+                mob.setHealth(Math.max(0.0F, newHealth));
+                if (newHealth <= 0.0F) {
+                    mob.die(src);
+                }
             }
         }
         return true;

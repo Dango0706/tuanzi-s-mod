@@ -19,6 +19,11 @@ public class ModPotions {
     public static final Holder<Potion> ADRENALINE_POTION_II = register("adrenaline_ii", new Potion("adrenaline", new MobEffectInstance(ModStatusEffects.ADRENALINE, 600, 1)));
     public static final Holder<Potion> LONG_ADRENALINE_POTION = register("long_adrenaline", new Potion("adrenaline", new MobEffectInstance(ModStatusEffects.ADRENALINE, 1800)));
 
+    public static final Holder<Potion> PURIFYING_POTION = register("purifying", new Potion("purifying", new MobEffectInstance(ModStatusEffects.PURIFYING_PULSE, 900))); // 45s
+    public static final Holder<Potion> LONG_PURIFYING_POTION = register("long_purifying", new Potion("purifying", new MobEffectInstance(ModStatusEffects.PURIFYING_PULSE, 1800))); // 90s
+
+    public static final Holder<Potion> DESPERATE_STAND_POTION = register("desperate_stand", new Potion("desperate_stand", new MobEffectInstance(ModStatusEffects.DESPERATE_STAND, 600))); // 30s
+
     private static Holder<Potion> register(String name, Potion potion) {
         return Registry.registerForHolder(BuiltInRegistries.POTION, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, name), potion);
     }

@@ -210,11 +210,13 @@ public final class SlotMachineBlockEntity extends BlockEntity implements MenuPro
             }
 
             int chance = CasinoSettings.chance(this);
+            double luck = CasinoSettings.playerLuck(initiator);
             int[] next = new int[3];
-            if (forced == null && chance >= 0) {
-               RandomSource var10001 = server.getRandom();
-               Objects.requireNonNull(var10001);
-               next = CasinoOdds.slots(chance, var10001::nextInt);
+            if (forced == null && (chance >= 0 || luck != 0.0D)) {
+               RandomSource random = server.getRandom();
+               next = CasinoOdds.slots(chance, luck, random::nextDouble, random::nextInt);
+               me.tuanzi.util.ModLog.debug(initiator, "【赌场-老虎机】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                       chance, luck, luck * 0.5D);
             } else {
                for(int k = 0; k < 3; ++k) {
                   next[k] = forced != null ? Math.floorMod(forced[k], 8) : server.getRandom().nextInt(8);

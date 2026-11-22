@@ -415,7 +415,14 @@ public final class BlackjackTableBlockEntity extends BlockEntity implements Menu
             this.computeAim(player, spot);
             this.view = new BlackjackTableState(server.getGameTime(), spot);
             this.view.phaseChanged(BlackjackRound.Phase.DEALING, 0);
-            this.round = new BlackjackRound(this.shoe, this.events, CasinoSettings.bias(this));
+            int baseBias = CasinoSettings.bias(this);
+            double luck = CasinoSettings.playerLuck(player);
+            double effectiveBias = BlackjackBias.effectiveBias(baseBias, luck);
+            if (luck != 0.0D) {
+               me.tuanzi.util.ModLog.debug(player, "【赌场-21点】基础偏向=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%, 生效偏向=%.2f",
+                       baseBias, luck, luck * 0.5D, effectiveBias);
+            }
+            this.round = new BlackjackRound(this.shoe, this.events, effectiveBias);
             menu.showWager(this.displayStakes());
             this.setChanged();
             this.sync();

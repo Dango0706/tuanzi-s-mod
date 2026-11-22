@@ -143,6 +143,14 @@
     {
       "id": "tuanzis_mod:husbandry",
       "required": false
+    },
+    {
+      "id": "tuanzis_mod:auspicious",
+      "required": false
+    },
+    {
+      "id": "tuanzis_mod:ill_omen",
+      "required": false
     }
   ]
 }

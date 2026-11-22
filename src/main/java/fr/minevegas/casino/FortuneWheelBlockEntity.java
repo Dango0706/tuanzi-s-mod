@@ -232,13 +232,15 @@ public final class FortuneWheelBlockEntity extends BlockEntity implements MenuPr
             }
 
             int chance = CasinoSettings.chance(this);
+            double luck = CasinoSettings.playerLuck(initiator);
             int var10000;
             if (forced >= 0) {
                var10000 = Math.floorMod(forced, 16);
-            } else if (chance >= 0) {
-               RandomSource var10001 = server.getRandom();
-               Objects.requireNonNull(var10001);
-               var10000 = CasinoOdds.wheel(chance, var10001::nextInt);
+            } else if (chance >= 0 || luck != 0.0D) {
+               RandomSource random = server.getRandom();
+               var10000 = CasinoOdds.wheel(chance, luck, random::nextDouble, random::nextInt);
+               me.tuanzi.util.ModLog.debug(initiator, "【赌场-幸运转盘】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                       chance, luck, luck * 0.5D);
             } else {
                var10000 = FortuneWheelGame.segmentForRoll(server.getRandom().nextInt(64));
             }

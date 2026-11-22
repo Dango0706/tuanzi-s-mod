@@ -78,8 +78,12 @@ public final class BlackjackShoe {
    }
 
    public int drawFavouring(int percent, IntToDoubleFunction score) {
+      return this.drawFavouring((double) percent, score);
+   }
+
+   public int drawFavouring(double percent, IntToDoubleFunction score) {
       if (this.rigged.isEmpty() && this.cards.size() >= 2) {
-         if (this.random.nextInt(100) >= percent) {
+         if (this.random.nextDouble() * 100.0D >= percent) {
             return (Integer)this.cards.removeLast();
          } else {
             int top = (Integer)this.cards.get(this.cards.size() - 1);

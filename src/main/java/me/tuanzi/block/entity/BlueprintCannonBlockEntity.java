@@ -194,14 +194,14 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         int length = blueprintTag.getIntOr("Length", 0);
         int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
 
-        if (blocks.length == 0) {
+        if (!BlueprintBuildPlanner.isValidDimensionsAndBlocks(width, height, length, blocks.length)) {
             be.resetToIdle();
             return;
         }
 
         ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
         if (be.activePlan == null || !be.activePlan.matches(blueprintTag, be.destroyMode, be.exactMatch)) {
-            be.activePlan = ActiveBuildPlan.create(blueprintTag, level, be.destroyMode, be.exactMatch);
+            be.activePlan = ActiveBuildPlan.create(blueprintTag, level, pos, be.destroyMode, be.exactMatch);
             me.tuanzi.util.ModLog.debug("BlueprintCannon: 构建建造计划 phase=" + be.activePlan.phase
                     + ", destroyQueue=" + be.activePlan.destroyQueue.size()
                     + ", singleQueue=" + be.activePlan.primarySingleQueue.size()
@@ -263,6 +263,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 case DESTROY -> {
                     if (!plan.destroyQueue.isEmpty()) {
                         BlockPos targetPos = plan.destroyQueue.peekFirst();
+                        if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, targetPos)) {
+                            plan.destroyQueue.pollFirst();
+                            plan.destroyDone++;
+                            this.currentIndex = plan.getCompletedWork();
+                            continue;
+                        }
+                        if (!level.isLoaded(targetPos)) {
+                            return;
+                        }
                         BlueprintCell cell = plan.parsed.cellMap().get(targetPos);
                         BlockState worldState = level.getBlockState(targetPos);
 
@@ -304,6 +313,14 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     boolean foundRemaining = false;
                     for (BlockPos candidate : plan.parsed.destroyCandidatesTopDown()) {
+                        if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, candidate)) {
+                            continue;
+                        }
+                        if (!level.isLoaded(candidate)) {
+                            plan.destroyQueue.addLast(candidate);
+                            foundRemaining = true;
+                            continue;
+                        }
                         BlockState worldState = level.getBlockState(candidate);
                         if (!BlueprintBuildPlanner.isBreakableBlock(level, candidate, worldState)) {
                             continue;
@@ -323,6 +340,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 case SINGLE_PRIMARY -> {
                     if (!plan.primarySingleQueue.isEmpty()) {
                         BlueprintCell cell = plan.primarySingleQueue.peekFirst();
+                        if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, cell.pos())) {
+                            plan.primarySingleQueue.pollFirst();
+                            plan.placementDone++;
+                            this.currentIndex = plan.getCompletedWork();
+                            continue;
+                        }
+                        if (!level.isLoaded(cell.pos())) {
+                            return;
+                        }
                         BlockState worldState = level.getBlockState(cell.pos());
 
                         if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
@@ -373,6 +399,16 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     }
 
                     BlueprintCell cell = plan.deferredSingleQueue.peekFirst();
+                    if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, cell.pos())) {
+                        plan.deferredSingleQueue.pollFirst();
+                        plan.placementDone++;
+                        plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
+                        this.currentIndex = plan.getCompletedWork();
+                        continue;
+                    }
+                    if (!level.isLoaded(cell.pos())) {
+                        return;
+                    }
                     BlockState worldState = level.getBlockState(cell.pos());
 
                     if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
@@ -406,6 +442,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 case MULTI_BLOCK -> {
                     if (!plan.multiQueue.isEmpty()) {
                         MultiBlockGroup group = plan.multiQueue.peekFirst();
+                        if (!isGroupInValidBoundsAndRange(level, pos, group)) {
+                            plan.multiQueue.pollFirst();
+                            plan.placementDone += group.parts().size();
+                            this.currentIndex = plan.getCompletedWork();
+                            continue;
+                        }
+                        if (!isGroupLoaded(level, group)) {
+                            return;
+                        }
 
                         if (isMultiBlockAlreadyComplete(level, group) || isMultiBlockBlocked(level, group)) {
                             plan.multiQueue.pollFirst();
@@ -446,6 +491,16 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     if (!plan.deferredMultiQueue.isEmpty()) {
                         MultiBlockGroup group = plan.deferredMultiQueue.peekFirst();
+                        if (!isGroupInValidBoundsAndRange(level, pos, group)) {
+                            plan.deferredMultiQueue.pollFirst();
+                            plan.placementDone += group.parts().size();
+                            plan.deferredMultiPassRemaining = plan.deferredMultiQueue.size();
+                            this.currentIndex = plan.getCompletedWork();
+                            continue;
+                        }
+                        if (!isGroupLoaded(level, group)) {
+                            return;
+                        }
                         if (isMultiBlockAlreadyComplete(level, group) || isMultiBlockBlocked(level, group)) {
                             plan.deferredMultiQueue.pollFirst();
                             plan.placementDone += group.parts().size();
@@ -475,6 +530,16 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     if (!plan.deferredSingleQueue.isEmpty()) {
                         BlueprintCell cell = plan.deferredSingleQueue.peekFirst();
+                        if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, cell.pos())) {
+                            plan.deferredSingleQueue.pollFirst();
+                            plan.placementDone++;
+                            plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
+                            this.currentIndex = plan.getCompletedWork();
+                            continue;
+                        }
+                        if (!level.isLoaded(cell.pos())) {
+                            return;
+                        }
                         BlockState worldState = level.getBlockState(cell.pos());
                         if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
                                 || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
@@ -642,8 +707,29 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         return LaunchOutcome.LAUNCHED;
     }
 
+    private static boolean isGroupInValidBoundsAndRange(Level level, BlockPos cannonPos, MultiBlockGroup group) {
+        for (BlueprintCell part : group.parts()) {
+            if (!BlueprintBuildPlanner.isValidWorldTarget(level, cannonPos, part.pos())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isGroupLoaded(Level level, MultiBlockGroup group) {
+        for (BlueprintCell part : group.parts()) {
+            if (!level.isLoaded(part.pos())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean isMultiBlockAlreadyComplete(Level level, MultiBlockGroup group) {
         for (BlueprintCell part : group.parts()) {
+            if (!level.isLoaded(part.pos())) {
+                return false;
+            }
             BlockState worldState = level.getBlockState(part.pos());
             if (!BlueprintBuildPlanner.isStateMatch(worldState, part.state(), this.exactMatch)) {
                 return false;
@@ -654,6 +740,9 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
     private boolean isMultiBlockBlocked(Level level, MultiBlockGroup group) {
         for (BlueprintCell part : group.parts()) {
+            if (!level.isLoaded(part.pos())) {
+                return false;
+            }
             BlockState worldState = level.getBlockState(part.pos());
             if (!BlueprintBuildPlanner.isStateMatch(worldState, part.state(), this.exactMatch)
                     && !BlueprintBuildPlanner.canOverwriteWorldState(worldState)) {
@@ -790,6 +879,13 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         BlockPos targetBlockPos = transformed.targetBlockPos();
         net.minecraft.core.Direction facing = transformed.facing();
         CompoundTag transformedNbt = transformed.transformedNbt();
+
+        if (!BlueprintBuildPlanner.isValidWorldTarget(level, pos, targetBlockPos)) {
+            return EntityStepOutcome.SKIP;
+        }
+        if (!level.isLoaded(targetBlockPos)) {
+            return EntityStepOutcome.PAUSED;
+        }
 
         boolean alreadyFlying = this.flyingBlocks.stream().anyMatch(item ->
                 item instanceof LaunchedItem.ForEntity forEntity &&
@@ -929,12 +1025,19 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             this.parsed = parsed;
         }
 
-        static ActiveBuildPlan create(CompoundTag blueprintTag, Level level, boolean destroyMode, boolean exactMatch) {
+        static ActiveBuildPlan create(CompoundTag blueprintTag, Level level, BlockPos cannonPos, boolean destroyMode, boolean exactMatch) {
             ParsedBlueprint parsed = BlueprintBuildPlanner.parseBlueprint(blueprintTag, level);
             ActiveBuildPlan plan = new ActiveBuildPlan(blueprintTag.copy(), destroyMode, exactMatch, parsed);
 
             if (destroyMode) {
                 for (BlockPos candidate : parsed.destroyCandidatesTopDown()) {
+                    if (!BlueprintBuildPlanner.isValidWorldTarget(level, cannonPos, candidate)) {
+                        continue;
+                    }
+                    if (!level.isLoaded(candidate)) {
+                        plan.destroyQueue.addLast(candidate);
+                        continue;
+                    }
                     BlockState worldState = level.getBlockState(candidate);
                     if (!BlueprintBuildPlanner.isBreakableBlock(level, candidate, worldState)) {
                         continue;
@@ -947,17 +1050,25 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 plan.destroyTotalInitial = plan.destroyQueue.size();
             }
 
-            plan.primarySingleQueue.addAll(parsed.singleCellsBottomUp());
-            plan.multiQueue.addAll(parsed.multiGroupsBottomUp());
+            for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
+                if (BlueprintBuildPlanner.isValidWorldTarget(level, cannonPos, cell.pos())) {
+                    plan.primarySingleQueue.addLast(cell);
+                }
+            }
+            for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
+                if (isGroupInValidBoundsAndRange(level, cannonPos, group)) {
+                    plan.multiQueue.addLast(group);
+                }
+            }
             for (int i = 0; i < parsed.entityCount(); i++) {
                 plan.entityQueue.addLast(i);
             }
 
             int multiPartSum = 0;
-            for (MultiBlockGroup g : parsed.multiGroupsBottomUp()) {
+            for (MultiBlockGroup g : plan.multiQueue) {
                 multiPartSum += g.parts().size();
             }
-            plan.placementTotal = parsed.singleCellsBottomUp().size() + multiPartSum + parsed.entityCount();
+            plan.placementTotal = plan.primarySingleQueue.size() + multiPartSum + parsed.entityCount();
 
             plan.phase = (destroyMode && !plan.destroyQueue.isEmpty())
                     ? BuildPhase.DESTROY

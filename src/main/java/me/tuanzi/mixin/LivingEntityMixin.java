@@ -206,6 +206,16 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                 }
             }
 
+            if (effect.getEffect().equals(ModStatusEffects.DESPERATE_STAND)) {
+                if (entity instanceof me.tuanzi.util.DesperateStandTracker tracker
+                        && entity.getEffect(ModStatusEffects.DESPERATE_STAND) == null
+                        && tracker.tuanzis_mod$getDesperateStandTrauma() > 0.0f) {
+                    tracker.tuanzis_mod$setDesperateStandSettleTicks(1);
+                    me.tuanzi.util.ModLog.debug(entity, null, "【背水一战】状态移除，已预约 1 tick 后结算剩余创伤: "
+                            + String.format(java.util.Locale.ROOT, "%.2f", tracker.tuanzis_mod$getDesperateStandTrauma()));
+                }
+            }
+
             if (effect.getEffect().equals(ModStatusEffects.ADRENALINE)) {
                 // 肾上腺素药水效果结束时
                 MobEffectInstance overdraw = entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
@@ -447,6 +457,52 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
                     cir.setReturnValue(false);
                 }
             }
+        }
+    }
+
+    @org.spongepowered.asm.mixin.injection.ModifyVariable(
+            method = "addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z",
+            at = @At("HEAD"),
+            argsOnly = true
+    )
+    private MobEffectInstance tuanzis_mod$applyPurifyingPulseDurationReduction(MobEffectInstance newEffect) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (!entity.level().isClientSide()
+                && newEffect != null
+                && entity.hasEffect(ModStatusEffects.PURIFYING_PULSE)
+                && me.tuanzi.effect.PurifyingPulseStatusEffect.isMilkClearableHarmful(newEffect)
+                && !newEffect.getEffect().value().isInstantaneous()
+                && !newEffect.isInfiniteDuration()
+                && newEffect.getDuration() > 1) {
+            int reduced = me.tuanzi.effect.PurifyingPulseStatusEffect.halveDuration(newEffect.getDuration());
+            me.tuanzi.util.ModLog.debug(entity, null, "【净化脉冲】新获得可净化负面状态 "
+                    + newEffect.getEffect().value().getDescriptionId()
+                    + "，持续时间 -50%: " + newEffect.getDuration() + " -> " + reduced + " ticks");
+            return new MobEffectInstance(
+                    newEffect.getEffect(),
+                    reduced,
+                    newEffect.getAmplifier(),
+                    newEffect.isAmbient(),
+                    newEffect.isVisible(),
+                    newEffect.showIcon()
+            );
+        }
+        return newEffect;
+    }
+
+    @Inject(
+            method = "applyItemBlocking(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)F",
+            at = @At("HEAD"),
+            cancellable = true
+    )
+    private void tuanzis_mod$bypassShieldForDesperateStand(
+            net.minecraft.server.level.ServerLevel level,
+            net.minecraft.world.damagesource.DamageSource source,
+            float damage,
+            CallbackInfoReturnable<Float> cir
+    ) {
+        if (source instanceof me.tuanzi.util.DesperateStandDamageSource) {
+            cir.setReturnValue(0.0F);
         }
     }
 }

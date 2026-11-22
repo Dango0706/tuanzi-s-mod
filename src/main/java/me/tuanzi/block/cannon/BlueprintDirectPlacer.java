@@ -73,9 +73,11 @@ public final class BlueprintDirectPlacer {
         int length = blueprintTag.getIntOr("Length", 0);
         int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
 
-        if (width <= 0 || height <= 0 || length <= 0 || blocks.length == 0) {
+        if (!BlueprintBuildPlanner.isValidDimensionsAndBlocks(width, height, length, blocks.length)) {
             return new PlaceResult(0, 0, 0);
         }
+        long layerSize = (long) width * (long) length;
+        int effectiveLength = (int) Math.min((long) blocks.length, layerSize * (long) height);
 
         int normalizedRot = Math.floorMod(rotationIdx, 4);
         Rotation rot = Rotation.values()[normalizedRot];
@@ -104,9 +106,9 @@ public final class BlueprintDirectPlacer {
         int placedBlocks = 0;
         int clearedAirBlocks = 0;
 
-        for (int idx = 0; idx < blocks.length; idx++) {
-            int y = idx / (width * length);
-            int rem = idx % (width * length);
+        for (int idx = 0; idx < effectiveLength; idx++) {
+            int y = (int) ((long) idx / layerSize);
+            int rem = (int) ((long) idx % layerSize);
             int z = rem / width;
             int x = rem % width;
 

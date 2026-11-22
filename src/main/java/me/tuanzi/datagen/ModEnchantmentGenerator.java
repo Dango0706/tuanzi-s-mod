@@ -911,6 +911,54 @@ public class ModEnchantmentGenerator extends FabricDynamicRegistryProvider {
                 )
         ).build(Identifier.fromNamespaceAndPath("tuanzis_mod", "eternal")));
 
+        // 祥瑞 (Auspicious) - 头盔附魔，UNCOMMON，最高等级 IV，每级 +0.5 幸运，与厄兆互斥
+        entries.add(ModEnchantments.AUSPICIOUS, Enchantment.enchantment(
+                        Enchantment.definition(
+                                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                                5,    // weight (UNCOMMON)
+                                4,    // max level (IV)
+                                Enchantment.dynamicCost(5, 8),
+                                Enchantment.dynamicCost(55, 8),
+                                2,    // anvil cost per level
+                                EquipmentSlotGroup.HEAD
+                        )
+                )
+                .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_LUCK_OMEN))
+                .withEffect(
+                        net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+                        new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.auspicious.luck"),
+                                net.minecraft.world.entity.ai.attributes.Attributes.LUCK,
+                                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(0.5F),
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+                        )
+                )
+                .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "auspicious")));
+
+        // 厄兆 (Ill Omen) - 头盔诅咒附魔（可在附魔台获得），UNCOMMON，最高等级 IV，每级 -0.5 幸运，与祥瑞互斥
+        entries.add(ModEnchantments.ILL_OMEN, Enchantment.enchantment(
+                        Enchantment.definition(
+                                items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
+                                5,    // weight (UNCOMMON)
+                                4,    // max level (IV)
+                                Enchantment.dynamicCost(5, 8),
+                                Enchantment.dynamicCost(55, 8),
+                                2,    // anvil cost per level
+                                EquipmentSlotGroup.HEAD
+                        )
+                )
+                .exclusiveWith(enchantments.getOrThrow(ModEnchantments.EXCLUSIVE_LUCK_OMEN))
+                .withEffect(
+                        net.minecraft.world.item.enchantment.EnchantmentEffectComponents.ATTRIBUTES,
+                        new net.minecraft.world.item.enchantment.effects.EnchantmentAttributeEffect(
+                                Identifier.fromNamespaceAndPath("tuanzis_mod", "enchantment.ill_omen.luck"),
+                                net.minecraft.world.entity.ai.attributes.Attributes.LUCK,
+                                net.minecraft.world.item.enchantment.LevelBasedValue.perLevel(-0.5F),
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
+                        )
+                )
+                .build(Identifier.fromNamespaceAndPath("tuanzis_mod", "ill_omen")));
+
     }
 
     @Override

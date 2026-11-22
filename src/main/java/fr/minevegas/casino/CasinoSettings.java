@@ -230,6 +230,10 @@ public final class CasinoSettings {
       return List.copyOf(result);
    }
 
+   public static double playerLuck(Player player) {
+      return player != null ? (double) player.getLuck() : 0.0D;
+   }
+
    public static int chance(BlockEntity machine) {
       int own = settings(machine).chance();
       return own >= 0 ? own : ((CroupierSettings)TYPES.getOrDefault(CasinoMachine.type(machine), CroupierSettings.EMPTY)).chance();

@@ -503,6 +503,20 @@ public class TuanzisModClient implements ClientModInitializer {
             });
         });
 
+        // 注册主世界建筑高度热更新接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.OverworldBuildHeightSyncS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.config.OverworldBuildHeightControl.applyClientSync(payload.overworldMaxBuildHeight());
+            });
+        });
+
+        // 注册背水一战创伤值同步接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.DesperateStandSyncPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> {
+                me.tuanzi.client.gui.TraumaHud.update(payload.trauma());
+            });
+        });
+
         // 注册拾荒回廊队伍状态同步接收器
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.ScavengerTeamSyncPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> {
@@ -540,8 +554,10 @@ public class TuanzisModClient implements ClientModInitializer {
             context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateItemRevealed(payload));
         });
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            me.tuanzi.config.OverworldBuildHeightControl.clearClientSync();
             me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.clearClientSync();
             me.tuanzi.client.scavenger.ScavengerClientState.clearContainer();
+            me.tuanzi.client.gui.TraumaHud.clear();
         });
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
             var clientPlayer = Minecraft.getInstance().player;

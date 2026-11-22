@@ -308,4 +308,84 @@ public class BlueprintCannonGameTest {
             }
         });
     }
+
+    @GameTest(maxTicks = 100)
+    public void testCannonRejectsOutOfBoundsAndDistantTargetsAndMalformedDimensions(GameTestHelper helper) {
+        for (int x = 0; x <= 3; x++) {
+            for (int z = 0; z <= 3; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                helper.setBlock(x, 1, z, Blocks.AIR);
+            }
+        }
+
+        helper.setBlock(0, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+        helper.setBlock(1, 1, 1, Blocks.CHEST);
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(1, 1, 1), ChestBlockEntity.class);
+        chest.setItem(0, new ItemStack(Items.STONE, 10));
+
+        BlueprintCannonBlockEntity cannon = helper.getBlockEntity(new BlockPos(0, 1, 1), BlueprintCannonBlockEntity.class);
+        cannon.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY, 4));
+
+        // 1. 构造超出建筑高度上限(Y=500)以及超远未加载区块(X+10000)的目标蓝图，验证不消耗材料、不消耗燃料且不强制加载远端区块
+        BlockPos absCannonPos = helper.absolutePos(new BlockPos(0, 1, 1));
+        BlockPos farUnloadedPos = new BlockPos(absCannonPos.getX() + 10000, 64, absCannonPos.getZ() + 10000);
+        if (helper.getLevel().isLoaded(farUnloadedPos)) {
+            helper.fail(Component.literal("Precondition failed: farUnloadedPos should not be loaded"));
+            return;
+        }
+
+        Map<BlockPos, BlockState> outOfBoundsMap = new HashMap<>();
+        outOfBoundsMap.put(new BlockPos(0, 0, 0), Blocks.STONE.defaultBlockState());
+        cannon.setItem(0, createBlueprintItem(new BlockPos(absCannonPos.getX(), 500, absCannonPos.getZ()), 1, 1, 1, outOfBoundsMap));
+        cannon.handleAction("START", true, false);
+
+        for (int i = 0; i < 10; i++) {
+            BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        }
+        if (chest.getItem(0).getCount() != 10) {
+            helper.fail(Component.literal("Out-of-height target must not consume materials, remaining=" + chest.getItem(0).getCount()));
+            return;
+        }
+
+        // 2. 远端目标（超射程且未加载）：不能强制加载区块且不能消耗材料
+        cannon.setItem(0, createBlueprintItem(farUnloadedPos, 1, 1, 1, outOfBoundsMap));
+        cannon.handleAction("START", true, false);
+        for (int i = 0; i < 10; i++) {
+            BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        }
+        if (helper.getLevel().isLoaded(farUnloadedPos)) {
+            helper.fail(Component.literal("Cannon must not force-load distant chunks"));
+            return;
+        }
+        if (chest.getItem(0).getCount() != 10) {
+            helper.fail(Component.literal("Distant target must not consume materials, remaining=" + chest.getItem(0).getCount()));
+            return;
+        }
+
+        // 3. 篡改 Width=Length=65536 的恶意蓝图不得崩溃，且大炮安全重置为空闲状态
+        CompoundTag badTag = new CompoundTag();
+        badTag.putInt("Width", 65536);
+        badTag.putInt("Height", 1);
+        badTag.putInt("Length", 65536);
+        ListTag paletteTag = new ListTag();
+        paletteTag.add(BlockState.CODEC.encodeStart(NbtOps.INSTANCE, Blocks.STONE.defaultBlockState()).getOrThrow());
+        badTag.put("Palette", paletteTag);
+        badTag.putIntArray("Blocks", new int[]{0});
+        ItemStack badBlueprint = new ItemStack(ModItems.STRUCTURE_BLUEPRINT);
+        badBlueprint.set(DataComponents.CUSTOM_DATA, CustomData.of(badTag));
+        cannon.setItem(0, badBlueprint);
+        cannon.handleAction("START", false, false);
+        BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        if (cannon.dataAccess.get(0) != 0) {
+            helper.fail(Component.literal("Malformed dimension blueprint should reset cannon to IDLE"));
+            return;
+        }
+
+        // 4. LaunchedItem 直接落地在越界坐标上必须安全跳过
+        me.tuanzi.block.cannon.LaunchedItem.ForBlockState outBoundsDrop =
+                new me.tuanzi.block.cannon.LaunchedItem.ForBlockState(absCannonPos, new BlockPos(absCannonPos.getX(), 500, absCannonPos.getZ()), new ItemStack(Items.STONE), Blocks.STONE.defaultBlockState(), null, false);
+        outBoundsDrop.place(helper.getLevel());
+
+        helper.succeed();
+    }
 }

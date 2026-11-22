@@ -340,19 +340,21 @@ public final class DuckDerbyBlockEntity extends BlockEntity implements MenuProvi
          } else {
             this.participants.replaceAll((id, px) -> new Participant(px.owner, px.name, px.lane, px.escrow, credits.stakes(px.escrow)));
             Participant first = (Participant)this.participants.values().iterator().next();
+            int chance = CasinoSettings.chance(this);
+            ServerPlayer soloPlayer = !this.groupRace ? server.getServer().getPlayerList().getPlayer(UUID.fromString(first.owner)) : null;
+            double luck = CasinoSettings.playerLuck(soloPlayer);
             int var10001;
             if (forced >= 0) {
                var10001 = Math.floorMod(forced, 4);
             } else if (this.groupRace) {
                var10001 = server.getRandom().nextInt(4);
-            } else if (CasinoSettings.chance(this) < 0) {
+            } else if (chance < 0 && luck == 0.0D) {
                var10001 = server.getRandom().nextInt(4);
             } else {
-               var10001 = first.lane;
-               int var10002 = CasinoSettings.chance(this);
-               RandomSource var10003 = server.getRandom();
-               Objects.requireNonNull(var10003);
-               var10001 = CasinoOdds.derby(var10001, var10002, var10003::nextInt);
+               RandomSource random = server.getRandom();
+               var10001 = CasinoOdds.derby(first.lane, chance, luck, random::nextDouble, random::nextInt);
+               me.tuanzi.util.ModLog.debug(soloPlayer, "【赌场-赛鸭】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                       chance, luck, luck * 0.5D);
             }
 
             this.winner = var10001;
@@ -591,14 +593,16 @@ public final class DuckDerbyBlockEntity extends BlockEntity implements MenuProvi
             }
 
             int chance = CasinoSettings.chance(this);
+            double luck = CasinoSettings.playerLuck(initiator);
             int var10001;
             if (forced >= 0) {
                var10001 = Math.floorMod(forced, 4);
-            } else if (chance >= 0) {
-               var10001 = DuckDerbyMenu.stakedLane(this.bets);
-               RandomSource var10003 = server.getRandom();
-               Objects.requireNonNull(var10003);
-               var10001 = CasinoOdds.derby(var10001, chance, var10003::nextInt);
+            } else if (chance >= 0 || luck != 0.0D) {
+               int stakedLane = DuckDerbyMenu.stakedLane(this.bets);
+               RandomSource random = server.getRandom();
+               var10001 = CasinoOdds.derby(stakedLane, chance, luck, random::nextDouble, random::nextInt);
+               me.tuanzi.util.ModLog.debug(initiator, "【赌场-赛鸭(传统)】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                       chance, luck, luck * 0.5D);
             } else {
                var10001 = server.getRandom().nextInt(4);
             }

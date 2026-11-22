@@ -174,14 +174,16 @@ public final class RouletteBlockEntity extends BlockEntity implements MenuProvid
             }
 
             int chance = CasinoSettings.chance(this);
+            double luck = CasinoSettings.playerLuck(initiator);
             int var10000;
             if (forced >= 0) {
                var10000 = Math.floorMod(forced, 37);
-            } else if (chance >= 0) {
-               var10000 = RouletteMenu.stakedColor(this.bets);
-               RandomSource var10002 = server.getRandom();
-               Objects.requireNonNull(var10002);
-               var10000 = CasinoOdds.roulette(var10000, chance, var10002::nextInt);
+            } else if (chance >= 0 || luck != 0.0D) {
+               int stakedColor = RouletteMenu.stakedColor(this.bets);
+               RandomSource random = server.getRandom();
+               var10000 = CasinoOdds.roulette(stakedColor, chance, luck, random::nextDouble, random::nextInt);
+               me.tuanzi.util.ModLog.debug(initiator, "【赌场-轮盘】配置胜率=%d, 玩家幸运=%.2f, 幸运胜率修正=%.2f%%",
+                       chance, luck, luck * 0.5D);
             } else {
                var10000 = server.getRandom().nextInt(37);
             }

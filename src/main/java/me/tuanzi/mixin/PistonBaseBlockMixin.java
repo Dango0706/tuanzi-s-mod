@@ -2,6 +2,7 @@ package me.tuanzi.mixin;
 
 import me.tuanzi.block.entity.BlockBreakerBlockEntity;
 import me.tuanzi.block.entity.BlockBreakerPistonManager;
+import me.tuanzi.config.OverworldBuildHeightControl;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.util.ModLog;
 import me.tuanzi.world.inventory.BlockBreakerMenu;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -22,11 +24,20 @@ import java.util.List;
 @Mixin(PistonBaseBlock.class)
 public class PistonBaseBlockMixin {
 
+    @Redirect(
+            method = "isPushable",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;getMaxY()I")
+    )
+    private static int tuanzis_mod$getEffectiveMaxY(Level level) {
+        return OverworldBuildHeightControl.getEffectiveMaxY(level);
+    }
+
     @Inject(method = "isPushable", at = @At("HEAD"), cancellable = true)
     private static void onIsPushable(BlockState state, Level level, BlockPos pos, Direction direction, boolean allowDestroyable, Direction connectionDirection, CallbackInfoReturnable<Boolean> cir) {
         if (state.is(ModBlocks.BLOCK_BREAKER)) {
+            int maxY = OverworldBuildHeightControl.getEffectiveMaxY(level);
             // 方块破坏器支持被活塞推拉
-            if (pos.getY() < level.getMinY() || pos.getY() > level.getMaxY() || !level.getWorldBorder().isWithinBounds(pos)) {
+            if (pos.getY() < level.getMinY() || pos.getY() > maxY || !level.getWorldBorder().isWithinBounds(pos)) {
                 cir.setReturnValue(false);
                 return;
             }
@@ -34,7 +45,7 @@ public class PistonBaseBlockMixin {
                 cir.setReturnValue(false);
                 return;
             }
-            if (direction == Direction.UP && pos.getY() == level.getMaxY()) {
+            if (direction == Direction.UP && pos.getY() == maxY) {
                 cir.setReturnValue(false);
                 return;
             }

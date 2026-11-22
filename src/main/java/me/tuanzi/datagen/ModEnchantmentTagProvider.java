@@ -49,7 +49,8 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(ModEnchantments.STONE_HEART)
                 .addOptional(ModEnchantments.PHARMACOLOGY)
                 .addOptional(ModEnchantments.HUSBANDRY)
-                .addOptional(ModEnchantments.PERVADING_VIBRATION);
+                .addOptional(ModEnchantments.PERVADING_VIBRATION)
+                .addOptional(ModEnchantments.AUSPICIOUS);
 
         builder(EnchantmentTags.IN_ENCHANTING_TABLE)
                 .addOptional(ModEnchantments.EXPERIENCE)
@@ -85,7 +86,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(ModEnchantments.STONE_HEART)
                 .addOptional(ModEnchantments.PHARMACOLOGY)
                 .addOptional(ModEnchantments.HUSBANDRY)
-                .addOptional(ModEnchantments.PERVADING_VIBRATION);
+                .addOptional(ModEnchantments.PERVADING_VIBRATION)
+                .addOptional(ModEnchantments.AUSPICIOUS)
+                .addOptional(ModEnchantments.ILL_OMEN);
 
         builder(ModEnchantments.ANCIENT_SCROLL)
                 .addOptional(ModEnchantments.ANCIENT_SCROLL_BLOOD_LEECH)
@@ -131,7 +134,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(ModEnchantments.AMONG_FLOWERS)
                 .addOptional(ModEnchantments.STONE_HEART)
                 .addOptional(ModEnchantments.PHARMACOLOGY)
-                .addOptional(ModEnchantments.HUSBANDRY);
+                .addOptional(ModEnchantments.HUSBANDRY)
+                .addOptional(ModEnchantments.AUSPICIOUS)
+                .addOptional(ModEnchantments.ILL_OMEN);
 
         builder(EnchantmentTags.TRADEABLE)
                 .addOptional(ModEnchantments.EXPERIENCE)
@@ -162,7 +167,9 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(ModEnchantments.AMONG_FLOWERS)
                 .addOptional(ModEnchantments.STONE_HEART)
                 .addOptional(ModEnchantments.PHARMACOLOGY)
-                .addOptional(ModEnchantments.HUSBANDRY);
+                .addOptional(ModEnchantments.HUSBANDRY)
+                .addOptional(ModEnchantments.AUSPICIOUS)
+                .addOptional(ModEnchantments.ILL_OMEN);
 
         // 熔炼 (Smelting) 不加入 IN_ENCHANTING_TABLE, ON_RANDOM_LOOT, TRADEABLE (通用池)
         // 它将通过 ModLootTableModifiers 和 ModTrades 手动注入
@@ -193,8 +200,14 @@ public class ModEnchantmentTagProvider extends FabricTagsProvider<Enchantment> {
                 .addOptional(ModEnchantments.RANGER_RELOAD)
                 .addOptional(ModEnchantments.ANCIENT_SCROLL_RESERVED_CHAMBER);
 
+        builder(ModEnchantments.EXCLUSIVE_LUCK_OMEN)
+                .addOptional(ModEnchantments.AUSPICIOUS)
+                .addOptional(ModEnchantments.ILL_OMEN);
+
         // 永恒 (Eternal) 属于诅咒标签：名称显示为红色 (&c) 且砂轮不可祛除；不加入任何生存战利品/附魔台/交易标签
+        // 厄兆 (Ill Omen) 属于诅咒标签，但同时加入了附魔台、随机战利品与村民交易标签
         builder(EnchantmentTags.CURSE)
-                .addOptional(ModEnchantments.ETERNAL);
+                .addOptional(ModEnchantments.ETERNAL)
+                .addOptional(ModEnchantments.ILL_OMEN);
     }
 }
