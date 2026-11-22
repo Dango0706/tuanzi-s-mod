@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/handheld",
   "textures": {
-    "layer0": "tuanzis_mod:item/star_rift_blade_1"
+    "layer0": "tuanzis_mod:item/bee_sting_echo_default"
   }
 }

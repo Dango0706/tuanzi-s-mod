@@ -33,7 +33,8 @@
       "me.tuanzi.gametest.BlueprintAndPenGameTest",
       "me.tuanzi.gametest.BlueprintCannonGameTest",
       "me.tuanzi.gametest.BlueprintDirectPlaceGameTest",
-      "me.tuanzi.gametest.EternalEnchantmentGameTest"
+      "me.tuanzi.gametest.EternalEnchantmentGameTest",
+      "me.tuanzi.gametest.RiftScarGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"

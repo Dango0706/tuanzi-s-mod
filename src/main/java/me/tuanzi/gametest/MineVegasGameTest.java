@@ -200,4 +200,103 @@ public class MineVegasGameTest {
             ModConfig.setCasinoRecipesEnabled(originalEnabled);
         }
     }
+
+    @GameTest
+    public void testCoinExchangeAndReverseRecipes(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        RecipeManager recipeManager = level.getServer().getRecipeManager();
+
+        record RecipeCase(String name, CraftingInput input, Item expectedItem, int expectedCount) {
+        }
+
+        List<RecipeCase> cases = List.of(
+                // 正向 13 条
+                new RecipeCase("5x1 -> 5", CraftingInput.of(3, 2, List.of(
+                        new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN),
+                        new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN), ItemStack.EMPTY
+                )), ModItems.COIN_5_YUAN, 1),
+                new RecipeCase("2x5 -> 10", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_5_YUAN), new ItemStack(ModItems.COIN_5_YUAN)
+                )), ModItems.COIN_10_YUAN, 1),
+                new RecipeCase("1x5+5x1 -> 10", CraftingInput.of(3, 2, List.of(
+                        new ItemStack(ModItems.COIN_5_YUAN), new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN),
+                        new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN), new ItemStack(ModItems.COIN_1_YUAN)
+                )), ModItems.COIN_10_YUAN, 1),
+                new RecipeCase("2x10 -> 20", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_10_YUAN), new ItemStack(ModItems.COIN_10_YUAN)
+                )), ModItems.COIN_20_YUAN, 1),
+                new RecipeCase("2x20+1x10 -> 50", CraftingInput.of(3, 1, List.of(
+                        new ItemStack(ModItems.COIN_20_YUAN), new ItemStack(ModItems.COIN_20_YUAN), new ItemStack(ModItems.COIN_10_YUAN)
+                )), ModItems.COIN_50_YUAN, 1),
+                new RecipeCase("2x50 -> 100", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_50_YUAN), new ItemStack(ModItems.COIN_50_YUAN)
+                )), ModItems.COIN_100_YUAN, 1),
+                new RecipeCase("2x100(H) -> 200", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_100_YUAN), new ItemStack(ModItems.COIN_100_YUAN)
+                )), ModItems.COIN_200_YUAN, 1),
+                new RecipeCase("2x200+1x100 -> 500", CraftingInput.of(3, 1, List.of(
+                        new ItemStack(ModItems.COIN_200_YUAN), new ItemStack(ModItems.COIN_200_YUAN), new ItemStack(ModItems.COIN_100_YUAN)
+                )), ModItems.COIN_500_YUAN, 1),
+                new RecipeCase("2x500 -> 1000", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_500_YUAN), new ItemStack(ModItems.COIN_500_YUAN)
+                )), ModItems.COIN_1000_YUAN, 1),
+                new RecipeCase("5x1000 -> 5000", CraftingInput.of(3, 2, List.of(
+                        new ItemStack(ModItems.COIN_1000_YUAN), new ItemStack(ModItems.COIN_1000_YUAN), new ItemStack(ModItems.COIN_1000_YUAN),
+                        new ItemStack(ModItems.COIN_1000_YUAN), new ItemStack(ModItems.COIN_1000_YUAN), ItemStack.EMPTY
+                )), ModItems.COIN_5000_YUAN, 1),
+                new RecipeCase("2x5000(H) -> 10000", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_5000_YUAN), new ItemStack(ModItems.COIN_5000_YUAN)
+                )), ModItems.COIN_10000_YUAN, 1),
+                new RecipeCase("5x10000 -> 50000", CraftingInput.of(3, 2, List.of(
+                        new ItemStack(ModItems.COIN_10000_YUAN), new ItemStack(ModItems.COIN_10000_YUAN), new ItemStack(ModItems.COIN_10000_YUAN),
+                        new ItemStack(ModItems.COIN_10000_YUAN), new ItemStack(ModItems.COIN_10000_YUAN), ItemStack.EMPTY
+                )), ModItems.COIN_50000_YUAN, 1),
+                new RecipeCase("2x50000(H) -> 100000", CraftingInput.of(2, 1, List.of(
+                        new ItemStack(ModItems.COIN_50000_YUAN), new ItemStack(ModItems.COIN_50000_YUAN)
+                )), ModItems.COIN_100000_YUAN, 1),
+                // 反向 10 条
+                new RecipeCase("1x5 -> 5x1", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_5_YUAN))), ModItems.COIN_1_YUAN, 5),
+                new RecipeCase("1x10 -> 2x5", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_10_YUAN))), ModItems.COIN_5_YUAN, 2),
+                new RecipeCase("1x20 -> 2x10", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_20_YUAN))), ModItems.COIN_10_YUAN, 2),
+                new RecipeCase("2x100(V) -> 4x50", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_100_YUAN), new ItemStack(ModItems.COIN_100_YUAN)
+                )), ModItems.COIN_50_YUAN, 4),
+                new RecipeCase("1x200 -> 2x100", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_200_YUAN))), ModItems.COIN_100_YUAN, 2),
+                new RecipeCase("2x1000(V) -> 4x500", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_1000_YUAN), new ItemStack(ModItems.COIN_1000_YUAN)
+                )), ModItems.COIN_500_YUAN, 4),
+                new RecipeCase("2x5000(V) -> 10x1000", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_5000_YUAN), new ItemStack(ModItems.COIN_5000_YUAN)
+                )), ModItems.COIN_1000_YUAN, 10),
+                new RecipeCase("2x10000(V) -> 4x5000", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_10000_YUAN), new ItemStack(ModItems.COIN_10000_YUAN)
+                )), ModItems.COIN_5000_YUAN, 4),
+                new RecipeCase("2x50000(V) -> 10x10000", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_50000_YUAN), new ItemStack(ModItems.COIN_50000_YUAN)
+                )), ModItems.COIN_10000_YUAN, 10),
+                new RecipeCase("2x100000(V) -> 4x50000", CraftingInput.of(1, 2, List.of(
+                        new ItemStack(ModItems.COIN_100000_YUAN), new ItemStack(ModItems.COIN_100000_YUAN)
+                )), ModItems.COIN_50000_YUAN, 4),
+                // 筹码 1:1 保留校验
+                new RecipeCase("1x100 -> chip_100", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_100_YUAN))), ModBlocks.CHIP_100.asItem(), 1),
+                new RecipeCase("1x100000 -> chip_100000", CraftingInput.of(1, 1, List.of(new ItemStack(ModItems.COIN_100000_YUAN))), ModBlocks.CHIP_100000.asItem(), 1)
+        );
+
+        for (RecipeCase rc : cases) {
+            var match = recipeManager.getRecipeFor(RecipeType.CRAFTING, rc.input(), level);
+            if (match.isEmpty()) {
+                helper.fail(Component.literal("Coin recipe not matched: " + rc.name()));
+                return;
+            }
+            ItemStack output = match.get().value().assemble(rc.input());
+            if (!output.is(rc.expectedItem()) || output.getCount() != rc.expectedCount()) {
+                helper.fail(Component.literal("Coin recipe mismatch for " + rc.name()
+                        + ": expected " + rc.expectedCount() + "x " + rc.expectedItem()
+                        + ", got " + output.getCount() + "x " + output.getItem()));
+                return;
+            }
+        }
+
+        helper.succeed();
+    }
 }

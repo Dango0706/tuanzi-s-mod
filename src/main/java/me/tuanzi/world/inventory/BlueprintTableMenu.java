@@ -15,15 +15,16 @@ public class BlueprintTableMenu extends AbstractContainerMenu {
     private final net.minecraft.world.inventory.ContainerData data;
 
     public BlueprintTableMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(2), new net.minecraft.world.inventory.SimpleContainerData(3));
+        this(containerId, playerInventory, new SimpleContainer(2), new net.minecraft.world.inventory.SimpleContainerData(6));
     }
 
     public BlueprintTableMenu(int containerId, Inventory playerInventory, Container container, net.minecraft.world.inventory.ContainerData data) {
         super(ModMenuTypes.BLUEPRINT_TABLE, containerId);
         this.container = container;
         this.data = data;
-        this.addDataSlots(data);
         checkContainerSize(container, 2);
+        checkContainerDataCount(data, 6);
+        this.addDataSlots(data);
 
         // Slot 0: 结构蓝图槽（用于导出）- (X=62, Y=35)
         this.addSlot(new Slot(container, 0, 62, 35) {
@@ -52,8 +53,19 @@ public class BlueprintTableMenu extends AbstractContainerMenu {
         }
     }
 
+    public static int reconstructInt(int low16, int high16) {
+        return (low16 & 0xFFFF) | ((high16 & 0xFFFF) << 16);
+    }
+
     public net.minecraft.core.BlockPos getTablePos() {
-        return new net.minecraft.core.BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
+        int x = reconstructInt(this.data.get(0), this.data.get(1));
+        int y = reconstructInt(this.data.get(2), this.data.get(3));
+        int z = reconstructInt(this.data.get(4), this.data.get(5));
+        return new net.minecraft.core.BlockPos(x, y, z);
+    }
+
+    public Container getContainer() {
+        return this.container;
     }
 
     public ItemStack getExportBlueprint() {

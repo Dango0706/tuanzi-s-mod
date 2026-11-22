@@ -23,9 +23,12 @@ public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvid
         @Override
         public int get(int index) {
             return switch (index) {
-                case 0 -> worldPosition.getX();
-                case 1 -> worldPosition.getY();
-                case 2 -> worldPosition.getZ();
+                case 0 -> worldPosition.getX() & 0xFFFF;
+                case 1 -> worldPosition.getX() >>> 16;
+                case 2 -> worldPosition.getY() & 0xFFFF;
+                case 3 -> worldPosition.getY() >>> 16;
+                case 4 -> worldPosition.getZ() & 0xFFFF;
+                case 5 -> worldPosition.getZ() >>> 16;
                 default -> 0;
             };
         }
@@ -36,7 +39,7 @@ public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvid
 
         @Override
         public int getCount() {
-            return 3;
+            return 6;
         }
     };
     // Slot 0: 要导出的结构蓝图; Slot 1: 准备记录导入的空白蓝图

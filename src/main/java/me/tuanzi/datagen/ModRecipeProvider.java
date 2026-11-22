@@ -446,6 +446,90 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                             .unlockedBy("has_chip_" + pair.idSuffix(), has(pair.chip()))
                             .save(exporter, Tuanzis_mod.MOD_ID + ":coin_" + pair.idSuffix() + "_yuan_from_chip");
                 }
+
+                // 钱币面额有序合成与反向拆解配方（正向横排 / 横排优先，反向竖排或单格，避免与筹码 1:1 及同数量正向冲突）
+                record CoinExchangeSpec(
+                        net.minecraft.world.item.Item smallCoin,
+                        net.minecraft.world.item.Item largeCoin,
+                        int ratio,
+                        boolean largeHasChip,
+                        String smallName,
+                        String largeName
+                ) {
+                }
+                List<CoinExchangeSpec> coinExchangeSpecs = List.of(
+                        new CoinExchangeSpec(ModItems.COIN_1_YUAN, ModItems.COIN_5_YUAN, 5, false, "1_yuan", "5_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_5_YUAN, ModItems.COIN_10_YUAN, 2, false, "5_yuan", "10_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_10_YUAN, ModItems.COIN_20_YUAN, 2, false, "10_yuan", "20_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_50_YUAN, ModItems.COIN_100_YUAN, 2, true, "50_yuan", "100_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_100_YUAN, ModItems.COIN_200_YUAN, 2, false, "100_yuan", "200_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_500_YUAN, ModItems.COIN_1000_YUAN, 2, true, "500_yuan", "1000_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_1000_YUAN, ModItems.COIN_5000_YUAN, 5, true, "1000_yuan", "5000_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_5000_YUAN, ModItems.COIN_10000_YUAN, 2, true, "5000_yuan", "10000_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_10000_YUAN, ModItems.COIN_50000_YUAN, 5, true, "10000_yuan", "50000_yuan"),
+                        new CoinExchangeSpec(ModItems.COIN_50000_YUAN, ModItems.COIN_100000_YUAN, 2, true, "50000_yuan", "100000_yuan")
+                );
+                for (CoinExchangeSpec spec : coinExchangeSpecs) {
+                    var forwardBuilder = shaped(RecipeCategory.DECORATIONS, spec.largeCoin(), 1);
+                    if (spec.ratio() == 2) {
+                        forwardBuilder.pattern("XX");
+                    } else if (spec.ratio() == 5) {
+                        forwardBuilder.pattern("XXX").pattern("XX ");
+                    } else {
+                        throw new IllegalStateException("Unsupported coin exchange ratio: " + spec.ratio());
+                    }
+                    forwardBuilder
+                            .define('X', spec.smallCoin())
+                            .unlockedBy("has_coin_" + spec.smallName(), has(spec.smallCoin()))
+                            .save(exporter, Tuanzis_mod.MOD_ID + ":coin_" + spec.largeName() + "_from_" + spec.smallName());
+
+                    int reverseOutputCount = spec.largeHasChip() ? spec.ratio() * 2 : spec.ratio();
+                    var reverseBuilder = shaped(RecipeCategory.DECORATIONS, spec.smallCoin(), reverseOutputCount);
+                    if (spec.largeHasChip()) {
+                        reverseBuilder.pattern("X").pattern("X");
+                    } else {
+                        reverseBuilder.pattern("X");
+                    }
+                    reverseBuilder
+                            .define('X', spec.largeCoin())
+                            .unlockedBy("has_coin_" + spec.largeName(), has(spec.largeCoin()))
+                            .save(exporter, Tuanzis_mod.MOD_ID + ":coin_" + spec.smallName() + "_from_" + spec.largeName());
+                }
+
+                // 混合面额钱币正向有序合成（不生成反向配方）
+                shaped(RecipeCategory.DECORATIONS, ModItems.COIN_10_YUAN, 1)
+                        .pattern("ABB")
+                        .pattern("BBB")
+                        .define('A', ModItems.COIN_5_YUAN)
+                        .define('B', ModItems.COIN_1_YUAN)
+                        .unlockedBy("has_coin_5_yuan", has(ModItems.COIN_5_YUAN))
+                        .unlockedBy("has_coin_1_yuan", has(ModItems.COIN_1_YUAN))
+                        .save(exporter, Tuanzis_mod.MOD_ID + ":coin_10_yuan_from_5_and_1_yuan");
+
+                record MixedTwoPlusOneSpec(
+                        net.minecraft.world.item.Item majorCoin,
+                        net.minecraft.world.item.Item minorCoin,
+                        net.minecraft.world.item.Item resultCoin,
+                        String majorName,
+                        String minorName,
+                        String recipeId
+                ) {
+                }
+                List<MixedTwoPlusOneSpec> mixedTwoPlusOneSpecs = List.of(
+                        new MixedTwoPlusOneSpec(ModItems.COIN_20_YUAN, ModItems.COIN_10_YUAN, ModItems.COIN_50_YUAN,
+                                "20_yuan", "10_yuan", "coin_50_yuan_from_20_and_10_yuan"),
+                        new MixedTwoPlusOneSpec(ModItems.COIN_200_YUAN, ModItems.COIN_100_YUAN, ModItems.COIN_500_YUAN,
+                                "200_yuan", "100_yuan", "coin_500_yuan_from_200_and_100_yuan")
+                );
+                for (MixedTwoPlusOneSpec spec : mixedTwoPlusOneSpecs) {
+                    shaped(RecipeCategory.DECORATIONS, spec.resultCoin(), 1)
+                            .pattern("AAB")
+                            .define('A', spec.majorCoin())
+                            .define('B', spec.minorCoin())
+                            .unlockedBy("has_coin_" + spec.majorName(), has(spec.majorCoin()))
+                            .unlockedBy("has_coin_" + spec.minorName(), has(spec.minorCoin()))
+                            .save(exporter, Tuanzis_mod.MOD_ID + ":" + spec.recipeId());
+                }
             }
         };
     }

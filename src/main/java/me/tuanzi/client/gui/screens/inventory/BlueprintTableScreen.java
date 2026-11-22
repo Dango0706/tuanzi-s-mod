@@ -37,6 +37,8 @@ import java.util.concurrent.CompletableFuture;
 public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTableMenu> {
 
     public static final String DEFAULT_BLUEPRINTS_FOLDER = "schematics";
+    public static final int DEFAULT_PANEL_WIDTH = 100;
+    public static final int MIN_PANEL_WIDTH = 64;
     private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/dispenser.png");
     private static final int LIST_TOP_OFFSET = 36;
     private static final int LIST_BOTTOM_OFFSET = 158;
@@ -52,10 +54,39 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
     private Button openFolderButton;
     private String selectedFile = null;
     private int listOffset = 0;
+    private int panelWidth = DEFAULT_PANEL_WIDTH;
     private EditBox searchBox;
 
     private boolean isParsing = false;
     private CompoundTag parsedBlueprintData = null;
+
+    public record TableLayout(int leftPos, int topPos, int panelWidth) {
+    }
+
+    /**
+     * 计算蓝图桌复合界面（左侧文件面板 + 主 GUI）在不同屏幕分辨率下的自适应位置与面板宽度，
+     * 保证整体居中且不会因左侧附着面板溢出屏幕左边界。
+     */
+    public static TableLayout computeLayout(int screenWidth, int screenHeight, int imageWidth, int imageHeight) {
+        int panelW;
+        if (screenWidth >= DEFAULT_PANEL_WIDTH + imageWidth) {
+            panelW = DEFAULT_PANEL_WIDTH;
+        } else {
+            panelW = Math.max(48, Math.min(DEFAULT_PANEL_WIDTH, screenWidth - imageWidth));
+            if (screenWidth >= MIN_PANEL_WIDTH + imageWidth) {
+                panelW = Math.max(MIN_PANEL_WIDTH, panelW);
+            }
+        }
+        int totalWidth = panelW + imageWidth;
+        int compositeLeft = Math.max(0, (screenWidth - totalWidth) / 2);
+        int leftPos = compositeLeft + panelW;
+        int topPos = (screenHeight - imageHeight) / 2;
+        return new TableLayout(leftPos, topPos, panelW);
+    }
+
+    public net.minecraft.client.renderer.Rect2i getLeftPanelRect() {
+        return new net.minecraft.client.renderer.Rect2i(this.leftPos - this.panelWidth, this.topPos, this.panelWidth, this.imageHeight);
+    }
 
     public BlueprintTableScreen(BlueprintTableMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title, 176, 166);
@@ -68,11 +99,18 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
     @Override
     protected void init() {
         super.init();
+        TableLayout layout = computeLayout(this.width, this.height, this.imageWidth, this.imageHeight);
+        this.panelWidth = layout.panelWidth();
+        this.leftPos = layout.leftPos();
+        this.topPos = layout.topPos();
+
         int x = this.leftPos;
         int y = this.topPos;
+        int px = x - this.panelWidth;
 
         // 搜索输入框 - 放在左侧附着面板标题下方，避免与标题重叠
-        this.searchBox = this.addRenderableWidget(new EditBox(this.font, x - 100 + 8, y + 18, 66, 14, Component.translatable("gui.tuanzis_mod.blueprint_table.search_hint")));
+        int searchW = Math.max(24, this.panelWidth - 34);
+        this.searchBox = this.addRenderableWidget(new EditBox(this.font, px + 8, y + 18, searchW, 14, Component.translatable("gui.tuanzis_mod.blueprint_table.search_hint")));
         this.searchBox.setMaxLength(32);
         this.searchBox.setHint(Component.translatable("gui.tuanzis_mod.blueprint_table.search_hint").withStyle(ChatFormatting.DARK_GRAY));
         this.searchBox.setResponder(this::filterFiles);
@@ -80,7 +118,7 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         // 刷新文件列表按钮 - 紧贴搜索框右侧
         this.refreshButton = this.addRenderableWidget(Button.builder(Component.literal("↻"), btn -> {
             reloadFiles();
-        }).bounds(x - 100 + 76, y + 17, 16, 16).build());
+        }).bounds(px + this.panelWidth - 24, y + 17, 16, 16).build());
 
         // 导入按钮
         this.importButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.tuanzis_mod.blueprint_table.import_btn"), btn -> {
@@ -231,14 +269,18 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
     }
 
     private void importBlueprint() {
+        if (this.isParsing) return;
         if (parsedBlueprintData != null) {
-            BlockPos tablePos = menu.getTablePos();
-            ClientPlayNetworking.send(new BlueprintTableImportPacket(tablePos, parsedBlueprintData));
-            if (this.minecraft != null && this.minecraft.player != null) {
-                this.minecraft.player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint_table.import_success").withStyle(ChatFormatting.GREEN));
+            if (this.minecraft != null && this.minecraft.getConnection() != null) {
+                BlockPos tablePos = menu.getTablePos();
+                ModLog.debug("[BlueprintTableScreen] 发送已解析蓝图导入请求: tablePos=" + tablePos + ", file=" + selectedFile);
+                ClientPlayNetworking.send(new BlueprintTableImportPacket(tablePos, parsedBlueprintData));
             }
         } else if (selectedFile != null) {
-            File file = new File(getBlueprintsDir(), selectedFile);
+            this.isParsing = true;
+            updateButtonStates();
+            final String targetFileName = selectedFile;
+            File file = new File(getBlueprintsDir(), targetFileName);
             CompletableFuture.supplyAsync(() -> {
                 try (FileInputStream fis = new FileInputStream(file)) {
                     CompoundTag nbt = NbtIo.readCompressed(fis, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
@@ -252,12 +294,14 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
                     return null;
                 }
             }).thenAcceptAsync(result -> {
+                this.isParsing = false;
+                updateButtonStates();
                 if (result != null) {
                     this.parsedBlueprintData = result;
-                    BlockPos tablePos = menu.getTablePos();
-                    ClientPlayNetworking.send(new BlueprintTableImportPacket(tablePos, result));
-                    if (this.minecraft != null && this.minecraft.player != null) {
-                        this.minecraft.player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint_table.import_success").withStyle(ChatFormatting.GREEN));
+                    if (this.minecraft != null && this.minecraft.getConnection() != null) {
+                        BlockPos tablePos = menu.getTablePos();
+                        ModLog.debug("[BlueprintTableScreen] 解析完成并发送蓝图导入请求: tablePos=" + tablePos + ", file=" + targetFileName);
+                        ClientPlayNetworking.send(new BlueprintTableImportPacket(tablePos, result));
                     }
                 } else {
                     if (this.minecraft != null && this.minecraft.player != null) {
@@ -339,7 +383,8 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
             }
         }
 
-        if (mouseX >= x - 100 + 8 && mouseX <= x - 8 && mouseY >= y + LIST_TOP_OFFSET && mouseY <= y + LIST_BOTTOM_OFFSET) {
+        int px = x - this.panelWidth;
+        if (mouseX >= px + 8 && mouseX <= x - 8 && mouseY >= y + LIST_TOP_OFFSET && mouseY <= y + LIST_BOTTOM_OFFSET) {
             int clickIdx = listOffset + (int) ((mouseY - (y + LIST_TOP_OFFSET)) / LIST_ROW_HEIGHT);
             if (clickIdx >= 0 && clickIdx < filteredList.size()) {
                 String clicked = filteredList.get(clickIdx);
@@ -361,11 +406,18 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
     }
 
     @Override
+    protected boolean hasClickedOutside(double mx, double my, int xo, int yo) {
+        boolean insideMain = mx >= xo && mx < xo + this.imageWidth && my >= yo && my < yo + this.imageHeight;
+        boolean insideSide = mx >= xo - this.panelWidth && mx < xo && my >= yo && my < yo + this.imageHeight;
+        return !insideMain && !insideSide;
+    }
+
+    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
         int x = this.leftPos;
         int y = this.topPos;
 
-        if (mouseX >= x - 100 && mouseX <= x && mouseY >= y && mouseY <= y + 166) {
+        if (mouseX >= x - this.panelWidth && mouseX <= x && mouseY >= y && mouseY <= y + 166) {
             if (verticalAmount > 0) {
                 listOffset = Math.max(0, listOffset - 1);
             } else if (verticalAmount < 0) {
@@ -396,7 +448,7 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         }
 
         // 2. 绘制附着面板背景
-        int px = x - 100;
+        int px = x - this.panelWidth;
         graphics.fill(px, y, x, y + 166, 0xFFC6C6C6);
         graphics.fill(px, y, px + 1, y + 166, 0xFFFFFFFF);
         graphics.fill(px, y, x, y + 1, 0xFFFFFFFF);
@@ -405,12 +457,13 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
 
         // 绘制侧栏列表标题（必须携带 0xFF Alpha 通道，否则 MC 26.3 GuiGraphicsExtractor 会跳过绘制）
         Component sideHeader = Component.translatable("gui.tuanzis_mod.blueprint_table.saved_blueprints");
-        String headerText = this.font.plainSubstrByWidth(sideHeader.getString(), 86);
+        String headerText = this.font.plainSubstrByWidth(sideHeader.getString(), Math.max(20, this.panelWidth - 14));
         graphics.text(this.font, headerText, px + 8, y + 6, 0xFF404040, false);
 
         // 绘制文件列表框体
-        graphics.fill(px + 8, y + LIST_TOP_OFFSET, px + 92, y + LIST_BOTTOM_OFFSET, 0xFF333333);
+        graphics.fill(px + 8, y + LIST_TOP_OFFSET, px + this.panelWidth - 8, y + LIST_BOTTOM_OFFSET, 0xFF333333);
 
+        int maxTextWidth = Math.max(24, this.panelWidth - 22);
         int drawCount = Math.max(0, Math.min(VISIBLE_ITEMS, filteredList.size() - listOffset));
         for (int i = 0; i < drawCount; i++) {
             String fname = filteredList.get(listOffset + i);
@@ -418,17 +471,17 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
             int color = 0xFFCCCCCC;
             if (fname.equals(selectedFile)) {
                 color = 0xFFFFFF55;
-                graphics.fill(px + 9, rowY - 1, px + 91, rowY + 9, 0x44FFFF55);
+                graphics.fill(px + 9, rowY - 1, px + this.panelWidth - 9, rowY + 9, 0x44FFFF55);
             }
             String display = fname;
-            if (this.font.width(display) > 78) {
+            if (this.font.width(display) > maxTextWidth) {
                 if (fname.equals(selectedFile)) {
                     String base = fname + "      ";
                     int scrollStep = (int) ((System.currentTimeMillis() / 250) % base.length());
                     display = base.substring(scrollStep) + base.substring(0, scrollStep);
-                    display = this.font.plainSubstrByWidth(display, 78);
+                    display = this.font.plainSubstrByWidth(display, maxTextWidth);
                 } else {
-                    display = this.font.plainSubstrByWidth(display, 70) + "...";
+                    display = this.font.plainSubstrByWidth(display, Math.max(16, maxTextWidth - 8)) + "...";
                 }
             }
             graphics.text(this.font, Component.literal(display), px + 10, rowY, color, false);
@@ -439,11 +492,11 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
             int scrollTrackH = LIST_BOTTOM_OFFSET - LIST_TOP_OFFSET;
             int thumbH = Math.max(10, scrollTrackH * VISIBLE_ITEMS / totalItems);
             int thumbY = y + LIST_TOP_OFFSET + (scrollTrackH - thumbH) * listOffset / (totalItems - VISIBLE_ITEMS);
-            graphics.fill(px + 91, thumbY, px + 94, thumbY + thumbH, 0xFF8B8B8B);
+            graphics.fill(px + this.panelWidth - 9, thumbY, px + this.panelWidth - 6, thumbY + thumbH, 0xFF8B8B8B);
         }
 
         if (isParsing) {
-            graphics.fill(px + 9, y + 84, px + 91, y + 100, 0xCC111118);
+            graphics.fill(px + 9, y + 84, px + this.panelWidth - 9, y + 100, 0xCC111118);
             graphics.text(this.font, Component.translatable("gui.tuanzis_mod.blueprint_table.parsing").withStyle(ChatFormatting.AQUA), px + 12, y + 88, 0xFF55FFFF, true);
         }
     }

@@ -47,7 +47,11 @@ public class Tuanzis_mod implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostPlaceStructurePacket.TYPE, me.tuanzi.network.GhostPlaceStructurePacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.BlueprintCannonShootS2CPacket.TYPE, me.tuanzi.network.BlueprintCannonShootS2CPacket.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintTableImportPacket.TYPE, me.tuanzi.network.BlueprintTableImportPacket.CODEC);
+        PayloadTypeRegistry.serverboundPlay().registerLarge(
+                me.tuanzi.network.BlueprintTableImportPacket.TYPE,
+                me.tuanzi.network.BlueprintTableImportPacket.CODEC,
+                me.tuanzi.network.BlueprintTableImportPacket.MAX_COMPRESSED_BYTES
+        );
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, me.tuanzi.network.BlueprintMaterialBookPacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.ChromaticSkullRequestPacket.TYPE, me.tuanzi.network.ChromaticSkullRequestPacket.CODEC);
         // 注册野太刀势槽同步与挥空网络包
@@ -364,25 +368,48 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintTableImportPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.tablePos());
-                if (be instanceof me.tuanzi.block.entity.BlueprintTableBlockEntity tableBe) {
-                    net.minecraft.world.item.ItemStack inputStack = tableBe.getItems().get(1);
-                    if (inputStack.is(me.tuanzi.init.ModItems.BLANK_BLUEPRINT)) {
-                        inputStack.shrink(1);
-                        ItemStack result = new ItemStack(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT);
-                        result.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(payload.blueprintData()));
-
-                        ItemStack slot0 = tableBe.getItems().get(0);
-                        if (slot0.isEmpty()) {
-                            tableBe.getItems().set(0, result);
-                        } else {
-                            if (!player.getInventory().add(result)) {
-                                player.drop(result, false, Prediction.SERVER_ONLY);
-                            }
-                        }
-                        tableBe.setChanged();
-                        me.tuanzi.util.ModLog.debug(player, null, "成功导入结构数据写入结构蓝图！");
+                me.tuanzi.block.entity.BlueprintTableBlockEntity tableBe = null;
+                if (player.containerMenu instanceof me.tuanzi.world.inventory.BlueprintTableMenu tableMenu && tableMenu.stillValid(player)) {
+                    if (tableMenu.getContainer() instanceof me.tuanzi.block.entity.BlueprintTableBlockEntity menuBe) {
+                        tableBe = menuBe;
                     }
+                }
+                if (tableBe == null) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.tablePos());
+                    if (be instanceof me.tuanzi.block.entity.BlueprintTableBlockEntity posBe && posBe.stillValid(player)) {
+                        tableBe = posBe;
+                    }
+                }
+                if (tableBe == null) {
+                    me.tuanzi.util.ModLog.debug(player, null, "蓝图桌导入被忽略：未找到有效的蓝图桌容器, packetPos=" + payload.tablePos());
+                    return;
+                }
+                CompoundTag blueprintData = payload.blueprintData();
+                if (blueprintData == null || !blueprintData.contains("Width")) {
+                    me.tuanzi.util.ModLog.debug(player, null, "蓝图桌导入失败：蓝图数据无效");
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint_table.parse_fail").withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
+                net.minecraft.world.item.ItemStack inputStack = tableBe.getItems().get(1);
+                if (inputStack.is(me.tuanzi.init.ModItems.BLANK_BLUEPRINT)) {
+                    inputStack.shrink(1);
+                    ItemStack result = new ItemStack(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT);
+                    result.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(blueprintData));
+
+                    ItemStack slot0 = tableBe.getItems().get(0);
+                    if (slot0.isEmpty()) {
+                        tableBe.getItems().set(0, result);
+                    } else {
+                        if (!player.getInventory().add(result)) {
+                            player.drop(result, false, Prediction.SERVER_ONLY);
+                        }
+                    }
+                    tableBe.setChanged();
+                    player.containerMenu.broadcastChanges();
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint_table.import_success").withStyle(net.minecraft.ChatFormatting.GREEN));
+                    me.tuanzi.util.ModLog.debug(player, null, "成功导入结构数据写入结构蓝图！");
+                } else {
+                    me.tuanzi.util.ModLog.debug(player, null, "蓝图桌导入被忽略：槽位 1 不是空白蓝图");
                 }
             });
         });

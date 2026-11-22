@@ -712,7 +712,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8据说剑中的虚空回响渴求着每次完美的切割。");
             translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[按住 Shift 展示详细故事与磨损详情]");
 
-            String riftScarDesc = "【裂虚之痕】\n在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影与折断的龙息碎片融合，锻造出这柄剑。它能察觉敌人护甲的缺失，一旦目标毫无防备，剑刃便穿透现实，直接撕扯灵魂。据说剑中的虚空回响渴求着每次完美的切割。\n\n§e属性：§r\n1. §a攻击力§r: 5.12 点。\n2. §a攻击速度§r: 2.0。\n\n§e虚无切割被动：§r\n1. 当攻击的目标当前护甲值为 0 时，你造成的伤害会提升至 175%。\n2. 若目标拥有护甲，则伤害保持原始值。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (无形、涟漪、蚀痕、崩解、残响) 并在挥动/击中时具有独特的粒子和音效。\n\n§e修复与维护：§r\n可在铁砧中使用§b回响碎片§r修复其耐久度。";
+            String riftScarDesc = "【裂虚之痕】\n在末地外沿的虚无夹缝中，一位末影骑士将自身的暗影与折断的龙息碎片融合，锻造出这柄剑。它能察觉敌人护甲的缺失，一旦目标毫无防备，剑刃便穿透现实，直接撕扯灵魂。据说剑中的虚空回响渴求着每次完美的切割。\n\n§e属性：§r\n1. §a攻击力§r: 5.12 点。\n2. §a攻击速度§r: 2.0。\n3. §a横扫攻击比率§r: 0.25。\n\n§e虚无切割被动：§r\n1. 当攻击的目标当前护甲值为 0 时，你造成的伤害会提升至 175%。\n2. 若目标拥有护甲，则伤害保持原始值。\n\n§e磨损度外观机制：§r\n此剑的磨损度在诞生的那一刻便已随机决定 (0-1)，永久不可变更，与耐久度无关。不同的磨损度对应五种不同的外观阶段 (无形、涟漪、蚀痕、崩解、残响) 并在挥动/击中时具有独特的粒子和音效。\n\n§e修复与维护：§r\n可在铁砧中使用§b回响碎片§r修复其耐久度。";
             translationBuilder.add("jei.tuanzis_mod.rift_scar.description", riftScarDesc);
 
             // 钢御壁垒 (Steel Barrier) 与 坚盾之赐 (Steel Shield Gift) 翻译
@@ -2222,7 +2222,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("item.tuanzis_mod.rift_scar.lore.4", "§8the blade pierces reality to directly tear the soul.");
             translationBuilder.add("item.tuanzis_mod.rift_scar.lore.5", "§8It is said the void echo within the sword craves every perfect cut.");
             translationBuilder.add("item.tuanzis_mod.rift_scar.shift_hint", "§7[Hold Shift for details & lore]");
-            translationBuilder.add("jei.tuanzis_mod.rift_scar.description", "A void sword forged by an End Knight. Deals 175% damage when the target has 0 armor. Random wear appearance on birth.\n\n§eRepair & Maintenance:§r\nCan be repaired in an anvil using §bEcho Shards§r.");
+            translationBuilder.add("jei.tuanzis_mod.rift_scar.description", "A void sword forged by an End Knight. Comes with +0.25 Sweeping Damage Ratio. Deals 175% damage when the target has 0 armor. Random wear appearance on birth.\n\n§eRepair & Maintenance:§r\nCan be repaired in an anvil using §bEcho Shards§r.");
 
             // Bee Sting Echo translations
             translationBuilder.add(ModItems.BEE_STING_ECHO, "Bee Sting Echo");

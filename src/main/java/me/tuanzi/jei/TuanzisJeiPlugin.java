@@ -12,6 +12,7 @@ import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.IExtendableCraftingRecipeCategory;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
@@ -53,6 +54,30 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 10, // inventorySlotStart
                 36  // inventorySlotCount
         );
+    }
+
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            ClientGuiHandlerRegistrar.register(registration);
+        }
+    }
+
+    @net.fabricmc.api.Environment(net.fabricmc.api.EnvType.CLIENT)
+    private static final class ClientGuiHandlerRegistrar {
+        private static void register(IGuiHandlerRegistration registration) {
+            registration.addGuiContainerHandler(
+                    me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen.class,
+                    new mezz.jei.api.gui.handlers.IGuiContainerHandler<>() {
+                        @Override
+                        public List<net.minecraft.client.renderer.Rect2i> getGuiExtraAreas(
+                                me.tuanzi.client.gui.screens.inventory.BlueprintTableScreen containerScreen
+                        ) {
+                            return List.of(containerScreen.getLeftPanelRect());
+                        }
+                    }
+            );
+        }
     }
 
     @Override

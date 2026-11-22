@@ -42,7 +42,7 @@
     ],
     "fallback": {
       "type": "minecraft:model",
-      "model": "tuanzis_mod:item/earth_pile_hammer_1"
+      "model": "tuanzis_mod:item/earth_pile_hammer_default"
     }
   }
 }
