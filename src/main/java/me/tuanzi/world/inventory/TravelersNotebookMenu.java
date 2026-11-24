@@ -8,18 +8,23 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Prediction;
+import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 
 public class TravelersNotebookMenu extends AbstractContainerMenu {
 
+    private final Player player;
     private final ItemStack notebook;
+    private final int blockedSlot;
+    private boolean isLoading = false;
     private final SimpleContainer container = new SimpleContainer(27) {
         @Override
         public void setChanged() {
@@ -34,20 +39,32 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
 
     public TravelersNotebookMenu(int containerId, Inventory playerInventory, InteractionHand hand) {
         super(ModMenuTypes.TRAVELERS_NOTEBOOK, containerId);
+        this.player = playerInventory.player;
 
         ItemStack foundNotebook = ItemStack.EMPTY;
+        int resolvedSlot = -1;
         if (hand != null) {
-            foundNotebook = playerInventory.player.getItemInHand(hand);
+            ItemStack candidate = this.player.getItemInHand(hand);
+            if (candidate.is(ModItems.TRAVELERS_NOTEBOOK)) {
+                foundNotebook = candidate;
+                resolvedSlot = (hand == InteractionHand.MAIN_HAND)
+                        ? playerInventory.getSelectedSlot()
+                        : Inventory.SLOT_OFFHAND;
+            }
         } else {
-            if (playerInventory.player.getMainHandItem().is(ModItems.TRAVELERS_NOTEBOOK)) {
-                foundNotebook = playerInventory.player.getMainHandItem();
-            } else if (playerInventory.player.getOffhandItem().is(ModItems.TRAVELERS_NOTEBOOK)) {
-                foundNotebook = playerInventory.player.getOffhandItem();
+            if (this.player.getMainHandItem().is(ModItems.TRAVELERS_NOTEBOOK)) {
+                foundNotebook = this.player.getMainHandItem();
+                resolvedSlot = playerInventory.getSelectedSlot();
+            } else if (this.player.getOffhandItem().is(ModItems.TRAVELERS_NOTEBOOK)) {
+                foundNotebook = this.player.getOffhandItem();
+                resolvedSlot = Inventory.SLOT_OFFHAND;
             }
         }
         this.notebook = foundNotebook;
+        this.blockedSlot = resolvedSlot;
 
         // 加载内部存储物品
+        this.isLoading = true;
         if (!this.notebook.isEmpty()) {
             CustomData customData = this.notebook.get(DataComponents.CUSTOM_DATA);
             if (customData != null) {
@@ -63,6 +80,7 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
                 }
             }
         }
+        this.isLoading = false;
 
         // 添加 Slot 0 (燃料格)
         this.addSlot(new Slot(this.container, 0, 8, 18) {
@@ -87,27 +105,129 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
         // 玩家背包物品栏
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
-                this.addSlot(new Slot(playerInventory, c + r * 9 + 9, 8 + c * 18, 84 + r * 18));
+                int invIndex = c + r * 9 + 9;
+                if (invIndex == this.blockedSlot) {
+                    this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 84 + r * 18) {
+                        @Override
+                        public boolean mayPickup(Player p) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean mayPlace(ItemStack stack) {
+                            return false;
+                        }
+                    });
+                } else {
+                    this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 84 + r * 18));
+                }
             }
         }
 
         // 玩家快捷栏物品栏
         for (int c = 0; c < 9; c++) {
-            this.addSlot(new Slot(playerInventory, c, 8 + c * 18, 142));
+            int invIndex = c;
+            if (invIndex == this.blockedSlot) {
+                this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 142) {
+                    @Override
+                    public boolean mayPickup(Player p) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return false;
+                    }
+                });
+            } else {
+                this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 142));
+            }
         }
     }
 
     @Override
     public boolean stillValid(Player player) {
-        return !this.notebook.isEmpty() && (player.getMainHandItem() == this.notebook || player.getOffhandItem() == this.notebook);
+        if (this.notebook.isEmpty()) {
+            return false;
+        }
+        if (this.blockedSlot == Inventory.SLOT_OFFHAND) {
+            return player.getOffhandItem() == this.notebook;
+        }
+        if (this.blockedSlot >= 0 && this.blockedSlot < player.getInventory().getContainerSize()) {
+            return player.getInventory().getItem(this.blockedSlot) == this.notebook;
+        }
+        return false;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
+        if (this.blockedSlot != -1) {
+            if (clickType == ContainerInput.SWAP && button == this.blockedSlot) {
+                return;
+            }
+            if (slotId >= 0 && slotId < this.slots.size()) {
+                Slot slot = this.slots.get(slotId);
+                if (slot.container == player.getInventory() && slot.getContainerSlot() == this.blockedSlot) {
+                    return;
+                }
+            }
+        }
+        super.clicked(slotId, button, clickType, player);
+    }
+
+    @Override
+    public void slotsChanged(Container container) {
+        super.slotsChanged(container);
+        if (this.isLoading || this.player.level().isClientSide() || !stillValid(this.player)) {
+            return;
+        }
+        saveContents(this.player, null);
+    }
+
+    private void saveContents(Player player, Integer overrideEnergy) {
+        if (this.notebook.isEmpty() || player.level().isClientSide()) {
+            return;
+        }
+        CompoundTag tag = new CompoundTag();
+        CustomData customData = this.notebook.get(DataComponents.CUSTOM_DATA);
+        if (customData != null) {
+            tag = customData.copyTag();
+        }
+
+        ListTag listTag = new ListTag();
+        for (int i = 0; i < 27; i++) {
+            ItemStack stack = this.container.getItem(i);
+            if (!stack.isEmpty()) {
+                CompoundTag itemTag = new CompoundTag();
+                itemTag.putByte("Slot", (byte) i);
+                itemTag.put("Item", ItemStackNbtHelper.write(player.registryAccess(), stack));
+                listTag.add(itemTag);
+            }
+        }
+        tag.put("Items", listTag);
+        if (overrideEnergy != null) {
+            tag.putInt("Energy", overrideEnergy);
+        }
+
+        this.notebook.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
     @Override
     public void removed(Player player) {
         super.removed(player);
+        if (player.level().isClientSide()) {
+            return;
+        }
+        if (!stillValid(player)) {
+            if (player.isAlive()) {
+                this.isLoading = true;
+                this.clearContainer(player, this.container);
+                this.isLoading = false;
+            }
+            return;
+        }
 
-        if (this.notebook.isEmpty()) return;
-
+        this.isLoading = true;
         // 1. 自动消耗传送纸充能
         ItemStack paperStack = this.container.getItem(0);
         int energy = TravelersNotebookItem.getEnergy(this.notebook);
@@ -126,33 +246,13 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
 
         // 2. 返还剩余燃料
         if (!paperStack.isEmpty()) {
-            if (!player.getInventory().add(paperStack)) {
-                player.drop(paperStack, false, Prediction.SERVER_ONLY);
-            }
+            player.getInventory().placeItemBackInInventory(paperStack, Prediction.SERVER_ONLY);
             this.container.setItem(0, ItemStack.EMPTY);
         }
 
         // 3. 将 1-26 格物品及最新能量值序列化保存至手札的 CUSTOM_DATA 中
-        CompoundTag tag = new CompoundTag();
-        CustomData customData = this.notebook.get(DataComponents.CUSTOM_DATA);
-        if (customData != null) {
-            tag = customData.copyTag();
-        }
-
-        ListTag listTag = new ListTag();
-        for (int i = 0; i < 27; i++) {
-            ItemStack stack = this.container.getItem(i);
-            if (!stack.isEmpty()) {
-                CompoundTag itemTag = new CompoundTag();
-                itemTag.putByte("Slot", (byte) i);
-                itemTag.put("Item", ItemStackNbtHelper.write(player.registryAccess(), stack));
-                listTag.add(itemTag);
-            }
-        }
-        tag.put("Items", listTag);
-        tag.putInt("Energy", energy);
-
-        this.notebook.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        saveContents(player, energy);
+        this.isLoading = false;
     }
 
     @Override
@@ -160,6 +260,11 @@ public class TravelersNotebookMenu extends AbstractContainerMenu {
         ItemStack itemStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
         if (slot != null && slot.hasItem()) {
+            if (this.blockedSlot != -1 && slotIndex >= 27
+                    && slot.container == player.getInventory()
+                    && slot.getContainerSlot() == this.blockedSlot) {
+                return ItemStack.EMPTY;
+            }
             ItemStack slotStack = slot.getItem();
             itemStack = slotStack.copy();
 

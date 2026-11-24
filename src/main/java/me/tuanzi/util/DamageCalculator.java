@@ -838,7 +838,7 @@ public class DamageCalculator {
                                             .lookupOrThrow(Registries.DAMAGE_TYPE)
                                             .getOrThrow(DamageTypes.MAGIC);
 
-                                    me.tuanzi.util.ChainPainDamageSource chainSrc = new me.tuanzi.util.ChainPainDamageSource(typeHolder);
+                                    me.tuanzi.util.ChainPainDamageSource chainSrc = new me.tuanzi.util.ChainPainDamageSource(typeHolder, attacker);
 
                                     victim.hurtServer(serverLevel, chainSrc, splashDamage);
 

@@ -127,15 +127,7 @@ public class BlockBreakerBlock extends BaseEntityBlock {
 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof BlockBreakerBlockEntity breakerBe) {
-            // 活塞推动时严禁产生掉落物或先掉落再拾取
-            if (!movedByPiston && !breakerBe.isMovingByPiston()) {
-                Containers.dropContents(level, pos, breakerBe);
-            }
-            level.updateNeighborsAt(pos, this);
-        }
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 
     @Override

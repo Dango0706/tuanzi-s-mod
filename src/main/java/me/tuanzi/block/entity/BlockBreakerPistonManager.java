@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,9 +25,18 @@ public class BlockBreakerPistonManager {
         ModLog.debug("[方块破坏器活塞迁移] 记录目标位置暂存数据: " + key + ", tag=" + stateTag);
     }
 
-    public static CompoundTag getMigration(ResourceKey<Level> dimension, BlockPos currentPos) {
+    public static @Nullable CompoundTag getMigration(ResourceKey<Level> dimension, BlockPos currentPos) {
         GlobalPos key = GlobalPos.of(dimension, currentPos.immutable());
         return PENDING_MIGRATIONS.get(key);
+    }
+
+    public static @Nullable CompoundTag consumeMigration(ResourceKey<Level> dimension, BlockPos currentPos) {
+        GlobalPos key = GlobalPos.of(dimension, currentPos.immutable());
+        CompoundTag removed = PENDING_MIGRATIONS.remove(key);
+        if (removed != null) {
+            ModLog.debug("[方块破坏器活塞迁移] 消费并清理暂存数据: " + key);
+        }
+        return removed;
     }
 
     public static void confirmMigration(ResourceKey<Level> dimension, BlockPos currentPos) {

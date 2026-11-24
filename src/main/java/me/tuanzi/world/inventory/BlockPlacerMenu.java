@@ -26,7 +26,7 @@ public class BlockPlacerMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BlockPlacerMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(TOTAL_CONTAINER_SLOTS), new SimpleContainerData(8));
+        this(containerId, playerInventory, new SimpleContainer(TOTAL_CONTAINER_SLOTS), new SimpleContainerData(10));
     }
 
     public BlockPlacerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
@@ -34,7 +34,7 @@ public class BlockPlacerMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
         checkContainerSize(container, TOTAL_CONTAINER_SLOTS);
-        checkContainerDataCount(data, 8);
+        checkContainerDataCount(data, 10);
         container.startOpen(playerInventory.player);
 
         // 1. 独立过滤槽 (Slot 0)
@@ -99,7 +99,10 @@ public class BlockPlacerMenu extends AbstractContainerMenu {
     }
 
     public BlockPos getBlockPos() {
-        return new BlockPos(this.data.get(5), this.data.get(6), this.data.get(7));
+        int x = BlueprintTableMenu.reconstructInt(this.data.get(5), this.data.get(6));
+        int y = this.data.get(7);
+        int z = BlueprintTableMenu.reconstructInt(this.data.get(8), this.data.get(9));
+        return new BlockPos(x, y, z);
     }
 
     @Override

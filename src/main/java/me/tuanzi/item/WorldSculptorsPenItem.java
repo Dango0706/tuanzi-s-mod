@@ -455,6 +455,7 @@ public class WorldSculptorsPenItem extends Item {
     public static void giveTargetItems(Player player, Item targetItem, Integer selectedColor, int amount) {
         if (targetItem == net.minecraft.world.item.Items.AIR) return;
         int remaining = amount;
+        int maxStack = Math.max(1, targetItem.getDefaultMaxStackSize());
         ItemStack sampleStack = createItemWithColor(targetItem, selectedColor, 1);
 
         // 1. 尝试先返还到背包里已有且未满的潜影盒或黄金口袋中
@@ -547,9 +548,11 @@ public class WorldSculptorsPenItem extends Item {
         }
 
         // 2. 将最终还有剩余的方块直接放入玩家普通背包，装不下则自动在脚下丢出
-        if (remaining > 0) {
-            ItemStack extraStack = createItemWithColor(targetItem, selectedColor, remaining);
+        while (remaining > 0) {
+            int batch = Math.min(maxStack, remaining);
+            ItemStack extraStack = createItemWithColor(targetItem, selectedColor, batch);
             player.getInventory().placeItemBackInInventory(extraStack, Prediction.SERVER_ONLY);
+            remaining -= batch;
         }
     }
 

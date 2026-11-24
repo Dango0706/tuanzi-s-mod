@@ -23,6 +23,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -33,6 +34,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 拾荒回廊 - 黑匣子数据核心箱 方块实体
@@ -166,6 +170,29 @@ public class BlackboxCoreCaseBlockEntity extends BlockEntity implements MenuProv
     // ==================== Container 接口兼容（支持破坏方块爆装） ====================
 
     @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level != null && !this.level.isClientSide()) {
+            List<GridItemEntry> removedEntries = this.scavengerLootState.grid().clearAll();
+            for (GridItemEntry entry : removedEntries) {
+                ItemStack stack = entry.copyStack();
+                if (!stack.isEmpty()) {
+                    Containers.dropItemStack(this.level, pos.getX(), pos.getY(), pos.getZ(), stack);
+                }
+            }
+            for (ItemStack overflow : this.scavengerLootState.grid().drainLoadOverflow()) {
+                if (!overflow.isEmpty()) {
+                    Containers.dropItemStack(this.level, pos.getX(), pos.getY(), pos.getZ(), overflow);
+                }
+            }
+        }
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 1;
+    }
+
+    @Override
     public int getContainerSize() {
         return 36; // 映射 6x6 网格槽位
     }
@@ -177,33 +204,76 @@ public class BlackboxCoreCaseBlockEntity extends BlockEntity implements MenuProv
 
     @Override
     public ItemStack getItem(int slot) {
+        if (slot < 0 || slot >= 36) {
+            return ItemStack.EMPTY;
+        }
         int x = slot % 6;
         int y = slot / 6;
         return this.scavengerLootState.grid().getEntryAt(x, y)
+                .filter(e -> e.anchorX() == x && e.anchorY() == y)
                 .map(GridItemEntry::copyStack)
                 .orElse(ItemStack.EMPTY);
     }
 
     @Override
     public ItemStack removeItem(int slot, int amount) {
-        int x = slot % 6;
-        int y = slot / 6;
-        return this.scavengerLootState.grid().getEntryAt(x, y)
-                .flatMap(e -> this.scavengerLootState.grid().removeEntry(e.entryId()))
-                .map(GridItemEntry::copyStack)
-                .orElse(ItemStack.EMPTY);
+        if (amount <= 0) {
+            return ItemStack.EMPTY;
+        }
+        return removeAnchorEntry(slot, true);
     }
 
     @Override
     public ItemStack removeItemNoUpdate(int slot) {
-        return removeItem(slot, 1);
+        return removeAnchorEntry(slot, false);
+    }
+
+    private ItemStack removeAnchorEntry(int slot, boolean notify) {
+        if (slot < 0 || slot >= 36) {
+            return ItemStack.EMPTY;
+        }
+        int x = slot % 6;
+        int y = slot / 6;
+        Optional<GridItemEntry> removed = this.scavengerLootState.grid().getEntryAt(x, y)
+                .filter(e -> e.anchorX() == x && e.anchorY() == y)
+                .flatMap(e -> this.scavengerLootState.grid().removeEntry(e.entryId()));
+        if (removed.isPresent()) {
+            if (notify) {
+                markContainerChanged();
+            }
+            return removed.get().copyStack();
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
     public void setItem(int slot, ItemStack stack) {
-        if (!stack.isEmpty()) {
-            this.scavengerLootState.grid().quickInsertFirstFit(stack, 20);
+        if (slot < 0 || slot >= 36) {
+            return;
+        }
+        int x = slot % 6;
+        int y = slot / 6;
+        var grid = this.scavengerLootState.grid();
+        Optional<GridItemEntry> existingAnchor = grid.getEntryAt(x, y)
+                .filter(e -> e.anchorX() == x && e.anchorY() == y);
+
+        if (stack == null || stack.isEmpty()) {
+            if (existingAnchor.isPresent()) {
+                grid.removeEntry(existingAnchor.get().entryId());
+                markContainerChanged();
+            }
+            return;
+        }
+
+        GridItemEntry backup = existingAnchor.flatMap(e -> grid.removeEntry(e.entryId())).orElse(null);
+        var placed = grid.placeAt(stack, x, y, false, 20, false);
+        if (!placed.isSuccess()) {
+            placed = grid.quickInsertFirstFit(stack, 20);
+        }
+        if (placed.isSuccess()) {
             markContainerChanged();
+        } else if (backup != null) {
+            grid.restoreEntry(backup);
         }
     }
 
@@ -270,12 +340,14 @@ public class BlackboxCoreCaseBlockEntity extends BlockEntity implements MenuProv
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        net.minecraft.world.inventory.SimpleContainerData data = new net.minecraft.world.inventory.SimpleContainerData(5);
-        data.set(0, this.worldPosition.getX());
-        data.set(1, this.worldPosition.getY());
-        data.set(2, this.worldPosition.getZ());
-        data.set(3, this.scavengerLootState.columns());
-        data.set(4, this.scavengerLootState.rows());
+        net.minecraft.world.inventory.SimpleContainerData data = new net.minecraft.world.inventory.SimpleContainerData(7);
+        data.set(0, this.worldPosition.getX() & 0xFFFF);
+        data.set(1, this.worldPosition.getX() >>> 16);
+        data.set(2, this.worldPosition.getY());
+        data.set(3, this.worldPosition.getZ() & 0xFFFF);
+        data.set(4, this.worldPosition.getZ() >>> 16);
+        data.set(5, this.scavengerLootState.columns());
+        data.set(6, this.scavengerLootState.rows());
         return new me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu(containerId, playerInventory, this, data);
     }
 }

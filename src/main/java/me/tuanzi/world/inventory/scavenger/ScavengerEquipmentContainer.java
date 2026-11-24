@@ -36,8 +36,8 @@ public class ScavengerEquipmentContainer extends SimpleContainer {
             this.items.set(0, profile.equippedBackpack().copy());
             this.items.set(1, profile.equippedSafebox().copy());
         } else if (this.player.level().isClientSide()) {
-            this.items.set(0, me.tuanzi.client.scavenger.ScavengerClientState.getEquippedBackpack().copy());
-            this.items.set(1, me.tuanzi.client.scavenger.ScavengerClientState.getEquippedSafebox().copy());
+            this.items.set(0, ScavengerClientBridge.getEquippedBackpack().copy());
+            this.items.set(1, ScavengerClientBridge.getEquippedSafebox().copy());
         }
     }
 

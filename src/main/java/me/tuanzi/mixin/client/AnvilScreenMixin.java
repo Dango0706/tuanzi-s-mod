@@ -3,6 +3,7 @@ package me.tuanzi.mixin.client;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AnvilScreen;
 import net.minecraft.client.gui.screens.inventory.ItemCombinerScreen;
 import net.minecraft.core.component.DataComponents;
@@ -11,16 +12,40 @@ import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
 @Mixin(AnvilScreen.class)
 public abstract class AnvilScreenMixin extends ItemCombinerScreen<AnvilMenu> {
 
+    @Shadow
+    private EditBox name;
+
     public AnvilScreenMixin(AnvilMenu menu, net.minecraft.world.entity.player.Inventory playerInventory, Component title, net.minecraft.resources.Identifier texture) {
         super(menu, playerInventory, title, texture);
+    }
+
+    /**
+     * 移除客户端铁砧界面 40 级“过于昂贵”的红色警告显示限制。
+     */
+    @ModifyConstant(method = "extractLabels", constant = @Constant(intValue = 40))
+    private int tuanzis_mod$removeTooExpensiveLabel(int constant) {
+        return Integer.MAX_VALUE;
+    }
+
+    /**
+     * 移除 50 字符的重命名限制
+     */
+    @Inject(method = "subInit", at = @At("TAIL"))
+    private void tuanzis_mod$removeRenameLimit(CallbackInfo ci) {
+        if (this.name != null) {
+            this.name.setMaxLength(Integer.MAX_VALUE);
+        }
     }
 
     @Inject(method = "extractLabels", at = @At("TAIL"))

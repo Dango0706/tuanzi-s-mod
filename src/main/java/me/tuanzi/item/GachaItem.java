@@ -67,15 +67,15 @@ public class GachaItem extends Item {
             }
             // 2. 常规右键：开启抽卡
             else {
-                // 扣除抽卡道具
-                if (!player.getAbilities().instabuild) {
-                    stack.shrink(1);
-                }
-
                 // 执行核心抽卡算法
                 List<GachaLogic.RollResult> results = GachaLogic.performRoll(serverPlayer, poolId, isTenFold);
                 if (results.isEmpty()) {
                     return InteractionResult.SUCCESS;
+                }
+
+                // 确认存在有效抽卡结果后再扣除抽卡道具
+                if (!player.getAbilities().instabuild) {
+                    stack.shrink(1);
                 }
 
                 // 筛选此次抽卡中最高的稀有度，用以渲染烟花粒子色彩

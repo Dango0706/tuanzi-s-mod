@@ -16,6 +16,25 @@ import java.util.Optional;
 
 public class LitematicaParser {
 
+    public static final long MAX_BLUEPRINT_VOLUME = 8_388_608L;
+    private static final int MAX_PALETTE_INDEX = 65536;
+
+    private static int validateDimensions(int width, int height, int length) {
+        if (width <= 0 || height <= 0 || length <= 0
+                || width > MAX_BLUEPRINT_VOLUME || height > MAX_BLUEPRINT_VOLUME || length > MAX_BLUEPRINT_VOLUME) {
+            throw new IllegalArgumentException("蓝图尺寸非法: " + width + "x" + height + "x" + length);
+        }
+        long area = (long) width * (long) height;
+        if (area > MAX_BLUEPRINT_VOLUME) {
+            throw new IllegalArgumentException("蓝图体积超出上限 (" + MAX_BLUEPRINT_VOLUME + "): " + width + "x" + height + "x" + length);
+        }
+        long volume = area * (long) length;
+        if (volume > MAX_BLUEPRINT_VOLUME) {
+            throw new IllegalArgumentException("蓝图体积超出上限 (" + MAX_BLUEPRINT_VOLUME + "): " + width + "x" + height + "x" + length);
+        }
+        return (int) volume;
+    }
+
     /**
      * 兼容解析任意 NBT Tag 形式的方块状态：
      * 1) MC 26.3 BlockState.CODEC 默认状态 StringTag ("minecraft:stone_bricks")
@@ -162,7 +181,7 @@ public class LitematicaParser {
 
         // Bit Unpacking BlockStates
         long[] longArray = region.getLongArray("BlockStates").orElse(new long[0]);
-        int totalBlocks = width * height * length;
+        int totalBlocks = validateDimensions(width, height, length);
         int[] blocks = new int[totalBlocks];
 
         if (paletteSize > 1) {
@@ -305,6 +324,7 @@ public class LitematicaParser {
         int width = rootTag.getShortOr("Width", (short) 0);
         int height = rootTag.getShortOr("Height", (short) 0);
         int length = rootTag.getShortOr("Length", (short) 0);
+        int totalBlocks = validateDimensions(width, height, length);
 
         result.putInt("Width", width);
         result.putInt("Height", height);
@@ -321,6 +341,9 @@ public class LitematicaParser {
 
         ListTag resultPalette = new ListTag();
         int maxIndex = indexToName.keySet().stream().max(Integer::compare).orElse(0);
+        if (maxIndex < 0 || maxIndex > MAX_PALETTE_INDEX) {
+            throw new IllegalArgumentException("Schematic 调色板索引非法: " + maxIndex);
+        }
         for (int i = 0; i <= maxIndex; i++) {
             String stateStr = indexToName.getOrDefault(i, "minecraft:air");
             // Sponge 的调色板是字符串，如 "minecraft:stone" 或 "minecraft:oak_stairs[facing=east]"
@@ -331,7 +354,7 @@ public class LitematicaParser {
 
         // BlockData 是 VarInt 数组
         byte[] blockData = rootTag.getByteArray("BlockData").orElse(new byte[0]);
-        int[] blocks = new int[width * height * length];
+        int[] blocks = new int[totalBlocks];
         int dataIdx = 0;
         for (int i = 0; i < blocks.length && dataIdx < blockData.length; i++) {
             int value = 0;
@@ -436,7 +459,7 @@ public class LitematicaParser {
         region.put("BlockStatePalette", blockStatePalette);
 
         int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
-        int totalBlocks = width * height * length;
+        int totalBlocks = validateDimensions(width, height, length);
         int paletteSize = palette.size();
 
         if (paletteSize > 1) {
@@ -496,22 +519,32 @@ public class LitematicaParser {
 
     private static CompoundTag convertStringToBlockStateNbt(String stateStr) {
         CompoundTag nbt = new CompoundTag();
+        if (stateStr == null || stateStr.isEmpty()) {
+            nbt.putString("id", "minecraft:air");
+            return nbt;
+        }
         int bracketIndex = stateStr.indexOf('[');
         if (bracketIndex == -1) {
             nbt.putString("id", stateStr);
         } else {
-            String name = stateStr.substring(0, bracketIndex);
-            nbt.putString("id", name);
-            CompoundTag properties = new CompoundTag();
-            String propStr = stateStr.substring(bracketIndex + 1, stateStr.length() - 1);
-            String[] parts = propStr.split(",");
-            for (String part : parts) {
-                String[] kv = part.split("=");
-                if (kv.length == 2) {
-                    properties.putString(kv[0], kv[1]);
+            String name = stateStr.substring(0, bracketIndex).trim();
+            nbt.putString("id", name.isEmpty() ? "minecraft:air" : name);
+            if (stateStr.endsWith("]") && bracketIndex + 1 <= stateStr.length() - 1) {
+                String propStr = stateStr.substring(bracketIndex + 1, stateStr.length() - 1);
+                if (!propStr.isEmpty()) {
+                    CompoundTag properties = new CompoundTag();
+                    String[] parts = propStr.split(",");
+                    for (String part : parts) {
+                        String[] kv = part.split("=", 2);
+                        if (kv.length == 2 && !kv[0].isEmpty()) {
+                            properties.putString(kv[0], kv[1]);
+                        }
+                    }
+                    if (!properties.isEmpty()) {
+                        nbt.put("properties", properties);
+                    }
                 }
             }
-            nbt.put("properties", properties);
         }
         return nbt;
     }

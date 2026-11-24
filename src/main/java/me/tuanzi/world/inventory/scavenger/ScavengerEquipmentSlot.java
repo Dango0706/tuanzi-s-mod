@@ -1,6 +1,5 @@
 package me.tuanzi.world.inventory.scavenger;
 
-import me.tuanzi.client.scavenger.ScavengerClientState;
 import me.tuanzi.world.scavenger.ScavengerPlayerTracker;
 import me.tuanzi.world.scavenger.loot.meta.EquipmentGridSpec;
 import me.tuanzi.world.scavenger.profile.PlayerCorridorProfile;
@@ -55,7 +54,10 @@ public class ScavengerEquipmentSlot extends Slot {
             PlayerCorridorProfile profile = tracker.tuanzis_mod$getCorridorProfile();
             return !profile.hasBackpack() || profile.backpackGrid().isEmpty();
         }
-        return ScavengerClientState.getBackpackEntries().isEmpty();
+        if (player.level().isClientSide()) {
+            return ScavengerClientBridge.isBackpackEmpty();
+        }
+        return false;
     }
 
     @Override

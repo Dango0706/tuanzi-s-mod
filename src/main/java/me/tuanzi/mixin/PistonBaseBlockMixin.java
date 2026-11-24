@@ -74,10 +74,10 @@ public class PistonBaseBlockMixin {
                     BlockPos targetPos = pos.relative(pushDirection);
                     ModLog.debug("[方块破坏器活塞移动] 开始从 " + pos + " 迁移至 " + targetPos);
 
-                    // 1. 关闭正在查看该破坏器 GUI 的玩家界面
+                    // 1. 仅关闭正在查看该被推动破坏器 GUI 的玩家界面
                     for (net.minecraft.world.entity.player.Player player : level.players()) {
                         if (player instanceof ServerPlayer serverPlayer && serverPlayer.containerMenu instanceof BlockBreakerMenu menu) {
-                            if (menu.stillValid(serverPlayer)) {
+                            if (menu.getContainer() == breakerBe) {
                                 serverPlayer.closeContainer();
                             }
                         }

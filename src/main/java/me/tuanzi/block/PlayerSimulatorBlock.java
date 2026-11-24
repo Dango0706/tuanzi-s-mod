@@ -55,9 +55,13 @@ public class PlayerSimulatorBlock extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    public static boolean isPowered(Level level, BlockPos pos) {
+        return level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
+    }
+
     @Override
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean movedByPiston) {
-        boolean shouldTrigger = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
+        boolean shouldTrigger = isPowered(level, pos);
         boolean isTriggered = state.getValue(TRIGGERED);
 
         if (shouldTrigger && !isTriggered) {
@@ -143,12 +147,7 @@ public class PlayerSimulatorBlock extends BaseEntityBlock {
 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof PlayerSimulatorBlockEntity simulatorBe) {
-            Containers.dropContents(level, pos, simulatorBe);
-            level.updateNeighborsAt(pos, this);
-        }
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 
     @Override

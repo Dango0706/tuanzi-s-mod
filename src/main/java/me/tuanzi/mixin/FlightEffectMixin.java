@@ -21,7 +21,11 @@ public abstract class FlightEffectMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private void tuanzis_mod$tickFlightAbility(CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
-        if (entity instanceof Player player && !player.getAbilities().instabuild) {
+        if (entity instanceof Player player) {
+            if (player.getAbilities().instabuild || player.isSpectator()) {
+                tuanzis_mod$hadFlightEffect = false;
+                return;
+            }
             MobEffectInstance effect = player.getEffect(ModStatusEffects.FLIGHT);
             boolean hasEffect = effect != null;
 

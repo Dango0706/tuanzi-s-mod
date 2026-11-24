@@ -27,13 +27,14 @@ public class BaseStashMenu extends AbstractContainerMenu {
     private final ScavengerEquipmentContainer equipmentContainer;
 
     public BaseStashMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainerData(4));
+        this(containerId, playerInventory, new SimpleContainerData(6));
     }
 
     public BaseStashMenu(int containerId, Inventory playerInventory, ContainerData data) {
         super(ModMenuTypes.BASE_STASH, containerId);
         this.player = playerInventory.player;
         this.data = data;
+        checkContainerDataCount(data, 6);
         this.addDataSlots(data);
         this.equipmentContainer = new ScavengerEquipmentContainer(this.player);
 
@@ -70,11 +71,14 @@ public class BaseStashMenu extends AbstractContainerMenu {
     }
 
     public BlockPos getCabinetPos() {
-        return new BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
+        int x = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(0), this.data.get(1));
+        int y = this.data.get(2);
+        int z = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(3), this.data.get(4));
+        return new BlockPos(x, y, z);
     }
 
     public int getStashLevel() {
-        return this.data.get(3);
+        return this.data.get(5);
     }
 
     @Override

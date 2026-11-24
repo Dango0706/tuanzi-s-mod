@@ -63,7 +63,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
         }
 
         // 0. 递增充能计时器 (仅在接收到红石充能信号时递增，上限设为 200 ticks 防止溢出)
-        if (level.hasNeighborSignal(pos)) {
+        if (PlayerSimulatorBlock.isPowered(level, pos)) {
             if (blockEntity.chargeTicks < 200) {
                 blockEntity.chargeTicks++;
             }
@@ -85,7 +85,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
             // A. 持续挖掘判定
             if (blockEntity.miningPos != null) {
                 // 当其破坏方块时，没在充能就停止破坏，在充能时则持续破坏
-                if (!level.hasNeighborSignal(pos)) {
+                if (!PlayerSimulatorBlock.isPowered(level, pos)) {
                     me.tuanzi.util.ModLog.debug("[玩家模拟器] 红石信号断开（没在充能），立即停止破坏方块: " + blockEntity.miningPos);
                     level.destroyBlockProgress(fakePlayer.getId(), blockEntity.miningPos, -1);
                     blockEntity.miningPos = null;
@@ -172,7 +172,7 @@ public class PlayerSimulatorBlockEntity extends BlockEntity implements MenuProvi
             }
             // C. 持续充能左键攻击判定 (蓄力攻击生物，红石信号断开时释放伤害)
             else if (blockEntity.attackingEntityId != -1) {
-                if (level.hasNeighborSignal(pos)) {
+                if (PlayerSimulatorBlock.isPowered(level, pos)) {
                     blockEntity.actionTick++;
                     // 蓄力上限保护：如果充能了 200 ticks，强制自动打出去
                     if (blockEntity.chargeTicks >= 200) {

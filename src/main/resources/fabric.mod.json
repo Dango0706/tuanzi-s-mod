@@ -38,7 +38,8 @@
       "me.tuanzi.gametest.PurifyingAndDesperateStandGameTest",
       "me.tuanzi.gametest.LuckCasinoUndyingGameTest",
       "me.tuanzi.gametest.LeaderZombieXpGameTest",
-      "me.tuanzi.gametest.OverworldBuildHeightGameTest"
+      "me.tuanzi.gametest.OverworldBuildHeightGameTest",
+      "me.tuanzi.gametest.BlockBreakerPistonGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"

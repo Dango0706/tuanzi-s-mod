@@ -27,13 +27,13 @@ public class ModMenuTypes {
     public static final MenuType<TravelersNotebookMenu> TRAVELERS_NOTEBOOK = Registry.register(
             BuiltInRegistries.MENU,
             TRAVELERS_NOTEBOOK_KEY,
-            new MenuType<>((containerId, playerInventory) -> new TravelersNotebookMenu(containerId, playerInventory, net.minecraft.world.InteractionHand.MAIN_HAND), FeatureFlags.VANILLA_SET)
+            new MenuType<>(TravelersNotebookMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static final MenuType<me.tuanzi.world.inventory.CraftsmanCharmMenu> CRAFTSMAN_CHARM = Registry.register(
             BuiltInRegistries.MENU,
             CRAFTSMAN_CHARM_KEY,
-            new MenuType<>((containerId, playerInventory) -> new me.tuanzi.world.inventory.CraftsmanCharmMenu(containerId, playerInventory, net.minecraft.world.InteractionHand.MAIN_HAND), FeatureFlags.VANILLA_SET)
+            new MenuType<>(me.tuanzi.world.inventory.CraftsmanCharmMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static final MenuType<me.tuanzi.world.inventory.BlueprintCannonMenu> BLUEPRINT_CANNON = Registry.register(

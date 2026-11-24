@@ -66,11 +66,12 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
     private boolean isMovingByPiston = false;
     private int delayAfterPistonMove = 0;
     private boolean hasTickedOnce = false;
+    private @Nullable CompoundTag pendingPistonLandingTag = null;
 
     // 模拟假玩家
     private @Nullable SimulatorFakePlayer fakePlayer = null;
 
-    // 菜单同步数据 (0: 模式, 1: 进度百分比, 2: 冷却, 3: 状态码, 4: pos.X, 5: pos.Y, 6: pos.Z)
+    // 菜单同步数据 (0: 模式, 1: 进度百分比, 2: 冷却, 3: 状态码, 4..5: pos.X, 6: pos.Y, 7..8: pos.Z)
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
@@ -79,9 +80,11 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
                 case 1 -> (int) (BlockBreakerBlockEntity.this.miningProgress * 100.0f);
                 case 2 -> BlockBreakerBlockEntity.this.cooldown;
                 case 3 -> BlockBreakerBlockEntity.this.statusCode;
-                case 4 -> BlockBreakerBlockEntity.this.worldPosition.getX();
-                case 5 -> BlockBreakerBlockEntity.this.worldPosition.getY();
-                case 6 -> BlockBreakerBlockEntity.this.worldPosition.getZ();
+                case 4 -> BlockBreakerBlockEntity.this.worldPosition.getX() & 0xFFFF;
+                case 5 -> BlockBreakerBlockEntity.this.worldPosition.getX() >>> 16;
+                case 6 -> BlockBreakerBlockEntity.this.worldPosition.getY();
+                case 7 -> BlockBreakerBlockEntity.this.worldPosition.getZ() & 0xFFFF;
+                case 8 -> BlockBreakerBlockEntity.this.worldPosition.getZ() >>> 16;
                 default -> 0;
             };
         }
@@ -98,13 +101,32 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
 
         @Override
         public int getCount() {
-            return 7;
+            return 9;
         }
     };
 
     public BlockBreakerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.BLOCK_BREAKER_BLOCK_ENTITY, pos, state);
         ModLog.debug("[方块破坏器创建] 实例: " + System.identityHashCode(this) + " at " + pos);
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.isMovingByPiston()) {
+            this.pendingPistonLandingTag = null;
+            return;
+        }
+        if (!state.is(ModBlocks.BLOCK_BREAKER)) {
+            if (this.pendingPistonLandingTag != null && this.level != null && !this.level.isClientSide()) {
+                BlockBreakerPistonManager.recordMigration(this.level.dimension(), this.worldPosition, this.pendingPistonLandingTag);
+                this.pendingPistonLandingTag = null;
+                this.items.clear();
+                ModLog.debug("[方块破坏器活塞移动] 检测到非破坏器旧状态(" + state + ")触发 preRemoveSideEffects，跳过掉落并归还迁移数据: " + pos + " 实例: " + System.identityHashCode(this));
+            }
+            return;
+        }
+        this.pendingPistonLandingTag = null;
+        super.preRemoveSideEffects(pos, state);
     }
 
     @Override
@@ -124,11 +146,12 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
     public void setLevel(Level level) {
         super.setLevel(level);
         ModLog.debug("[方块破坏器 setLevel] 实例: " + System.identityHashCode(this) + " at " + this.worldPosition);
-        if (!level.isClientSide() && BlockBreakerPistonManager.hasPendingMigration(level.dimension(), this.worldPosition)) {
-            CompoundTag tag = BlockBreakerPistonManager.getMigration(level.dimension(), this.worldPosition);
+        if (!level.isClientSide()) {
+            CompoundTag tag = BlockBreakerPistonManager.consumeMigration(level.dimension(), this.worldPosition);
             if (tag != null) {
                 this.loadFromTag(tag);
-                ModLog.debug("[方块破坏器活塞移动] 在 setLevel 成功恢复迁移数据: " + this.worldPosition + " 实例: " + System.identityHashCode(this));
+                this.pendingPistonLandingTag = tag;
+                ModLog.debug("[方块破坏器活塞移动] 在 setLevel 成功消费并恢复迁移数据: " + this.worldPosition + " 实例: " + System.identityHashCode(this));
             }
         }
     }
@@ -138,19 +161,18 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
             return;
         }
 
+        blockEntity.pendingPistonLandingTag = null;
+
         if (!blockEntity.hasTickedOnce) {
             blockEntity.hasTickedOnce = true;
             ModLog.debug("[方块破坏器 serverTick 首次运行] 实例: " + System.identityHashCode(blockEntity) + " at " + pos + " items=" + blockEntity.items);
         }
 
         // 双重保障检查活塞数据迁移与落地确认
-        if (BlockBreakerPistonManager.hasPendingMigration(serverLevel.dimension(), pos)) {
-            CompoundTag tag = BlockBreakerPistonManager.getMigration(serverLevel.dimension(), pos);
-            if (tag != null && blockEntity.isEmpty()) {
-                blockEntity.loadFromTag(tag);
-                ModLog.debug("[方块破坏器活塞移动] 在 serverTick 兜底恢复迁移数据: " + pos + " 实例: " + System.identityHashCode(blockEntity));
-            }
-            BlockBreakerPistonManager.confirmMigration(serverLevel.dimension(), pos);
+        CompoundTag fallbackTag = BlockBreakerPistonManager.consumeMigration(serverLevel.dimension(), pos);
+        if (fallbackTag != null && blockEntity.isEmpty()) {
+            blockEntity.loadFromTag(fallbackTag);
+            ModLog.debug("[方块破坏器活塞移动] 在 serverTick 兜底恢复迁移数据: " + pos + " 实例: " + System.identityHashCode(blockEntity));
         }
 
         if (blockEntity.isMovingByPiston) {
@@ -507,6 +529,7 @@ public class BlockBreakerBlockEntity extends BlockEntity implements MenuProvider
 
     public void onPistonMoveStart() {
         this.isMovingByPiston = true;
+        this.pendingPistonLandingTag = null;
         if (this.level instanceof ServerLevel serverLevel) {
             cancelMining(serverLevel, this.fakePlayer);
         }

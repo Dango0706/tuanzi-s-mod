@@ -18,7 +18,7 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BlueprintCannonMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(3), new SimpleContainerData(11));
+        this(containerId, playerInventory, new SimpleContainer(3), new SimpleContainerData(14));
     }
 
     public BlueprintCannonMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
@@ -26,6 +26,7 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
         checkContainerSize(container, 3);
+        checkContainerDataCount(data, 14);
         this.addDataSlots(data);
 
         // 蓝图槽 Slot 0 (X=62, Y=35)
@@ -64,8 +65,15 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
         }
     }
 
+    public static int reconstructInt(int low16, int high16) {
+        return (low16 & 0xFFFF) | ((high16 & 0xFFFF) << 16);
+    }
+
     public BlockPos getCannonPos() {
-        return new BlockPos(this.data.get(6), this.data.get(7), this.data.get(8));
+        int x = reconstructInt(this.data.get(8), this.data.get(9));
+        int y = this.data.get(10);
+        int z = reconstructInt(this.data.get(11), this.data.get(12));
+        return new BlockPos(x, y, z);
     }
 
     public int getBuildState() {
@@ -77,7 +85,7 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
      * 返回值 == getTotalBlocks() 时表示建造已完成（进度 100%）。
      */
     public int getCurrentIndex() {
-        return this.data.get(1);
+        return reconstructInt(this.data.get(1), this.data.get(2));
     }
 
     /**
@@ -85,23 +93,23 @@ public class BlueprintCannonMenu extends AbstractContainerMenu {
      * 为 0 表示蓝图未载入或已被取走。
      */
     public int getTotalBlocks() {
-        return this.data.get(2);
+        return reconstructInt(this.data.get(3), this.data.get(4));
     }
 
     public boolean isDestroyMode() {
-        return this.data.get(3) == 1;
+        return this.data.get(5) == 1;
     }
 
     public boolean isExactMatch() {
-        return this.data.get(4) == 1;
+        return this.data.get(6) == 1;
     }
 
     public int getSlurryDurability() {
-        return this.data.get(5);
+        return this.data.get(7);
     }
 
     public int getPauseReason() {
-        return this.data.get(9);
+        return this.data.get(13);
     }
 
     public ItemStack getBlueprint() {

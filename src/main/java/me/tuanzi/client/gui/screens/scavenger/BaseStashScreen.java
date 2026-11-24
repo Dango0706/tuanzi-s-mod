@@ -183,7 +183,7 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
         ScavengerGridRenderer.renderGridBackground(graphics, sX, sY, STASH_COLUMNS, VISIBLE_ROWS);
 
         // 提取并过滤落在当前可视视口内的仓库条目
-        Collection<RedactedGridEntryView> allStashEntries = ScavengerClientState.getContainerEntries().values();
+        Collection<RedactedGridEntryView> allStashEntries = ScavengerClientState.getBaseStashEntries().values();
         List<RedactedGridEntryView> visibleViews = new ArrayList<>();
         for (RedactedGridEntryView v : allStashEntries) {
             int top = v.anchorY();
@@ -254,7 +254,7 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
             int actualTargetRow = this.dragController.calculateTargetRow(stashCell[1] + this.scrollRowOffset);
             int ignoredId = (this.dragController.getSource() == ScavengerGridActionC2SPacket.GridSource.BASE_STASH)
                     ? this.dragController.getEntryId() : -1;
-            boolean valid = ScavengerGridRenderer.isRedactedPlacementValid(targetCol, actualTargetRow, wCells, hCells, STASH_COLUMNS, totalRows, ignoredId, ScavengerClientState.getContainerEntries().values());
+            boolean valid = ScavengerGridRenderer.isRedactedPlacementValid(targetCol, actualTargetRow, wCells, hCells, STASH_COLUMNS, totalRows, ignoredId, ScavengerClientState.getBaseStashEntries().values());
             int viewRow = actualTargetRow - this.scrollRowOffset;
             ScavengerGridRenderer.renderGhostProjection(graphics, sX, sY, targetCol, viewRow, wCells, hCells, valid);
         }
@@ -338,7 +338,7 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
             int targetRow = this.dragController.calculateTargetRow(stashCell[1] + this.scrollRowOffset);
             int ignoredId = (this.dragController.getSource() == ScavengerGridActionC2SPacket.GridSource.BASE_STASH)
                     ? this.dragController.getEntryId() : -1;
-            if (ScavengerGridRenderer.isRedactedPlacementValid(targetCol, targetRow, w, h, STASH_COLUMNS, totalRows, ignoredId, ScavengerClientState.getContainerEntries().values())) {
+            if (ScavengerGridRenderer.isRedactedPlacementValid(targetCol, targetRow, w, h, STASH_COLUMNS, totalRows, ignoredId, ScavengerClientState.getBaseStashEntries().values())) {
                 ClientPlayNetworking.send(new ScavengerGridActionC2SPacket(
                         ScavengerGridActionC2SPacket.ActionType.MOVE_OR_ROTATE,
                         this.dragController.getSource(),
@@ -511,7 +511,7 @@ public class BaseStashScreen extends AbstractContainerScreen<BaseStashMenu> {
                 int actualCol = cell[0];
                 int actualRow = cell[1] + this.scrollRowOffset;
 
-                for (RedactedGridEntryView view : ScavengerClientState.getContainerEntries().values()) {
+                for (RedactedGridEntryView view : ScavengerClientState.getBaseStashEntries().values()) {
                     int w = view.effectiveWidth();
                     int h = view.effectiveHeight();
                     if (actualCol >= view.anchorX() && actualCol < view.anchorX() + w

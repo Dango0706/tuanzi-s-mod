@@ -1,5 +1,6 @@
 package me.tuanzi.world.scavenger.loot.container;
 
+import com.mojang.serialization.Codec;
 import me.tuanzi.util.ModLog;
 import me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry;
 import me.tuanzi.world.scavenger.loot.grid.GridInventory;
@@ -35,6 +36,9 @@ import java.util.function.Predicate;
  * </ul>
  */
 public class ScavengerLootContainerState {
+
+    private static final Codec<Map<String, List<String>>> REVEALED_PLAYERS_CODEC =
+            Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf());
 
     private final Identifier containerDefId;
     private final GridInventory grid;
@@ -262,7 +266,10 @@ public class ScavengerLootContainerState {
 
         ValueOutput revChild = output.child("RevealedPlayers");
         for (Map.Entry<Integer, Set<UUID>> entry : this.revealedPlayersByEntry.entrySet()) {
-            ValueOutput.TypedOutputList<String> list = revChild.list(String.valueOf(entry.getKey()), com.mojang.serialization.Codec.STRING);
+            if (entry.getValue() == null || entry.getValue().isEmpty()) {
+                continue;
+            }
+            ValueOutput.TypedOutputList<String> list = revChild.list(String.valueOf(entry.getKey()), Codec.STRING);
             for (UUID uuid : entry.getValue()) {
                 list.add(uuid.toString());
             }
@@ -271,12 +278,29 @@ public class ScavengerLootContainerState {
 
     public void loadFromValueInput(ValueInput input) {
         this.lootGenerated = input.getBooleanOr("LootGenerated", false);
-        input.child("Grid").ifPresent(child -> this.grid.loadFromValueInput(child, false));
+        input.child("Grid").ifPresentOrElse(
+                child -> this.grid.loadFromValueInput(child, false),
+                this.grid::clearAll
+        );
 
         this.revealedPlayersByEntry.clear();
-        input.child("RevealedPlayers").ifPresent(revChild -> {
-            // ValueInput 的子项遍历机制兼容
-            // 若为基础 key 解析，由 loadFromTag 兜底亦完全完备
+        input.read("RevealedPlayers", REVEALED_PLAYERS_CODEC).ifPresent(revealedMap -> {
+            for (Map.Entry<String, List<String>> entry : revealedMap.entrySet()) {
+                try {
+                    int entryId = Integer.parseInt(entry.getKey());
+                    Set<UUID> set = new HashSet<>();
+                    for (String uuidStr : entry.getValue()) {
+                        try {
+                            set.add(UUID.fromString(uuidStr));
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    }
+                    if (!set.isEmpty()) {
+                        this.revealedPlayersByEntry.put(entryId, set);
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
         });
     }
 }

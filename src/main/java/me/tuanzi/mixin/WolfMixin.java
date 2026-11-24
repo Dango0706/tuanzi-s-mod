@@ -7,6 +7,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -21,6 +22,8 @@ import net.minecraft.world.entity.animal.wolf.WolfSoundVariant;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -173,8 +176,8 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
 
     // 6. 受到致命伤害拦截、无敌及倒地免伤
     @ModifyVariable(method = "hurtServer", at = @At("HEAD"), argsOnly = true)
-    private float tuanzis_mod$modifyHurtDamage(float damage) {
-        if (tuanzis_mod$invulnerableTicks > 0) {
+    private float tuanzis_mod$modifyHurtDamage(float damage, ServerLevel level, DamageSource source) {
+        if (tuanzis_mod$invulnerableTicks > 0 && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return 0.0f;
         }
         return damage;
@@ -184,15 +187,16 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
     private void tuanzis_mod$onHurtServer(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         Wolf wolf = (Wolf) (Object) this;
 
-        // 倒地状态绝对无敌
+        // 倒地状态免除常规伤害，放行绕过无敌的伤害（如 /kill、虚空），且不重复触发护符复活
         if (tuanzis_mod$downed) {
-            cir.setReturnValue(false);
+            if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                cir.setReturnValue(false);
+            }
             return;
         }
 
-
-        // 致命伤害防护
-        if (amount >= this.getHealth()) {
+        // 致命伤害防护（绕过无敌的伤害不可触发免死保护）
+        if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && amount >= this.getHealth()) {
             if (wolf.isTame() && wolf.getOwner() instanceof ServerPlayer owner) {
                 ItemStack offhandStack = owner.getItemInHand(InteractionHand.OFF_HAND);
                 if (offhandStack.is(ModItems.WOLF_COMMAND) && !owner.getCooldowns().isOnCooldown(offhandStack)) {
@@ -304,5 +308,26 @@ public abstract class WolfMixin extends LivingEntity implements me.tuanzi.util.W
             return false;
         }
         return super.canBeSeenAsEnemy();
+    }
+
+    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+    private void tuanzis_mod$writeWolfCharmData(ValueOutput output, CallbackInfo ci) {
+        output.putInt("tuanzis_mod$invulnerable_ticks", this.tuanzis_mod$invulnerableTicks);
+        output.putInt("tuanzis_mod$rage_ticks", this.tuanzis_mod$rageTicks);
+        output.putBoolean("tuanzis_mod$downed", this.tuanzis_mod$downed);
+        output.putInt("tuanzis_mod$rotten_flesh_fed_count", this.tuanzis_mod$rottenFleshFedCount);
+    }
+
+    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+    private void tuanzis_mod$readWolfCharmData(ValueInput input, CallbackInfo ci) {
+        this.tuanzis_mod$invulnerableTicks = Math.max(0, input.getIntOr("tuanzis_mod$invulnerable_ticks", 0));
+        this.tuanzis_mod$rageTicks = Math.max(0, input.getIntOr("tuanzis_mod$rage_ticks", 0));
+        this.tuanzis_mod$downed = input.getBooleanOr("tuanzis_mod$downed", false);
+        this.tuanzis_mod$rottenFleshFedCount = Math.max(0, input.getIntOr("tuanzis_mod$rotten_flesh_fed_count", 0));
+        if (this.tuanzis_mod$downed) {
+            Wolf wolf = (Wolf) (Object) this;
+            wolf.setOrderedToSit(true);
+            this.setHealth(1.0f);
+        }
     }
 }

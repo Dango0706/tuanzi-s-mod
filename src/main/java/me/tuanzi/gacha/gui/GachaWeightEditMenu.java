@@ -23,7 +23,9 @@ public class GachaWeightEditMenu extends ChestMenu {
     private final GachaPool pool;
     private final String rarity;
     private final GachaPoolItem targetItem;
-    private final ChestMenu parentMenu;
+    private final GachaImportMenu.ImportSessionState importState;
+    private final String parentRarity;
+    private final int parentPage;
     private final ServerPlayer player;
     private int currentWeight;
 
@@ -32,7 +34,19 @@ public class GachaWeightEditMenu extends ChestMenu {
         this.pool = pool;
         this.rarity = rarity;
         this.targetItem = targetItem;
-        this.parentMenu = parentMenu;
+        if (parentMenu instanceof GachaImportMenu importMenu) {
+            this.importState = importMenu.getSessionState();
+            this.parentRarity = null;
+            this.parentPage = 0;
+        } else if (parentMenu instanceof GachaPoolEditMenu editMenu) {
+            this.importState = null;
+            this.parentRarity = editMenu.getCurrentRarity();
+            this.parentPage = editMenu.getCurrentPage();
+        } else {
+            this.importState = null;
+            this.parentRarity = null;
+            this.parentPage = 0;
+        }
         this.player = (ServerPlayer) playerInventory.player;
         this.currentWeight = targetItem.getWeight();
         refreshSlots();
@@ -102,15 +116,16 @@ public class GachaWeightEditMenu extends ChestMenu {
                 // 功能按钮
             else if (slotIndex == 20) {
                 // 确认修改
-                if (parentMenu instanceof GachaImportMenu importMenu) {
-                    // 如果来自批量导入，我们需要提取槽位并设置临时权重
+                if (this.importState != null) {
+                    // 如果来自批量导入，我们需要提取槽位并设置临时权重与暂存物品
                     String id = targetItem.getId();
                     if (id.startsWith("temp_")) {
                         try {
                             int slotIdx = Integer.parseInt(id.split("_")[1]);
-                            importMenu.setTempWeight(slotIdx, currentWeight);
-                            // 将修改过临时权重的物品放回导入缓存中，保持状态
-                            importMenu.getContainer().setItem(slotIdx, targetItem.getItem().copy());
+                            if (slotIdx >= 0 && slotIdx < 27) {
+                                this.importState.tempWeights.put(slotIdx, currentWeight);
+                                this.importState.stagedItems.set(slotIdx, targetItem.getItem().copy());
+                            }
                         } catch (Exception ignored) {
                         }
                     }
@@ -142,21 +157,15 @@ public class GachaWeightEditMenu extends ChestMenu {
     }
 
     private void returnToParent() {
-        if (parentMenu instanceof GachaImportMenu importMenu) {
+        if (this.importState != null) {
             net.minecraft.world.SimpleMenuProvider provider = new net.minecraft.world.SimpleMenuProvider(
-                    (id, playerInv, p) -> {
-                        importMenu.refreshSlots();
-                        return importMenu;
-                    },
+                    (id, playerInv, p) -> new GachaImportMenu(id, playerInv, this.importState),
                     Component.literal("从生存背包批量导入物品")
             );
             player.openMenu(provider);
-        } else if (parentMenu instanceof GachaPoolEditMenu editMenu) {
+        } else if (this.parentRarity != null) {
             net.minecraft.world.SimpleMenuProvider provider = new net.minecraft.world.SimpleMenuProvider(
-                    (id, playerInv, p) -> {
-                        editMenu.refreshSlots();
-                        return editMenu;
-                    },
+                    (id, playerInv, p) -> new GachaPoolEditMenu(id, playerInv, this.pool, this.parentRarity, this.parentPage),
                     Component.literal("活跃卡池编辑器")
             );
             player.openMenu(provider);

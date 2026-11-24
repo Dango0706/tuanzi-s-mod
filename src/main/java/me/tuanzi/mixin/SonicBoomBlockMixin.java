@@ -15,26 +15,27 @@ import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
+/**
+ * 必须保持 priority < 1000（如 900）且 order < 1000（900 / 950），严禁使用 priority >= 1000：
+ * sponge-mixin-0.17.4 在 INJECT_PREPARE 阶段为所有 @At("HEAD") 共享绑定原方法首指令 ORIG_0，
+ * 随后在 INJECT_APPLY 阶段按 (order 升序, Mixin priority 升序) 执行 insertBefore(ORIG_0, ...)，呈严格 FIFO。
+ * 若使用 priority >= 1000，默认 priority=1000 的 BloodRageDamageMixin 与 LivingEntityMixin 会排在本 Mixin 之前执行。
+ */
+@Mixin(value = LivingEntity.class, priority = 900)
 public abstract class SonicBoomBlockMixin {
-
-    private static boolean tuanzis_mod$isApplyingPassiveReduction = false;
 
     @Inject(
             method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
             at = @At("HEAD"),
-            cancellable = true
+            cancellable = true,
+            order = 900
     )
     private void tuanzis_mod$redirectSonicBoomHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity target = (LivingEntity) (Object) this;
         if (target instanceof Player player && source.is(DamageTypes.SONIC_BOOM)) {
-            // 如果在被动减伤重入防递归中，直接放行，走原本的原版伤害流程
-            if (tuanzis_mod$isApplyingPassiveReduction) {
-                return;
-            }
-
             if (player.isUsingItem() && player.getUseItem().is(ModItems.ECHO_BREAKER)) {
                 // Block successful!
                 // 1. Play shield block and metallic chime sounds at player position
@@ -76,18 +77,26 @@ public abstract class SonicBoomBlockMixin {
                 cir.setReturnValue(false);
                 return;
             }
-
-            // 被动吸伤被动：必须在主手持有该武器，副手和快捷栏均不生效，自动减免 15% 的爆破伤害（即造成 85% 的原始伤害）
-            if (player.getMainHandItem().is(ModItems.ECHO_BREAKER)) {
-                tuanzis_mod$isApplyingPassiveReduction = true;
-                try {
-                    me.tuanzi.util.ModLog.debug(player, source.getEntity(), "回响破障者被动属性触发：主手持有吸收 15% 声波伤害，减免后伤害为 " + String.format("%.2f", amount * 0.85F) + "。");
-                    boolean result = player.hurtServer(level, source, amount * 0.85F);
-                    cir.setReturnValue(result);
-                } finally {
-                    tuanzis_mod$isApplyingPassiveReduction = false;
-                }
-            }
         }
+    }
+
+    @ModifyVariable(
+            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            at = @At("HEAD"),
+            argsOnly = true,
+            order = 950
+    )
+    private float tuanzis_mod$applyPassiveSonicBoomReduction(float amount, ServerLevel level, DamageSource source) {
+        LivingEntity target = (LivingEntity) (Object) this;
+        if (target instanceof Player player
+                && source.is(DamageTypes.SONIC_BOOM)
+                && !(player.isUsingItem() && player.getUseItem().is(ModItems.ECHO_BREAKER))
+                && player.getMainHandItem().is(ModItems.ECHO_BREAKER)) {
+            float reduced = amount * 0.85F;
+            me.tuanzi.util.ModLog.debug(player, source.getEntity(),
+                    "回响破障者被动属性触发：主手持有吸收 15% 声波伤害，减免后伤害为 " + String.format("%.2f", reduced) + "。");
+            return reduced;
+        }
+        return amount;
     }
 }

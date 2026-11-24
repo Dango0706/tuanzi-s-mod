@@ -27,7 +27,7 @@ public record GhostPlaceStructurePacket(
             ByteBufCodecs.VAR_INT, GhostPlaceStructurePacket::rotation,
             ByteBufCodecs.BOOL, GhostPlaceStructurePacket::mirrored,
             ByteBufCodecs.BOOL, GhostPlaceStructurePacket::useHeldBlueprint,
-            ByteBufCodecs.COMPOUND_TAG, GhostPlaceStructurePacket::blueprintData,
+            BlueprintTableImportPacket.COMPRESSED_COMPOUND_TAG, GhostPlaceStructurePacket::blueprintData,
             GhostPlaceStructurePacket::new
     );
 

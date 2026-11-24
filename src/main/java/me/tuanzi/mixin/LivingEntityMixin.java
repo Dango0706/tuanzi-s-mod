@@ -45,6 +45,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
     private double tuanzis_mod$persistentZ = 0.0;
     @org.spongepowered.asm.mixin.Unique
     private boolean tuanzis_mod$hasPersistentPos = false;
+    @org.spongepowered.asm.mixin.Unique
+    private boolean tuanzis_mod$pendingAdrenalineSideEffect = false;
 
     @org.spongepowered.asm.mixin.Unique
     private static ServerPlayer tuanzis_mod$resolveSourcePlayer(Entity source) {
@@ -181,6 +183,35 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
         }
     }
 
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void tuanzis_mod$tickAdrenalineSideEffect(CallbackInfo ci) {
+        if (!this.tuanzis_mod$pendingAdrenalineSideEffect) {
+            return;
+        }
+        this.tuanzis_mod$pendingAdrenalineSideEffect = false;
+
+        LivingEntity entity = (LivingEntity) (Object) this;
+        if (entity.level().isClientSide() || !entity.isAlive() || entity.hasEffect(ModStatusEffects.ADRENALINE)) {
+            return;
+        }
+
+        MobEffectInstance overdraw = entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
+        if (overdraw != null) {
+            int level = overdraw.getAmplifier() + 1;
+            int sideEffectTicks = level * 30 * 20;
+
+            entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, sideEffectTicks, 0));
+            entity.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, sideEffectTicks, 0));
+
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
+                    SoundEvents.AMBIENT_UNDERWATER_ENTER, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.5f);
+
+            me.tuanzi.util.ModLog.debug(entity, null, "肾上腺素药水效果结束：透支副作用触发！已获得 " + (level * 30) + " 秒的虚弱 I 与挖掘疲劳 I（透支等级: " + level + " 级）。");
+
+            entity.removeEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
+        }
+    }
+
     /**
      * 当实体移除状态效果时（不管是到期自动移除，还是被其他逻辑清除），
      * 如果“肾上腺素”Buff被移除，且“肾上腺素透支”效果依然存在，就会在这里拦截并触发负面效果。
@@ -217,27 +248,8 @@ public abstract class LivingEntityMixin implements me.tuanzi.util.RhythmTracker,
             }
 
             if (effect.getEffect().equals(ModStatusEffects.ADRENALINE)) {
-                // 肾上腺素药水效果结束时
-                MobEffectInstance overdraw = entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
-                if (overdraw != null) {
-                    // 根据是否仍处于透支状态触发副作用！
-                    // “每级叠加30秒虚弱I + 挖掘疲劳I，最高叠加至IV级”
-                    // overdraw.getAmplifier() 范围为 0 至 3 (即 I 至 IV 级)
-                    int level = overdraw.getAmplifier() + 1;
-                    int sideEffectTicks = level * 30 * 20; // 30秒/级
-
-                    // 虚弱 I 的 amplifier 是 0，挖掘疲劳 I 的 amplifier 是 0
-                    entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, sideEffectTicks, 0));
-                    entity.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, sideEffectTicks, 0));
-
-                    // 播放虚脱副作用音效
-                    entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                            SoundEvents.AMBIENT_UNDERWATER_ENTER, net.minecraft.sounds.SoundSource.PLAYERS, 1.0f, 1.5f);
-
-                    me.tuanzi.util.ModLog.debug(entity, null, "肾上腺素药水效果结束：透支副作用触发！已获得 " + (level * 30) + " 秒的虚弱 I 与挖掘疲劳 I（透支等级: " + level + " 级）。");
-
-                    // 移除肾上腺素透支标识，以防止重复触发
-                    entity.removeEffect(ModStatusEffects.ADRENALINE_OVERDRAW);
+                if (entity.getEffect(ModStatusEffects.ADRENALINE_OVERDRAW) != null) {
+                    this.tuanzis_mod$pendingAdrenalineSideEffect = true;
                 }
             }
         }

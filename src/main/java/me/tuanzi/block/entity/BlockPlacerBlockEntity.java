@@ -94,7 +94,7 @@ public class BlockPlacerBlockEntity extends BlockEntity implements MenuProvider,
 
     private @Nullable SimulatorFakePlayer fakePlayer = null;
 
-    // 菜单同步数据 (0: 模式, 1: 连续间隔, 2: 模拟潜行, 3: 底面抽出, 4: 状态码, 5: X, 6: Y, 7: Z)
+    // 菜单同步数据 (0: 模式, 1: 连续间隔, 2: 模拟潜行, 3: 底面抽出, 4: 状态码, 5..6: X, 7: Y, 8..9: Z)
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
@@ -104,9 +104,11 @@ public class BlockPlacerBlockEntity extends BlockEntity implements MenuProvider,
                 case 2 -> BlockPlacerBlockEntity.this.simulateSneak ? 1 : 0;
                 case 3 -> BlockPlacerBlockEntity.this.allowBottomExtract ? 1 : 0;
                 case 4 -> BlockPlacerBlockEntity.this.statusCode;
-                case 5 -> BlockPlacerBlockEntity.this.worldPosition.getX();
-                case 6 -> BlockPlacerBlockEntity.this.worldPosition.getY();
-                case 7 -> BlockPlacerBlockEntity.this.worldPosition.getZ();
+                case 5 -> BlockPlacerBlockEntity.this.worldPosition.getX() & 0xFFFF;
+                case 6 -> BlockPlacerBlockEntity.this.worldPosition.getX() >>> 16;
+                case 7 -> BlockPlacerBlockEntity.this.worldPosition.getY();
+                case 8 -> BlockPlacerBlockEntity.this.worldPosition.getZ() & 0xFFFF;
+                case 9 -> BlockPlacerBlockEntity.this.worldPosition.getZ() >>> 16;
                 default -> 0;
             };
         }
@@ -124,7 +126,7 @@ public class BlockPlacerBlockEntity extends BlockEntity implements MenuProvider,
 
         @Override
         public int getCount() {
-            return 8;
+            return 10;
         }
     };
 

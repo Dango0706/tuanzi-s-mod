@@ -29,10 +29,25 @@ public class GachaPoolEditMenu extends ChestMenu {
     private GachaPoolItem pendingDeleteItem = null;
 
     public GachaPoolEditMenu(int containerId, Inventory playerInventory, GachaPool pool) {
+        this(containerId, playerInventory, pool, "legendary", 0);
+    }
+
+    public GachaPoolEditMenu(int containerId, Inventory playerInventory, GachaPool pool, String initialRarity, int initialPage) {
         super(MenuType.GENERIC_9x6, containerId, playerInventory, new SimpleContainer(54), 6);
         this.pool = pool;
         this.player = (ServerPlayer) playerInventory.player;
+        this.currentRarity = (initialRarity != null && !initialRarity.isEmpty()) ? initialRarity : "legendary";
+        int totalPages = Math.max(1, (int) Math.ceil((double) pool.getListByRarity(this.currentRarity).size() / 18));
+        this.currentPage = Math.min(Math.max(0, initialPage), totalPages - 1);
         refreshSlots();
+    }
+
+    public String getCurrentRarity() {
+        return currentRarity;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
     }
 
     public void refreshSlots() {

@@ -118,12 +118,7 @@ public class BlockPlacerBlock extends BaseEntityBlock {
 
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        BlockEntity be = level.getBlockEntity(pos);
-        if (be instanceof BlockPlacerBlockEntity placerBe) {
-            Containers.dropContents(level, pos, placerBe);
-            level.updateNeighborsAt(pos, this);
-        }
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 
     @Override

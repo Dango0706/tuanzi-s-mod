@@ -147,7 +147,10 @@ public class BlueprintCannonGameTest {
             }
 
             if (cannon.dataAccess.get(0) != 0) {
-                helper.fail(Component.literal("Cannon still running, progress=" + cannon.dataAccess.get(1) + "/" + cannon.dataAccess.get(2)));
+                helper.fail(Component.literal("Cannon still running, progress="
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(1), cannon.dataAccess.get(2))
+                        + "/"
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(3), cannon.dataAccess.get(4))));
                 return;
             }
 
@@ -269,7 +272,10 @@ public class BlueprintCannonGameTest {
             }
 
             if (cannon.dataAccess.get(0) != 0) {
-                helper.fail(Component.literal("Cannon still running, progress=" + cannon.dataAccess.get(1) + "/" + cannon.dataAccess.get(2)));
+                helper.fail(Component.literal("Cannon still running, progress="
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(1), cannon.dataAccess.get(2))
+                        + "/"
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(3), cannon.dataAccess.get(4))));
                 return;
             }
 
@@ -387,5 +393,74 @@ public class BlueprintCannonGameTest {
         outBoundsDrop.place(helper.getLevel());
 
         helper.succeed();
+    }
+
+    @GameTest(maxTicks = 400)
+    public void testCreativeCoreCustomFiringSpeed(GameTestHelper helper) {
+        for (int x = 0; x <= 6; x++) {
+            for (int z = 0; z <= 3; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                for (int y = 1; y <= 4; y++) {
+                    helper.setBlock(x, y, z, Blocks.AIR);
+                }
+            }
+        }
+
+        helper.setBlock(0, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+        helper.setBlock(1, 1, 1, Blocks.CHEST);
+
+        // 仅放入配置为「每 2 ticks 发射 3 次」的创造核心（不放石头与浆料，由创造核心和附近/自身浆料提供）
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(1, 1, 1), ChestBlockEntity.class);
+        ItemStack creativeCore = new ItemStack(ModItems.CREATIVE_CORE);
+        me.tuanzi.item.CreativeCoreItem.setCannonSpeed(creativeCore, 2, 3);
+        chest.setItem(0, creativeCore);
+
+        Map<BlockPos, BlockState> bp = new HashMap<>();
+        for (int i = 0; i < 6; i++) {
+            bp.put(new BlockPos(i % 3, i / 3, 0), Blocks.STONE.defaultBlockState());
+        }
+
+        BlockPos absCannonPos = helper.absolutePos(new BlockPos(0, 1, 1));
+        BlueprintCannonBlockEntity cannon = helper.getBlockEntity(new BlockPos(0, 1, 1), BlueprintCannonBlockEntity.class);
+        cannon.setItem(0, createBlueprintItem(helper.absolutePos(new BlockPos(3, 1, 1)), 3, 2, 1, bp));
+        cannon.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY, 4));
+        cannon.handleAction("START", false, false);
+
+        // 第 1 tick：一次性发射 3 个方块，然后重置 ticksToNextPlace = 2
+        BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        if (cannon.flyingBlocks.size() != 3) {
+            helper.fail(Component.literal("Expected 3 flying blocks after first firing tick, got " + cannon.flyingBlocks.size()));
+            return;
+        }
+
+        // 第 2 tick：ticksToNextPlace 从 2 减到 1，不应发射新方块
+        BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        if (cannon.flyingBlocks.size() != 3) {
+            helper.fail(Component.literal("Expected still 3 flying blocks during 1-tick cooldown, got " + cannon.flyingBlocks.size()));
+            return;
+        }
+
+        // 第 3 tick：ticksToNextPlace 从 1 减到 0，一次性再发射剩余 3 个方块（共 6 个在途）
+        BlueprintCannonBlockEntity.serverTick(helper.getLevel(), absCannonPos, cannon.getBlockState(), cannon);
+        if (cannon.flyingBlocks.size() != 6) {
+            helper.fail(Component.literal("Expected 6 flying blocks after second firing tick, got " + cannon.flyingBlocks.size()));
+            return;
+        }
+
+        helper.succeedWhen(() -> {
+            if (cannon.dataAccess.get(0) != 0) {
+                helper.fail(Component.literal("Cannon still running, progress="
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(1), cannon.dataAccess.get(2))
+                        + "/"
+                        + me.tuanzi.world.inventory.BlueprintCannonMenu.reconstructInt(cannon.dataAccess.get(3), cannon.dataAccess.get(4))));
+                return;
+            }
+            for (int i = 0; i < 6; i++) {
+                helper.assertBlockPresent(Blocks.STONE, 3 + (i % 3), 1 + (i / 3), 1);
+            }
+            if (chest.getItem(0).isEmpty() || !chest.getItem(0).is(ModItems.CREATIVE_CORE)) {
+                helper.fail(Component.literal("Creative core should remain intact in chest"));
+            }
+        });
     }
 }

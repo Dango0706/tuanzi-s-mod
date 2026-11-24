@@ -22,6 +22,9 @@ public record ScavengerContainerSyncS2CPacket(
         List<RedactedGridEntryView> entries
 ) implements CustomPacketPayload {
 
+    public static final Identifier BASE_STASH_DEF_ID =
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_stash");
+
     public static final Type<ScavengerContainerSyncS2CPacket> TYPE =
             new Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_container_sync_s2c"));
     private static final StreamCodec<RegistryFriendlyByteBuf, List<RedactedGridEntryView>> ENTRIES_STREAM_CODEC =

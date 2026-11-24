@@ -41,13 +41,17 @@ public class DecoyTotemItem extends Item {
                     decoy.setItemSlot(slot, player.getItemBySlot(slot).copy());
                 }
 
-                // 3. 复制玩家的血量、最大血量、护甲值
-                double maxHealth = player.getMaxHealth();
-                decoy.getAttribute(Attributes.MAX_HEALTH).setBaseValue(maxHealth);
+                // 3. 复制玩家的血量、最大血量、基础护甲值（穿戴装备与附魔修饰符由 setItemSlot + detectEquipmentUpdates 自动结算）
+                var maxHealthAttr = decoy.getAttribute(Attributes.MAX_HEALTH);
+                if (maxHealthAttr != null) {
+                    maxHealthAttr.setBaseValue(player.getMaxHealth());
+                }
                 decoy.setHealth(player.getHealth());
 
-                double armor = player.getAttributeValue(Attributes.ARMOR);
-                decoy.getAttribute(Attributes.ARMOR).setBaseValue(armor);
+                var armorAttr = decoy.getAttribute(Attributes.ARMOR);
+                if (armorAttr != null) {
+                    armorAttr.setBaseValue(player.getAttributeBaseValue(Attributes.ARMOR));
+                }
 
                 level.addFreshEntity(decoy);
             }

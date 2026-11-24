@@ -31,15 +31,17 @@ public class BaseStashCabinetBlockEntity extends BlockEntity implements MenuProv
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        SimpleContainerData data = new SimpleContainerData(4);
-        data.set(0, this.worldPosition.getX());
-        data.set(1, this.worldPosition.getY());
-        data.set(2, this.worldPosition.getZ());
+        SimpleContainerData data = new SimpleContainerData(6);
+        data.set(0, this.worldPosition.getX() & 0xFFFF);
+        data.set(1, this.worldPosition.getX() >>> 16);
+        data.set(2, this.worldPosition.getY());
+        data.set(3, this.worldPosition.getZ() & 0xFFFF);
+        data.set(4, this.worldPosition.getZ() >>> 16);
         int stashLv = 1;
         if (player instanceof ScavengerPlayerTracker tracker) {
             stashLv = tracker.tuanzis_mod$getCorridorProfile().stashLevel();
         }
-        data.set(3, stashLv);
+        data.set(5, stashLv);
         return new BaseStashMenu(containerId, playerInventory, data);
     }
 }

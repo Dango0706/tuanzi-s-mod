@@ -415,6 +415,23 @@ public class GridInventory {
     }
 
     /**
+     * 按原 {@code entryId}、锚点坐标与旋转朝向无损恢复之前被移除的条目（保留原始 {@code entryId} 与固化搜索耗时）。
+     */
+    public boolean restoreEntry(GridItemEntry entry) {
+        if (entry == null || entry.stack().isEmpty()) {
+            return false;
+        }
+        if (this.entriesById.containsKey(entry.entryId())) {
+            return false;
+        }
+        if (!canPlace(entry.resolveMeta(), entry.anchorX(), entry.anchorY(), entry.effectiveRotated(), EMPTY_CELL)) {
+            return false;
+        }
+        putEntryInternal(entry);
+        return true;
+    }
+
+    /**
      * 清空网格并返回被移除的全部条目列表。
      */
     public List<GridItemEntry> clearAll() {

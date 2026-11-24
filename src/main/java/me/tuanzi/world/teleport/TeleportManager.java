@@ -32,6 +32,15 @@ public class TeleportManager {
     private static final Map<UUID, TeleportTask> activeTasks = new ConcurrentHashMap<>();
     private static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
 
+    public static void clear() {
+        activeTasks.clear();
+        cooldowns.clear();
+    }
+
+    public static void onPlayerDisconnect(UUID uuid) {
+        activeTasks.remove(uuid);
+    }
+
     public static void initialize() {
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             Iterator<Map.Entry<UUID, TeleportTask>> iterator = activeTasks.entrySet().iterator();
@@ -40,16 +49,34 @@ public class TeleportManager {
                 TeleportTask task = entry.getValue();
                 ServerPlayer player = task.player;
 
-                // 玩家离线或离开服务器，则移除
-                if (player == null || player.isRemoved()) {
+                // 玩家离线、断线、移除或死亡，则移除
+                if (player == null || player.isRemoved() || player.hasDisconnected() || !player.isAlive()) {
                     iterator.remove();
                     continue;
                 }
 
-                // 移动检测：若距离初始位置超过 0.1 格，则打断传送
-                if (player.position().distanceToSqr(task.startVec) > 0.01) {
+                // 维度与移动检测：若离开初始维度或距离初始位置超过 0.1 格，则打断传送
+                if (!player.level().dimension().equals(task.startDim)
+                        || player.position().distanceToSqr(task.startVec) > 0.01) {
                     player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
-                    me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：玩家移动距离过大。");
+                    me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：玩家移动距离过大或维度变化。");
+                    iterator.remove();
+                    continue;
+                }
+
+                // 引导期间校验原手仍持有同组件旅者手札且能量充足
+                InteractionHand hand = task.isMainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
+                ItemStack curNotebook = player.getItemInHand(hand);
+                if (!curNotebook.is(ModItems.TRAVELERS_NOTEBOOK)
+                        || !ItemStack.isSameItemSameComponents(task.startNotebookSnapshot, curNotebook)) {
+                    player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
+                    me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：手中旅者手札已切换或变更。");
+                    iterator.remove();
+                    continue;
+                }
+                if (TravelersNotebookItem.getEnergy(curNotebook) < task.energyCost) {
+                    player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.insufficient_energy"));
+                    me.tuanzi.util.ModLog.debug(player, null, "旅者手札传送打断：旅者手札能量不足。");
                     iterator.remove();
                     continue;
                 }
@@ -124,6 +151,8 @@ public class TeleportManager {
         TeleportTask task = new TeleportTask(
                 player,
                 player.position(),
+                player.level().dimension(),
+                notebook.copy(),
                 targetDimKey,
                 tx, ty, tz, yaw, pitch,
                 60, // 3秒引导 (60 ticks)
@@ -148,15 +177,33 @@ public class TeleportManager {
 
     private static void performTeleport(TeleportTask task) {
         ServerPlayer player = task.player;
-        ServerLevel targetLevel = player.level().getServer().getLevel(task.targetDim);
+        if (player == null || player.isRemoved() || player.hasDisconnected() || !player.isAlive()) {
+            return;
+        }
+        if (!player.level().dimension().equals(task.startDim)) {
+            player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
+            return;
+        }
+        var server = player.level().getServer();
+        if (server == null) {
+            return;
+        }
+        ServerLevel targetLevel = server.getLevel(task.targetDim);
 
         if (targetLevel != null) {
-            // 扣除能量
+            // 二次校验手中仍持有同一手札且能量充足后再扣能传送
             ItemStack notebook = player.getItemInHand(task.isMainHand ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-            if (notebook.is(ModItems.TRAVELERS_NOTEBOOK)) {
-                int curEnergy = TravelersNotebookItem.getEnergy(notebook);
-                TravelersNotebookItem.setEnergy(notebook, curEnergy - task.energyCost);
+            if (!notebook.is(ModItems.TRAVELERS_NOTEBOOK)
+                    || !ItemStack.isSameItemSameComponents(task.startNotebookSnapshot, notebook)) {
+                player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.interrupted"));
+                return;
             }
+            int curEnergy = TravelersNotebookItem.getEnergy(notebook);
+            if (curEnergy < task.energyCost) {
+                player.sendSystemMessage(Component.translatable("message.tuanzis_mod.travelers_notebook.insufficient_energy"));
+                return;
+            }
+            TravelersNotebookItem.setEnergy(notebook, curEnergy - task.energyCost);
 
             // 播放起点的传送音效与粒子
             ServerLevel originLevel = (ServerLevel) player.level();
@@ -195,6 +242,8 @@ public class TeleportManager {
     private static class TeleportTask {
         final ServerPlayer player;
         final Vec3 startVec;
+        final ResourceKey<Level> startDim;
+        final ItemStack startNotebookSnapshot;
         final ResourceKey<Level> targetDim;
         final double tx, ty, tz;
         final float yaw, pitch;
@@ -202,11 +251,13 @@ public class TeleportManager {
         final boolean isMainHand;
         int remainingTicks;
 
-        TeleportTask(ServerPlayer player, Vec3 startVec, ResourceKey<Level> targetDim,
-                     double tx, double ty, double tz, float yaw, float pitch,
+        TeleportTask(ServerPlayer player, Vec3 startVec, ResourceKey<Level> startDim, ItemStack startNotebookSnapshot,
+                     ResourceKey<Level> targetDim, double tx, double ty, double tz, float yaw, float pitch,
                      int remainingTicks, int energyCost, boolean isMainHand) {
             this.player = player;
             this.startVec = startVec;
+            this.startDim = startDim;
+            this.startNotebookSnapshot = startNotebookSnapshot;
             this.targetDim = targetDim;
             this.tx = tx;
             this.ty = ty;

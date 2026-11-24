@@ -30,9 +30,64 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StarRiftBladeItem extends Item {
     public static final Identifier GAP_VERDICT_SPEED_MODIFIER_ID = Identifier.fromNamespaceAndPath("tuanzis_mod", "gap_verdict_attack_speed");
     private static final Map<UUID, Integer> SPEED_BUFF_TICKS = new ConcurrentHashMap<>();
+    private static boolean tickHandlerRegistered = false;
 
     public StarRiftBladeItem(Properties properties) {
         super(properties);
+    }
+
+    public static void registerTickHandler() {
+        if (tickHandlerRegistered) {
+            return;
+        }
+        tickHandlerRegistered = true;
+
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (SPEED_BUFF_TICKS.isEmpty()) {
+                return;
+            }
+            for (UUID uuid : List.copyOf(SPEED_BUFF_TICKS.keySet())) {
+                LivingEntity living = findLivingEntity(server, uuid);
+                if (living == null || !living.isAlive()) {
+                    SPEED_BUFF_TICKS.remove(uuid);
+                    if (living != null) {
+                        AttributeInstance speedAttr = living.getAttribute(Attributes.ATTACK_SPEED);
+                        if (speedAttr != null) {
+                            speedAttr.removeModifier(GAP_VERDICT_SPEED_MODIFIER_ID);
+                        }
+                    }
+                    continue;
+                }
+                tickGapVerdictSpeedBuff(living);
+            }
+        });
+
+        net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            var player = handler.getPlayer();
+            SPEED_BUFF_TICKS.remove(player.getUUID());
+            AttributeInstance speedAttr = player.getAttribute(Attributes.ATTACK_SPEED);
+            if (speedAttr != null) {
+                speedAttr.removeModifier(GAP_VERDICT_SPEED_MODIFIER_ID);
+            }
+        });
+
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            SPEED_BUFF_TICKS.clear();
+        });
+    }
+
+    private static LivingEntity findLivingEntity(net.minecraft.server.MinecraftServer server, UUID uuid) {
+        var player = server.getPlayerList().getPlayer(uuid);
+        if (player != null) {
+            return player;
+        }
+        for (ServerLevel level : server.getAllLevels()) {
+            Entity entity = level.getEntity(uuid);
+            if (entity instanceof LivingEntity living) {
+                return living;
+            }
+        }
+        return null;
     }
 
     public static void applyGapVerdictSpeedBuff(LivingEntity entity, double bonusRatio, int durationTicks) {
@@ -85,10 +140,6 @@ public class StarRiftBladeItem extends Item {
 
                 // 打印调试日志
                 me.tuanzi.util.ModLog.debug(entity, null, "【星隙裁刃】生成磨损度: " + String.format("%.4f", wear));
-            }
-
-            if (entity instanceof LivingEntity livingEntity) {
-                tickGapVerdictSpeedBuff(livingEntity);
             }
         }
     }

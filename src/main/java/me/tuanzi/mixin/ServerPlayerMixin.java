@@ -60,12 +60,22 @@ public class ServerPlayerMixin implements WitherKillTracker {
                     if (currentGameTime - this.tuanzis_mod$lastVoidAnchorGameTime >= 6000L) {
                         this.tuanzis_mod$lastVoidAnchorGameTime = currentGameTime;
 
-                        // 传送回最近一次站立的安全地面
-                        net.minecraft.world.phys.Vec3 targetPos = this.tuanzis_mod$lastSafePos;
-                        ServerLevel targetLevel = this.tuanzis_mod$lastSafeLevel != null ? this.tuanzis_mod$lastSafeLevel : level;
+                        // 传送回当前维度最近一次站立的安全地面；跨维度且尚无本维安全记录时回退至世界出生点维度及坐标
+                        net.minecraft.world.phys.Vec3 targetPos = (this.tuanzis_mod$lastSafeLevel == level) ? this.tuanzis_mod$lastSafePos : null;
+                        ServerLevel targetLevel = level;
                         if (targetPos == null) {
-                            net.minecraft.core.BlockPos spawnPos = level.getLevelData().getRespawnData().globalPos().pos();
-                            targetPos = net.minecraft.world.phys.Vec3.atBottomCenterOf(spawnPos);
+                            net.minecraft.core.GlobalPos globalPos = level.getLevelData().getRespawnData().globalPos();
+                            ServerLevel respawnLevel = level.getServer() != null ? level.getServer().getLevel(globalPos.dimension()) : null;
+                            if (respawnLevel != null) {
+                                targetLevel = respawnLevel;
+                                targetPos = net.minecraft.world.phys.Vec3.atBottomCenterOf(globalPos.pos());
+                            } else {
+                                targetLevel = level;
+                                net.minecraft.core.BlockPos fallbackPos = globalPos.pos();
+                                int surfaceY = targetLevel.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, fallbackPos.getX(), fallbackPos.getZ());
+                                double safeY = Math.max(surfaceY + 1, Math.max(fallbackPos.getY(), targetLevel.getMinY() + 64));
+                                targetPos = new net.minecraft.world.phys.Vec3(fallbackPos.getX() + 0.5, safeY, fallbackPos.getZ() + 0.5);
+                            }
                         }
 
                         // 每次触发消耗 10 点耐久
@@ -135,6 +145,12 @@ public class ServerPlayerMixin implements WitherKillTracker {
                     net.minecraft.sounds.SoundEvents.ENDER_DRAGON_FLAP, net.minecraft.sounds.SoundSource.PLAYERS, 0.5f, 1.5f);
         }
         tuanzis_mod$hadWolfCommandInOffhand = hasWolfCommand;
+
+        // 跨维度后清理旧维度安全点，避免强引用与跨维错位
+        if (this.tuanzis_mod$lastSafeLevel != null && this.tuanzis_mod$lastSafeLevel != player.level()) {
+            this.tuanzis_mod$lastSafePos = null;
+            this.tuanzis_mod$lastSafeLevel = null;
+        }
 
         // 记录虚空锚安全落脚点
         if (player.onGround() && !player.isInLava() && !player.isOnFire() && player.getY() > player.level().getMinY()) {

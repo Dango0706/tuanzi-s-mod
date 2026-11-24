@@ -123,7 +123,8 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
     }
 
     public Villager getOrCreateVillager() {
-        if (this.cachedVillager == null && this.storedVillagerNbt != null && !this.storedVillagerNbt.isEmpty()) {
+        if ((this.cachedVillager == null || this.cachedVillager.isRemoved() || !this.cachedVillager.isAlive())
+                && this.storedVillagerNbt != null && !this.storedVillagerNbt.isEmpty()) {
             if (this.level instanceof ServerLevel serverLevel) {
                 recreateVillager(serverLevel);
             }
@@ -288,9 +289,9 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                 // 移动到破坏的方块中心，并在世界上保留它！
                 villager.snapTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, villager.getYRot(), villager.getXRot());
 
-                // 确保它被正确加入世界里（如果先前未激活）
-                if (!villager.isAlive()) {
-                    level.addFreshEntity(villager);
+                // 确保它被正确加入世界里（如果先前未加入或已不在世界中）
+                if (this.villagerUuid == null || serverLevel.getEntity(villager.getUUID()) == null) {
+                    serverLevel.addFreshEntity(villager);
                 }
             }
         }

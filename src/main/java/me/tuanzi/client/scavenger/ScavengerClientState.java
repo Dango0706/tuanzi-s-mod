@@ -32,6 +32,7 @@ public final class ScavengerClientState {
     private static final List<GridItemEntry> backpackEntries = new ArrayList<>();
     private static final List<GridItemEntry> safeboxEntries = new ArrayList<>();
     private static final Map<Integer, RedactedGridEntryView> containerEntries = new HashMap<>();
+    private static final Map<Integer, RedactedGridEntryView> baseStashEntries = new HashMap<>();
     // ==================== 个人档案状态 ====================
     private static ItemStack equippedBackpack = ItemStack.EMPTY;
     private static int backpackColumns = 0;
@@ -48,6 +49,9 @@ public final class ScavengerClientState {
     private static BlockPos containerPos = BlockPos.ZERO;
     private static int containerColumns = 0;
     private static int containerRows = 0;
+    // ==================== 个人基地仓库状态 ====================
+    private static int baseStashColumns = 0;
+    private static int baseStashRows = 0;
     // ==================== 逐刻搜索状态 ====================
     private static int activeSearchEntryId = -1;
     private static int activeSearchProgressTicks = 0;
@@ -94,6 +98,21 @@ public final class ScavengerClientState {
     }
 
     public static synchronized void updateContainer(ScavengerContainerSyncS2CPacket pkt) {
+        if (ScavengerContainerSyncS2CPacket.BASE_STASH_DEF_ID.equals(pkt.containerDefId())) {
+            baseStashColumns = pkt.columns();
+            baseStashRows = pkt.rows();
+            baseStashEntries.clear();
+            if (pkt.entries() != null) {
+                for (RedactedGridEntryView view : pkt.entries()) {
+                    baseStashEntries.put(view.entryId(), view);
+                }
+            }
+            ModLog.debug((net.minecraft.world.entity.Entity) null, (net.minecraft.world.entity.Entity) null, String.format(
+                    "【客户端回廊状态】基地仓库快照已同步: (%dx%d, %d条目)",
+                    baseStashColumns, baseStashRows, baseStashEntries.size()
+            ));
+            return;
+        }
         containerDefId = pkt.containerDefId();
         containerPos = pkt.containerPos();
         containerColumns = pkt.columns();
@@ -206,6 +225,12 @@ public final class ScavengerClientState {
         activeSearchProgressTicks = 0;
     }
 
+    public static synchronized void clearBaseStash() {
+        baseStashColumns = 0;
+        baseStashRows = 0;
+        baseStashEntries.clear();
+    }
+
     // ==================== Getters ====================
 
     public static ItemStack getEquippedBackpack() {
@@ -274,6 +299,10 @@ public final class ScavengerClientState {
 
     public static Map<Integer, RedactedGridEntryView> getContainerEntries() {
         return new HashMap<>(containerEntries);
+    }
+
+    public static Map<Integer, RedactedGridEntryView> getBaseStashEntries() {
+        return new HashMap<>(baseStashEntries);
     }
 
     public static int getActiveSearchEntryId() {

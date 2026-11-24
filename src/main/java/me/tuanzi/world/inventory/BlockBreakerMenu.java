@@ -22,7 +22,7 @@ public class BlockBreakerMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BlockBreakerMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainer(TOTAL_CONTAINER_SLOTS), new SimpleContainerData(7));
+        this(containerId, playerInventory, new SimpleContainer(TOTAL_CONTAINER_SLOTS), new SimpleContainerData(9));
     }
 
     public BlockBreakerMenu(int containerId, Inventory playerInventory, Container container, ContainerData data) {
@@ -30,7 +30,7 @@ public class BlockBreakerMenu extends AbstractContainerMenu {
         this.container = container;
         this.data = data;
         checkContainerSize(container, TOTAL_CONTAINER_SLOTS);
-        checkContainerDataCount(data, 7);
+        checkContainerDataCount(data, 9);
         container.startOpen(playerInventory.player);
 
         // 1. 工具槽 (Slot 0)
@@ -86,7 +86,14 @@ public class BlockBreakerMenu extends AbstractContainerMenu {
     }
 
     public net.minecraft.core.BlockPos getBlockPos() {
-        return new net.minecraft.core.BlockPos(this.data.get(4), this.data.get(5), this.data.get(6));
+        int x = BlueprintTableMenu.reconstructInt(this.data.get(4), this.data.get(5));
+        int y = this.data.get(6);
+        int z = BlueprintTableMenu.reconstructInt(this.data.get(7), this.data.get(8));
+        return new net.minecraft.core.BlockPos(x, y, z);
+    }
+
+    public Container getContainer() {
+        return this.container;
     }
 
     @Override

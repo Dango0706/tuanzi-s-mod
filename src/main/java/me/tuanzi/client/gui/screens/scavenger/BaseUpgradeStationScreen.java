@@ -202,7 +202,7 @@ public class BaseUpgradeStationScreen extends AbstractContainerScreen<BaseUpgrad
         }
 
         // 3. 基地仓库快照
-        for (RedactedGridEntryView view : ScavengerClientState.getContainerEntries().values()) {
+        for (RedactedGridEntryView view : ScavengerClientState.getBaseStashEntries().values()) {
             if (!view.stack().isEmpty() && BuiltInRegistries.ITEM.getKey(view.stack().getItem()).equals(itemId)) {
                 count += view.stack().getCount();
             }

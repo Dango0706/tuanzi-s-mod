@@ -33,7 +33,7 @@ public class ScavengerTacticalMenu extends AbstractContainerMenu {
 
     // 客户端构造器
     public ScavengerTacticalMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, null, new SimpleContainerData(5));
+        this(containerId, playerInventory, null, new SimpleContainerData(7));
     }
 
     // 服务端构造器
@@ -47,6 +47,7 @@ public class ScavengerTacticalMenu extends AbstractContainerMenu {
         this.player = playerInventory.player;
         this.container = container;
         this.data = data;
+        checkContainerDataCount(data, 7);
         this.addDataSlots(data);
 
         // 玩家快捷栏 9 格 (0..8) - 放置在界面左下角
@@ -83,6 +84,9 @@ public class ScavengerTacticalMenu extends AbstractContainerMenu {
 
                 @Override
                 public void onSessionClosed(ServerPlayer p, String reason) {
+                    if (p.containerMenu == ScavengerTacticalMenu.this) {
+                        p.closeContainer();
+                    }
                 }
             });
             ScavengerServerPacketHandler.syncContainer(serverPlayer, container);
@@ -91,15 +95,18 @@ public class ScavengerTacticalMenu extends AbstractContainerMenu {
     }
 
     public BlockPos getContainerPos() {
-        return new BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
+        int x = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(0), this.data.get(1));
+        int y = this.data.get(2);
+        int z = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(3), this.data.get(4));
+        return new BlockPos(x, y, z);
     }
 
     public int getColumns() {
-        return this.data.get(3);
+        return this.data.get(5);
     }
 
     public int getRows() {
-        return this.data.get(4);
+        return this.data.get(6);
     }
 
     @Override
@@ -173,6 +180,9 @@ public class ScavengerTacticalMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         if (!player.isAlive() || player.level().dimension() != ModDimensions.SCAVENGER_CORRIDOR_LEVEL) {
+            return false;
+        }
+        if (this.container != null && this.container.isContainerRemoved()) {
             return false;
         }
         BlockPos pos = getContainerPos();

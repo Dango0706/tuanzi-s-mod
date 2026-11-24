@@ -36,7 +36,7 @@ public abstract class LocalPlayerMixin {
                 ModLog.debug("Air jump triggered! hasEnchant=" + hasEnchant);
                 if (hasEnchant) {
                     this.tuanzis_mod$canDoubleJump = false;
-                    me.tuanzi.util.DoubleJumpHandler.performClientDoubleJump(player);
+                    me.tuanzi.client.ClientDoubleJumpHandler.performClientDoubleJump(player);
                 }
             }
         }

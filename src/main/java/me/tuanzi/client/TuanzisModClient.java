@@ -557,8 +557,27 @@ public class TuanzisModClient implements ClientModInitializer {
             me.tuanzi.config.OverworldBuildHeightControl.clearClientSync();
             me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.clearClientSync();
             me.tuanzi.client.scavenger.ScavengerClientState.clearContainer();
+            me.tuanzi.client.scavenger.ScavengerClientState.clearBaseStash();
             me.tuanzi.client.gui.TraumaHud.clear();
         });
+        me.tuanzi.world.inventory.scavenger.ScavengerClientBridge.registerClientProvider(
+                new me.tuanzi.world.inventory.scavenger.ScavengerClientBridge.ClientStateProvider() {
+                    @Override
+                    public ItemStack getEquippedBackpack() {
+                        return me.tuanzi.client.scavenger.ScavengerClientState.getEquippedBackpack();
+                    }
+
+                    @Override
+                    public ItemStack getEquippedSafebox() {
+                        return me.tuanzi.client.scavenger.ScavengerClientState.getEquippedSafebox();
+                    }
+
+                    @Override
+                    public boolean isBackpackEmpty() {
+                        return me.tuanzi.client.scavenger.ScavengerClientState.getBackpackEntries().isEmpty();
+                    }
+                }
+        );
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, tooltipContext, tooltipType, lines) -> {
             var clientPlayer = Minecraft.getInstance().player;
             boolean inCorridor = clientPlayer != null

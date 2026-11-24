@@ -27,7 +27,7 @@ public record BlueprintTableImportPacket(BlockPos tablePos, CompoundTag blueprin
     public static final CustomPacketPayload.Type<BlueprintTableImportPacket> TYPE =
             new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "blueprint_table_import"));
 
-    private static final StreamCodec<FriendlyByteBuf, CompoundTag> COMPRESSED_COMPOUND_TAG = new StreamCodec<>() {
+    public static final StreamCodec<FriendlyByteBuf, CompoundTag> COMPRESSED_COMPOUND_TAG = new StreamCodec<>() {
         @Override
         public CompoundTag decode(FriendlyByteBuf buf) {
             byte[] compressed = buf.readByteArray(MAX_COMPRESSED_BYTES);

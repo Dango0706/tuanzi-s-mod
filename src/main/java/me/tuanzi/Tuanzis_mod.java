@@ -57,8 +57,13 @@ public class Tuanzis_mod implements ModInitializer {
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlockBreakerToggleModePacket.TYPE, me.tuanzi.network.BlockBreakerToggleModePacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlockPlacerActionPacket.TYPE, me.tuanzi.network.BlockPlacerActionPacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostTransformPacket.TYPE, me.tuanzi.network.GhostTransformPacket.CODEC);
-        PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.GhostPlaceStructurePacket.TYPE, me.tuanzi.network.GhostPlaceStructurePacket.CODEC);
+        PayloadTypeRegistry.serverboundPlay().registerLarge(
+                me.tuanzi.network.GhostPlaceStructurePacket.TYPE,
+                me.tuanzi.network.GhostPlaceStructurePacket.CODEC,
+                me.tuanzi.network.BlueprintTableImportPacket.MAX_COMPRESSED_BYTES + 256
+        );
         PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, me.tuanzi.network.BlueprintCannonActionPacket.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(me.tuanzi.network.CreativeCoreConfigPacket.TYPE, me.tuanzi.network.CreativeCoreConfigPacket.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(me.tuanzi.network.BlueprintCannonShootS2CPacket.TYPE, me.tuanzi.network.BlueprintCannonShootS2CPacket.CODEC);
         PayloadTypeRegistry.serverboundPlay().registerLarge(
                 me.tuanzi.network.BlueprintTableImportPacket.TYPE,
@@ -372,10 +377,13 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
-                if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe) {
-                    cannonBe.handleAction(payload.action(), payload.destroyMode(), payload.exactMatch());
-                    me.tuanzi.util.ModLog.debug(player, null, "收到大炮控制：action=" + payload.action() + ", destroyMode=" + payload.destroyMode() + ", exactMatch=" + payload.exactMatch());
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
+                    if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe && cannonBe.stillValid(player)) {
+                        cannonBe.handleAction(payload.action(), payload.destroyMode(), payload.exactMatch());
+                        me.tuanzi.util.ModLog.debug(player, null, "收到大炮控制：action=" + payload.action() + ", destroyMode=" + payload.destroyMode() + ", exactMatch=" + payload.exactMatch());
+                    }
                 }
             });
         });
@@ -444,9 +452,38 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintMaterialBookPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
-                net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
-                if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe) {
-                    cannonBe.writeMaterialBook(player.level(), payload.pos());
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
+                    if (be instanceof me.tuanzi.block.entity.BlueprintCannonBlockEntity cannonBe && cannonBe.stillValid(player)) {
+                        cannonBe.writeMaterialBook(player.level(), payload.pos());
+                    }
+                }
+            });
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.CreativeCoreConfigPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                net.minecraft.world.InteractionHand hand = payload.isMainHand()
+                        ? net.minecraft.world.InteractionHand.MAIN_HAND
+                        : net.minecraft.world.InteractionHand.OFF_HAND;
+                ItemStack stack = player.getItemInHand(hand);
+                if (!stack.is(me.tuanzi.init.ModItems.CREATIVE_CORE)) {
+                    hand = hand == net.minecraft.world.InteractionHand.MAIN_HAND
+                            ? net.minecraft.world.InteractionHand.OFF_HAND
+                            : net.minecraft.world.InteractionHand.MAIN_HAND;
+                    stack = player.getItemInHand(hand);
+                }
+                if (stack.is(me.tuanzi.init.ModItems.CREATIVE_CORE)) {
+                    me.tuanzi.item.CreativeCoreItem.setCannonSpeed(stack, payload.intervalTicks(), payload.shotsPerCycle());
+                    int ticks = me.tuanzi.item.CreativeCoreItem.getIntervalTicks(stack);
+                    int shots = me.tuanzi.item.CreativeCoreItem.getShotsPerCycle(stack);
+                    player.containerMenu.broadcastChanges();
+                    ModLog.debug(player, null, "创造核心发射速度配置已更新: 每 " + ticks + " ticks 发射 " + shots + " 次");
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable(
+                            "message.tuanzis_mod.creative_core.configured", ticks, shots
+                    ).withStyle(net.minecraft.ChatFormatting.GREEN), true);
                 }
             });
         });
@@ -493,6 +530,7 @@ public class Tuanzis_mod implements ModInitializer {
         me.tuanzi.util.ModLootTableModifiers.initialize();
         me.tuanzi.util.ModSeating.initialize();
         me.tuanzi.util.TempBlockManager.initialize();
+        me.tuanzi.item.StarRiftBladeItem.registerTickHandler();
         me.tuanzi.init.ModSounds.initialize();
 
         // 初始化抽卡保底与卡池系统生命周期事件
@@ -500,6 +538,7 @@ public class Tuanzis_mod implements ModInitializer {
         net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             me.tuanzi.gacha.PlayerGachaManager.onPlayerDisconnect(handler.getPlayer().getUUID());
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.closeSession(handler.getPlayer().getUUID(), "玩家断开连接");
+            me.tuanzi.world.teleport.TeleportManager.onPlayerDisconnect(handler.getPlayer().getUUID());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             activeServer = server;
@@ -510,6 +549,9 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.gacha.PoolManager.shutdown(server.registryAccess());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            me.tuanzi.util.TempBlockManager.clear();
+            me.tuanzi.world.teleport.TeleportManager.clear();
+            me.tuanzi.block.entity.BlockBreakerPistonManager.clear();
             if (activeServer == server) {
                 activeServer = null;
             }

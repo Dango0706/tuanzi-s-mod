@@ -26,13 +26,14 @@ public class BaseUpgradeStationMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public BaseUpgradeStationMenu(int containerId, Inventory playerInventory) {
-        this(containerId, playerInventory, new SimpleContainerData(5));
+        this(containerId, playerInventory, new SimpleContainerData(7));
     }
 
     public BaseUpgradeStationMenu(int containerId, Inventory playerInventory, ContainerData data) {
         super(ModMenuTypes.BASE_UPGRADE_STATION, containerId);
         this.player = playerInventory.player;
         this.data = data;
+        checkContainerDataCount(data, 7);
         this.addDataSlots(data);
 
         // 玩家快捷栏 9 格 (0..8) - 方便查看随身材料
@@ -44,19 +45,23 @@ public class BaseUpgradeStationMenu extends AbstractContainerMenu {
 
         if (!player.level().isClientSide() && player instanceof ServerPlayer serverPlayer) {
             ScavengerServerPacketHandler.syncProfile(serverPlayer);
+            ScavengerServerPacketHandler.syncBaseStash(serverPlayer, getStationPos());
         }
     }
 
     public BlockPos getStationPos() {
-        return new BlockPos(this.data.get(0), this.data.get(1), this.data.get(2));
+        int x = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(0), this.data.get(1));
+        int y = this.data.get(2);
+        int z = me.tuanzi.world.inventory.BlueprintTableMenu.reconstructInt(this.data.get(3), this.data.get(4));
+        return new BlockPos(x, y, z);
     }
 
     public int getWeightLevel() {
-        return this.data.get(3);
+        return this.data.get(5);
     }
 
     public int getStashLevel() {
-        return this.data.get(4);
+        return this.data.get(6);
     }
 
     @Override

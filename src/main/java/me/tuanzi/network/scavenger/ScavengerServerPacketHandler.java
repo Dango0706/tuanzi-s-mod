@@ -14,7 +14,6 @@ import me.tuanzi.world.scavenger.loot.meta.EquipmentGridSpec;
 import me.tuanzi.world.scavenger.loot.meta.ScavengerItemMeta;
 import me.tuanzi.world.scavenger.loot.search.RedactedGridEntryView;
 import me.tuanzi.world.scavenger.loot.search.SearchSessionManager;
-import me.tuanzi.world.scavenger.profile.CorridorInventoryRules;
 import me.tuanzi.world.scavenger.profile.CorridorWeightController;
 import me.tuanzi.world.scavenger.profile.PlayerCorridorProfile;
 import me.tuanzi.world.scavenger.team.ScavengerTeamManager;
@@ -131,7 +130,7 @@ public final class ScavengerServerPacketHandler {
             ));
         }
         ScavengerContainerSyncS2CPacket packet = new ScavengerContainerSyncS2CPacket(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath(me.tuanzi.Tuanzis_mod.MOD_ID, "base_stash"),
+                ScavengerContainerSyncS2CPacket.BASE_STASH_DEF_ID,
                 cabinetPos,
                 stash.columns(),
                 stash.rows(),
@@ -190,16 +189,14 @@ public final class ScavengerServerPacketHandler {
                 }
             }
             case UNEQUIP_BACKPACK -> {
-                if (profile.hasBackpack() && profile.backpackGrid().isEmpty()) {
-                    Optional<ItemStack> unequipped = profile.unequipBackpack(player.registryAccess());
-                    unequipped.ifPresent(stack -> {
-                        CorridorInventoryRules.routeItemAddition(
-                                -1, stack,
-                                player.getInventory()::getItem,
-                                player.getInventory()::setItem,
-                                profile, player.registryAccess(), player.getRandom()
-                        );
-                    });
+                if (profile.hasBackpack() && profile.backpackGrid() != null && profile.backpackGrid().isEmpty()) {
+                    ItemStack cleanCopy = profile.equippedBackpack().copyWithCount(1);
+                    GridInventory.writeToContainerStack(cleanCopy, null, player.registryAccess());
+                    if (tryStoreUnequippedEquipment(player, profile, cleanCopy, false)) {
+                        profile.unequipBackpack(player.registryAccess());
+                    } else {
+                        player.sendSystemMessage(Component.literal("§c快捷栏与当前可用网格空间不足，无法卸下！"), true);
+                    }
                 }
             }
             case EQUIP_SAFEBOX -> {
@@ -213,16 +210,14 @@ public final class ScavengerServerPacketHandler {
                 }
             }
             case UNEQUIP_SAFEBOX -> {
-                if (profile.hasSafebox() && profile.safeboxGrid().isEmpty()) {
-                    Optional<ItemStack> unequipped = profile.unequipSafebox(player.registryAccess());
-                    unequipped.ifPresent(stack -> {
-                        CorridorInventoryRules.routeItemAddition(
-                                -1, stack,
-                                player.getInventory()::getItem,
-                                player.getInventory()::setItem,
-                                profile, player.registryAccess(), player.getRandom()
-                        );
-                    });
+                if (profile.hasSafebox() && profile.safeboxGrid() != null && profile.safeboxGrid().isEmpty()) {
+                    ItemStack cleanCopy = profile.equippedSafebox().copyWithCount(1);
+                    GridInventory.writeToContainerStack(cleanCopy, null, player.registryAccess());
+                    if (tryStoreUnequippedEquipment(player, profile, cleanCopy, true)) {
+                        profile.unequipSafebox(player.registryAccess());
+                    } else {
+                        player.sendSystemMessage(Component.literal("§c快捷栏与当前可用网格空间不足，无法卸下！"), true);
+                    }
                 }
             }
         }
@@ -233,9 +228,61 @@ public final class ScavengerServerPacketHandler {
         if (session != null) {
             syncContainer(player, session.container());
         }
-        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu) {
+        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu
+                && stashMenu.stillValid(player)) {
             syncBaseStash(player, stashMenu.getCabinetPos());
         }
+    }
+
+    private static boolean tryStoreUnequippedEquipment(
+            ServerPlayer player,
+            PlayerCorridorProfile profile,
+            ItemStack cleanStack,
+            boolean allowBackpackGrid
+    ) {
+        if (cleanStack == null || cleanStack.isEmpty()) {
+            return false;
+        }
+        // 1. 优先存入快捷栏空位 (0..8)
+        for (int i = 0; i < 9; i++) {
+            if (player.getInventory().getItem(i).isEmpty()) {
+                player.getInventory().setItem(i, cleanStack);
+                markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.HOTBAR);
+                return true;
+            }
+        }
+        // 2. 仅安全箱允许退入当前随身背囊网格
+        if (allowBackpackGrid && profile.hasBackpack() && profile.backpackGrid() != null) {
+            GridPlacementResult fit = profile.backpackGrid().quickInsertFirstFit(cleanStack, 0);
+            if (fit.isSuccess()) {
+                markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BACKPACK);
+                return true;
+            }
+        }
+        // 3. 当前正打开合法的个人基地仓库菜单 -> 尝试放入基地仓库
+        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu
+                && stashMenu.stillValid(player)
+                && profile.baseStashGrid() != null) {
+            GridPlacementResult fit = profile.baseStashGrid().quickInsertFirstFit(cleanStack, 0);
+            if (fit.isSuccess()) {
+                markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BASE_STASH);
+                return true;
+            }
+        }
+        // 4. 当前正打开合法的野外搜刮菜单 -> 尝试放入搜刮容器并立即标记揭示
+        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu tacticalMenu
+                && tacticalMenu.stillValid(player)) {
+            SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
+            if (session != null && session.container() != null) {
+                GridPlacementResult fit = session.container().scavengerLootState().grid().quickInsertFirstFit(cleanStack, 0);
+                if (fit.isSuccess() && fit.placedEntry() != null) {
+                    session.container().scavengerLootState().markRevealedFor(fit.placedEntry().entryId(), player.getUUID());
+                    session.container().markContainerChanged();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static void handleCrossGridMove(ServerPlayer player, PlayerCorridorProfile profile, ScavengerGridActionC2SPacket packet) {
@@ -309,9 +356,23 @@ public final class ScavengerServerPacketHandler {
                 ModLog.debug(player, null, "网格物品成功移入快捷栏槽位 " + slot + ": " + meta.itemId());
             } else {
                 ScavengerItemMeta existingMeta = ScavengerDataRegistry.resolveItemMeta(existing);
-                if (srcGrid.canPlace(existingMeta, entry.anchorX(), entry.anchorY(), entry.rotated(), entry.entryId())) {
+                if (existing.getCount() == 1
+                        && srcGrid.acceptsItem(existing)
+                        && srcGrid.canPlace(existingMeta, entry.anchorX(), entry.anchorY(), entry.rotated(), entry.entryId())) {
                     srcGrid.removeEntry(packet.entryId());
-                    srcGrid.placeAt(existing.copyWithCount(1), entry.anchorX(), entry.anchorY(), entry.rotated(), 0, false);
+                    GridPlacementResult placed = srcGrid.placeAt(
+                            existing.copyWithCount(1), entry.anchorX(), entry.anchorY(), entry.rotated(), 0, false
+                    );
+                    if (!placed.isSuccess()) {
+                        srcGrid.restoreEntry(entry);
+                        return;
+                    }
+                    if (packet.source() == ScavengerGridActionC2SPacket.GridSource.CONTAINER && placed.placedEntry() != null) {
+                        SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
+                        if (session != null && session.container() != null) {
+                            session.container().scavengerLootState().markRevealedFor(placed.placedEntry().entryId(), player.getUUID());
+                        }
+                    }
                     player.getInventory().setItem(slot, stack);
                     markSourceDirty(player, profile, packet.source());
                     player.inventoryMenu.broadcastChanges();
@@ -332,24 +393,6 @@ public final class ScavengerServerPacketHandler {
             }
             ItemStack hotbarStack = player.getInventory().getItem(slot);
             if (hotbarStack.isEmpty()) return;
-
-            ScavengerItemMeta incomingMeta = ScavengerDataRegistry.resolveItemMeta(hotbarStack);
-            int targetW = incomingMeta.effectiveWidth(packet.rotated());
-            int targetH = incomingMeta.effectiveHeight(packet.rotated());
-            java.util.Set<Integer> collisions = dstGrid.findCollidingIds(packet.targetX(), packet.targetY(), targetW, targetH, GridInventory.EMPTY_CELL);
-
-            boolean allowSwap = false;
-            if (collisions.size() == 1) {
-                int victimId = collisions.iterator().next();
-                Optional<GridItemEntry> victimEntry = dstGrid.getEntry(victimId);
-                if (victimEntry.isPresent()) {
-                    ItemStack victimStack = victimEntry.get().copyStack();
-                    ScavengerItemMeta victimMeta = victimEntry.get().resolveMeta();
-                    if (victimMeta.isAllowedInHotbar(victimStack)) {
-                        allowSwap = true;
-                    }
-                }
-            }
 
             GridPlacementResult fit = dstGrid.placeAt(
                     hotbarStack.copyWithCount(1),
@@ -653,8 +696,12 @@ public final class ScavengerServerPacketHandler {
         if (session != null) {
             syncContainer(player, session.container());
         }
-        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu) {
+        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu
+                && stashMenu.stillValid(player)) {
             syncBaseStash(player, stashMenu.getCabinetPos());
+        } else if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseUpgradeStationMenu stationMenu
+                && stationMenu.stillValid(player)) {
+            syncBaseStash(player, stationMenu.getStationPos());
         }
     }
 
@@ -666,10 +713,18 @@ public final class ScavengerServerPacketHandler {
         return switch (source) {
             case BACKPACK -> profile.backpackGrid();
             case SAFEBOX -> profile.safeboxGrid();
-            case BASE_STASH -> profile.baseStashGrid();
+            case BASE_STASH -> (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu menu
+                    && menu.stillValid(player))
+                    ? profile.baseStashGrid()
+                    : null;
             case CONTAINER -> {
                 SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
-                yield session != null ? session.container().scavengerLootState().grid() : null;
+                yield (session != null
+                        && session.container() != null
+                        && player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.ScavengerTacticalMenu menu
+                        && menu.stillValid(player))
+                        ? session.container().scavengerLootState().grid()
+                        : null;
             }
             case HOTBAR -> null;
         };
@@ -680,12 +735,22 @@ public final class ScavengerServerPacketHandler {
         GridInventory srcGrid = fromHotbar ? null : resolveGridBySource(player, profile, packet.source());
         if (!fromHotbar && srcGrid == null) return;
 
+        if (!fromHotbar && packet.source() == ScavengerGridActionC2SPacket.GridSource.CONTAINER) {
+            SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
+            if (session == null || !isContainerEntryRevealed(player, session.container(), packet.entryId())) {
+                return;
+            }
+        }
+
+        ItemStack hotbarStack = ItemStack.EMPTY;
         ItemStack stack;
         GridItemEntry entry = null;
         int hotbarSlot = packet.entryId();
         if (fromHotbar) {
             if (hotbarSlot < 0 || hotbarSlot >= 9) return;
-            stack = player.getInventory().getItem(hotbarSlot).copy();
+            hotbarStack = player.getInventory().getItem(hotbarSlot);
+            if (hotbarStack.isEmpty()) return;
+            stack = hotbarStack.copyWithCount(1);
         } else {
             Optional<GridItemEntry> entryOpt = srcGrid.getEntry(packet.entryId());
             if (entryOpt.isEmpty()) return;
@@ -706,7 +771,10 @@ public final class ScavengerServerPacketHandler {
 
             if (!profile.hasBackpack()) {
                 if (fromHotbar) {
-                    player.getInventory().setItem(hotbarSlot, ItemStack.EMPTY);
+                    hotbarStack.shrink(1);
+                    if (hotbarStack.isEmpty()) {
+                        player.getInventory().setItem(hotbarSlot, ItemStack.EMPTY);
+                    }
                 } else {
                     srcGrid.removeEntry(packet.entryId());
                 }
@@ -721,15 +789,40 @@ public final class ScavengerServerPacketHandler {
                     player.sendSystemMessage(Component.literal("§c请先清空当前背囊内的全部物资，再更换背囊！"), true);
                     return;
                 }
-                Optional<ItemStack> oldBackpack = profile.unequipBackpack(player.registryAccess());
+                ItemStack oldBp = profile.equippedBackpack().copyWithCount(1);
+                GridInventory.writeToContainerStack(oldBp, null, player.registryAccess());
+
                 if (fromHotbar) {
-                    player.getInventory().setItem(hotbarSlot, oldBackpack.orElse(ItemStack.EMPTY));
+                    if (hotbarStack.getCount() == 1) {
+                        hotbarStack.shrink(1);
+                        player.getInventory().setItem(hotbarSlot, oldBp);
+                    } else {
+                        int emptySlot = findEmptyHotbarSlot(player);
+                        if (emptySlot == -1) {
+                            player.sendSystemMessage(Component.literal("§c快捷栏空间不足，无法容纳替换下的背囊！"), true);
+                            return;
+                        }
+                        hotbarStack.shrink(1);
+                        player.getInventory().setItem(emptySlot, oldBp);
+                    }
                 } else {
                     srcGrid.removeEntry(packet.entryId());
-                    if (oldBackpack.isPresent()) {
-                        srcGrid.quickInsertFirstFit(oldBackpack.get(), 0);
+                    if (!oldBp.isEmpty()) {
+                        GridPlacementResult fit = srcGrid.quickInsertFirstFit(oldBp, 0);
+                        if (!fit.isSuccess()) {
+                            srcGrid.restoreEntry(entry);
+                            player.sendSystemMessage(Component.literal("§c网格空间不足，无法容纳替换下的背囊！"), true);
+                            return;
+                        }
+                        if (packet.source() == ScavengerGridActionC2SPacket.GridSource.CONTAINER && fit.placedEntry() != null) {
+                            SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
+                            if (session != null && session.container() != null) {
+                                session.container().scavengerLootState().markRevealedFor(fit.placedEntry().entryId(), player.getUUID());
+                            }
+                        }
                     }
                 }
+                profile.unequipBackpack(player.registryAccess());
                 profile.equipBackpack(stack, player.registryAccess());
                 markSourceDirty(player, profile, packet.source());
                 profile.markDirty();
@@ -769,7 +862,10 @@ public final class ScavengerServerPacketHandler {
         ItemStack currentEquipped = player.getItemBySlot(equipSlot);
         if (currentEquipped.isEmpty()) {
             if (fromHotbar) {
-                player.getInventory().setItem(hotbarSlot, ItemStack.EMPTY);
+                hotbarStack.shrink(1);
+                if (hotbarStack.isEmpty()) {
+                    player.getInventory().setItem(hotbarSlot, ItemStack.EMPTY);
+                }
             } else {
                 srcGrid.removeEntry(packet.entryId());
             }
@@ -783,19 +879,43 @@ public final class ScavengerServerPacketHandler {
             // 置换已有的旧护甲
             ItemStack oldCopy = currentEquipped.copy();
             if (fromHotbar) {
-                player.getInventory().setItem(hotbarSlot, oldCopy);
-                player.setItemSlot(equipSlot, stack);
+                if (hotbarStack.getCount() == 1) {
+                    hotbarStack.shrink(1);
+                    player.getInventory().setItem(hotbarSlot, oldCopy);
+                    player.setItemSlot(equipSlot, stack);
+                } else {
+                    int emptySlot = findEmptyHotbarSlot(player);
+                    if (emptySlot == -1) {
+                        player.sendSystemMessage(Component.literal("§c快捷栏空间不足，无法容纳替换下的装备！"), true);
+                        return;
+                    }
+                    hotbarStack.shrink(1);
+                    player.getInventory().setItem(emptySlot, oldCopy);
+                    player.setItemSlot(equipSlot, stack);
+                }
             } else {
+                if (currentEquipped.getCount() > 1) {
+                    String msg = (targetSlot == 4)
+                            ? "§c副手物品堆叠数量大于 1，无法直接与网格物品置换！"
+                            : "§c当前装备槽位物品堆叠数量大于 1，无法直接与网格物品置换！";
+                    player.sendSystemMessage(Component.literal(msg), true);
+                    return;
+                }
                 srcGrid.removeEntry(packet.entryId());
-                player.setItemSlot(equipSlot, stack);
                 GridPlacementResult fit = srcGrid.quickInsertFirstFit(oldCopy, 0);
                 if (!fit.isSuccess()) {
-                    // 如果放不进原网格，回滚
-                    player.setItemSlot(equipSlot, currentEquipped);
-                    srcGrid.placeAt(stack, entry.anchorX(), entry.anchorY(), entry.rotated(), entry.solidifiedSearchTicks(), false);
+                    // 如果放不进原网格，无损恢复原条目（保留原 entryId 与揭示状态）
+                    srcGrid.restoreEntry(entry);
                     player.sendSystemMessage(Component.literal("§c网格空间不足，无法容纳替换下的装备！"), true);
                     return;
                 }
+                if (packet.source() == ScavengerGridActionC2SPacket.GridSource.CONTAINER && fit.placedEntry() != null) {
+                    SearchSessionManager.SearchSession session = SearchSessionManager.getSession(player.getUUID());
+                    if (session != null && session.container() != null) {
+                        session.container().scavengerLootState().markRevealedFor(fit.placedEntry().entryId(), player.getUUID());
+                    }
+                }
+                player.setItemSlot(equipSlot, stack);
             }
             markSourceDirty(player, profile, packet.source());
             player.inventoryMenu.broadcastChanges();
@@ -803,6 +923,15 @@ public final class ScavengerServerPacketHandler {
             syncProfile(player);
             ModLog.debug(player, null, "成功置换护甲槽 " + equipSlot + ": " + stack);
         }
+    }
+
+    private static int findEmptyHotbarSlot(ServerPlayer player) {
+        for (int i = 0; i < 9; i++) {
+            if (player.getInventory().getItem(i).isEmpty()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static void handleSwitchSafebox(ServerPlayer player, PlayerCorridorProfile profile, ScavengerGridActionC2SPacket packet) {
@@ -820,6 +949,9 @@ public final class ScavengerServerPacketHandler {
             player.sendSystemMessage(Component.literal("§c请先清空当前安全箱内的全部物资，再更换黑匣规格！"), true);
             return;
         }
+
+        boolean canAccessBaseStash = (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu stashMenu
+                && stashMenu.stillValid(player));
 
         // 检查持有资格：创造模式直接放行；生存/冒险模式检查玩家随身/仓库是否持有该道具
         boolean isCreative = player.isCreative();
@@ -848,8 +980,8 @@ public final class ScavengerServerPacketHandler {
                     }
                 }
             }
-            // 查基地仓库
-            if (!foundItem && profile.baseStashGrid() != null) {
+            // 查基地仓库（仅当正打开合法基地仓库界面时）
+            if (!foundItem && canAccessBaseStash && profile.baseStashGrid() != null) {
                 for (GridItemEntry entry : profile.baseStashGrid().entries()) {
                     if (entry.copyStack().is(targetItem)) {
                         foundItem = true;
@@ -866,37 +998,96 @@ public final class ScavengerServerPacketHandler {
             return;
         }
 
-        // 消耗新安全箱，退还旧安全箱
-        ItemStack oldSafebox = profile.hasSafebox() ? profile.equippedSafebox().copy() : ItemStack.EMPTY;
+        // 消耗新安全箱，退还旧安全箱（两阶段校验与失败回滚）
+        ItemStack oldSafebox = profile.hasSafebox() ? profile.equippedSafebox().copyWithCount(1) : ItemStack.EMPTY;
+        if (!oldSafebox.isEmpty()) {
+            GridInventory.writeToContainerStack(oldSafebox, null, player.registryAccess());
+        }
         if (!isCreative) {
             if (foundHotbarSlot != -1) {
-                player.getInventory().getItem(foundHotbarSlot).shrink(1);
-                if (!oldSafebox.isEmpty()) {
-                    if (player.getInventory().getItem(foundHotbarSlot).isEmpty()) {
-                        player.getInventory().setItem(foundHotbarSlot, oldSafebox);
-                        oldSafebox = ItemStack.EMPTY;
+                ItemStack hotbarStack = player.getInventory().getItem(foundHotbarSlot);
+                if (oldSafebox.isEmpty()) {
+                    hotbarStack.shrink(1);
+                    if (hotbarStack.isEmpty()) {
+                        player.getInventory().setItem(foundHotbarSlot, ItemStack.EMPTY);
+                    }
+                } else if (hotbarStack.getCount() == 1) {
+                    hotbarStack.shrink(1);
+                    player.getInventory().setItem(foundHotbarSlot, oldSafebox);
+                } else {
+                    int emptySlot = findEmptyHotbarSlot(player);
+                    if (emptySlot != -1) {
+                        hotbarStack.shrink(1);
+                        player.getInventory().setItem(emptySlot, oldSafebox);
+                    } else if (profile.hasBackpack() && profile.backpackGrid() != null
+                            && profile.backpackGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess()) {
+                        hotbarStack.shrink(1);
+                        markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BACKPACK);
+                    } else if (canAccessBaseStash && profile.baseStashGrid() != null
+                            && profile.baseStashGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess()) {
+                        hotbarStack.shrink(1);
+                        markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BASE_STASH);
+                    } else {
+                        player.sendSystemMessage(Component.literal("§c快捷栏与当前可用网格空间不足，无法容纳替换下的安全箱！"), true);
+                        return;
                     }
                 }
             } else if (foundSource == ScavengerGridActionC2SPacket.GridSource.BACKPACK && profile.backpackGrid() != null) {
-                profile.backpackGrid().removeEntry(foundEntryId);
+                Optional<GridItemEntry> removedOpt = profile.backpackGrid().removeEntry(foundEntryId);
+                if (removedOpt.isEmpty()) return;
+                GridItemEntry removedEntry = removedOpt.get();
                 if (!oldSafebox.isEmpty()) {
-                    profile.backpackGrid().quickInsertFirstFit(oldSafebox, 0);
-                    oldSafebox = ItemStack.EMPTY;
+                    boolean stored = profile.backpackGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess();
+                    if (!stored && canAccessBaseStash && profile.baseStashGrid() != null) {
+                        stored = profile.baseStashGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess();
+                        if (stored) {
+                            markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BASE_STASH);
+                        }
+                    }
+                    if (!stored) {
+                        int emptySlot = findEmptyHotbarSlot(player);
+                        if (emptySlot != -1) {
+                            player.getInventory().setItem(emptySlot, oldSafebox);
+                            markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.HOTBAR);
+                            stored = true;
+                        }
+                    }
+                    if (!stored) {
+                        profile.backpackGrid().restoreEntry(removedEntry);
+                        player.sendSystemMessage(Component.literal("§c空间不足，无法容纳替换下的安全箱！"), true);
+                        return;
+                    }
                 }
                 markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BACKPACK);
-            } else if (foundSource == ScavengerGridActionC2SPacket.GridSource.BASE_STASH && profile.baseStashGrid() != null) {
-                profile.baseStashGrid().removeEntry(foundEntryId);
+            } else if (foundSource == ScavengerGridActionC2SPacket.GridSource.BASE_STASH && canAccessBaseStash && profile.baseStashGrid() != null) {
+                Optional<GridItemEntry> removedOpt = profile.baseStashGrid().removeEntry(foundEntryId);
+                if (removedOpt.isEmpty()) return;
+                GridItemEntry removedEntry = removedOpt.get();
                 if (!oldSafebox.isEmpty()) {
-                    profile.baseStashGrid().quickInsertFirstFit(oldSafebox, 0);
-                    oldSafebox = ItemStack.EMPTY;
+                    boolean stored = profile.baseStashGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess();
+                    if (!stored && profile.hasBackpack() && profile.backpackGrid() != null) {
+                        stored = profile.backpackGrid().quickInsertFirstFit(oldSafebox, 0).isSuccess();
+                        if (stored) {
+                            markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BACKPACK);
+                        }
+                    }
+                    if (!stored) {
+                        int emptySlot = findEmptyHotbarSlot(player);
+                        if (emptySlot != -1) {
+                            player.getInventory().setItem(emptySlot, oldSafebox);
+                            markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.HOTBAR);
+                            stored = true;
+                        }
+                    }
+                    if (!stored) {
+                        profile.baseStashGrid().restoreEntry(removedEntry);
+                        player.sendSystemMessage(Component.literal("§c基地仓库空间不足，无法容纳替换下的安全箱！"), true);
+                        return;
+                    }
                 }
                 markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BASE_STASH);
-            }
-            if (!oldSafebox.isEmpty()) {
-                if (profile.baseStashGrid() != null) {
-                    profile.baseStashGrid().quickInsertFirstFit(oldSafebox, 0);
-                    markSourceDirty(player, profile, ScavengerGridActionC2SPacket.GridSource.BASE_STASH);
-                }
+            } else {
+                return;
             }
         }
 

@@ -144,8 +144,7 @@ public class EarthPileHammerItem extends Item {
         try {
             DamageCalculator.IS_SHOCKWAVE_ATTACK.set(true);
             for (LivingEntity victim : selectedTargets) {
-                float finalShockDmg = DamageCalculator.calculateDamage(shockDamage, shockSource, victim);
-                boolean hurt = victim.hurtServer(serverLevel, shockSource, finalShockDmg);
+                boolean hurt = victim.hurtServer(serverLevel, shockSource, shockDamage);
 
                 if (hurt && victim.isAlive()) {
                     // 试炼假人不施加减速

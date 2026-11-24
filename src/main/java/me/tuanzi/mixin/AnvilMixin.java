@@ -49,7 +49,36 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
     @Shadow
     private int repairItemCountCost;
     @Unique
+    private static final int TUANZIS_MOD_MAX_GRADIENT_CHARS = 128;
+
+    @Unique
     private ItemStack tuanzis_mod$leftRemainder = ItemStack.EMPTY;
+
+    @Unique
+    private boolean tuanzis_mod$shouldRestoreLeftRemainder = false;
+
+    @Unique
+    private static int tuanzis_mod$parseGradientCount(String rawDigits) {
+        try {
+            long parsed = Long.parseLong(rawDigits);
+            if (parsed <= 0 || parsed > TUANZIS_MOD_MAX_GRADIENT_CHARS) {
+                return -1;
+            }
+            return (int) parsed;
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
+
+    @Unique
+    private static boolean tuanzis_mod$areAllBlank(String[] parts) {
+        for (String part : parts) {
+            if (!part.isBlank()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public AnvilMixin(MenuType<?> type, int syncId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
         super(type, syncId, playerInventory, access, slotDefinition);
@@ -136,6 +165,10 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 }
             }
         }
+        if (this.cost.get() <= 0) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (!player.getAbilities().instabuild) {
             cir.setReturnValue(player.experienceLevel >= this.cost.get());
         }
@@ -143,18 +176,21 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
     @Inject(method = "onTake", at = @At("HEAD"))
     private void tuanzis_mod$captureLeftInputBeforeTake(Player player, ItemStack result, CallbackInfo ci) {
-        ItemStack left = this.inputSlots.getItem(0);
-        if (left.getCount() > 1) {
-            ItemStack remainder = left.copy();
-            remainder.shrink(1);
-            this.tuanzis_mod$leftRemainder = remainder;
-        } else {
-            this.tuanzis_mod$leftRemainder = ItemStack.EMPTY;
+        if (this.tuanzis_mod$shouldRestoreLeftRemainder) {
+            ItemStack left = this.inputSlots.getItem(0);
+            if (left.getCount() > 1) {
+                ItemStack remainder = left.copy();
+                remainder.shrink(1);
+                this.tuanzis_mod$leftRemainder = remainder;
+                return;
+            }
         }
+        this.tuanzis_mod$leftRemainder = ItemStack.EMPTY;
     }
 
     @Inject(method = "onTake", at = @At("TAIL"))
     private void tuanzis_mod$restoreLeftRemainderAfterTake(Player player, ItemStack result, CallbackInfo ci) {
+        this.tuanzis_mod$shouldRestoreLeftRemainder = false;
         if (!this.tuanzis_mod$leftRemainder.isEmpty()) {
             this.inputSlots.setItem(0, this.tuanzis_mod$leftRemainder);
             this.tuanzis_mod$leftRemainder = ItemStack.EMPTY;
@@ -163,6 +199,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
     @Inject(method = "createResult", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$handleColorSpongeCustom(CallbackInfo ci) {
+        this.tuanzis_mod$shouldRestoreLeftRemainder = false;
         AnvilMenu menu = (AnvilMenu) (Object) this;
         // 采用原生的 inputSlots 影子字段获取物品，解决受保护访问权限问题
         ItemStack left = this.inputSlots.getItem(0);
@@ -286,6 +323,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
             this.cost.set(eternalCost);
             this.repairItemCountCost = 0;
+            this.tuanzis_mod$shouldRestoreLeftRemainder = true;
             this.resultSlots.setItem(0, result);
             ModLog.debug("AnvilMenu", "createResult",
                     "成功应用【永恒】附魔！物品: " + left.getHoverName().getString()
@@ -321,6 +359,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
             this.cost.set(20);
             this.repairItemCountCost = 0;
+            this.tuanzis_mod$shouldRestoreLeftRemainder = true;
             this.resultSlots.setItem(0, result);
             ModLog.debug("AnvilMenu", "createResult", "成功应用【通惠】附魔！物品: " + left.getHoverName().getString() + "，原累积惩罚: " + oldRepairCost + "，重置后惩罚: 0，消耗等级: 20");
             menu.broadcastChanges();
@@ -336,14 +375,23 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 // 检查是否为渐变色指令
                 Matcher gradM = GRADIENT_PATTERN.matcher(this.itemName);
                 if (gradM.find()) {
+                    int n = tuanzis_mod$parseGradientCount(gradM.group(1));
+                    if (n <= 0) {
+                        this.resultSlots.setItem(0, ItemStack.EMPTY);
+                        this.cost.set(0);
+                        this.repairItemCountCost = 0;
+                        menu.broadcastChanges();
+                        ci.cancel();
+                        return;
+                    }
                     // 仅渐变色不改变海绵名字颜色（保持纯文本预览）
                     result.set(DataComponents.CUSTOM_NAME, Component.literal(this.itemName));
-                    this.cost.set(calculateRenamingCost(this.itemName));
+                    this.cost.set(n * 8);
                 } else {
                     // 其他写法均改变海绵颜色名字作为示范
                     if (this.itemName.contains(",")) {
                         // 分割系统预览：将海绵名字按逗号分段染色
-                        String[] parts = this.itemName.split(",");
+                        String[] parts = this.itemName.split(",", -1);
                         MutableComponent preview = Component.empty();
                         for (int i = 0; i < parts.length; i++) {
                             if (i > 0) preview.append(Component.literal(",").withStyle(ChatFormatting.GRAY));
@@ -357,9 +405,11 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                     this.cost.set(calculateRenamingCost(this.itemName));
                 }
 
+                this.repairItemCountCost = 0;
                 this.resultSlots.setItem(0, result);
                 menu.broadcastChanges();
                 ci.cancel();
+                return;
             }
         }
 
@@ -375,7 +425,15 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                 // 1. 渐变色
                 Matcher gradM = GRADIENT_PATTERN.matcher(spongeText);
                 if (gradM.find()) {
-                    int n = Integer.parseInt(gradM.group(1));
+                    int n = tuanzis_mod$parseGradientCount(gradM.group(1));
+                    if (n <= 0) {
+                        this.resultSlots.setItem(0, ItemStack.EMPTY);
+                        this.cost.set(0);
+                        this.repairItemCountCost = 0;
+                        menu.broadcastChanges();
+                        ci.cancel();
+                        return;
+                    }
                     TextColor startColor = TextColor.parseColor(gradM.group(2)).result().orElse(TextColor.fromRgb(0xFFFFFF));
                     TextColor endColor = gradM.group(3) != null ?
                             TextColor.parseColor(gradM.group(3)).result().orElse(TextColor.fromRgb(0xFFFFFF)) :
@@ -391,6 +449,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                     }
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(n * 32);
+                    this.repairItemCountCost = 0;
                     this.resultSlots.setItem(0, result);
                     menu.broadcastChanges();
                     ci.cancel();
@@ -399,13 +458,22 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
                 // 2. 分割系统
                 if (spongeText.contains(",")) {
-                    String[] styleParts = spongeText.split(",");
+                    String[] styleParts = spongeText.split(",", -1);
+                    if (styleParts.length == 0 || tuanzis_mod$areAllBlank(styleParts)) {
+                        this.resultSlots.setItem(0, ItemStack.EMPTY);
+                        this.cost.set(0);
+                        this.repairItemCountCost = 0;
+                        menu.broadcastChanges();
+                        ci.cancel();
+                        return;
+                    }
                     for (int i = 0; i < itemText.length(); i++) {
                         String part = styleParts[i % styleParts.length].trim();
                         finalComp.append(Component.literal(String.valueOf(itemText.charAt(i))).withStyle(parseStyle(part)));
                     }
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(calculateMergingCost(spongeText));
+                    this.repairItemCountCost = 0;
                     this.resultSlots.setItem(0, result);
                     menu.broadcastChanges();
                     ci.cancel();
@@ -418,6 +486,7 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
                     finalComp.append(Component.literal(itemText).withStyle(style));
                     result.set(DataComponents.CUSTOM_NAME, finalComp);
                     this.cost.set(calculateMergingCost(spongeText));
+                    this.repairItemCountCost = 0;
                     this.resultSlots.setItem(0, result);
                     menu.broadcastChanges();
                     ci.cancel();
@@ -449,7 +518,10 @@ public abstract class AnvilMixin extends ItemCombinerMenu {
 
     private int calculateRenamingCost(String text) {
         Matcher m = GRADIENT_PATTERN.matcher(text);
-        if (m.find()) return Integer.parseInt(m.group(1)) * 8;
+        if (m.find()) {
+            int n = tuanzis_mod$parseGradientCount(m.group(1));
+            return n > 0 ? n * 8 : 0;
+        }
         int commas = 0;
         for (char c : text.toCharArray()) if (c == ',') commas++;
         int styles = 0;

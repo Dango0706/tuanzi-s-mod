@@ -29,6 +29,7 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
     private final ItemStack charmStack;
     private final InteractionHand hand;
     private final Player player;
+    private final int blockedSlot;
 
     private final CraftingContainer craftSlots = new TransientCraftingContainer(this, 3, 3);
     private final ResultContainer resultSlots = new ResultContainer();
@@ -46,21 +47,31 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
 
         ItemStack foundCharm = ItemStack.EMPTY;
         InteractionHand foundHand = hand;
+        int resolvedSlot = -1;
 
         if (hand != null) {
-            foundCharm = this.player.getItemInHand(hand);
+            ItemStack candidate = this.player.getItemInHand(hand);
+            if (candidate.is(ModItems.CRAFTSMAN_CHARM)) {
+                foundCharm = candidate;
+                resolvedSlot = (hand == InteractionHand.MAIN_HAND)
+                        ? playerInventory.getSelectedSlot()
+                        : Inventory.SLOT_OFFHAND;
+            }
         } else {
             if (this.player.getMainHandItem().is(ModItems.CRAFTSMAN_CHARM)) {
                 foundCharm = this.player.getMainHandItem();
                 foundHand = InteractionHand.MAIN_HAND;
+                resolvedSlot = playerInventory.getSelectedSlot();
             } else if (this.player.getOffhandItem().is(ModItems.CRAFTSMAN_CHARM)) {
                 foundCharm = this.player.getOffhandItem();
                 foundHand = InteractionHand.OFF_HAND;
+                resolvedSlot = Inventory.SLOT_OFFHAND;
             }
         }
 
         this.charmStack = foundCharm;
         this.hand = foundHand;
+        this.blockedSlot = resolvedSlot;
 
         // 1. 添加结果槽 (Slot 0)
         this.addSlot(new ResultSlot(playerInventory.player, this.craftSlots, this.resultSlots, 0, 124, 35));
@@ -82,13 +93,43 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
         // 3. 玩家背包物品栏 (Slot 10 到 36)
         for (int r = 0; r < 3; r++) {
             for (int c = 0; c < 9; c++) {
-                this.addSlot(new Slot(playerInventory, c + r * 9 + 9, 8 + c * 18, 84 + r * 18));
+                int invIndex = c + r * 9 + 9;
+                if (invIndex == this.blockedSlot) {
+                    this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 84 + r * 18) {
+                        @Override
+                        public boolean mayPickup(Player p) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean mayPlace(ItemStack stack) {
+                            return false;
+                        }
+                    });
+                } else {
+                    this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 84 + r * 18));
+                }
             }
         }
 
         // 4. 玩家快捷栏物品栏 (Slot 37 到 45)
         for (int c = 0; c < 9; c++) {
-            this.addSlot(new Slot(playerInventory, c, 8 + c * 18, 142));
+            int invIndex = c;
+            if (invIndex == this.blockedSlot) {
+                this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 142) {
+                    @Override
+                    public boolean mayPickup(Player p) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean mayPlace(ItemStack stack) {
+                        return false;
+                    }
+                });
+            } else {
+                this.addSlot(new Slot(playerInventory, invIndex, 8 + c * 18, 142));
+            }
         }
 
         // 从护符的 CUSTOM_DATA 中加载已有的 9 个缓存格子物品 (此时所有 Slots 已经就绪)
@@ -115,12 +156,33 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        if (this.charmStack.isEmpty() || this.hand == null) {
+        if (this.charmStack.isEmpty()) {
             return false;
         }
         // 当护符由于各种原因不在玩家原本的格子中时，关闭 GUI。
-        // 即校验当前对应手部的物品实例是否还是原来那个
-        return player.getItemInHand(this.hand) == this.charmStack;
+        if (this.blockedSlot == Inventory.SLOT_OFFHAND) {
+            return player.getOffhandItem() == this.charmStack;
+        }
+        if (this.blockedSlot >= 0 && this.blockedSlot < player.getInventory().getContainerSize()) {
+            return player.getInventory().getItem(this.blockedSlot) == this.charmStack;
+        }
+        return false;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ContainerInput clickType, Player player) {
+        if (this.blockedSlot != -1) {
+            if (clickType == ContainerInput.SWAP && button == this.blockedSlot) {
+                return;
+            }
+            if (slotId >= 0 && slotId < this.slots.size()) {
+                Slot slot = this.slots.get(slotId);
+                if (slot.container == player.getInventory() && slot.getContainerSlot() == this.blockedSlot) {
+                    return;
+                }
+            }
+        }
+        super.clicked(slotId, button, clickType, player);
     }
 
     @Override
@@ -145,16 +207,16 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
             this.resultSlots.setItem(0, result);
             this.setRemoteSlot(0, result);
             serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(this.containerId, this.incrementStateId(), 0, result));
+            if (stillValid(this.player)) {
+                saveContents(this.player);
+            }
         }
     }
 
-    @Override
-    public void removed(Player player) {
-        super.removed(player);
-
-        if (this.charmStack.isEmpty()) return;
-
-        // 将 9 个缓存格子物品序列化保存至护符的 CUSTOM_DATA 中
+    private void saveContents(Player player) {
+        if (this.charmStack.isEmpty() || player.level().isClientSide()) {
+            return;
+        }
         CompoundTag tag = new CompoundTag();
         CustomData customData = this.charmStack.get(DataComponents.CUSTOM_DATA);
         if (customData != null) {
@@ -174,6 +236,24 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
         tag.put("Items", listTag);
 
         this.charmStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+    }
+
+    @Override
+    public void removed(Player player) {
+        super.removed(player);
+        if (player.level().isClientSide()) {
+            return;
+        }
+        if (!stillValid(player)) {
+            if (player.isAlive()) {
+                this.isLoading = true;
+                this.clearContainer(player, this.craftSlots);
+                this.isLoading = false;
+            }
+            return;
+        }
+
+        saveContents(player);
         ModLog.debug(player, null, "工匠护符界面关闭，已将 9 个合成格缓存的物品安全保存回护符 NBT 中。");
     }
 
@@ -182,6 +262,11 @@ public class CraftsmanCharmMenu extends AbstractContainerMenu {
         ItemStack clicked = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
         if (slot != null && slot.hasItem()) {
+            if (this.blockedSlot != -1 && slotIndex >= 10
+                    && slot.container == player.getInventory()
+                    && slot.getContainerSlot() == this.blockedSlot) {
+                return ItemStack.EMPTY;
+            }
             ItemStack stack = slot.getItem();
             clicked = stack.copy();
             if (slotIndex == 0) {

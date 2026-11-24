@@ -25,29 +25,51 @@ public class TempBlockManager {
         ServerTickEvents.END_SERVER_TICK.register(TempBlockManager::tick);
     }
 
+    public static synchronized void clear() {
+        PENDING_ENTRIES.clear();
+    }
+
     public static synchronized void schedule(ServerLevel level, BlockPos pos, int delayTicks, BlockState targetState) {
         long expireTick = level.getGameTime() + delayTicks;
         PENDING_ENTRIES.add(new TempEntry(level, pos, expireTick, targetState));
         ModLog.debug("【临时方块调度】在 " + pos + " 调度临时方块任务，将在 " + delayTicks + " 刻后转换为 " + targetState.getBlock().getName().getString());
     }
 
-    private static synchronized void tick(MinecraftServer server) {
-        if (PENDING_ENTRIES.isEmpty()) return;
+    private static void tick(MinecraftServer server) {
+        List<TempEntry> dueEntries = new ArrayList<>();
+        synchronized (TempBlockManager.class) {
+            if (PENDING_ENTRIES.isEmpty()) return;
 
-        Iterator<TempEntry> iterator = PENDING_ENTRIES.iterator();
-        while (iterator.hasNext()) {
-            TempEntry entry = iterator.next();
-            if (entry.level().getGameTime() >= entry.expireTick()) {
-                iterator.remove();
+            Iterator<TempEntry> iterator = PENDING_ENTRIES.iterator();
+            while (iterator.hasNext()) {
+                TempEntry entry = iterator.next();
                 ServerLevel level = entry.level();
-                BlockPos pos = entry.pos();
-                // 仅当该方块仍为岩浆或原方块时进行固化替换
-                if (level.getBlockState(pos).is(Blocks.LAVA)) {
-                    level.setBlockAndUpdate(pos, entry.targetState());
-                    level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.2F);
-                    level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 6, 0.2, 0.3, 0.2, 0.05);
-                    ModLog.debug("【临时方块还原】位置 " + pos + " 的临时岩浆已成功冷却固化为黑曜石！");
+                if (level == null || level.getServer() != server) {
+                    iterator.remove();
+                    continue;
                 }
+                if (level.getGameTime() >= entry.expireTick()) {
+                    if (!level.isLoaded(entry.pos())) {
+                        continue;
+                    }
+                    iterator.remove();
+                    dueEntries.add(entry);
+                }
+            }
+        }
+
+        for (TempEntry entry : dueEntries) {
+            ServerLevel level = entry.level();
+            BlockPos pos = entry.pos();
+            if (!level.isLoaded(pos)) {
+                continue;
+            }
+            // 仅当该方块仍为岩浆或原方块时进行固化替换
+            if (level.getBlockState(pos).is(Blocks.LAVA)) {
+                level.setBlockAndUpdate(pos, entry.targetState());
+                level.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 1.2F);
+                level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 6, 0.2, 0.3, 0.2, 0.05);
+                ModLog.debug("【临时方块还原】位置 " + pos + " 的临时岩浆已成功冷却固化为黑曜石！");
             }
         }
     }

@@ -32,10 +32,12 @@ public class BaseUpgradeStationBlockEntity extends BlockEntity implements MenuPr
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        SimpleContainerData data = new SimpleContainerData(5);
-        data.set(0, this.worldPosition.getX());
-        data.set(1, this.worldPosition.getY());
-        data.set(2, this.worldPosition.getZ());
+        SimpleContainerData data = new SimpleContainerData(7);
+        data.set(0, this.worldPosition.getX() & 0xFFFF);
+        data.set(1, this.worldPosition.getX() >>> 16);
+        data.set(2, this.worldPosition.getY());
+        data.set(3, this.worldPosition.getZ() & 0xFFFF);
+        data.set(4, this.worldPosition.getZ() >>> 16);
         int weightLv = 1;
         int stashLv = 1;
         if (player instanceof ScavengerPlayerTracker tracker) {
@@ -43,8 +45,8 @@ public class BaseUpgradeStationBlockEntity extends BlockEntity implements MenuPr
             weightLv = profile.weightLevel();
             stashLv = profile.stashLevel();
         }
-        data.set(3, weightLv);
-        data.set(4, stashLv);
+        data.set(5, weightLv);
+        data.set(6, stashLv);
         return new BaseUpgradeStationMenu(containerId, playerInventory, data);
     }
 }

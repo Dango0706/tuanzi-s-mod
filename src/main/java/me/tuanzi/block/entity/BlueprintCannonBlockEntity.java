@@ -7,6 +7,7 @@ import me.tuanzi.block.cannon.BlueprintBuildPlanner.ParsedBlueprint;
 import me.tuanzi.block.cannon.LaunchedItem;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
+import me.tuanzi.item.CreativeCoreItem;
 import me.tuanzi.item.StructureBlueprintItem;
 import me.tuanzi.network.BlueprintCannonShootS2CPacket;
 import me.tuanzi.world.inventory.BlueprintCannonMenu;
@@ -61,21 +62,25 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
     // 机械动力风格飞行方块列表（LaunchedItem 队列与瞄准状态）
     public final List<LaunchedItem> flyingBlocks = new LinkedList<>();
-    // GUI 属性同步 Data（共 11 个槽位）
+    // GUI 属性同步 Data（共 14 个槽位）
     public final ContainerData dataAccess = new ContainerData() {
         @Override
         public int get(int index) {
             return switch (index) {
                 case 0 -> buildState;
-                case 1 -> currentIndex;    // index 1: 当前进度索引（即已处理格子数）
-                case 2 -> totalBlocks;     // index 2: 总格子数（blocks.length）
-                case 3 -> destroyMode ? 1 : 0;
-                case 4 -> exactMatch ? 1 : 0;
-                case 5 -> getSlurryDurability();
-                case 6 -> worldPosition.getX();
-                case 7 -> worldPosition.getY();
-                case 8 -> worldPosition.getZ();
-                case 9 -> pauseReason;
+                case 1 -> currentIndex & 0xFFFF;         // index 1: 当前进度索引低 16 位
+                case 2 -> currentIndex >>> 16;           // index 2: 当前进度索引高 16 位
+                case 3 -> totalBlocks & 0xFFFF;          // index 3: 总格子数低 16 位
+                case 4 -> totalBlocks >>> 16;            // index 4: 总格子数高 16 位
+                case 5 -> destroyMode ? 1 : 0;
+                case 6 -> exactMatch ? 1 : 0;
+                case 7 -> getSlurryDurability();
+                case 8 -> worldPosition.getX() & 0xFFFF;
+                case 9 -> worldPosition.getX() >>> 16;
+                case 10 -> worldPosition.getY();
+                case 11 -> worldPosition.getZ() & 0xFFFF;
+                case 12 -> worldPosition.getZ() >>> 16;
+                case 13 -> pauseReason;
                 default -> 0;
             };
         }
@@ -84,17 +89,19 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         public void set(int index, int value) {
             switch (index) {
                 case 0 -> buildState = value;
-                case 1 -> currentIndex = value;
-                case 2 -> totalBlocks = value;
-                case 3 -> destroyMode = (value == 1);
-                case 4 -> exactMatch = (value == 1);
-                case 9 -> pauseReason = value;
+                case 1 -> currentIndex = (currentIndex & 0xFFFF0000) | (value & 0xFFFF);
+                case 2 -> currentIndex = (currentIndex & 0xFFFF) | ((value & 0xFFFF) << 16);
+                case 3 -> totalBlocks = (totalBlocks & 0xFFFF0000) | (value & 0xFFFF);
+                case 4 -> totalBlocks = (totalBlocks & 0xFFFF) | ((value & 0xFFFF) << 16);
+                case 5 -> destroyMode = (value == 1);
+                case 6 -> exactMatch = (value == 1);
+                case 13 -> pauseReason = value;
             }
         }
 
         @Override
         public int getCount() {
-            return 11;
+            return 14;
         }
     };
     // 3 个物品槽：Slot 0 为蓝图，Slot 1 为压缩浆料燃料，Slot 2 为书与笔（材料清单输出）
@@ -216,6 +223,16 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             be.setChanged();
         }
 
+        if (be.cachedSources != null) {
+            ItemStack cachedCore = be.findCreativeCoreInSources();
+            if (cachedCore != null) {
+                int maxInterval = CreativeCoreItem.getIntervalTicks(cachedCore);
+                if (be.ticksToNextPlace > maxInterval) {
+                    be.ticksToNextPlace = maxInterval;
+                }
+            }
+        }
+
         be.ticksToNextPlace--;
         if (be.ticksToNextPlace <= 0) {
             be.ticksToNextPlace = 0;
@@ -224,7 +241,24 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 be.scanNearbyContainers(level, pos);
             }
 
-            be.processBuildPlanTick(level, pos, state, blueprintTag, width, height, length, entitiesTag, plan);
+            int intervalTicks = be.getEffectiveIntervalTicks(level, pos);
+            int shotsPerCycle = be.getEffectiveShotsPerCycle(level, pos);
+            int launchedCount = 0;
+            for (int shot = 0; shot < shotsPerCycle; shot++) {
+                if (be.buildState != 1 || be.activePlan == null) {
+                    break;
+                }
+                if (be.processBuildPlanTick(level, pos, state, blueprintTag, width, height, length, entitiesTag, plan)) {
+                    launchedCount++;
+                } else {
+                    break;
+                }
+            }
+            if (launchedCount > 0 && be.buildState == 1) {
+                be.ticksToNextPlace = intervalTicks;
+                be.setChanged();
+                me.tuanzi.util.ModLog.debug("BlueprintCannon: 本轮发射完成 launchedCount=" + launchedCount + "/" + shotsPerCycle + ", intervalTicks=" + intervalTicks);
+            }
         }
     }
 
@@ -242,7 +276,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
-    private void processBuildPlanTick(
+    private boolean processBuildPlanTick(
             Level level,
             BlockPos pos,
             BlockState cannonState,
@@ -270,7 +304,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         if (!level.isLoaded(targetPos)) {
-                            return;
+                            return false;
                         }
                         BlueprintCell cell = plan.parsed.cellMap().get(targetPos);
                         BlockState worldState = level.getBlockState(targetPos);
@@ -293,22 +327,21 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                         if (!this.consumeFuel(level, pos)) {
                             this.ticksToNextPlace = 0;
-                            return;
+                            return false;
                         }
 
                         plan.destroyQueue.pollFirst();
                         plan.destroyDone++;
                         this.currentIndex = plan.getCompletedWork();
                         this.launchBlock(level, targetPos, ItemStack.EMPTY, Blocks.AIR.defaultBlockState(), null, true);
-                        this.ticksToNextPlace = 5;
                         this.setChanged();
-                        return;
+                        return true;
                     }
 
                     // 等待所有拆除飞弹落地后再校验是否有下落方块等残余障碍
                     if (hasFlyingDestroyBlocks()) {
                         this.currentIndex = plan.getCompletedWork();
-                        return;
+                        return false;
                     }
 
                     boolean foundRemaining = false;
@@ -347,7 +380,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         if (!level.isLoaded(cell.pos())) {
-                            return;
+                            return false;
                         }
                         BlockState worldState = level.getBlockState(cell.pos());
 
@@ -371,11 +404,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             plan.primarySingleQueue.pollFirst();
                             plan.placementDone++;
                             this.currentIndex = plan.getCompletedWork();
-                            this.ticksToNextPlace = 5;
                             this.setChanged();
-                            return;
+                            return true;
                         }
-                        return;
+                        return false;
                     }
 
                     plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
@@ -391,7 +423,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         // 本轮没有可放置的依附方块：若仍有飞行中的方块，则等待其落地后再复检
                         if (hasFlyingBlockItems()) {
                             plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
-                            return;
+                            return false;
                         }
                         // 所有先导单方块已落地，仍有未就绪的依附方块（可能依附于多方块或悬浮结构），先进入多方块阶段
                         plan.phase = BuildPhase.MULTI_BLOCK;
@@ -407,7 +439,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         continue;
                     }
                     if (!level.isLoaded(cell.pos())) {
-                        return;
+                        return false;
                     }
                     BlockState worldState = level.getBlockState(cell.pos());
 
@@ -428,11 +460,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             plan.placementDone++;
                             plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
                             this.currentIndex = plan.getCompletedWork();
-                            this.ticksToNextPlace = 5;
                             this.setChanged();
-                            return;
+                            return true;
                         }
-                        return;
+                        return false;
                     }
 
                     plan.deferredSingleQueue.pollFirst();
@@ -449,7 +480,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         if (!isGroupLoaded(level, group)) {
-                            return;
+                            return false;
                         }
 
                         if (isMultiBlockAlreadyComplete(level, group) || isMultiBlockBlocked(level, group)) {
@@ -461,7 +492,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                         if (!BlueprintBuildPlanner.isMultiBlockReady(level, group, plan.parsed.cellMap())) {
                             if (hasFlyingBlockItems()) {
-                                return;
+                                return false;
                             }
                             plan.multiQueue.pollFirst();
                             plan.deferredMultiQueue.addLast(group);
@@ -473,11 +504,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             plan.multiQueue.pollFirst();
                             plan.placementDone += group.parts().size();
                             this.currentIndex = plan.getCompletedWork();
-                            this.ticksToNextPlace = 5;
                             this.setChanged();
-                            return;
+                            return true;
                         }
-                        return;
+                        return false;
                     }
 
                     plan.deferredMultiPassRemaining = plan.deferredMultiQueue.size();
@@ -486,7 +516,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 }
                 case POST_MULTI_DEPENDENT -> {
                     if (hasFlyingBlockItems()) {
-                        return;
+                        return false;
                     }
 
                     if (!plan.deferredMultiQueue.isEmpty()) {
@@ -499,7 +529,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         if (!isGroupLoaded(level, group)) {
-                            return;
+                            return false;
                         }
                         if (isMultiBlockAlreadyComplete(level, group) || isMultiBlockBlocked(level, group)) {
                             plan.deferredMultiQueue.pollFirst();
@@ -516,11 +546,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                                 plan.placementDone += group.parts().size();
                                 plan.deferredMultiPassRemaining = plan.deferredMultiQueue.size();
                                 this.currentIndex = plan.getCompletedWork();
-                                this.ticksToNextPlace = 5;
                                 this.setChanged();
-                                return;
+                                return true;
                             }
-                            return;
+                            return false;
                         }
                         plan.deferredMultiQueue.pollFirst();
                         plan.deferredMultiQueue.addLast(group);
@@ -538,7 +567,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         if (!level.isLoaded(cell.pos())) {
-                            return;
+                            return false;
                         }
                         BlockState worldState = level.getBlockState(cell.pos());
                         if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
@@ -559,11 +588,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                                 plan.placementDone++;
                                 plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
                                 this.currentIndex = plan.getCompletedWork();
-                                this.ticksToNextPlace = 5;
                                 this.setChanged();
-                                return;
+                                return true;
                             }
-                            return;
+                            return false;
                         }
                         plan.deferredSingleQueue.pollFirst();
                         plan.deferredSingleQueue.addLast(cell);
@@ -575,7 +603,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 }
                 case ENTITIES -> {
                     if (hasFlyingBlockItems()) {
-                        return;
+                        return false;
                     }
                     if (!plan.entityQueue.isEmpty()) {
                         int entityIdx = plan.entityQueue.peekFirst();
@@ -591,17 +619,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                                 plan.entityQueue.pollFirst();
                                 plan.placementDone++;
                                 this.currentIndex = plan.getCompletedWork();
-                                this.ticksToNextPlace = 5;
                                 this.setChanged();
-                                return;
+                                return true;
                             }
                             case DESTROYED_CONFLICT -> {
-                                this.ticksToNextPlace = 5;
                                 this.setChanged();
-                                return;
+                                return true;
                             }
                             case PAUSED -> {
-                                return;
+                                return false;
                             }
                         }
                     }
@@ -609,7 +635,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 }
                 case DONE -> {
                     if (!this.flyingBlocks.isEmpty()) {
-                        return;
+                        return false;
                     }
                     this.totalBlocks = plan.getTotalWork();
                     this.currentIndex = this.totalBlocks;
@@ -622,10 +648,11 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     level.playSound(null, pos, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.BLOCKS, 1.0f, 1.2f);
                     this.setChanged();
                     level.sendBlockUpdated(pos, cannonState, cannonState, 3);
-                    return;
+                    return false;
                 }
             }
         }
+        return false;
     }
 
     private enum LaunchOutcome {
@@ -780,11 +807,30 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean ensureCreativeCoreOrRescan(Level level, BlockPos cannonPos) {
-        if (this.hasCreativeCoreInSources()) {
-            return true;
+        return ensureAndGetCreativeCore(level, cannonPos) != null;
+    }
+
+    private @Nullable ItemStack ensureAndGetCreativeCore(Level level, BlockPos cannonPos) {
+        ItemStack core = this.findCreativeCoreInSources();
+        if (core != null) {
+            return core;
         }
         this.scanNearbyContainers(level, cannonPos);
-        return this.hasCreativeCoreInSources();
+        return this.findCreativeCoreInSources();
+    }
+
+    public int getEffectiveIntervalTicks(Level level, BlockPos cannonPos) {
+        ItemStack core = ensureAndGetCreativeCore(level, cannonPos);
+        return core != null
+                ? CreativeCoreItem.getIntervalTicks(core)
+                : CreativeCoreItem.DEFAULT_INTERVAL_TICKS;
+    }
+
+    public int getEffectiveShotsPerCycle(Level level, BlockPos cannonPos) {
+        ItemStack core = ensureAndGetCreativeCore(level, cannonPos);
+        return core != null
+                ? CreativeCoreItem.getShotsPerCycle(core)
+                : CreativeCoreItem.DEFAULT_SHOTS_PER_CYCLE;
     }
 
     private @Nullable ContainerSource findItemOrRescan(Level level, BlockPos cannonPos, Item item) {
@@ -956,6 +1002,12 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             return EntityStepOutcome.PAUSED;
         }
 
+        if (!this.hasFuel(level, pos)) {
+            this.consumeFuel(level, pos);
+            this.ticksToNextPlace = 0;
+            return EntityStepOutcome.PAUSED;
+        }
+
         Map<String, ItemStack> consumedItems = new LinkedHashMap<>();
         if (!hasCreativeCore) {
             List<me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement> reqs =
@@ -981,6 +1033,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             this.launchEntity(level, exactPos, baseStack, id, sanitizedNbt);
             return EntityStepOutcome.LAUNCHED;
         }
+        this.ticksToNextPlace = 0;
         return EntityStepOutcome.PAUSED;
     }
 
@@ -1181,6 +1234,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     me.tuanzi.util.ModLog.debug("START from IDLE: 重置进度 currentIndex=0");
                 }
                 this.buildState = 1;
+                this.ticksToNextPlace = 0;
                 this.cachedSources = null; // 重新触发扫描
             }
             case "PAUSE" -> this.buildState = 2;
@@ -1465,6 +1519,23 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         this.setChanged();
     }
 
+    private boolean hasFuel(Level level, BlockPos pos) {
+        if (this.fuel > 0) {
+            return true;
+        }
+        ItemStack slurry = this.items.get(1);
+        if (!slurry.isEmpty() && slurry.is(ModItems.COMPRESSED_BUILD_SLURRY)) {
+            return true;
+        }
+        List<Player> nearbyPlayers = level.getEntitiesOfClass(Player.class, new net.minecraft.world.phys.AABB(pos).inflate(16));
+        for (Player p : nearbyPlayers) {
+            if (p.isCreative()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean consumeFuel(Level level, BlockPos pos) {
         if (this.fuel > 0) {
             this.fuel--;
@@ -1494,15 +1565,19 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         return false;
     }
 
-    public boolean hasCreativeCoreInSources() {
-        if (this.cachedSources == null) return false;
+    public @Nullable ItemStack findCreativeCoreInSources() {
+        if (this.cachedSources == null) return null;
         for (ContainerSource src : this.cachedSources) {
             ItemStack stack = src.container.getItem(src.slot);
             if (!stack.isEmpty() && stack.is(ModItems.CREATIVE_CORE)) {
-                return true;
+                return stack;
             }
         }
-        return false;
+        return null;
+    }
+
+    public boolean hasCreativeCoreInSources() {
+        return findCreativeCoreInSources() != null;
     }
 
     private ContainerSource findItemInSources(Item item) {

@@ -160,9 +160,11 @@ public class SafeboxSelectorOverlay {
         for (GridItemEntry entry : ScavengerClientState.getBackpackEntries()) {
             if (entry.copyStack().is(targetItem)) return true;
         }
-        // 3. 基地仓库
-        for (RedactedGridEntryView view : ScavengerClientState.getContainerEntries().values()) {
-            if (view.stack().is(targetItem)) return true;
+        // 3. 基地仓库（仅在基地仓库界面打开时有效）
+        if (player.containerMenu instanceof me.tuanzi.world.inventory.scavenger.BaseStashMenu) {
+            for (RedactedGridEntryView view : ScavengerClientState.getBaseStashEntries().values()) {
+                if (view.stack().is(targetItem)) return true;
+            }
         }
         return false;
     }

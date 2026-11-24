@@ -85,14 +85,21 @@ public class BlueprintCommand {
         int maxY = Math.max(y1, y2);
         int maxZ = Math.max(z1, z2);
 
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
-        int length = maxZ - minZ + 1;
+        long widthLong = (long) maxX - (long) minX + 1L;
+        long heightLong = (long) maxY - (long) minY + 1L;
+        long lengthLong = (long) maxZ - (long) minZ + 1L;
 
-        if (width * height * length > 262144) {
+        if (widthLong <= 0 || heightLong <= 0 || lengthLong <= 0
+                || widthLong > 262144L || heightLong > 262144L || lengthLong > 262144L
+                || widthLong * heightLong > 262144L
+                || widthLong * heightLong * lengthLong > 262144L) {
             player.sendSystemMessage(Component.translatable("message.tuanzis_mod.blueprint.too_large").withStyle(ChatFormatting.RED));
             return 0;
         }
+
+        int width = (int) widthLong;
+        int height = (int) heightLong;
+        int length = (int) lengthLong;
 
         List<BlockState> paletteList = new ArrayList<>();
         int[] blocks = new int[width * height * length];
@@ -134,7 +141,7 @@ public class BlueprintCommand {
         }
 
         // 捕获实体 (排除玩家与环境临时实体)
-        net.minecraft.world.phys.AABB boundingBox = new net.minecraft.world.phys.AABB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
+        net.minecraft.world.phys.AABB boundingBox = new net.minecraft.world.phys.AABB(minX, minY, minZ, maxX + 1L, maxY + 1L, maxZ + 1L);
         List<net.minecraft.world.entity.Entity> entities = level.getEntities((net.minecraft.world.entity.Entity) null, boundingBox,
                 entity -> !me.tuanzi.block.cannon.BlueprintEntityHelper.isIgnoredEntity(entity));
         ListTag entitiesTag = new ListTag();
