@@ -42,7 +42,6 @@
     "FoodDataMixin",
     "GrindstoneMenuMixin",
     "PistonBaseBlockMixin",
-    "PistonMovingBlockEntityMixin",
     "GachaItemEntityMixin",
     "ImmortalTalismanMixin",
     "ImmortalTalismanPlayerMixin",
