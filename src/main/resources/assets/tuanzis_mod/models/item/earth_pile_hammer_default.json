@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "tuanzis_mod:item/bee_sting_echo_default"
+  }
+}
