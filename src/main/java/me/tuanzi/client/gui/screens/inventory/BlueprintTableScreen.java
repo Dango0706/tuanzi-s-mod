@@ -218,14 +218,14 @@ public class BlueprintTableScreen extends AbstractContainerScreen<BlueprintTable
         if (selectedFile == null && !exportBp.isEmpty()) {
             CustomData customData = exportBp.get(DataComponents.CUSTOM_DATA);
             if (customData != null) {
-                CompoundTag tag = customData.copyTag();
+                CompoundTag tag = LitematicaParser.expandBlueprintTag(customData.copyTag());
                 if (tag.contains("Width")) {
                     String title = exportBp.getHoverName().getString();
                     ModLog.debug("[BlueprintTableScreen] 打开槽位蓝图 3D 检视器: " + title);
                     this.minecraft.setScreenAndShow(new BlueprintInspectorScreen(this, tag, title, updatedTag -> {
                         ItemStack currentSlot0 = menu.getExportBlueprint();
                         if (!currentSlot0.isEmpty()) {
-                            currentSlot0.set(DataComponents.CUSTOM_DATA, CustomData.of(updatedTag.copy()));
+                            currentSlot0.set(DataComponents.CUSTOM_DATA, CustomData.of(LitematicaParser.compactBlueprintTag(updatedTag)));
                         }
                         if (this.minecraft != null && this.minecraft.getConnection() != null) {
                             ClientPlayNetworking.send(new BlueprintTableImportPacket(menu.getTablePos(), updatedTag.copy(), true));

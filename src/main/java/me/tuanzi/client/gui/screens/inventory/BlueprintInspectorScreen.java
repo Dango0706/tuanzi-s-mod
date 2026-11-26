@@ -4,11 +4,13 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import me.tuanzi.block.cannon.BlueprintBuildPlanner;
+import me.tuanzi.block.cannon.BlueprintColorMaterialHelper;
 import me.tuanzi.client.ClientGhostManager;
 import me.tuanzi.client.renderer.blueprint.BlueprintPreviewMath;
 import me.tuanzi.client.renderer.blueprint.BlueprintPreviewMesh;
 import me.tuanzi.client.renderer.blueprint.BlueprintPreviewRenderer;
 import me.tuanzi.util.ModLog;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -78,8 +80,9 @@ public class BlueprintInspectorScreen extends Screen {
     // 切层参数
     private int currentLayer = 0;
     private boolean singleLayerMode = false;
-    // 选中的方块种类高亮过滤（按 Block 聚合高亮）
+    // 选中的方块种类/颜色高亮过滤（彩色方块支持按具体 RGB 单独高亮）
     private @Nullable Block selectedBlock = null;
+    private @Nullable Integer selectedColor = null;
     // 侧边栏与自适应控件引用
     private boolean sidebarCollapsed = false;
     private int listScrollOffset = 0;
@@ -96,6 +99,7 @@ public class BlueprintInspectorScreen extends Screen {
     private Button compassButton;
     private boolean sortByCount = true;
     private @Nullable Block lastClickedListBlock = null;
+    private @Nullable Integer lastClickedListColor = null;
     private long lastClickedListTimeMs = 0L;
 
     public BlueprintInspectorScreen(Screen parentScreen, CompoundTag blueprintTag, String title) {
@@ -110,7 +114,7 @@ public class BlueprintInspectorScreen extends Screen {
     ) {
         super(Component.literal(title));
         this.parentScreen = parentScreen;
-        this.blueprintTag = blueprintTag;
+        this.blueprintTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(blueprintTag);
         this.blueprintTitle = title;
         this.onBlueprintModified = onBlueprintModified;
         initBlueprintData(true);
@@ -153,23 +157,35 @@ public class BlueprintInspectorScreen extends Screen {
             }
         }
 
-        // 使用通用多方块与多消耗方块规划器统计真实需求数量与占用格数（1扇门=1、模组多方块整组=1、双半砖=2；液体仅算源头）
+        // 使用通用多方块与彩色方块按颜色细分规划器统计真实需求数量与占用格数
         Minecraft mc = Minecraft.getInstance();
-        Map<Block, BlueprintBuildPlanner.MaterialStat> materialStats =
-                BlueprintBuildPlanner.collectMaterialStats(blueprintTag, mc != null ? mc.level : null);
+        Map<BlueprintBuildPlanner.MaterialKey, BlueprintBuildPlanner.MaterialStat> materialStats =
+                BlueprintBuildPlanner.collectColoredMaterialStats(blueprintTag, mc != null ? mc.level : null);
 
         this.totalBlocks = 0;
+        for (int pIdx : this.blocks) {
+            if (pIdx >= 0 && pIdx < this.palette.length) {
+                BlockState st = this.palette[pIdx];
+                if (st != null && !BlueprintBuildPlanner.isBlueprintAir(st)) {
+                    this.totalBlocks++;
+                }
+            }
+        }
         this.totalRequiredItems = 0;
         allBlockStats.clear();
-        for (Map.Entry<Block, BlueprintBuildPlanner.MaterialStat> entry : materialStats.entrySet()) {
-            Block block = entry.getKey();
+        for (Map.Entry<BlueprintBuildPlanner.MaterialKey, BlueprintBuildPlanner.MaterialStat> entry : materialStats.entrySet()) {
+            BlueprintBuildPlanner.MaterialKey key = entry.getKey();
+            Block block = key.block();
             BlueprintBuildPlanner.MaterialStat stat = entry.getValue();
-            ItemStack stack = BlueprintBlockReplaceScreen.resolveDisplayStack(block);
-            String locName = block.getName().getString();
+            ItemStack stack = key.isColored()
+                    ? BlueprintColorMaterialHelper.createColoredDisplayStack(block.asItem(), key.color())
+                    : BlueprintBlockReplaceScreen.resolveDisplayStack(block);
+            String locName = key.isColored()
+                    ? block.getName().getString() + " " + key.formatHex()
+                    : block.getName().getString();
             String regId = BuiltInRegistries.BLOCK.getKey(block).toString();
-            allBlockStats.add(new BlockStatEntry(block, stack, locName, regId, stat.itemCount(), stat.voxelCount()));
+            allBlockStats.add(new BlockStatEntry(block, key.color(), stack, locName, regId, stat.itemCount(), stat.voxelCount()));
             this.totalRequiredItems += stat.itemCount();
-            this.totalBlocks += stat.voxelCount();
         }
         sortBlockStats();
 
@@ -254,6 +270,7 @@ public class BlueprintInspectorScreen extends Screen {
 
         this.resetFilterButton = this.addRenderableWidget(Button.builder(Component.literal("重置视角"), btn -> {
             this.selectedBlock = null;
+            this.selectedColor = null;
             resetCamera();
         }).bounds(sbX + 76, 64, SIDEBAR_WIDTH - 88, 16).build());
 
@@ -439,6 +456,7 @@ public class BlueprintInspectorScreen extends Screen {
         }
 
         this.selectedBlock = null;
+        this.selectedColor = null;
         initBlueprintData(false);
 
         if (ClientGhostManager.hasActiveGhost()) {
@@ -489,21 +507,27 @@ public class BlueprintInspectorScreen extends Screen {
                     BlockStatEntry selected = filteredBlockStats.get(itemIdx);
                     if (btn == InputConstants.MOUSE_BUTTON_LEFT || btn == 0) {
                         long now = System.currentTimeMillis();
+                        boolean sameEntry = this.lastClickedListBlock == selected.block
+                                && Objects.equals(this.lastClickedListColor, selected.color);
                         boolean isDoubleClick = doubleClick
-                                || (this.lastClickedListBlock == selected.block && (now - this.lastClickedListTimeMs) <= 600L);
+                                || (sameEntry && (now - this.lastClickedListTimeMs) <= 600L);
                         this.lastClickedListBlock = selected.block;
+                        this.lastClickedListColor = selected.color;
                         this.lastClickedListTimeMs = now;
                         if (isDoubleClick) {
                             this.lastClickedListBlock = null;
+                            this.lastClickedListColor = null;
                             this.lastClickedListTimeMs = 0L;
                             openBlockReplaceScreen(selected);
                             return true;
                         }
                     }
-                    if (this.selectedBlock == selected.block) {
+                    if (this.selectedBlock == selected.block && Objects.equals(this.selectedColor, selected.color)) {
                         this.selectedBlock = null;
+                        this.selectedColor = null;
                     } else {
                         this.selectedBlock = selected.block;
+                        this.selectedColor = selected.color;
                     }
                     return true;
                 }
@@ -614,7 +638,7 @@ public class BlueprintInspectorScreen extends Screen {
         }
         if ((key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) && this.selectedBlock != null) {
             for (BlockStatEntry entry : this.allBlockStats) {
-                if (entry.block == this.selectedBlock) {
+                if (entry.block == this.selectedBlock && Objects.equals(entry.color, this.selectedColor)) {
                     openBlockReplaceScreen(entry);
                     return true;
                 }
@@ -633,6 +657,7 @@ public class BlueprintInspectorScreen extends Screen {
         }
         if (key == InputConstants.KEY_R) { // R 键重置相机与高亮
             this.selectedBlock = null;
+            this.selectedColor = null;
             resetCamera();
             return true;
         }
@@ -744,7 +769,10 @@ public class BlueprintInspectorScreen extends Screen {
         graphics.text(this.font, dimBadge, 12, TOP_BAR_HEIGHT + 7, 0xFF88EEFF, false);
 
         if (selectedBlock != null) {
-            String filterTip = "高亮过滤: " + selectedBlock.getName().getString() + " (点击条目取消)";
+            String selLabel = selectedColor != null
+                    ? selectedBlock.getName().getString() + String.format(" #%06X", selectedColor & 0xFFFFFF)
+                    : selectedBlock.getName().getString();
+            String filterTip = "高亮过滤: " + selLabel + " (点击条目取消)";
             int fw = this.font.width(filterTip) + 12;
             graphics.fill(6, TOP_BAR_HEIGHT + 21, 6 + fw, TOP_BAR_HEIGHT + 35, 0xCC2A2410);
             graphics.outline(6, TOP_BAR_HEIGHT + 21, fw, 14, 0xFFFFCC44);
@@ -786,12 +814,15 @@ public class BlueprintInspectorScreen extends Screen {
                 String qtyLine = entry.count != entry.voxelCount
                         ? String.format("需求数量: %,d 个 (占比 %.1f%% · 占用 %,d 格)", entry.count, pct, entry.voxelCount)
                         : String.format("需求数量: %,d 个 (占比 %.1f%%)", entry.count, pct);
-                List<Component> tipLines = List.of(
-                        Component.literal(entry.localizedName).withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD),
-                        Component.literal(entry.registryId).withStyle(ChatFormatting.DARK_GRAY),
-                        Component.literal(qtyLine).withStyle(ChatFormatting.AQUA),
-                        Component.translatable("gui.tuanzis_mod.inspector.list_item_hint").withStyle(ChatFormatting.GRAY)
-                );
+                List<Component> tipLines = new ArrayList<>();
+                tipLines.add(Component.literal(entry.localizedName).withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
+                if (entry.color != null) {
+                    tipLines.add(Component.literal(String.format("染色颜色: #%06X", entry.color & 0xFFFFFF))
+                            .withStyle(style -> style.withColor(entry.color & 0xFFFFFF)));
+                }
+                tipLines.add(Component.literal(entry.registryId).withStyle(ChatFormatting.DARK_GRAY));
+                tipLines.add(Component.literal(qtyLine).withStyle(ChatFormatting.AQUA));
+                tipLines.add(Component.translatable("gui.tuanzis_mod.inspector.list_item_hint").withStyle(ChatFormatting.GRAY));
                 graphics.setComponentTooltipForNextFrame(this.font, tipLines, mouseX, mouseY);
             }
         }
@@ -823,7 +854,7 @@ public class BlueprintInspectorScreen extends Screen {
                         previewMesh,
                         structWidth, structHeight, structLength,
                         yaw, pitch, panX, panY, baseScale,
-                        currentLayer, singleLayerMode, showBoundsAndAxes, selectedBlock,
+                        currentLayer, singleLayerMode, showBoundsAndAxes, selectedBlock, selectedColor,
                         0, TOP_BAR_HEIGHT, vpWidth, vpHeight - BOTTOM_BAR_HEIGHT,
                         scissor, bounds
                 ));
@@ -957,16 +988,21 @@ public class BlueprintInspectorScreen extends Screen {
                 int rowY = LIST_Y_START + i * LIST_ROW_HEIGHT;
 
                 boolean isHovered = mouseX >= sbX + 4 && mouseX <= this.width - 5 && mouseY >= rowY && mouseY <= rowY + 22;
-                boolean isSelected = (selectedBlock == entry.block);
+                boolean isSelected = (selectedBlock == entry.block) && Objects.equals(selectedColor, entry.color);
 
                 int bgCol = isSelected ? 0x66FFCC33 : (isHovered ? 0x38FFFFFF : 0x1EFFFFFF);
                 graphics.fill(sbX + 4, rowY, this.width - 5, rowY + 22, bgCol);
+                if (entry.color != null) {
+                    // 左侧色条直观标识该条目的染色颜色
+                    graphics.fill(sbX + 4, rowY + 1, sbX + 7, rowY + 21, ARGB.opaque(entry.color));
+                }
                 if (isSelected) {
                     graphics.outline(sbX + 4, rowY, SIDEBAR_WIDTH - 9, 22, 0xFFFFDD55);
                 }
 
+                int iconX = entry.color != null ? sbX + 8 : sbX + 6;
                 if (!entry.itemStack.isEmpty()) {
-                    graphics.item(entry.itemStack, sbX + 6, rowY + 3);
+                    graphics.item(entry.itemStack, iconX, rowY + 3);
                 }
 
                 double pct = totalRequiredItems > 0 ? (entry.count * 100.0 / totalRequiredItems) : 0.0;
@@ -977,13 +1013,14 @@ public class BlueprintInspectorScreen extends Screen {
                 int pctW = this.font.width(pctStr);
                 int rightColW = Math.max(countW, pctW);
 
-                int availNameW = Math.max(36, SIDEBAR_WIDTH - 34 - rightColW);
+                int nameX = entry.color != null ? sbX + 26 : sbX + 24;
+                int availNameW = Math.max(36, SIDEBAR_WIDTH - (nameX - sbX) - 10 - rightColW);
                 String dispName = entry.localizedName;
                 if (this.font.width(dispName) > availNameW) {
                     dispName = this.font.plainSubstrByWidth(dispName, Math.max(24, availNameW - 6)) + "..";
                 }
 
-                graphics.text(this.font, dispName, sbX + 24, rowY + 7, isSelected ? 0xFFFFEE55 : 0xFFFFFFFF, false);
+                graphics.text(this.font, dispName, nameX, rowY + 7, isSelected ? 0xFFFFEE55 : 0xFFFFFFFF, false);
                 graphics.text(this.font, countStr, this.width - 7 - countW, rowY + 3, 0xFF55FFFF, false);
                 graphics.text(this.font, pctStr, this.width - 7 - pctW, rowY + 12, 0xFF99AABB, false);
             }
@@ -1020,17 +1057,19 @@ public class BlueprintInspectorScreen extends Screen {
         }
     }
 
-    // 按 Block 聚合去重后的方块统计列表项
+    // 按 (Block, Color) 聚合去重后的方块统计列表项（彩色方块按具体 RGB 颜色细分）
     public static class BlockStatEntry {
         public final Block block;
+        public final @Nullable Integer color;
         public final ItemStack itemStack;
         public final String localizedName;
         public final String registryId;
         public int count;
         public int voxelCount;
 
-        public BlockStatEntry(Block block, ItemStack itemStack, String localizedName, String registryId, int count, int voxelCount) {
+        public BlockStatEntry(Block block, @Nullable Integer color, ItemStack itemStack, String localizedName, String registryId, int count, int voxelCount) {
             this.block = block;
+            this.color = color;
             this.itemStack = itemStack;
             this.localizedName = localizedName;
             this.registryId = registryId;

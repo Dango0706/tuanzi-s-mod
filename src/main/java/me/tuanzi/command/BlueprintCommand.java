@@ -208,7 +208,8 @@ public class BlueprintCommand {
         stack.shrink(1);
 
         ItemStack structureBlueprint = new ItemStack(ModItems.STRUCTURE_BLUEPRINT);
-        structureBlueprint.set(DataComponents.CUSTOM_DATA, CustomData.of(blueprintData));
+        structureBlueprint.set(DataComponents.CUSTOM_DATA,
+                CustomData.of(me.tuanzi.util.LitematicaParser.compactBlueprintTag(blueprintData)));
 
         if (!player.getInventory().add(structureBlueprint)) {
             player.drop(structureBlueprint, false, Prediction.SERVER_ONLY);

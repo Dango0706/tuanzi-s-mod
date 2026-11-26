@@ -3,6 +3,7 @@ package me.tuanzi.client.renderer.blueprint;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.QuadInstance;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import me.tuanzi.block.cannon.BlueprintBuildPlanner;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -74,7 +75,7 @@ public final class BlueprintPreviewMesh {
         }
 
         BlueprintPreviewLevel previewLevel = new BlueprintPreviewLevel(
-                width, height, length, palette, blocks, currentLayer, singleLayerMode
+                width, height, length, palette, blocks, teNbtMap, currentLayer, singleLayerMode
         );
         ModelBlockRenderer blockRenderer = new ModelBlockRenderer(false, true, mc.getBlockColors());
         FluidRenderer fluidRenderer = new FluidRenderer(mc.getModelManager().getFluidStateModelSet());
@@ -87,11 +88,12 @@ public final class BlueprintPreviewMesh {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         int[] emittedCounter = new int[1];
         Block[] currentBlockRef = new Block[1];
+        int[] currentColorRef = new int[]{-1, -1};
 
         BlockQuadOutput quadOutput = (qx, qy, qz, quad, instance) -> {
             emittedCounter[0]++;
             LayerBatch target = mesh.batchFor(quad.materialInfo().layer());
-            target.addBakedQuad(qx, qy, qz, quad, instance, currentBlockRef[0]);
+            target.addBakedQuad(qx, qy, qz, quad, instance, currentBlockRef[0], currentColorRef[0], currentColorRef[1]);
         };
 
         FluidVertexCollector fluidCollector = new FluidVertexCollector(mesh);
@@ -116,6 +118,14 @@ public final class BlueprintPreviewMesh {
                     pos.set(x, y, z);
                     Block block = state.getBlock();
                     currentBlockRef[0] = block;
+                    int[] reqCols = BlueprintBuildPlanner.getRequiredColors(state, teNbtMap.get(pos));
+                    if (reqCols.length > 0) {
+                        currentColorRef[0] = reqCols[0];
+                        currentColorRef[1] = reqCols.length > 1 ? reqCols[1] : reqCols[0];
+                    } else {
+                        currentColorRef[0] = -1;
+                        currentColorRef[1] = -1;
+                    }
                     emittedCounter[0] = 0;
 
                     // 1. 流体渲染（支持水、岩浆与含水方块 waterlogged=true）
@@ -141,13 +151,13 @@ public final class BlueprintPreviewMesh {
                         );
                     }
 
-                    // 3. 方块实体渲染（赌场多方块动态部件、告示牌文字、箱子、旗帜等）
+                    // 3. 方块实体渲染（赌场多方块动态部件、告示牌文字、箱子、旗帜等；跳过无 BER 的实体方块如彩色方块以加速大蓝图烘焙）
                     boolean hasBer = false;
                     if (block instanceof EntityBlock entityBlock && clientLevel != null) {
                         BlockPos virtualPos = new BlockPos(x + VIRTUAL_POS_OFFSET, y, z + VIRTUAL_POS_OFFSET);
                         try {
                             BlockEntity be = entityBlock.newBlockEntity(virtualPos, state);
-                            if (be != null) {
+                            if (be != null && berDispatcher.getRenderer(be) != null) {
                                 be.setLevel(clientLevel);
                                 CompoundTag rawTeNbt = teNbtMap.get(pos);
                                 if (rawTeNbt != null) {
@@ -159,10 +169,8 @@ public final class BlueprintPreviewMesh {
                                             ProblemReporter.DISCARDING, clientLevel.registryAccess(), loadedNbt
                                     ));
                                 }
-                                if (berDispatcher.getRenderer(be) != null) {
-                                    mesh.blockEntities.add(new BlockEntityEntry(x, y, z, block, be));
-                                    hasBer = true;
-                                }
+                                mesh.blockEntities.add(new BlockEntityEntry(x, y, z, block, be));
+                                hasBer = true;
                             }
                         } catch (Exception e) {
                             ModLog.debug("[BlueprintPreviewMesh] 创建预览 BlockEntity 跳过 " + state + " @" + pos + ": " + e.getMessage());
@@ -189,7 +197,8 @@ public final class BlueprintPreviewMesh {
                 + ", cutout=" + mesh.cutoutBatch.quadCount
                 + ", translucent=" + mesh.translucentBatch.quadCount
                 + ", special=" + mesh.specialModels.size()
-                + ", blockEntities=" + mesh.blockEntities.size());
+                + ", blockEntities=" + mesh.blockEntities.size()
+                + ", tintedColorLookups=" + previewLevel.getTintedBlockLookupCount());
         return mesh;
     }
 
@@ -217,6 +226,8 @@ public final class BlueprintPreviewMesh {
         private int[] colors = new int[INITIAL_QUADS * 4];
         private int[] lights = new int[INITIAL_QUADS * 4];
         private Block[] blocks = new Block[INITIAL_QUADS];
+        private int[] blockColors = new int[INITIAL_QUADS];
+        private int[] altBlockColors = new int[INITIAL_QUADS];
         public int quadCount = 0;
 
         private void ensureCapacity() {
@@ -227,12 +238,16 @@ public final class BlueprintPreviewMesh {
             colors = Arrays.copyOf(colors, newCap * 4);
             lights = Arrays.copyOf(lights, newCap * 4);
             blocks = Arrays.copyOf(blocks, newCap);
+            blockColors = Arrays.copyOf(blockColors, newCap);
+            altBlockColors = Arrays.copyOf(altBlockColors, newCap);
         }
 
-        void addBakedQuad(float ox, float oy, float oz, BakedQuad quad, QuadInstance instance, Block block) {
+        void addBakedQuad(float ox, float oy, float oz, BakedQuad quad, QuadInstance instance, Block block, int blockColor, int altBlockColor) {
             ensureCapacity();
             int qi = quadCount++;
             blocks[qi] = block;
+            blockColors[qi] = blockColor;
+            altBlockColors[qi] = altBlockColor;
 
             int lightEmission = quad.materialInfo().lightEmission();
             int basePos = qi * 12;
@@ -249,7 +264,10 @@ public final class BlueprintPreviewMesh {
                 uv[baseUv + v * 2] = UVPair.unpackU(packedUv);
                 uv[baseUv + v * 2 + 1] = UVPair.unpackV(packedUv);
 
-                colors[baseCol + v] = instance.getColor(v);
+                int rawColor = instance.getColor(v);
+                colors[baseCol + v] = (quad.materialInfo().layer() == ChunkSectionLayer.TRANSLUCENT)
+                        ? rawColor
+                        : ARGB.opaque(rawColor);
                 lights[baseCol + v] = instance.getLightCoordsWithEmission(v, lightEmission);
             }
         }
@@ -258,6 +276,8 @@ public final class BlueprintPreviewMesh {
             ensureCapacity();
             int qi = quadCount++;
             blocks[qi] = block;
+            blockColors[qi] = -1;
+            altBlockColors[qi] = -1;
             int basePos = qi * 12;
             int baseUv = qi * 8;
             int baseCol = qi * 4;
@@ -272,20 +292,28 @@ public final class BlueprintPreviewMesh {
             }
         }
 
-        public boolean hasAnyMatching(@Nullable Block selectedBlock, boolean matchSelected) {
+        private boolean matchesSelection(int idx, @Nullable Block selectedBlock, @Nullable Integer selectedColor) {
+            if (selectedBlock == null) return true;
+            if (blocks[idx] != selectedBlock) return false;
+            if (selectedColor == null) return true;
+            int target = selectedColor & 0xFFFFFF;
+            return blockColors[idx] == target || altBlockColors[idx] == target;
+        }
+
+        public boolean hasAnyMatching(@Nullable Block selectedBlock, @Nullable Integer selectedColor, boolean matchSelected) {
             if (quadCount == 0) return false;
             if (selectedBlock == null) return matchSelected;
             for (int i = 0; i < quadCount; i++) {
-                if ((blocks[i] == selectedBlock) == matchSelected) {
+                if (matchesSelection(i, selectedBlock, selectedColor) == matchSelected) {
                     return true;
                 }
             }
             return false;
         }
 
-        public void writeTo(PoseStack.Pose pose, VertexConsumer vc, @Nullable Block selectedBlock, boolean matchSelected, boolean dimmedTranslucent) {
+        public void writeTo(PoseStack.Pose pose, VertexConsumer vc, @Nullable Block selectedBlock, @Nullable Integer selectedColor, boolean matchSelected, boolean dimmedTranslucent) {
             for (int i = 0; i < quadCount; i++) {
-                boolean matches = (selectedBlock == null) || (blocks[i] == selectedBlock);
+                boolean matches = matchesSelection(i, selectedBlock, selectedColor);
                 if (matches != matchSelected) continue;
 
                 int basePos = i * 12;

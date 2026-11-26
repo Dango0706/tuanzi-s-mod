@@ -1,14 +1,20 @@
 package me.tuanzi.util;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.Property;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +23,145 @@ import java.util.Optional;
 public class LitematicaParser {
 
     public static final long MAX_BLUEPRINT_VOLUME = 8_388_608L;
+    public static final String KEY_COMPRESSED_PAYLOAD = "CompressedPayload";
+    public static final String KEY_BLOCK_COUNT = "BlockCount";
+    public static final long MAX_ITEM_UNCOMPRESSED_BYTES = 32L * 1024 * 1024;
     private static final int MAX_PALETTE_INDEX = 65536;
+
+    /**
+     * 将蓝图大体积体素与方块实体数据（Palette/Blocks/BlockEntities/Entities）GZIP 压缩为单个 byte[]，
+     * 避免大蓝图或上万个彩色方块在 ItemStack 网络同步（container_set_content）时触发原版 2MB NbtAccounter 崩溃。
+     * 外层保留尺寸、方块总数与虚影定位/变换等轻量元数据，供 Tooltip 与右键放置直接读写。
+     */
+    public static CompoundTag compactBlueprintTag(CompoundTag rawTag) {
+        if (rawTag == null || !rawTag.contains("Width")) {
+            return rawTag == null ? new CompoundTag() : rawTag.copy();
+        }
+        // 已是压缩态且无残留未压缩大数据字段
+        if (rawTag.contains(KEY_COMPRESSED_PAYLOAD)
+                && !rawTag.contains("Blocks")
+                && !rawTag.contains("Palette")
+                && !rawTag.contains("BlockEntities")
+                && !rawTag.contains("Entities")) {
+            return rawTag.copy();
+        }
+
+        CompoundTag expanded = expandBlueprintTag(rawTag);
+        CompoundTag payload = new CompoundTag();
+        if (expanded.contains("Palette")) {
+            payload.put("Palette", expanded.getListOrEmpty("Palette").copy());
+        }
+        int[] blocks = expanded.getIntArray("Blocks").orElse(new int[0]);
+        payload.putIntArray("Blocks", blocks);
+        if (expanded.contains("BlockEntities")) {
+            payload.put("BlockEntities", expanded.getListOrEmpty("BlockEntities").copy());
+        }
+        if (expanded.contains("Entities")) {
+            payload.put("Entities", expanded.getListOrEmpty("Entities").copy());
+        }
+
+        byte[] compressed;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            NbtIo.writeCompressed(payload, baos);
+            compressed = baos.toByteArray();
+        } catch (IOException e) {
+            ModLog.error("[LitematicaParser] 压缩蓝图数据失败，回退原始格式", e);
+            return expanded;
+        }
+
+        CompoundTag compact = new CompoundTag();
+        compact.putInt("Width", expanded.getIntOr("Width", 0));
+        compact.putInt("Height", expanded.getIntOr("Height", 0));
+        compact.putInt("Length", expanded.getIntOr("Length", 0));
+        compact.putInt(KEY_BLOCK_COUNT, blocks.length);
+        compact.putByteArray(KEY_COMPRESSED_PAYLOAD, compressed);
+
+        // 保留外层轻量虚影/姿态与扩展元数据
+        for (String key : rawTag.keySet()) {
+            if ("Palette".equals(key) || "Blocks".equals(key) || "BlockEntities".equals(key)
+                    || "Entities".equals(key) || KEY_COMPRESSED_PAYLOAD.equals(key)
+                    || "Width".equals(key) || "Height".equals(key) || "Length".equals(key)
+                    || KEY_BLOCK_COUNT.equals(key)) {
+                continue;
+            }
+            Tag extra = rawTag.get(key);
+            if (extra != null) {
+                compact.put(key, extra.copy());
+            }
+        }
+        if (expanded.contains("Entities")) {
+            compact.putInt("EntityCount", expanded.getListOrEmpty("Entities").size());
+        }
+
+        ModLog.debug("[LitematicaParser] 蓝图压缩完成: blocks=" + blocks.length
+                + ", blockEntities=" + expanded.getListOrEmpty("BlockEntities").size()
+                + ", compressedBytes=" + compressed.length);
+        return compact;
+    }
+
+    /**
+     * 透明展开蓝图 CompoundTag：
+     * - 若为新压缩格式（含 CompressedPayload），解压并合并外层最新的 Width/Height/Length/Ghost/Offset/Rotation/Mirrored；
+     * - 若为旧未压缩格式，直接原样返回，保持 100% 向后兼容。
+     */
+    public static CompoundTag expandBlueprintTag(CompoundTag tag) {
+        if (tag == null || !tag.contains(KEY_COMPRESSED_PAYLOAD)) {
+            return tag;
+        }
+        byte[] compressed = tag.getByteArray(KEY_COMPRESSED_PAYLOAD).orElse(new byte[0]);
+        if (compressed.length == 0) {
+            return tag;
+        }
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(compressed)) {
+            CompoundTag payload = NbtIo.readCompressed(bais, NbtAccounter.create(MAX_ITEM_UNCOMPRESSED_BYTES));
+            CompoundTag result = new CompoundTag();
+            for (String key : tag.keySet()) {
+                if (KEY_COMPRESSED_PAYLOAD.equals(key)) continue;
+                Tag v = tag.get(key);
+                if (v != null) {
+                    result.put(key, v.copy());
+                }
+            }
+            for (String key : payload.keySet()) {
+                Tag v = payload.get(key);
+                if (v != null) {
+                    result.put(key, v.copy());
+                }
+            }
+            return result;
+        } catch (IOException e) {
+            ModLog.error("[LitematicaParser] 解压蓝图 CompressedPayload 失败", e);
+            return tag;
+        }
+    }
+
+    /**
+     * 若结构蓝图物品仍采用旧版未压缩 NBT，就地无损压缩回写，避免打开容器发包触发 2MB 限制断连。
+     */
+    public static boolean compactItemStackIfNeeded(ItemStack stack) {
+        if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof me.tuanzi.item.StructureBlueprintItem)) {
+            return false;
+        }
+        CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
+        if (customData == null || customData.isEmpty()) {
+            return false;
+        }
+        CompoundTag raw = customData.copyTag();
+        if (!raw.contains("Width")) {
+            return false;
+        }
+        if (raw.contains(KEY_COMPRESSED_PAYLOAD)
+                && !raw.contains("Blocks")
+                && !raw.contains("Palette")
+                && !raw.contains("BlockEntities")
+                && !raw.contains("Entities")) {
+            return false;
+        }
+        CompoundTag compact = compactBlueprintTag(raw);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(compact));
+        ModLog.debug("[LitematicaParser] 自动压缩结构蓝图 ItemStack NBT");
+        return true;
+    }
 
     private static int validateDimensions(int width, int height, int length) {
         if (width <= 0 || height <= 0 || length <= 0
@@ -396,6 +540,7 @@ public class LitematicaParser {
     }
 
     public static CompoundTag packLitematic(CompoundTag blueprintTag, String name) {
+        blueprintTag = expandBlueprintTag(blueprintTag);
         CompoundTag root = new CompoundTag();
         root.putInt("Version", 5);
 

@@ -49,6 +49,7 @@ public class BlueprintTableBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof BlueprintTableBlockEntity tableBe) {
+                tableBe.compactStoredBlueprints();
                 player.openMenu(tableBe);
             }
         }

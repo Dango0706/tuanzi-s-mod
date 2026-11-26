@@ -86,8 +86,22 @@ public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvid
         return ContainerHelper.takeItem(this.items, slot);
     }
 
+    public boolean compactStoredBlueprints() {
+        boolean changed = false;
+        for (ItemStack stack : this.items) {
+            if (me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack)) {
+                changed = true;
+            }
+        }
+        if (changed) {
+            this.setChanged();
+        }
+        return changed;
+    }
+
     @Override
     public void setItem(int slot, ItemStack stack) {
+        me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack);
         this.items.set(slot, stack);
         if (stack.getCount() > this.getMaxStackSize()) {
             stack.setCount(this.getMaxStackSize());
@@ -121,6 +135,7 @@ public class BlueprintTableBlockEntity extends BlockEntity implements MenuProvid
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, this.items);
+        compactStoredBlueprints();
     }
 
     @Override

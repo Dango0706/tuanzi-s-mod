@@ -1,6 +1,7 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.init.ModItems;
+import me.tuanzi.util.LitematicaParser;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +20,11 @@ public class ItemFrameFrameMixin {
     private void tuanzis_mod$preventDummyInFrame(ItemStack stack, boolean update, CallbackInfo ci) {
         if (stack.is(ModItems.TRIAL_DUMMY)) {
             ci.cancel();
+            return;
+        }
+        ItemFrame self = (ItemFrame) (Object) this;
+        if (!self.level().isClientSide()) {
+            LitematicaParser.compactItemStackIfNeeded(stack);
         }
     }
 

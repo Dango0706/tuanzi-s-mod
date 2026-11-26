@@ -86,15 +86,16 @@ public class BlueprintPreviewRenderer extends PictureInPictureRenderer<Blueprint
             poseStack.translate(-state.structWidth() / 2.0F, -state.structHeight() / 2.0F, -state.structLength() / 2.0F);
 
             Block selected = state.selectedBlock();
+            Integer selectedColor = state.selectedColor();
 
             // 1. 提交预烘焙固体/镂空方块网格
-            if (mesh.solidBatch.hasAnyMatching(selected, true)) {
+            if (mesh.solidBatch.hasAnyMatching(selected, selectedColor, true)) {
                 collector.submitCustomGeometry(poseStack, RenderTypes.solidMovingBlock(),
-                        (pose, vc) -> mesh.solidBatch.writeTo(pose, vc, selected, true, false));
+                        (pose, vc) -> mesh.solidBatch.writeTo(pose, vc, selected, selectedColor, true, false));
             }
-            if (mesh.cutoutBatch.hasAnyMatching(selected, true)) {
+            if (mesh.cutoutBatch.hasAnyMatching(selected, selectedColor, true)) {
                 collector.submitCustomGeometry(poseStack, RenderTypes.cutoutMovingBlock(),
-                        (pose, vc) -> mesh.cutoutBatch.writeTo(pose, vc, selected, true, false));
+                        (pose, vc) -> mesh.cutoutBatch.writeTo(pose, vc, selected, selectedColor, true, false));
             }
 
             // 2. 提交 SpecialModel 兜底方块（无 BlockEntityRenderer 接管的内置模型）
@@ -132,21 +133,21 @@ public class BlueprintPreviewRenderer extends PictureInPictureRenderer<Blueprint
             }
 
             // 4. 提交半透明网格（水体、玻璃、传送门，以及选中过滤模式下其余半透明淡化方块）
-            boolean hasTranslucentSelected = mesh.translucentBatch.hasAnyMatching(selected, true);
+            boolean hasTranslucentSelected = mesh.translucentBatch.hasAnyMatching(selected, selectedColor, true);
             boolean hasDimmedOther = selected != null && (
-                    mesh.solidBatch.hasAnyMatching(selected, false)
-                            || mesh.cutoutBatch.hasAnyMatching(selected, false)
-                            || mesh.translucentBatch.hasAnyMatching(selected, false)
+                    mesh.solidBatch.hasAnyMatching(selected, selectedColor, false)
+                            || mesh.cutoutBatch.hasAnyMatching(selected, selectedColor, false)
+                            || mesh.translucentBatch.hasAnyMatching(selected, selectedColor, false)
             );
             if (hasTranslucentSelected || hasDimmedOther) {
                 collector.submitCustomGeometry(poseStack, RenderTypes.translucentMovingBlock(), (pose, vc) -> {
                     if (hasTranslucentSelected) {
-                        mesh.translucentBatch.writeTo(pose, vc, selected, true, false);
+                        mesh.translucentBatch.writeTo(pose, vc, selected, selectedColor, true, false);
                     }
                     if (hasDimmedOther) {
-                        mesh.solidBatch.writeTo(pose, vc, selected, false, true);
-                        mesh.cutoutBatch.writeTo(pose, vc, selected, false, true);
-                        mesh.translucentBatch.writeTo(pose, vc, selected, false, true);
+                        mesh.solidBatch.writeTo(pose, vc, selected, selectedColor, false, true);
+                        mesh.cutoutBatch.writeTo(pose, vc, selected, selectedColor, false, true);
+                        mesh.translucentBatch.writeTo(pose, vc, selected, selectedColor, false, true);
                     }
                 });
             }
@@ -294,6 +295,7 @@ public class BlueprintPreviewRenderer extends PictureInPictureRenderer<Blueprint
             boolean singleLayerMode,
             boolean showBoundsAndAxes,
             @Nullable Block selectedBlock,
+            @Nullable Integer selectedColor,
             int x0,
             int y0,
             int x1,

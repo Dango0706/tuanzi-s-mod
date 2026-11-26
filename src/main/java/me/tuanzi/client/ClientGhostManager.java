@@ -163,7 +163,7 @@ public class ClientGhostManager {
             return;
         }
 
-        activeBlueprintTag = blueprintTag.copy();
+        activeBlueprintTag = LitematicaParser.expandBlueprintTag(blueprintTag.copy());
         basePos = base;
         offset = off != null ? off : BlockPos.ZERO;
         rotationIdx = (rot % 4 + 4) % 4;

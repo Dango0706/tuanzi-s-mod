@@ -460,6 +460,326 @@ public class BlueprintCannonGameTest {
             }
             if (chest.getItem(0).isEmpty() || !chest.getItem(0).is(ModItems.CREATIVE_CORE)) {
                 helper.fail(Component.literal("Creative core should remain intact in chest"));
+                return;
+            }
+            ItemStack remainingSlurry = cannon.getItem(1);
+            if (remainingSlurry.isEmpty() || !remainingSlurry.is(ModItems.COMPRESSED_BUILD_SLURRY) || remainingSlurry.getCount() != 4) {
+                helper.fail(Component.literal("Creative core should NOT consume slurry, expected 4, got "
+                        + (remainingSlurry.isEmpty() ? 0 : remainingSlurry.getCount())));
+                return;
+            }
+            if (cannon.dataAccess.get(7) != 0) {
+                helper.fail(Component.literal("Creative core should NOT consume slurry durability, expected fuel=0, got "
+                        + cannon.dataAccess.get(7)));
+            }
+        });
+    }
+
+    private static ItemStack createColoredBlueprintItem(
+            BlockPos ghostAbsPos,
+            int width,
+            int height,
+            int length,
+            Map<BlockPos, BlockState> localBlocks,
+            Map<BlockPos, Integer> localColors
+    ) {
+        ItemStack stack = createBlueprintItem(ghostAbsPos, width, height, length, localBlocks);
+        CompoundTag tag = stack.get(DataComponents.CUSTOM_DATA).copyTag();
+        ListTag bes = new ListTag();
+        for (Map.Entry<BlockPos, Integer> e : localColors.entrySet()) {
+            CompoundTag entry = new CompoundTag();
+            entry.putIntArray("pos", new int[]{e.getKey().getX(), e.getKey().getY(), e.getKey().getZ()});
+            CompoundTag nbt = new CompoundTag();
+            nbt.putString("id", "tuanzis_mod:color_block_be");
+            nbt.putInt("Color", e.getValue() & 0xFFFFFF);
+            entry.put("nbt", nbt);
+            bes.add(entry);
+        }
+        tag.put("BlockEntities", bes);
+        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        return stack;
+    }
+
+    @GameTest(maxTicks = 400)
+    public void testColorBlockExactAndPaintBucketPrinting(GameTestHelper helper) {
+        for (int x = 0; x <= 6; x++) {
+            for (int z = 0; z <= 3; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                for (int y = 1; y <= 3; y++) {
+                    helper.setBlock(x, y, z, Blocks.AIR);
+                }
+            }
+        }
+
+        helper.setBlock(0, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+        helper.setBlock(1, 1, 1, Blocks.CHEST);
+
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(1, 1, 1), ChestBlockEntity.class);
+        // 放入 1 个精确红色彩色方块 + 2 个白色彩色方块 + 1 个仅剩 2 点耐久的油漆桶
+        chest.setItem(0, me.tuanzi.block.cannon.BlueprintColorMaterialHelper.createColoredDisplayStack(ModBlocks.COLOR_BLOCK.asItem(), 0xFF0000));
+        ItemStack whites = me.tuanzi.block.cannon.BlueprintColorMaterialHelper.createColoredDisplayStack(ModBlocks.COLOR_BLOCK.asItem(), 0xFFFFFF);
+        whites.setCount(2);
+        chest.setItem(1, whites);
+        ItemStack bucket = new ItemStack(ModItems.PAINT_BUCKET);
+        bucket.setDamageValue(bucket.getMaxDamage() - 2);
+        chest.setItem(2, bucket);
+
+        Map<BlockPos, BlockState> bp = new HashMap<>();
+        bp.put(new BlockPos(0, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        bp.put(new BlockPos(1, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        bp.put(new BlockPos(2, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        Map<BlockPos, Integer> colors = Map.of(
+                new BlockPos(0, 0, 0), 0xFF0000,
+                new BlockPos(1, 0, 0), 0x00FF00,
+                new BlockPos(2, 0, 0), 0x0000FF
+        );
+
+        BlueprintCannonBlockEntity cannon = helper.getBlockEntity(new BlockPos(0, 1, 1), BlueprintCannonBlockEntity.class);
+        cannon.setItem(0, createColoredBlueprintItem(helper.absolutePos(new BlockPos(3, 1, 1)), 3, 1, 1, bp, colors));
+        cannon.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY, 4));
+        cannon.handleAction("START", false, false);
+
+        helper.succeedWhen(() -> {
+            if (cannon.dataAccess.get(0) != 0) {
+                helper.fail(Component.literal("Cannon still running, state=" + cannon.dataAccess.get(0)));
+                return;
+            }
+            helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 3, 1, 1);
+            helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 4, 1, 1);
+            helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 5, 1, 1);
+
+            var be0 = helper.getBlockEntity(new BlockPos(3, 1, 1), me.tuanzi.block.entity.ColorBlockBlockEntity.class);
+            var be1 = helper.getBlockEntity(new BlockPos(4, 1, 1), me.tuanzi.block.entity.ColorBlockBlockEntity.class);
+            var be2 = helper.getBlockEntity(new BlockPos(5, 1, 1), me.tuanzi.block.entity.ColorBlockBlockEntity.class);
+            if (be0.getColor() != 0xFF0000 || be1.getColor() != 0x00FF00 || be2.getColor() != 0x0000FF) {
+                helper.fail(Component.literal("Color mismatch: "
+                        + String.format("#%06X, #%06X, #%06X", be0.getColor(), be1.getColor(), be2.getColor())));
+                return;
+            }
+            if (!chest.getItem(0).isEmpty() || !chest.getItem(1).isEmpty()) {
+                helper.fail(Component.literal("Expected all 3 color blocks consumed"));
+                return;
+            }
+            if (!chest.getItem(2).is(Items.BUCKET)) {
+                helper.fail(Component.literal("Expected paint bucket depleted into empty BUCKET, got " + chest.getItem(2)));
+            }
+        });
+    }
+
+    @GameTest(maxTicks = 60)
+    public void testLegacyUncompressedBlueprintAutoCompactedOnEntityAndCodec(GameTestHelper helper) {
+        int width = 32;
+        int height = 16;
+        int length = 32;
+        CompoundTag legacyTag = new CompoundTag();
+        legacyTag.putInt("Width", width);
+        legacyTag.putInt("Height", height);
+        legacyTag.putInt("Length", length);
+        ListTag palette = new ListTag();
+        palette.add(net.minecraft.nbt.StringTag.valueOf("minecraft:air"));
+        palette.add(net.minecraft.nbt.StringTag.valueOf("tuanzis_mod:color_block"));
+        legacyTag.put("Palette", palette);
+        legacyTag.putIntArray("Blocks", new int[width * height * length]);
+
+        ListTag blockEntities = new ListTag();
+        for (int i = 0; i < 15_000; i++) {
+            CompoundTag entry = new CompoundTag();
+            entry.putIntArray("pos", new int[]{i & 31, (i >> 5) & 15, (i >> 9) & 31});
+            CompoundTag inner = new CompoundTag();
+            inner.putString("id", "tuanzis_mod:color_block");
+            inner.putInt("Color", 0xFF000000 | (i & 0xFFFFFF));
+            entry.put("nbt", inner);
+            blockEntities.add(entry);
+        }
+        legacyTag.put("BlockEntities", blockEntities);
+
+        // 1. 确认未压缩数据确实超出原版 2MB NbtAccounter 限制
+        net.minecraft.network.FriendlyByteBuf rawCheckBuf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        try {
+            net.minecraft.network.FriendlyByteBuf.writeNbt(rawCheckBuf, legacyTag);
+            boolean threwQuota = false;
+            try {
+                net.minecraft.network.FriendlyByteBuf.readNbt(rawCheckBuf, net.minecraft.nbt.NbtAccounter.defaultQuota());
+            } catch (net.minecraft.nbt.NbtAccounterException expected) {
+                threwQuota = true;
+            }
+            if (!threwQuota) {
+                helper.fail(Component.literal("Expected raw 15,000 ColorBlock tag to exceed 2MB NbtAccounter quota"));
+                return;
+            }
+        } finally {
+            rawCheckBuf.release();
+        }
+
+        ItemStack legacyStack = new ItemStack(ModItems.STRUCTURE_BLUEPRINT);
+        legacyStack.set(DataComponents.CUSTOM_DATA, CustomData.of(legacyTag));
+
+        // 2. 通过 ItemStack.CODEC 编解码（模拟旧存档反序列化）应自动压缩
+        var encodedNbt = ItemStack.CODEC.encodeStart(
+                helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE),
+                legacyStack.copy()
+        ).getOrThrow();
+        ItemStack decodedFromSave = ItemStack.CODEC.parse(
+                helper.getLevel().registryAccess().createSerializationContext(NbtOps.INSTANCE),
+                encodedNbt
+        ).getOrThrow();
+        CompoundTag saveCompactTag = decodedFromSave.get(DataComponents.CUSTOM_DATA).copyTag();
+        if (!saveCompactTag.contains(me.tuanzi.util.LitematicaParser.KEY_COMPRESSED_PAYLOAD)
+                || saveCompactTag.contains("BlockEntities")) {
+            helper.fail(Component.literal("Expected ItemStack.CODEC deserialization to auto-compact legacy blueprint"));
+            return;
+        }
+
+        // 3. ItemEntity#setItem 应自动压缩，且 ClientboundSetEntityDataPacket 可正常编解码
+        BlockPos dropPos = helper.absolutePos(new BlockPos(1, 2, 1));
+        ItemEntity itemEntity = new ItemEntity(helper.getLevel(), dropPos.getX() + 0.5, dropPos.getY(), dropPos.getZ() + 0.5, legacyStack.copy());
+        CompoundTag itemEntityTag = itemEntity.getItem().get(DataComponents.CUSTOM_DATA).copyTag();
+        if (!itemEntityTag.contains(me.tuanzi.util.LitematicaParser.KEY_COMPRESSED_PAYLOAD)
+                || itemEntityTag.contains("BlockEntities")) {
+            helper.fail(Component.literal("Expected ItemEntity#setItem to auto-compact blueprint"));
+            return;
+        }
+
+        var nonDefaultData = itemEntity.getEntityData().getNonDefaultValues();
+        if (nonDefaultData == null || nonDefaultData.isEmpty()) {
+            helper.fail(Component.literal("Expected non-empty SynchedEntityData on ItemEntity"));
+            return;
+        }
+        net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket packet =
+                new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(itemEntity.getId(), nonDefaultData);
+        net.minecraft.network.RegistryFriendlyByteBuf wireBuf =
+                new net.minecraft.network.RegistryFriendlyByteBuf(io.netty.buffer.Unpooled.buffer(), helper.getLevel().registryAccess());
+        try {
+            net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket.STREAM_CODEC.encode(wireBuf, packet);
+            net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket decodedPacket =
+                    net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket.STREAM_CODEC.decode(wireBuf);
+            if (decodedPacket.packedItems().isEmpty()) {
+                helper.fail(Component.literal("Expected decoded set_entity_data packet items"));
+                return;
+            }
+        } finally {
+            wireBuf.release();
+        }
+
+        // 4. ItemFrame#setItem 应自动压缩
+        net.minecraft.world.entity.decoration.ItemFrame frame =
+                new net.minecraft.world.entity.decoration.ItemFrame(helper.getLevel(), helper.absolutePos(new BlockPos(2, 2, 1)), Direction.NORTH);
+        frame.setItem(legacyStack.copy(), false);
+        CompoundTag frameTag = frame.getItem().get(DataComponents.CUSTOM_DATA).copyTag();
+        if (!frameTag.contains(me.tuanzi.util.LitematicaParser.KEY_COMPRESSED_PAYLOAD)
+                || frameTag.contains("BlockEntities")) {
+            helper.fail(Component.literal("Expected ItemFrame#setItem to auto-compact blueprint"));
+            return;
+        }
+
+        helper.succeed();
+    }
+
+    @GameTest(maxTicks = 120)
+    public void testColorBlockMissingWithoutPaintBucketPauses(GameTestHelper helper) {
+        for (int x = 0; x <= 5; x++) {
+            for (int z = 0; z <= 3; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                for (int y = 1; y <= 3; y++) {
+                    helper.setBlock(x, y, z, Blocks.AIR);
+                }
+            }
+        }
+
+        helper.setBlock(0, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+        helper.setBlock(1, 1, 1, Blocks.CHEST);
+
+        // 仅放入 1 个白色彩色方块、不放油漆桶，而蓝图需要红色 #FF0000
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(1, 1, 1), ChestBlockEntity.class);
+        chest.setItem(0, me.tuanzi.block.cannon.BlueprintColorMaterialHelper.createColoredDisplayStack(ModBlocks.COLOR_BLOCK.asItem(), 0xFFFFFF));
+
+        Map<BlockPos, BlockState> bp = Map.of(new BlockPos(0, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        Map<BlockPos, Integer> colors = Map.of(new BlockPos(0, 0, 0), 0xFF0000);
+
+        BlueprintCannonBlockEntity cannon = helper.getBlockEntity(new BlockPos(0, 1, 1), BlueprintCannonBlockEntity.class);
+        cannon.setItem(0, createColoredBlueprintItem(helper.absolutePos(new BlockPos(3, 1, 1)), 1, 1, 1, bp, colors));
+        cannon.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY, 2));
+        cannon.handleAction("START", false, false);
+
+        helper.succeedWhen(() -> {
+            if (cannon.dataAccess.get(0) != 2 || cannon.dataAccess.get(13) != 2) {
+                helper.fail(Component.literal("Expected cannon paused for missing material (state=2, reason=2), got state="
+                        + cannon.dataAccess.get(0) + ", reason=" + cannon.dataAccess.get(13)));
+                return;
+            }
+            helper.assertBlockPresent(Blocks.AIR, 3, 1, 1);
+            if (chest.getItem(0).getCount() != 1) {
+                helper.fail(Component.literal("White color block should NOT be consumed without paint bucket"));
+            }
+        });
+    }
+
+    @GameTest(maxTicks = 240)
+    public void testCreativeCoreNoSlurryConsumption(GameTestHelper helper) {
+        for (int x = 0; x <= 6; x++) {
+            for (int z = 0; z <= 3; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                for (int y = 1; y <= 4; y++) {
+                    helper.setBlock(x, y, z, Blocks.AIR);
+                }
+            }
+        }
+
+        // 1. 第一台大炮：无任何压缩建造浆料，仅有创造核心，开启拆除模式清理泥土并放置 4 个石头
+        helper.setBlock(0, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+        helper.setBlock(1, 1, 1, Blocks.CHEST);
+        helper.setBlock(3, 1, 1, Blocks.DIRT);
+
+        ChestBlockEntity chest = helper.getBlockEntity(new BlockPos(1, 1, 1), ChestBlockEntity.class);
+        chest.setItem(0, new ItemStack(ModItems.CREATIVE_CORE));
+
+        Map<BlockPos, BlockState> bp1 = new HashMap<>();
+        for (int i = 0; i < 4; i++) {
+            bp1.put(new BlockPos(i % 2, i / 2, 0), Blocks.STONE.defaultBlockState());
+        }
+
+        BlueprintCannonBlockEntity emptySlurryCannon = helper.getBlockEntity(new BlockPos(0, 1, 1), BlueprintCannonBlockEntity.class);
+        emptySlurryCannon.setItem(0, createBlueprintItem(helper.absolutePos(new BlockPos(3, 1, 1)), 2, 2, 1, bp1));
+        emptySlurryCannon.handleAction("START", true, false);
+
+        // 2. 第二台大炮：Slot 1 放入 4 个压缩建造浆料，验证有创造核心时完全不消耗已有浆料
+        helper.setBlock(0, 1, 3, ModBlocks.BLUEPRINT_CANNON);
+        Map<BlockPos, BlockState> bp2 = new HashMap<>();
+        bp2.put(new BlockPos(0, 0, 0), Blocks.OAK_PLANKS.defaultBlockState());
+        bp2.put(new BlockPos(1, 0, 0), Blocks.OAK_PLANKS.defaultBlockState());
+
+        BlueprintCannonBlockEntity filledSlurryCannon = helper.getBlockEntity(new BlockPos(0, 1, 3), BlueprintCannonBlockEntity.class);
+        filledSlurryCannon.setItem(0, createBlueprintItem(helper.absolutePos(new BlockPos(3, 1, 3)), 2, 1, 1, bp2));
+        filledSlurryCannon.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY, 4));
+        filledSlurryCannon.handleAction("START", false, false);
+
+        helper.succeedWhen(() -> {
+            if (emptySlurryCannon.dataAccess.get(0) != 0) {
+                helper.fail(Component.literal("Empty-slurry creative-core cannon still running/paused, state="
+                        + emptySlurryCannon.dataAccess.get(0) + ", reason=" + emptySlurryCannon.dataAccess.get(13)));
+                return;
+            }
+            if (filledSlurryCannon.dataAccess.get(0) != 0) {
+                helper.fail(Component.literal("Filled-slurry creative-core cannon still running/paused, state="
+                        + filledSlurryCannon.dataAccess.get(0) + ", reason=" + filledSlurryCannon.dataAccess.get(13)));
+                return;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                helper.assertBlockPresent(Blocks.STONE, 3 + (i % 2), 1 + (i / 2), 1);
+            }
+            helper.assertBlockPresent(Blocks.OAK_PLANKS, 3, 1, 3);
+            helper.assertBlockPresent(Blocks.OAK_PLANKS, 4, 1, 3);
+
+            ItemStack slurryLeft = filledSlurryCannon.getItem(1);
+            if (slurryLeft.isEmpty() || !slurryLeft.is(ModItems.COMPRESSED_BUILD_SLURRY) || slurryLeft.getCount() != 4) {
+                helper.fail(Component.literal("Expected all 4 slurry items preserved under Creative Core, got "
+                        + (slurryLeft.isEmpty() ? 0 : slurryLeft.getCount())));
+                return;
+            }
+            if (filledSlurryCannon.dataAccess.get(7) != 0) {
+                helper.fail(Component.literal("Expected fuel durability untouched (0) under Creative Core, got "
+                        + filledSlurryCannon.dataAccess.get(7)));
             }
         });
     }

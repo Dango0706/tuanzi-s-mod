@@ -5,8 +5,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -15,13 +18,57 @@ import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class StructureBlueprintItem extends Item {
 
+    public static final int MAX_DEFAULT_ENTITY_LINES = 4;
+    private static final int ENTITY_CACHE_MAX_ENTRIES = 16;
+
+    public record EntityTooltipEntry(String id, double x, double y, double z) {
+    }
+
+    private record CompressedPayloadKey(byte[] bytes, int hash) {
+        static CompressedPayloadKey of(byte[] bytes) {
+            return new CompressedPayloadKey(bytes, Arrays.hashCode(bytes));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (!(obj instanceof CompressedPayloadKey other)) return false;
+            return this.hash == other.hash && Arrays.equals(this.bytes, other.bytes);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.hash;
+        }
+    }
+
+    private static final Map<CompressedPayloadKey, List<EntityTooltipEntry>> COMPRESSED_ENTITY_CACHE =
+            Collections.synchronizedMap(new LinkedHashMap<>(ENTITY_CACHE_MAX_ENTRIES, 0.75F, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<CompressedPayloadKey, List<EntityTooltipEntry>> eldest) {
+                    return size() > ENTITY_CACHE_MAX_ENTRIES;
+                }
+            });
+
     public StructureBlueprintItem(Properties properties) {
         super(properties.stacksTo(1));
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+        me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack);
     }
 
     @Override
@@ -56,7 +103,7 @@ public class StructureBlueprintItem extends Item {
                 tag.putInt("Rotation", 0); // 0, 1, 2, 3
                 tag.putBoolean("Mirrored", false);
 
-                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(me.tuanzi.util.LitematicaParser.compactBlueprintTag(tag)));
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                     serverPlayer.containerMenu.broadcastChanges();
                 }
@@ -73,7 +120,7 @@ public class StructureBlueprintItem extends Item {
                 tag.remove("Rotation");
                 tag.remove("Mirrored");
 
-                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(me.tuanzi.util.LitematicaParser.compactBlueprintTag(tag)));
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                     serverPlayer.containerMenu.broadcastChanges();
                 }
@@ -100,7 +147,7 @@ public class StructureBlueprintItem extends Item {
                 tag.remove("OffsetZ");
                 tag.remove("Rotation");
                 tag.remove("Mirrored");
-                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                stack.set(DataComponents.CUSTOM_DATA, CustomData.of(me.tuanzi.util.LitematicaParser.compactBlueprintTag(tag)));
                 if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                     serverPlayer.containerMenu.broadcastChanges();
                 }
@@ -120,36 +167,14 @@ public class StructureBlueprintItem extends Item {
                 int w = tag.getIntOr("Width", 0);
                 int h = tag.getIntOr("Height", 0);
                 int l = tag.getIntOr("Length", 0);
-                int[] blocks = tag.getIntArray("Blocks").orElse(new int[0]);
+                int blockCount = tag.contains(me.tuanzi.util.LitematicaParser.KEY_BLOCK_COUNT)
+                        ? tag.getIntOr(me.tuanzi.util.LitematicaParser.KEY_BLOCK_COUNT, 0)
+                        : tag.getIntArray("Blocks").orElse(new int[0]).length;
                 builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.size", w, h, l).withStyle(ChatFormatting.GRAY));
-                builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.blocks", blocks.length).withStyle(ChatFormatting.GRAY));
+                builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.blocks", blockCount).withStyle(ChatFormatting.GRAY));
 
-                // 实体列表显示
-                if (tag.contains("Entities")) {
-                    net.minecraft.nbt.ListTag entitiesTag = tag.getListOrEmpty("Entities");
-                    if (!entitiesTag.isEmpty()) {
-                        builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entities", entitiesTag.size()).withStyle(ChatFormatting.DARK_PURPLE));
-                        for (int i = 0; i < entitiesTag.size(); i++) {
-                            CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
-                            String id = entityNbt.getStringOr("id", "");
-                            String displayName = id;
-                            if (id.contains(":")) {
-                                displayName = id.substring(id.indexOf(":") + 1);
-                            }
-                            net.minecraft.network.chat.Component entityName = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getOptional(net.minecraft.resources.Identifier.tryParse(id))
-                                    .map(net.minecraft.world.entity.EntityType::getDescription)
-                                    .orElse(Component.literal(displayName));
-
-                            net.minecraft.nbt.ListTag posList = entityNbt.getListOrEmpty("Pos");
-                            if (posList.size() >= 3) {
-                                double rx = posList.getDoubleOr(0, 0.0);
-                                double ry = posList.getDoubleOr(1, 0.0);
-                                double rz = posList.getDoubleOr(2, 0.0);
-                                builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entity_entry", entityName, rx, ry, rz).withStyle(ChatFormatting.LIGHT_PURPLE));
-                            }
-                        }
-                    }
-                }
+                // 实体列表显示：默认最多显示 4 行，超出时按住 Shift 展开全部
+                appendEntityTooltip(tag, isShiftDown(), builder);
                 if (tag.getBooleanOr("GhostPlaced", false)) {
                     builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.ghost_active",
                             tag.getIntOr("GhostX", 0) + tag.getIntOr("OffsetX", 0),
@@ -164,5 +189,94 @@ public class StructureBlueprintItem extends Item {
             builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.empty").withStyle(ChatFormatting.RED));
         }
         super.appendHoverText(stack, context, display, builder, tooltipFlag);
+    }
+
+    private static boolean isShiftDown() {
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().getEnvironmentType() == net.fabricmc.api.EnvType.CLIENT) {
+            return me.tuanzi.client.ClientTooltipHelper.isShiftDown();
+        }
+        return false;
+    }
+
+    public static void appendEntityTooltip(CompoundTag tag, boolean shiftDown, Consumer<Component> builder) {
+        List<EntityTooltipEntry> entries = resolveEntityEntries(tag);
+        if (entries.isEmpty()) {
+            int entityCount = tag.getIntOr("EntityCount", 0);
+            if (entityCount > 0) {
+                builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entities", entityCount).withStyle(ChatFormatting.DARK_PURPLE));
+            }
+            return;
+        }
+
+        builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entities", entries.size()).withStyle(ChatFormatting.DARK_PURPLE));
+        boolean showAll = shiftDown || entries.size() <= MAX_DEFAULT_ENTITY_LINES;
+        int displayCount = showAll ? entries.size() : MAX_DEFAULT_ENTITY_LINES;
+
+        for (int i = 0; i < displayCount; i++) {
+            EntityTooltipEntry entry = entries.get(i);
+            String id = entry.id();
+            String displayName = id;
+            if (id.contains(":")) {
+                displayName = id.substring(id.indexOf(":") + 1);
+            }
+            Component entityName = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE
+                    .getOptional(net.minecraft.resources.Identifier.tryParse(id))
+                    .map(net.minecraft.world.entity.EntityType::getDescription)
+                    .orElse(Component.literal(displayName));
+            builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entity_entry", entityName, entry.x(), entry.y(), entry.z())
+                    .withStyle(ChatFormatting.LIGHT_PURPLE));
+        }
+
+        if (!showAll) {
+            builder.accept(Component.translatable("tooltip.tuanzis_mod.blueprint.entities_more", entries.size() - MAX_DEFAULT_ENTITY_LINES)
+                    .withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    public static List<EntityTooltipEntry> resolveEntityEntries(CompoundTag tag) {
+        if (tag == null) {
+            return List.of();
+        }
+        if (tag.contains("Entities")) {
+            return extractEntityEntries(tag.getListOrEmpty("Entities"));
+        }
+        if (tag.getIntOr("EntityCount", 0) > 0 && tag.contains(me.tuanzi.util.LitematicaParser.KEY_COMPRESSED_PAYLOAD)) {
+            byte[] compressed = tag.getByteArray(me.tuanzi.util.LitematicaParser.KEY_COMPRESSED_PAYLOAD).orElse(new byte[0]);
+            if (compressed.length == 0) {
+                return List.of();
+            }
+            CompressedPayloadKey key = CompressedPayloadKey.of(compressed);
+            List<EntityTooltipEntry> cached = COMPRESSED_ENTITY_CACHE.get(key);
+            if (cached != null) {
+                return cached;
+            }
+            CompoundTag expanded = me.tuanzi.util.LitematicaParser.expandBlueprintTag(tag);
+            List<EntityTooltipEntry> extracted = expanded != null && expanded.contains("Entities")
+                    ? List.copyOf(extractEntityEntries(expanded.getListOrEmpty("Entities")))
+                    : List.of();
+            COMPRESSED_ENTITY_CACHE.put(key, extracted);
+            me.tuanzi.util.ModLog.debug("[StructureBlueprintItem] 解压并缓存压缩蓝图实体列表: count=" + extracted.size());
+            return extracted;
+        }
+        return List.of();
+    }
+
+    private static List<EntityTooltipEntry> extractEntityEntries(net.minecraft.nbt.ListTag entitiesTag) {
+        if (entitiesTag == null || entitiesTag.isEmpty()) {
+            return List.of();
+        }
+        List<EntityTooltipEntry> entries = new ArrayList<>(entitiesTag.size());
+        for (int i = 0; i < entitiesTag.size(); i++) {
+            CompoundTag entityNbt = entitiesTag.getCompoundOrEmpty(i);
+            net.minecraft.nbt.ListTag posList = entityNbt.getListOrEmpty("Pos");
+            if (posList.size() >= 3) {
+                String id = entityNbt.getStringOr("id", "");
+                double rx = posList.getDoubleOr(0, 0.0);
+                double ry = posList.getDoubleOr(1, 0.0);
+                double rz = posList.getDoubleOr(2, 0.0);
+                entries.add(new EntityTooltipEntry(id, rx, ry, rz));
+            }
+        }
+        return entries;
     }
 }

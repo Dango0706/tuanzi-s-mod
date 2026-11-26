@@ -1,5 +1,10 @@
 package me.tuanzi.block.cannon;
 
+import me.tuanzi.block.ColorBlock;
+import me.tuanzi.block.ColorSlab;
+import me.tuanzi.block.ColorStairs;
+import me.tuanzi.block.entity.ColorBlockBlockEntity;
+import me.tuanzi.block.entity.ColorSlabBlockEntity;
 import me.tuanzi.util.LitematicaParser;
 import me.tuanzi.util.ModLog;
 import net.minecraft.core.BlockPos;
@@ -73,6 +78,94 @@ public class BlueprintBuildPlanner {
     }
 
     public record MaterialStat(int itemCount, int voxelCount) {
+    }
+
+    /**
+     * 蓝图材料唯一键：普通方块按 Block 聚合（color == null），
+     * 彩色方块/楼梯/半砖按 (Block, 24-bit RGB) 独立聚合展示与消耗。
+     */
+    public record MaterialKey(Block block, @Nullable Integer color) {
+        public MaterialKey {
+            if (color != null) {
+                color = color & 0xFFFFFF;
+            }
+        }
+
+        public boolean isColored() {
+            return color != null;
+        }
+
+        public String formatHex() {
+            return color != null ? String.format("#%06X", color & 0xFFFFFF) : "";
+        }
+    }
+
+    public static boolean isColorBlockSeries(Block block) {
+        return block instanceof ColorBlock || block instanceof ColorStairs || block instanceof ColorSlab;
+    }
+
+    /**
+     * 提取单个蓝图格所需的颜色列表（仅彩色方块/楼梯/半砖返回非空数组，普通方块返回空数组）。
+     * 双层彩色半砖返回 2 个颜色 [bottomColor, topColor]；单半砖、彩色方块与彩色楼梯返回 1 个颜色。
+     */
+    public static int[] getRequiredColors(BlockState state, @Nullable CompoundTag teData) {
+        Block block = state.getBlock();
+        if (block instanceof ColorBlock || block instanceof ColorStairs) {
+            int col = teData != null ? (teData.getIntOr("Color", 0xFFFFFF) & 0xFFFFFF) : 0xFFFFFF;
+            return new int[]{col};
+        }
+        if (block instanceof ColorSlab) {
+            SlabType type = state.hasProperty(BlockStateProperties.SLAB_TYPE)
+                    ? state.getValue(BlockStateProperties.SLAB_TYPE)
+                    : SlabType.BOTTOM;
+            int bottom = teData != null ? (teData.getIntOr("BottomColor", 0xFFFFFF) & 0xFFFFFF) : 0xFFFFFF;
+            int top = teData != null ? (teData.getIntOr("TopColor", 0xFFFFFF) & 0xFFFFFF) : 0xFFFFFF;
+            if (type == SlabType.DOUBLE) {
+                return new int[]{bottom, top};
+            }
+            if (type == SlabType.TOP) {
+                return new int[]{top};
+            }
+            return new int[]{bottom};
+        }
+        return new int[0];
+    }
+
+    /**
+     * 判断世界指定位置的方块及颜色（若为彩色方块系列）是否已与蓝图格完全匹配。
+     */
+    public static boolean isCellMatch(Level level, BlockPos pos, BlockState worldState, BlueprintCell cell, boolean exactMatch) {
+        if (!isStateMatch(worldState, cell.state(), exactMatch)) {
+            return false;
+        }
+        Block block = cell.state().getBlock();
+        if (!isColorBlockSeries(block)) {
+            return true;
+        }
+        BlockEntity be = level.getBlockEntity(pos);
+        if (block instanceof ColorBlock || block instanceof ColorStairs) {
+            int expected = getRequiredColors(cell.state(), cell.teData())[0];
+            int actual = (be instanceof ColorBlockBlockEntity colorBe) ? (colorBe.getColor() & 0xFFFFFF) : 0xFFFFFF;
+            return actual == expected;
+        }
+        if (block instanceof ColorSlab) {
+            if (!(be instanceof ColorSlabBlockEntity slabBe)) {
+                return false;
+            }
+            SlabType type = cell.state().hasProperty(BlockStateProperties.SLAB_TYPE)
+                    ? cell.state().getValue(BlockStateProperties.SLAB_TYPE)
+                    : SlabType.BOTTOM;
+            int[] req = getRequiredColors(cell.state(), cell.teData());
+            if (type == SlabType.DOUBLE) {
+                return (slabBe.getBottomColor() & 0xFFFFFF) == req[0]
+                        && (slabBe.getTopColor() & 0xFFFFFF) == req[1];
+            }
+            if (type == SlabType.TOP) {
+                return (slabBe.getTopColor() & 0xFFFFFF) == req[0];
+            }
+            return (slabBe.getBottomColor() & 0xFFFFFF) == req[0];
+        }
+        return true;
     }
 
     public record ReplaceResult(
@@ -173,6 +266,7 @@ public class BlueprintBuildPlanner {
      * 解析蓝图 NBT，完成旋转/镜像坐标变换、多方块耦合分组与阶段排序。
      */
     public static ParsedBlueprint parseBlueprint(CompoundTag blueprintTag, @Nullable LevelReader worldLevel) {
+        blueprintTag = LitematicaParser.expandBlueprintTag(blueprintTag);
         int width = blueprintTag.getIntOr("Width", 0);
         int height = blueprintTag.getIntOr("Height", 0);
         int length = blueprintTag.getIntOr("Length", 0);
@@ -695,6 +789,71 @@ public class BlueprintBuildPlanner {
             result.put(b, new MaterialStat(items, voxels));
         }
         ModLog.debug("BlueprintBuildPlanner.collectMaterialStats: 统计材料种类=" + result.size());
+        return result;
+    }
+
+    /**
+     * 按 MaterialKey（彩色方块系列按具体 RGB 颜色细分，其余方块按 Block 聚合）统计蓝图真实材料需求量与占用格数。
+     */
+    public static Map<MaterialKey, MaterialStat> collectColoredMaterialStats(CompoundTag blueprintTag, @Nullable LevelReader worldLevel) {
+        ParsedBlueprint parsed = parseBlueprint(blueprintTag, worldLevel);
+        Map<MaterialKey, Integer> voxelCounts = new LinkedHashMap<>();
+        Map<MaterialKey, Integer> itemCounts = new LinkedHashMap<>();
+
+        for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
+            Block b = cell.state().getBlock();
+            int[] colors = getRequiredColors(cell.state(), cell.teData());
+            if (colors.length > 0) {
+                if (colors.length == 2 && colors[0] != colors[1]) {
+                    MaterialKey k0 = new MaterialKey(b, colors[0]);
+                    MaterialKey k1 = new MaterialKey(b, colors[1]);
+                    itemCounts.merge(k0, 1, Integer::sum);
+                    itemCounts.merge(k1, 1, Integer::sum);
+                    voxelCounts.merge(k0, 1, Integer::sum);
+                    voxelCounts.merge(k1, 1, Integer::sum);
+                } else {
+                    MaterialKey k = new MaterialKey(b, colors[0]);
+                    itemCounts.merge(k, colors.length, Integer::sum);
+                    voxelCounts.merge(k, 1, Integer::sum);
+                }
+            } else {
+                MaterialKey k = new MaterialKey(b, null);
+                int needed = (b.asItem() == Items.AIR) ? 1 : getSingleBlockItemCount(cell.state());
+                itemCounts.merge(k, needed, Integer::sum);
+                voxelCounts.merge(k, 1, Integer::sum);
+            }
+        }
+
+        for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
+            if (!group.parts().isEmpty()) {
+                Block b = group.parts().getFirst().state().getBlock();
+                MaterialKey k = new MaterialKey(b, null);
+                itemCounts.merge(k, 1, Integer::sum);
+                voxelCounts.merge(k, group.parts().size(), Integer::sum);
+            }
+        }
+
+        // 兜底统计仅出现在 cellMap 中（例如非源头流体等）而不在 single/multi 列表里的体素格
+        for (BlueprintCell cell : parsed.cellMap().values()) {
+            Block b = cell.state().getBlock();
+            int[] colors = getRequiredColors(cell.state(), cell.teData());
+            MaterialKey k = colors.length > 0 ? new MaterialKey(b, colors[0]) : new MaterialKey(b, null);
+            if (!itemCounts.containsKey(k)) {
+                voxelCounts.merge(k, 1, Integer::sum);
+            }
+        }
+
+        Map<MaterialKey, MaterialStat> result = new LinkedHashMap<>();
+        for (Map.Entry<MaterialKey, Integer> entry : itemCounts.entrySet()) {
+            MaterialKey k = entry.getKey();
+            int items = entry.getValue();
+            int voxels = voxelCounts.getOrDefault(k, items);
+            result.put(k, new MaterialStat(items, voxels));
+        }
+        for (Map.Entry<MaterialKey, Integer> entry : voxelCounts.entrySet()) {
+            result.putIfAbsent(entry.getKey(), new MaterialStat(entry.getValue(), entry.getValue()));
+        }
+        ModLog.debug("BlueprintBuildPlanner.collectColoredMaterialStats: 细分材料条目数=" + result.size());
         return result;
     }
 

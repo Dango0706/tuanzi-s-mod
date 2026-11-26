@@ -68,6 +68,7 @@ public final class BlueprintDirectPlacer {
             int rotationIdx,
             boolean mirrored
     ) {
+        blueprintTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(blueprintTag);
         int width = blueprintTag.getIntOr("Width", 0);
         int height = blueprintTag.getIntOr("Height", 0);
         int length = blueprintTag.getIntOr("Length", 0);

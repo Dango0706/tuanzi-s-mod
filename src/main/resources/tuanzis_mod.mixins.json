@@ -16,6 +16,7 @@
     "BlockStateBaseMixin",
     "BloodRageDamageMixin",
     "BloodRageEffectMixin",
+    "BlueprintItemEntityMixin",
     "BucketItemMixin",
     "ChainMiningMixin",
     "CombatRulesMixin",
@@ -48,6 +49,7 @@
     "InfinityMendingMixin",
     "ItemFrameFrameMixin",
     "ItemInstanceMixin",
+    "ItemStackBlueprintCompactMixin",
     "ItemStackDurabilityMixin",
     "LevelMixin",
     "LivingEntityAccessor",
@@ -85,6 +87,7 @@
     "WardenSoulboundDropMixin",
     "WitherBossMixin",
     "WolfMixin",
+    "YieldJobSiteMixin",
     "ZombieMixin"
   ],
   "injectors": {

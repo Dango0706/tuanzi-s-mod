@@ -32,6 +32,13 @@ public class ColorBlockBlockEntity extends BlockEntity {
         }
     }
 
+    /**
+     * 仅供客户端离屏蓝图预览使用：直接写入颜色，不触发世界同步与高频日志。
+     */
+    public void setPreviewColor(int color) {
+        this.color = color;
+    }
+
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);

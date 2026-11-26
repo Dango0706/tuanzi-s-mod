@@ -5,12 +5,19 @@ import me.tuanzi.init.ModBlocks;
 import me.tuanzi.mixin.VillagerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.GlobalPos;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
 import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -19,7 +26,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 
+import java.util.Optional;
+import java.util.function.Predicate;
+
 public class SoulMerchantStationBlockEntity extends BlockEntity {
+    public static final int RESTOCK_INTERVAL = 8000;
+    public static final int JOB_SITE_SYNC_INTERVAL = 20;
+
     private CompoundTag storedVillagerNbt = null;
     private Villager cachedVillager = null;
     private long lastRestockCheckDay = -1L;
@@ -96,9 +109,14 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
                     be.setChanged();
                 }
 
+                // 定期校验并主动独占相邻工作站，同时自愈存量 POTENTIAL_JOB_SITE
+                if (be.restockTimer % JOB_SITE_SYNC_INTERVAL == 0) {
+                    be.ensureBoundJobSite(serverLevel, villager);
+                }
+
                 // 方块实体自身 Tick 计时刷新交易锁定，每 8000 ticks (8小时游戏时间) 补货一次
                 be.restockTimer++;
-                if (be.restockTimer >= 8000) {
+                if (be.restockTimer >= RESTOCK_INTERVAL) {
                     me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站已持续运行 8000 ticks (8小时游戏时间)，触发补货。");
                     be.restockTimer = 0;
                     be.tryRestock(serverLevel);
@@ -169,6 +187,12 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
     }
 
     public CompoundTag exportVillager() {
+        if (this.level instanceof ServerLevel serverLevel && this.hasVillager()) {
+            Villager villager = this.getOrCreateVillager();
+            if (villager != null) {
+                this.releaseBoundJobSite(serverLevel, villager);
+            }
+        }
         syncVillagerToNbt();
         CompoundTag result = this.storedVillagerNbt != null ? this.storedVillagerNbt.copy() : new CompoundTag();
 
@@ -217,33 +241,155 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
         }
     }
 
+    public static boolean isAdjacentJobSite(BlockPos stationPos, ResourceKey<Level> stationDimension, GlobalPos jobSitePos) {
+        if (stationPos == null || stationDimension == null || jobSitePos == null) {
+            return false;
+        }
+        return stationDimension.equals(jobSitePos.dimension()) && stationPos.distManhattan(jobSitePos.pos()) == 1;
+    }
+
+    public int getRestockTimer() {
+        return this.restockTimer;
+    }
+
+    public void setRestockTimer(int restockTimer) {
+        this.restockTimer = Math.max(0, restockTimer);
+        this.setChanged();
+    }
+
+    public boolean ensureBoundJobSite(ServerLevel serverLevel, Villager villager) {
+        if (villager == null) {
+            return false;
+        }
+
+        Holder<VillagerProfession> profession = villager.getVillagerData().profession();
+        if (profession.is(VillagerProfession.NONE) || profession.is(VillagerProfession.NITWIT)) {
+            releaseBoundJobSite(serverLevel, villager);
+            return false;
+        }
+
+        Predicate<Holder<PoiType>> jobSitePredicate = profession.value().heldJobSite();
+        PoiManager poiManager = serverLevel.getPoiManager();
+        BlockPos pos = this.getBlockPos();
+        ResourceKey<Level> dimension = serverLevel.dimension();
+
+        // 1. 优先校验现有专属 JOB_SITE 是否仍位于相邻 6 面且匹配职业
+        boolean hasValidJobSite = false;
+        Optional<GlobalPos> existingJobSite = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
+        if (existingJobSite.isPresent()) {
+            GlobalPos jobGlobalPos = existingJobSite.get();
+            BlockPos jobPos = jobGlobalPos.pos();
+            if (isAdjacentJobSite(pos, dimension, jobGlobalPos) && poiManager.exists(jobPos, jobSitePredicate)) {
+                // 兜底：若 POI 票未处于占用状态，补占 1 票确保独占
+                poiManager.take(jobSitePredicate, (poiType, poiPos) -> poiPos.equals(jobPos), jobPos, 0);
+                hasValidJobSite = true;
+            } else {
+                villager.releasePoi(MemoryModuleType.JOB_SITE);
+                villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+                syncVillagerToNbt();
+                setChanged();
+                me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站旧工作站已失效，已解绑并释放 POI: " + jobPos);
+            }
+        }
+
+        // 2. 处理 POTENTIAL_JOB_SITE：若为相邻有效工作站则存量自愈接管为 JOB_SITE，否则释放并清除
+        Optional<GlobalPos> potentialJobSite = villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+        if (potentialJobSite.isPresent()) {
+            GlobalPos potentialGlobalPos = potentialJobSite.get();
+            BlockPos potentialPos = potentialGlobalPos.pos();
+            if (!hasValidJobSite
+                    && isAdjacentJobSite(pos, dimension, potentialGlobalPos)
+                    && poiManager.exists(potentialPos, jobSitePredicate)) {
+                villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+                villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, potentialGlobalPos);
+                // 若该 POI 仍有空余票则补占；若已由 POTENTIAL_JOB_SITE 占用则直接无缝接管票权
+                poiManager.take(jobSitePredicate, (poiType, poiPos) -> poiPos.equals(potentialPos), potentialPos, 0);
+                serverLevel.debugSynchronizers().updatePoi(potentialPos);
+                syncVillagerToNbt();
+                setChanged();
+                me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站存量自愈：已将相邻潜在工作站接管为专属工作站 " + potentialPos);
+                hasValidJobSite = true;
+            } else {
+                villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE);
+                villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+                syncVillagerToNbt();
+                setChanged();
+                me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站已清理无效或多余的潜在工作站记忆: " + potentialPos);
+            }
+        }
+
+        if (hasValidJobSite) {
+            return true;
+        }
+
+        // 3. 主动在相邻 6 面认领 1 个未被占用的匹配工作站，防止被外部自由村民抢占
+        for (Direction dir : Direction.values()) {
+            BlockPos neighborPos = pos.relative(dir);
+            Optional<BlockPos> taken = poiManager.take(
+                    jobSitePredicate,
+                    (poiType, poiPos) -> poiPos.equals(neighborPos),
+                    neighborPos,
+                    0
+            );
+            if (taken.isPresent()) {
+                GlobalPos boundPos = GlobalPos.of(dimension, neighborPos);
+                villager.getBrain().setMemory(MemoryModuleType.JOB_SITE, boundPos);
+                serverLevel.debugSynchronizers().updatePoi(neighborPos);
+                syncVillagerToNbt();
+                setChanged();
+                me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站已独占绑定相邻工作站: " + neighborPos + "（职业: " + profession.getRegisteredName() + "）");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void releaseBoundJobSite(ServerLevel serverLevel, Villager villager) {
+        if (villager == null) {
+            return;
+        }
+        boolean changed = false;
+        Optional<GlobalPos> jobSite = villager.getBrain().getMemory(MemoryModuleType.JOB_SITE);
+        if (jobSite.isPresent()) {
+            BlockPos oldPos = jobSite.get().pos();
+            villager.releasePoi(MemoryModuleType.JOB_SITE);
+            villager.getBrain().eraseMemory(MemoryModuleType.JOB_SITE);
+            changed = true;
+            me.tuanzi.util.ModLog.debug(null, this.worldPosition.toString(), "灵笼贸易站已释放专属工作站 POI: " + oldPos);
+        }
+        Optional<GlobalPos> potentialJobSite = villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+        if (potentialJobSite.isPresent()) {
+            BlockPos oldPos = potentialJobSite.get().pos();
+            villager.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE);
+            villager.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+            changed = true;
+            me.tuanzi.util.ModLog.debug(null, this.worldPosition.toString(), "灵笼贸易站已释放潜在工作站 POI: " + oldPos);
+        }
+        if (changed) {
+            syncVillagerToNbt();
+            setChanged();
+        }
+    }
+
     public void tryRestock(ServerLevel serverLevel) {
         Villager villager = this.getOrCreateVillager();
         if (villager == null) return;
 
-        if (villager.getVillagerData().profession().is(net.minecraft.world.entity.npc.villager.VillagerProfession.NONE)) {
+        Holder<VillagerProfession> profession = villager.getVillagerData().profession();
+        if (profession.is(VillagerProfession.NONE) || profession.is(VillagerProfession.NITWIT)) {
+            me.tuanzi.util.ModLog.debug(null, this.worldPosition.toString(), "灵笼贸易站跳过补货：当前村民无可用职业（" + profession.getRegisteredName() + "）。");
             return;
         }
 
-        java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> jobSitePredicate =
-                villager.getVillagerData().profession().value().heldJobSite();
-
         BlockPos pos = this.getBlockPos();
-        boolean foundFreeJobSite = false;
-
-        for (Direction dir : Direction.values()) {
-            BlockPos neighborPos = pos.relative(dir);
-            if (serverLevel.getPoiManager().getInRange(jobSitePredicate, neighborPos, 0, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.HAS_SPACE).findAny().isPresent()) {
-                foundFreeJobSite = true;
-                break;
-            }
-        }
-
-        if (foundFreeJobSite) {
+        if (ensureBoundJobSite(serverLevel, villager)) {
             villager.restock();
             syncVillagerToNbt();
             serverLevel.playSound(null, pos, SoundEvents.VILLAGER_WORK_LIBRARIAN, SoundSource.BLOCKS, 1.0f, 1.0f);
-            me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站检测到周围工作站，村民交易已自动刷新（村民: " + villager.getDisplayName().getString() + "）。");
+            me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站检测到专属工作站，村民交易已自动刷新（村民: " + villager.getDisplayName().getString() + "）。");
+        } else {
+            me.tuanzi.util.ModLog.debug(null, pos.toString(), "灵笼贸易站补货失败：相邻 6 面未找到可用且未被占用的对应工作站（职业: " + profession.getRegisteredName() + "）。");
         }
     }
 
@@ -279,6 +425,9 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
             }
 
             if (villager != null) {
+                // 释放并清除专属工作站 POI 绑定，防止 POI 票泄漏
+                this.releaseBoundJobSite(serverLevel, villager);
+
                 // 关闭无 AI、无敌与静音
                 villager.setNoAi(false);
                 villager.setPermanentlyInvulnerable(false);
@@ -300,6 +449,47 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
         this.storedVillagerNbt = null;
         this.villagerUuid = null;
         this.setChanged();
+    }
+
+    private void cleanupVillagerAndJobSite(ServerLevel serverLevel) {
+        Villager villager = null;
+        if (this.villagerUuid != null) {
+            net.minecraft.world.entity.Entity entity = serverLevel.getEntity(this.villagerUuid);
+            if (entity instanceof Villager v) {
+                villager = v;
+            }
+        }
+        if (villager == null) {
+            villager = this.getOrCreateVillager();
+        }
+        if (villager != null) {
+            this.releaseBoundJobSite(serverLevel, villager);
+            if (serverLevel.getEntity(villager.getUUID()) != null) {
+                villager.discard();
+            }
+        }
+        this.cachedVillager = null;
+        this.storedVillagerNbt = null;
+        this.villagerUuid = null;
+    }
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level instanceof ServerLevel serverLevel && this.hasVillager()) {
+            cleanupVillagerAndJobSite(serverLevel);
+        }
+        super.preRemoveSideEffects(pos, state);
+    }
+
+    @Override
+    public void setRemoved() {
+        // 兼容 /setblock replace (flag 256) 等跳过 preRemoveSideEffects 的方块替换路径；区块卸载时方块仍是本方块，不会误触发
+        if (this.level instanceof ServerLevel serverLevel
+                && this.hasVillager()
+                && !serverLevel.getBlockState(this.worldPosition).is(ModBlocks.SOUL_MERCHANT_STATION)) {
+            cleanupVillagerAndJobSite(serverLevel);
+        }
+        super.setRemoved();
     }
 
     public ItemStack getDropStack() {

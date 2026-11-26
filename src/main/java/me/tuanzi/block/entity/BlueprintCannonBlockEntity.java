@@ -4,6 +4,7 @@ import me.tuanzi.block.cannon.BlueprintBuildPlanner;
 import me.tuanzi.block.cannon.BlueprintBuildPlanner.BlueprintCell;
 import me.tuanzi.block.cannon.BlueprintBuildPlanner.MultiBlockGroup;
 import me.tuanzi.block.cannon.BlueprintBuildPlanner.ParsedBlueprint;
+import me.tuanzi.block.cannon.BlueprintColorMaterialHelper;
 import me.tuanzi.block.cannon.LaunchedItem;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
@@ -18,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -190,25 +192,24 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
             return;
         }
 
-        CompoundTag blueprintTag = customData.copyTag();
-        if (!blueprintTag.contains("Width")) {
+        CompoundTag rawTag = customData.copyTag();
+        if (!rawTag.contains("Width")) {
             be.resetToIdle();
             return;
         }
 
-        int width = blueprintTag.getIntOr("Width", 0);
-        int height = blueprintTag.getIntOr("Height", 0);
-        int length = blueprintTag.getIntOr("Length", 0);
-        int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
+        if (be.activePlan == null || !be.activePlan.matches(rawTag, be.destroyMode, be.exactMatch)) {
+            CompoundTag expandedTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(rawTag);
+            int width = expandedTag.getIntOr("Width", 0);
+            int height = expandedTag.getIntOr("Height", 0);
+            int length = expandedTag.getIntOr("Length", 0);
+            int[] blocks = expandedTag.getIntArray("Blocks").orElse(new int[0]);
 
-        if (!BlueprintBuildPlanner.isValidDimensionsAndBlocks(width, height, length, blocks.length)) {
-            be.resetToIdle();
-            return;
-        }
-
-        ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
-        if (be.activePlan == null || !be.activePlan.matches(blueprintTag, be.destroyMode, be.exactMatch)) {
-            be.activePlan = ActiveBuildPlan.create(blueprintTag, level, pos, be.destroyMode, be.exactMatch);
+            if (!BlueprintBuildPlanner.isValidDimensionsAndBlocks(width, height, length, blocks.length)) {
+                be.resetToIdle();
+                return;
+            }
+            be.activePlan = ActiveBuildPlan.create(rawTag, expandedTag, level, pos, be.destroyMode, be.exactMatch);
             me.tuanzi.util.ModLog.debug("BlueprintCannon: 构建建造计划 phase=" + be.activePlan.phase
                     + ", destroyQueue=" + be.activePlan.destroyQueue.size()
                     + ", singleQueue=" + be.activePlan.primarySingleQueue.size()
@@ -217,6 +218,11 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
 
         ActiveBuildPlan plan = be.activePlan;
+        CompoundTag blueprintTag = plan.expandedBlueprintTag;
+        int width = blueprintTag.getIntOr("Width", 0);
+        int height = blueprintTag.getIntOr("Height", 0);
+        int length = blueprintTag.getIntOr("Length", 0);
+        ListTag entitiesTag = blueprintTag.getListOrEmpty("Entities");
         int planTotal = plan.getTotalWork();
         if (be.totalBlocks != planTotal) {
             be.totalBlocks = planTotal;
@@ -313,7 +319,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         if (BlueprintBuildPlanner.isBreakableBlock(level, targetPos, worldState)) {
                             if (cell == null) {
                                 needsDestroy = true;
-                            } else if (!BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)) {
+                            } else if (!BlueprintBuildPlanner.isCellMatch(level, targetPos, worldState, cell, this.exactMatch)) {
                                 needsDestroy = true;
                             }
                         }
@@ -359,7 +365,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             continue;
                         }
                         BlueprintCell cell = plan.parsed.cellMap().get(candidate);
-                        if (cell == null || !BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)) {
+                        if (cell == null || !BlueprintBuildPlanner.isCellMatch(level, candidate, worldState, cell, this.exactMatch)) {
                             plan.destroyQueue.addLast(candidate);
                             foundRemaining = true;
                         }
@@ -384,7 +390,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         }
                         BlockState worldState = level.getBlockState(cell.pos());
 
-                        if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
+                        if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                                 || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
                                 || cell.state().getBlock().asItem() == Items.AIR) {
                             plan.primarySingleQueue.pollFirst();
@@ -443,7 +449,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     }
                     BlockState worldState = level.getBlockState(cell.pos());
 
-                    if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
+                    if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                             || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
                             || cell.state().getBlock().asItem() == Items.AIR) {
                         plan.deferredSingleQueue.pollFirst();
@@ -570,7 +576,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                             return false;
                         }
                         BlockState worldState = level.getBlockState(cell.pos());
-                        if (BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), this.exactMatch)
+                        if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                                 || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
                                 || cell.state().getBlock().asItem() == Items.AIR) {
                             plan.deferredSingleQueue.pollFirst();
@@ -669,10 +675,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
     private LaunchOutcome tryLaunchSingleCell(Level level, BlockPos cannonPos, BlueprintCell cell, boolean forceKeepShape) {
         Item requiredItem = cell.state().getBlock().asItem();
+        int[] requiredColors = BlueprintBuildPlanner.getRequiredColors(cell.state(), cell.teData());
         int neededCount = BlueprintBuildPlanner.getSingleBlockItemCount(cell.state());
         boolean hasCreativeCore = ensureCreativeCoreOrRescan(level, cannonPos);
 
-        if (!hasCreativeCore && !hasItemCountOrRescan(level, cannonPos, requiredItem, neededCount)) {
+        boolean hasEnoughMaterials = hasCreativeCore || (requiredColors.length > 0
+                ? canFulfillColorOrRescan(level, cannonPos, requiredItem, requiredColors)
+                : hasItemCountOrRescan(level, cannonPos, requiredItem, neededCount));
+
+        if (!hasEnoughMaterials) {
             this.buildState = 2;
             this.pauseReason = 2;
             this.ticksToNextPlace = 0;
@@ -688,9 +699,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
         ItemStack placedStack;
         if (!hasCreativeCore) {
-            placedStack = consumeItemCountFromSources(requiredItem, neededCount);
+            if (requiredColors.length > 0) {
+                placedStack = BlueprintColorMaterialHelper.consumeColorRequirements(this.cachedSources, requiredItem, requiredColors);
+            } else {
+                placedStack = consumeItemCountFromSources(requiredItem, neededCount);
+            }
         } else {
-            placedStack = new ItemStack(cell.state().getBlock());
+            placedStack = requiredColors.length > 0
+                    ? BlueprintColorMaterialHelper.createColoredDisplayStack(requiredItem, requiredColors[0])
+                    : new ItemStack(cell.state().getBlock());
             me.tuanzi.util.ModLog.debug("检测到创造核心: 无视材料缺失或不消耗材料直接放置方块: " + cell.state() + " at " + cell.pos());
         }
 
@@ -848,6 +865,14 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
         this.scanNearbyContainers(level, cannonPos);
         return countItemInSources(item) >= requiredCount;
+    }
+
+    private boolean canFulfillColorOrRescan(Level level, BlockPos cannonPos, Item item, int[] requiredColors) {
+        if (BlueprintColorMaterialHelper.canFulfillColorRequirements(this.cachedSources, item, requiredColors)) {
+            return true;
+        }
+        this.scanNearbyContainers(level, cannonPos);
+        return BlueprintColorMaterialHelper.canFulfillColorRequirements(this.cachedSources, item, requiredColors);
     }
 
     private int countItemInSources(Item item) {
@@ -1049,6 +1074,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
     private static class ActiveBuildPlan {
         final CompoundTag blueprintSnapshot;
+        final CompoundTag expandedBlueprintTag;
         final boolean destroyMode;
         final boolean exactMatch;
         final ParsedBlueprint parsed;
@@ -1068,19 +1094,21 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
         private ActiveBuildPlan(
                 CompoundTag blueprintSnapshot,
+                CompoundTag expandedBlueprintTag,
                 boolean destroyMode,
                 boolean exactMatch,
                 ParsedBlueprint parsed
         ) {
             this.blueprintSnapshot = blueprintSnapshot;
+            this.expandedBlueprintTag = expandedBlueprintTag;
             this.destroyMode = destroyMode;
             this.exactMatch = exactMatch;
             this.parsed = parsed;
         }
 
-        static ActiveBuildPlan create(CompoundTag blueprintTag, Level level, BlockPos cannonPos, boolean destroyMode, boolean exactMatch) {
-            ParsedBlueprint parsed = BlueprintBuildPlanner.parseBlueprint(blueprintTag, level);
-            ActiveBuildPlan plan = new ActiveBuildPlan(blueprintTag.copy(), destroyMode, exactMatch, parsed);
+        static ActiveBuildPlan create(CompoundTag rawTag, CompoundTag expandedTag, Level level, BlockPos cannonPos, boolean destroyMode, boolean exactMatch) {
+            ParsedBlueprint parsed = BlueprintBuildPlanner.parseBlueprint(expandedTag, level);
+            ActiveBuildPlan plan = new ActiveBuildPlan(rawTag.copy(), expandedTag.copy(), destroyMode, exactMatch, parsed);
 
             if (destroyMode) {
                 for (BlockPos candidate : parsed.destroyCandidatesTopDown()) {
@@ -1096,7 +1124,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         continue;
                     }
                     BlueprintCell cell = parsed.cellMap().get(candidate);
-                    if (cell == null || !BlueprintBuildPlanner.isStateMatch(worldState, cell.state(), exactMatch)) {
+                    if (cell == null || !BlueprintBuildPlanner.isCellMatch(level, candidate, worldState, cell, exactMatch)) {
                         plan.destroyQueue.addLast(candidate);
                     }
                 }
@@ -1181,8 +1209,22 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         return ContainerHelper.takeItem(this.items, slot);
     }
 
+    public boolean compactStoredBlueprints() {
+        boolean changed = false;
+        for (ItemStack stack : this.items) {
+            if (me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack)) {
+                changed = true;
+            }
+        }
+        if (changed) {
+            this.setChanged();
+        }
+        return changed;
+    }
+
     @Override
     public void setItem(int slot, ItemStack stack) {
+        me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack);
         this.items.set(slot, stack);
         if (stack.getCount() > this.getMaxStackSize()) {
             stack.setCount(this.getMaxStackSize());
@@ -1273,23 +1315,34 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         }
         CustomData customData = blueprint.get(DataComponents.CUSTOM_DATA);
         if (customData == null) return false;
-        CompoundTag blueprintTag = customData.copyTag();
+        CompoundTag blueprintTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(customData.copyTag());
         if (!blueprintTag.contains("Width")) return false;
 
         int[] blocks = blueprintTag.getIntArray("Blocks").orElse(new int[0]);
         if (blocks.length == 0) return false;
 
-        // 使用与建造一致的多方块分组逻辑统计材料总需量（如床/门每组计为 1 件）
+        // 使用与建造一致的多方块分组与彩色方块按色细分逻辑统计材料总需量
         ParsedBlueprint parsed = BlueprintBuildPlanner.parseBlueprint(blueprintTag, level);
-        Map<Item, Integer> totalNeeded = new LinkedHashMap<>();
+        record BookMaterialKey(Item item, @Nullable Integer color) {
+        }
+        Map<BookMaterialKey, Integer> totalNeeded = new LinkedHashMap<>();
+        boolean hasAnyColored = false;
         for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
             Item item = cell.state().getBlock().asItem();
             if (item == Items.AIR) continue;
-            totalNeeded.merge(item, BlueprintBuildPlanner.getSingleBlockItemCount(cell.state()), Integer::sum);
+            int[] reqColors = BlueprintBuildPlanner.getRequiredColors(cell.state(), cell.teData());
+            if (reqColors.length > 0) {
+                hasAnyColored = true;
+                for (int col : reqColors) {
+                    totalNeeded.merge(new BookMaterialKey(item, col & 0xFFFFFF), 1, Integer::sum);
+                }
+            } else {
+                totalNeeded.merge(new BookMaterialKey(item, null), BlueprintBuildPlanner.getSingleBlockItemCount(cell.state()), Integer::sum);
+            }
         }
         for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
             if (group.requiredItem() != Items.AIR) {
-                totalNeeded.merge(group.requiredItem(), 1, Integer::sum);
+                totalNeeded.merge(new BookMaterialKey(group.requiredItem(), null), 1, Integer::sum);
             }
         }
 
@@ -1306,14 +1359,16 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         me.tuanzi.block.cannon.BlueprintEntityHelper.extractRequirements(id, entityNbt, level.registryAccess());
                 for (me.tuanzi.block.cannon.BlueprintEntityHelper.EntityRequirement req : reqs) {
                     if (!req.template().isEmpty()) {
-                        totalNeeded.merge(req.template().getItem(), 1, Integer::sum);
+                        totalNeeded.merge(new BookMaterialKey(req.template().getItem(), null), 1, Integer::sum);
                     }
                 }
             }
         }
 
-        // 统计周围容器现有数量（服务端扫描，可靠）
-        Map<Item, Integer> available = new HashMap<>();
+        // 统计周围容器现有数量（彩色方块按具体颜色区分，同时统计油漆桶可用耐久）
+        Map<Item, Integer> availablePlain = new HashMap<>();
+        Map<String, Integer> availableColored = new HashMap<>();
+        int[] paintBucketDurability = new int[1];
         int radius = 5;
         for (int dx = -radius; dx <= radius; dx++) {
             for (int dy = -radius; dy <= radius; dy++) {
@@ -1321,17 +1376,20 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     BlockPos p = cannonPos.offset(dx, dy, dz);
                     BlockEntity be = level.getBlockEntity(p);
                     if (be instanceof Container container && be != this) {
-                        countContainerItems(container, available, 1);
+                        countContainerItems(container, availablePlain, availableColored, paintBucketDurability, 1);
                     }
                 }
             }
         }
 
         // 按是否足量分组，不足的在前，足量的在后
-        List<Map.Entry<Item, Integer>> missing = new ArrayList<>();
-        List<Map.Entry<Item, Integer>> fulfilled = new ArrayList<>();
-        for (Map.Entry<Item, Integer> entry : totalNeeded.entrySet()) {
-            int avail = available.getOrDefault(entry.getKey(), 0);
+        List<Map.Entry<BookMaterialKey, Integer>> missing = new ArrayList<>();
+        List<Map.Entry<BookMaterialKey, Integer>> fulfilled = new ArrayList<>();
+        for (Map.Entry<BookMaterialKey, Integer> entry : totalNeeded.entrySet()) {
+            BookMaterialKey key = entry.getKey();
+            int avail = key.color() != null
+                    ? availableColored.getOrDefault(coloredItemKey(key.item(), key.color()), 0)
+                    : availablePlain.getOrDefault(key.item(), 0);
             if (avail >= entry.getValue()) {
                 fulfilled.add(entry);
             } else {
@@ -1345,24 +1403,37 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
         if (!missing.isEmpty()) {
             allComponents.add(Component.literal("=== 缺少材料 ==="));
-            for (Map.Entry<Item, Integer> e : missing) {
-                int avail = available.getOrDefault(e.getKey(), 0);
-                allComponents.add(
-                        Component.literal("§c✗ ")
-                                .append(Component.translatable(e.getKey().getDescriptionId()))
-                                .append(Component.literal(": " + avail + "/" + e.getValue()))
-                );
+            for (Map.Entry<BookMaterialKey, Integer> e : missing) {
+                BookMaterialKey key = e.getKey();
+                int avail = key.color() != null
+                        ? availableColored.getOrDefault(coloredItemKey(key.item(), key.color()), 0)
+                        : availablePlain.getOrDefault(key.item(), 0);
+                var line = Component.literal("§c✗ ")
+                        .append(Component.translatable(key.item().getDescriptionId()));
+                if (key.color() != null) {
+                    line.append(Component.literal(String.format(" #%06X", key.color())));
+                }
+                line.append(Component.literal(": " + avail + "/" + e.getValue()));
+                allComponents.add(line);
+            }
+            if (hasAnyColored && paintBucketDurability[0] > 0) {
+                allComponents.add(Component.literal("§e油漆桶可用耐久: " + paintBucketDurability[0]));
             }
         }
         if (!fulfilled.isEmpty()) {
             allComponents.add(Component.literal("=== 足量材料 ==="));
-            for (Map.Entry<Item, Integer> e : fulfilled) {
-                int avail = available.getOrDefault(e.getKey(), 0);
-                allComponents.add(
-                        Component.literal("§a✔ ")
-                                .append(Component.translatable(e.getKey().getDescriptionId()))
-                                .append(Component.literal(": " + avail + "/" + e.getValue()))
-                );
+            for (Map.Entry<BookMaterialKey, Integer> e : fulfilled) {
+                BookMaterialKey key = e.getKey();
+                int avail = key.color() != null
+                        ? availableColored.getOrDefault(coloredItemKey(key.item(), key.color()), 0)
+                        : availablePlain.getOrDefault(key.item(), 0);
+                var line = Component.literal("§a✔ ")
+                        .append(Component.translatable(key.item().getDescriptionId()));
+                if (key.color() != null) {
+                    line.append(Component.literal(String.format(" #%06X", key.color())));
+                }
+                line.append(Component.literal(": " + avail + "/" + e.getValue()));
+                allComponents.add(line);
             }
         }
         if (allComponents.isEmpty()) {
@@ -1398,10 +1469,20 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
         return true;
     }
 
+    private static String coloredItemKey(Item item, int color) {
+        return BuiltInRegistries.ITEM.getKey(item) + "#" + String.format("%06X", color & 0xFFFFFF);
+    }
+
     /**
-     * 递归扫描容器，统计各物品数量到 countMap
+     * 递归扫描容器，统计各物品数量（彩色方块按颜色细分）与油漆桶可用总耐久。
      */
-    private void countContainerItems(Container container, Map<Item, Integer> countMap, int depth) {
+    private void countContainerItems(
+            Container container,
+            Map<Item, Integer> plainMap,
+            Map<String, Integer> coloredMap,
+            int[] paintBucketDurability,
+            int depth
+    ) {
         if (depth > 3) return;
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
@@ -1413,10 +1494,18 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                     NonNullList<ItemStack> inner = NonNullList.withSize(containerSize, ItemStack.EMPTY);
                     contents.copyInto(inner);
                     SimpleContainer virtual = new SimpleContainer(inner.toArray(new ItemStack[0]));
-                    countContainerItems(virtual, countMap, depth + 1);
+                    countContainerItems(virtual, plainMap, coloredMap, paintBucketDurability, depth + 1);
                 }
             } else {
-                countMap.merge(stack.getItem(), stack.getCount(), Integer::sum);
+                Item item = stack.getItem();
+                plainMap.merge(item, stack.getCount(), Integer::sum);
+                if (item instanceof net.minecraft.world.item.BlockItem bi
+                        && BlueprintBuildPlanner.isColorBlockSeries(bi.getBlock())) {
+                    int col = BlueprintColorMaterialHelper.getItemColor(stack);
+                    coloredMap.merge(coloredItemKey(item, col), stack.getCount(), Integer::sum);
+                } else if (stack.is(ModItems.PAINT_BUCKET)) {
+                    paintBucketDurability[0] += BlueprintColorMaterialHelper.getPaintBucketRemainingDurability(stack);
+                }
             }
         }
     }
@@ -1520,6 +1609,9 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean hasFuel(Level level, BlockPos pos) {
+        if (ensureCreativeCoreOrRescan(level, pos)) {
+            return true;
+        }
         if (this.fuel > 0) {
             return true;
         }
@@ -1537,6 +1629,10 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean consumeFuel(Level level, BlockPos pos) {
+        if (ensureCreativeCoreOrRescan(level, pos)) {
+            me.tuanzi.util.ModLog.debug("检测到创造核心: 免除压缩建造浆料消耗");
+            return true;
+        }
         if (this.fuel > 0) {
             this.fuel--;
             this.setChanged();
@@ -1649,6 +1745,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
         ContainerHelper.loadAllItems(input, this.items);
+        compactStoredBlueprints();
         this.buildState = input.getIntOr("BuildState", 0);
         this.currentIndex = input.getIntOr("CurrentIndex", 0);
         this.destroyMode = input.getBooleanOr("DestroyMode", false);

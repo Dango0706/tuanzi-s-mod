@@ -112,7 +112,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add(ModItems.LOGIC_CORE, "逻辑核心");
             translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "玩家控制核心");
             translationBuilder.add(ModItems.CREATIVE_CORE, "创造核心");
-            translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§e调试用道具§7，当蓝图大炮检测到周围箱子内有此物品时，无视材料的缺少继续打印。");
+            translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§e调试用道具§7，当蓝图大炮检测到周围箱子内有此物品时，无视材料与浆料缺少并免消耗继续打印。");
             translationBuilder.add("tooltip.tuanzis_mod.creative_core.speed", "发射速度: 每 %d ticks 发射 %d 次");
             translationBuilder.add("tooltip.tuanzis_mod.creative_core.usage", "手持右键可打开射速配置界面");
             translationBuilder.add("gui.tuanzis_mod.creative_core.title", "创造核心 - 发射速度配置");
@@ -125,7 +125,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.creative_core.configured", "创造核心射速已设为: 每 %d ticks 发射 %d 次");
             translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【逻辑核心】\n这是合成玩家模拟器所必需的关键控制硬件。\n\n主体是一个精密的微芯片电路板，外部带有钢制外壳，内部密布着闪烁幽红光芒的微缩红石走线，能够稳定处理各种复杂的高速脉冲逻辑计算。");
             translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【玩家控制核心】\n这是用于读取并解析玩家行为模式的高级智能运算核心，是合成玩家模拟器的神经中枢。\n\n其核心是一个微型人类头颅模样的生物电子芯片，通过外部的红石电路和红石能量流，能够高度模拟并映射在线玩家的左键、右键以及充能攻击等各种交互逻辑行为。");
-            translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【创造核心】\n这是专为蓝图构筑系统设计的调试核心道具。\n\n§e核心机制：\n当蓝图大炮在其周围 5 格内的任意容器（包括普通箱子、木桶以及潜影盒内部）中检测到存有【创造核心】时，将自动开启无限创造建造模式：\n1. §b无视材料缺失：即使箱子内缺乏蓝图所需的方块或实体材料，蓝图大炮也不会暂停，而是无视材料缺失直接继续打印构建。\n2. §b零材料消耗：建造过程中完全不扣除或消耗容器中的任何建筑方块与实体材料。\n3. §b自定义发射速度：手持【创造核心】右键可打开配置界面，自由设置蓝图大炮的发射频率（每 1~1200 ticks 发射 1~64 次，默认为每 5 ticks 发射 1 次）。");
+            translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【创造核心】\n这是专为蓝图构筑系统设计的调试核心道具。\n\n§e核心机制：\n当蓝图大炮在其周围 5 格内的任意容器（包括普通箱子、木桶以及潜影盒内部）中检测到存有【创造核心】时，将自动开启无限创造建造模式：\n1. §b无视材料缺失：即使箱子内缺乏蓝图所需的方块或实体材料，蓝图大炮也不会暂停，而是无视材料缺失直接继续打印构建。\n2. §b零材料与燃料消耗：建造过程中完全不扣除或消耗容器中的任何建筑方块与实体材料，且不再消耗压缩建造浆料（无燃料亦可直接打印）。\n3. §b自定义发射速度：手持【创造核心】右键可打开配置界面，自由设置蓝图大炮的发射频率（每 1~1200 ticks 发射 1~64 次，默认为每 5 ticks 发射 1 次）。");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "蓝图大炮");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "蓝图大炮");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "蓝图桌");
@@ -284,6 +284,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             // 实体捕获的 Tooltip
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "包含生物 (数量: %s):");
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entity_entry", "  - %s [相对: %.1f, %.1f, %.1f]");
+            translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities_more", "  ... 还有 %s 个实体（按住 Shift 显示全部）");
 
             translationBuilder.add("message.tuanzis_mod.blueprint.not_holding", "必须手持空白蓝图！");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_points", "尚未设定任何角点！");
@@ -2125,7 +2126,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add(ModItems.LOGIC_CORE, "Logic Core");
             translationBuilder.add(ModItems.PLAYER_CONTROL_CORE, "Player Control Core");
             translationBuilder.add(ModItems.CREATIVE_CORE, "Creative Core");
-            translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§eDebug Item§7: When detected in nearby chests by a Blueprint Cannon, continues printing regardless of missing materials.");
+            translationBuilder.add("tooltip.tuanzis_mod.creative_core.desc", "§eDebug Item§7: When detected in nearby chests by a Blueprint Cannon, prints without consuming materials or build slurry.");
             translationBuilder.add("tooltip.tuanzis_mod.creative_core.speed", "Firing Speed: %d shots per %d ticks");
             translationBuilder.add("tooltip.tuanzis_mod.creative_core.usage", "Right-click to configure firing speed");
             translationBuilder.add("gui.tuanzis_mod.creative_core.title", "Creative Core - Firing Speed");
@@ -2138,7 +2139,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.creative_core.configured", "Creative Core speed set: %d ticks / %d shot(s)");
             translationBuilder.add("jei.tuanzis_mod.logic_core.description", "【Logic Core】\nA critical control hardware component required to craft the Player Simulator.\n\nIt features a precise microchip circuit board enclosed in a steel casing with glowing redstone wires. Specially optimized for processing complex high-speed pulse logic calculations.");
             translationBuilder.add("jei.tuanzis_mod.player_control_core.description", "【Player Control Core】\nAn advanced bio-electronic computing core used to read and map player behavior patterns. Serves as the neural hub of the Player Simulator.\n\nFormed by a skull-shaped microchip integrated with external redstone circuitry, it maps and replicates various user interactions such as left-clicks, right-clicks, and charge-attacks.");
-            translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【Creative Core】\nA debug core item tailored for the Blueprint Construction System.\n\n§eMechanics:\nWhen a Blueprint Cannon detects a 【Creative Core】 inside any container (chests, barrels, or shulker boxes) within a 5-block radius, it unlocks infinite creative construction mode:\n1. §bIgnore Missing Materials: The Blueprint Cannon will continue printing without pausing even if required blocks or entity items are completely missing.\n2. §bZero Material Deduction: Does not consume or deduct any building blocks or entity items from the containers.\n3. §bCustom Firing Speed: Right-click while holding the Creative Core to open its configuration GUI and customize the Blueprint Cannon's firing rate (1~64 shots every 1~1200 ticks; default is 1 shot every 5 ticks).");
+            translationBuilder.add("jei.tuanzis_mod.creative_core.description", "【Creative Core】\nA debug core item tailored for the Blueprint Construction System.\n\n§eMechanics:\nWhen a Blueprint Cannon detects a 【Creative Core】 inside any container (chests, barrels, or shulker boxes) within a 5-block radius, it unlocks infinite creative construction mode:\n1. §bIgnore Missing Materials: The Blueprint Cannon will continue printing without pausing even if required blocks or entity items are completely missing.\n2. §bZero Material & Fuel Consumption: Does not consume or deduct any building blocks, entity items, or Compressed Build Slurry (prints freely even with no fuel).\n3. §bCustom Firing Speed: Right-click while holding the Creative Core to open its configuration GUI and customize the Blueprint Cannon's firing rate (1~64 shots every 1~1200 ticks; default is 1 shot every 5 ticks).");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON, "Blueprint Cannon");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_CANNON.asItem(), "Blueprint Cannon");
             translationBuilder.add(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, "Blueprint Table");
@@ -2297,6 +2298,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             // Entity capture Tooltip
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities", "Contains Entities (Count: %s):");
             translationBuilder.add("tooltip.tuanzis_mod.blueprint.entity_entry", "  - %s [Relative: %.1f, %.1f, %.1f]");
+            translationBuilder.add("tooltip.tuanzis_mod.blueprint.entities_more", "  ... and %s more entities (Hold Shift to show all)");
 
             translationBuilder.add("message.tuanzis_mod.blueprint.not_holding", "Must hold a blank blueprint!");
             translationBuilder.add("message.tuanzis_mod.blueprint.no_points", "No coordinates set yet!");

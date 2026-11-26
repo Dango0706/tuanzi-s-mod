@@ -58,6 +58,7 @@ public class BlueprintCannonBlock extends BaseEntityBlock {
         if (!level.isClientSide()) {
             BlockEntity be = level.getBlockEntity(pos);
             if (be instanceof BlueprintCannonBlockEntity cannonBe) {
+                cannonBe.compactStoredBlueprints();
                 player.openMenu(cannonBe);
             }
         }

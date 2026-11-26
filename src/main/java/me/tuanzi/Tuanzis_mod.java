@@ -301,7 +301,8 @@ public class Tuanzis_mod implements ModInitializer {
                     tag.putInt("OffsetZ", payload.offset().getZ());
                     tag.putInt("Rotation", payload.rotation());
                     tag.putBoolean("Mirrored", payload.mirrored());
-                    stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
+                    stack.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA,
+                            net.minecraft.world.item.component.CustomData.of(me.tuanzi.util.LitematicaParser.compactBlueprintTag(tag)));
                     player.containerMenu.broadcastChanges();
                     me.tuanzi.util.ModLog.debug(player, null, "收到虚影变换：offset=" + payload.offset() + ", rotation=" + payload.rotation() + ", mirrored=" + payload.mirrored());
                 }
@@ -327,11 +328,11 @@ public class Tuanzis_mod implements ModInitializer {
                     if (stack.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
                         net.minecraft.world.item.component.CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
                         if (customData != null) {
-                            blueprintTag = customData.copyTag();
+                            blueprintTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(customData.copyTag());
                         }
                     }
                 } else if (payload.blueprintData() != null && !payload.blueprintData().isEmpty()) {
-                    blueprintTag = payload.blueprintData();
+                    blueprintTag = me.tuanzi.util.LitematicaParser.expandBlueprintTag(payload.blueprintData());
                 }
 
                 if (blueprintTag == null || !blueprintTag.contains("Width")) {
@@ -413,10 +414,11 @@ public class Tuanzis_mod implements ModInitializer {
                     player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.blueprint_table.parse_fail").withStyle(net.minecraft.ChatFormatting.RED));
                     return;
                 }
+                CompoundTag compactData = me.tuanzi.util.LitematicaParser.compactBlueprintTag(blueprintData);
                 if (payload.updateExportSlot()) {
                     ItemStack slot0 = tableBe.getItems().get(0);
                     if (slot0.is(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT)) {
-                        slot0.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(blueprintData.copy()));
+                        slot0.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(compactData));
                         tableBe.setChanged();
                         player.containerMenu.broadcastChanges();
                         me.tuanzi.util.ModLog.debug(player, null, "成功同步更新蓝图桌槽位 0 结构蓝图数据！");
@@ -429,7 +431,7 @@ public class Tuanzis_mod implements ModInitializer {
                 if (inputStack.is(me.tuanzi.init.ModItems.BLANK_BLUEPRINT)) {
                     inputStack.shrink(1);
                     ItemStack result = new ItemStack(me.tuanzi.init.ModItems.STRUCTURE_BLUEPRINT);
-                    result.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(blueprintData));
+                    result.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(compactData));
 
                     ItemStack slot0 = tableBe.getItems().get(0);
                     if (slot0.isEmpty()) {

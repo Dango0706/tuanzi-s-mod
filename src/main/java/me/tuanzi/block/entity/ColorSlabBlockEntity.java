@@ -56,6 +56,16 @@ public class ColorSlabBlockEntity extends BlockEntity {
         return this.topSet;
     }
 
+    /**
+     * 仅供客户端离屏蓝图预览使用：直接写入上下半砖颜色，不触发世界同步。
+     */
+    public void setPreviewColors(int bottomColor, int topColor, boolean bottomSet, boolean topSet) {
+        this.bottomColor = bottomColor;
+        this.topColor = topColor;
+        this.bottomSet = bottomSet;
+        this.topSet = topSet;
+    }
+
     @Override
     protected void loadAdditional(ValueInput input) {
         super.loadAdditional(input);
