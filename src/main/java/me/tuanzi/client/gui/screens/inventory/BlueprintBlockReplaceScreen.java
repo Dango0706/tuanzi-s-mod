@@ -2,6 +2,7 @@ package me.tuanzi.client.gui.screens.inventory;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import me.tuanzi.block.cannon.BlueprintBuildPlanner;
+import me.tuanzi.client.gui.screens.PaintBucketScreen;
 import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,7 +31,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * 蓝图方块替换选择界面：
@@ -47,8 +48,9 @@ public class BlueprintBlockReplaceScreen extends Screen {
 
     private final Screen parentScreen;
     private final Block sourceBlock;
+    private final @Nullable Integer sourceColor;
     private final ItemStack sourceDisplayStack;
-    private final Consumer<Block> onConfirmReplace;
+    private final BiConsumer<Block, @Nullable Integer> onConfirmReplace;
 
     private final List<CategoryTab> categoryTabs = new ArrayList<>();
     private final List<BlockOption> filteredOptions = new ArrayList<>();
@@ -57,6 +59,7 @@ public class BlueprintBlockReplaceScreen extends Screen {
     private int activeTabIndex = 0;
     private int tabPageOffset = 0;
     private int scrollRowOffset = 0;
+    private String lastSearchQuery = "";
 
     private @Nullable Block selectedTargetBlock = null;
     private @Nullable BlockOption selectedTargetOption = null;
@@ -66,6 +69,7 @@ public class BlueprintBlockReplaceScreen extends Screen {
     private Button tabPrevButton;
     private Button tabNextButton;
     private Button confirmButton;
+    private @Nullable Button recolorButton;
     private Button cancelButton;
 
     private int panelX;
@@ -79,14 +83,20 @@ public class BlueprintBlockReplaceScreen extends Screen {
     public BlueprintBlockReplaceScreen(
             Screen parentScreen,
             Block sourceBlock,
+            @Nullable Integer sourceColor,
             ItemStack sourceDisplayStack,
-            Consumer<Block> onConfirmReplace
+            BiConsumer<Block, @Nullable Integer> onConfirmReplace
     ) {
         super(Component.translatable("gui.tuanzis_mod.inspector.replace_title"));
         this.parentScreen = parentScreen;
         this.sourceBlock = sourceBlock;
+        this.sourceColor = sourceColor != null ? (sourceColor & 0xFFFFFF) : null;
         this.sourceDisplayStack = sourceDisplayStack.isEmpty() ? resolveDisplayStack(sourceBlock) : sourceDisplayStack.copy();
         this.onConfirmReplace = onConfirmReplace;
+    }
+
+    private boolean isSourceColorSeries() {
+        return BlueprintBuildPlanner.isColorBlockSeries(this.sourceBlock);
     }
 
     @Override
@@ -115,7 +125,13 @@ public class BlueprintBlockReplaceScreen extends Screen {
         ));
         this.searchBox.setMaxLength(48);
         this.searchBox.setHint(Component.translatable("gui.tuanzis_mod.inspector.search_hint").withStyle(ChatFormatting.DARK_GRAY));
-        this.searchBox.setResponder(val -> applyFilter(true));
+        if (!this.lastSearchQuery.isEmpty()) {
+            this.searchBox.setValue(this.lastSearchQuery);
+        }
+        this.searchBox.setResponder(val -> {
+            this.lastSearchQuery = val;
+            applyFilter(true);
+        });
 
         // 中部选项卡翻页与标签按钮
         this.tabRowY = searchY + 22;
@@ -155,18 +171,40 @@ public class BlueprintBlockReplaceScreen extends Screen {
         this.gridX = this.panelX + (this.panelW - gridTotalW - 10) / 2;
         this.gridY = this.tabRowY + 26;
 
-        // 底部确定与取消按钮
+        // 底部确定、修改颜色（仅原方块为彩色方块系列时显示）与取消按钮
         int btnY = this.panelY + this.panelH - 26;
-        int btnW = 76;
-        this.confirmButton = this.addRenderableWidget(Button.builder(
-                Component.translatable("gui.tuanzis_mod.inspector.replace_confirm"),
-                btn -> confirmSelection()
-        ).bounds(this.panelX + this.panelW / 2 - btnW - 8, btnY, btnW, 18).build());
+        if (isSourceColorSeries()) {
+            int btnW = 74;
+            int gap = 6;
+            int totalW = btnW * 3 + gap * 2;
+            int startX = this.panelX + (this.panelW - totalW) / 2;
+            this.confirmButton = this.addRenderableWidget(Button.builder(
+                    Component.translatable("gui.tuanzis_mod.inspector.replace_confirm"),
+                    btn -> confirmSelection()
+            ).bounds(startX, btnY, btnW, 18).build());
 
-        this.cancelButton = this.addRenderableWidget(Button.builder(
-                Component.translatable("gui.tuanzis_mod.inspector.replace_cancel"),
-                btn -> onClose()
-        ).bounds(this.panelX + this.panelW / 2 + 8, btnY, btnW, 18).build());
+            this.recolorButton = this.addRenderableWidget(Button.builder(
+                    Component.translatable("gui.tuanzis_mod.inspector.replace_recolor"),
+                    btn -> openColorPicker(this.sourceBlock)
+            ).bounds(startX + btnW + gap, btnY, btnW, 18).build());
+
+            this.cancelButton = this.addRenderableWidget(Button.builder(
+                    Component.translatable("gui.tuanzis_mod.inspector.replace_cancel"),
+                    btn -> onClose()
+            ).bounds(startX + (btnW + gap) * 2, btnY, btnW, 18).build());
+        } else {
+            this.recolorButton = null;
+            int btnW = 76;
+            this.confirmButton = this.addRenderableWidget(Button.builder(
+                    Component.translatable("gui.tuanzis_mod.inspector.replace_confirm"),
+                    btn -> confirmSelection()
+            ).bounds(this.panelX + this.panelW / 2 - btnW - 8, btnY, btnW, 18).build());
+
+            this.cancelButton = this.addRenderableWidget(Button.builder(
+                    Component.translatable("gui.tuanzis_mod.inspector.replace_cancel"),
+                    btn -> onClose()
+            ).bounds(this.panelX + this.panelW / 2 + 8, btnY, btnW, 18).build());
+        }
 
         updateTabButtons();
         applyFilter(false);
@@ -209,7 +247,7 @@ public class BlueprintBlockReplaceScreen extends Screen {
             LinkedHashMap<Block, BlockOption> tabBlocks = new LinkedHashMap<>();
             for (ItemStack stack : tab.getDisplayItems()) {
                 Block resolved = extractBlockFromStack(stack);
-                if (resolved == null || resolved == this.sourceBlock) {
+                if (resolved == null || (resolved == this.sourceBlock && !isSourceColorSeries())) {
                     continue;
                 }
                 BlockOption opt = createBlockOption(resolved, stack);
@@ -228,7 +266,7 @@ public class BlueprintBlockReplaceScreen extends Screen {
 
         // 兜底补充注册表中有默认方块的条目（确保流体、模组无标签方块等也可检索）
         for (Block block : BuiltInRegistries.BLOCK) {
-            if (block == Blocks.AIR || block == this.sourceBlock) {
+            if (block == Blocks.AIR || (block == this.sourceBlock && !isSourceColorSeries())) {
                 continue;
             }
             if (allBlocksMap.containsKey(block)) {
@@ -239,7 +277,9 @@ public class BlueprintBlockReplaceScreen extends Screen {
                 allBlocksMap.put(block, createBlockOption(block, disp));
             }
         }
-        allBlocksMap.remove(this.sourceBlock);
+        if (!isSourceColorSeries()) {
+            allBlocksMap.remove(this.sourceBlock);
+        }
 
         this.categoryTabs.add(new CategoryTab(
                 Component.translatable("gui.tuanzis_mod.inspector.tab_all_blocks"),
@@ -351,7 +391,7 @@ public class BlueprintBlockReplaceScreen extends Screen {
         String query = this.searchBox != null ? this.searchBox.getValue().trim().toLowerCase(Locale.ROOT) : "";
         CategoryTab currentTab = this.categoryTabs.get(this.activeTabIndex);
         for (BlockOption option : currentTab.blocks()) {
-            if (option.block() == this.sourceBlock) {
+            if (option.block() == this.sourceBlock && !isSourceColorSeries()) {
                 continue;
             }
             if (query.isEmpty()
@@ -382,7 +422,12 @@ public class BlueprintBlockReplaceScreen extends Screen {
         if (this.selectedTargetBlock == null) {
             return;
         }
-        Component compatErr = BlueprintBuildPlanner.checkReplacementCompatibility(this.sourceBlock, this.selectedTargetBlock);
+        Component compatErr = BlueprintBuildPlanner.checkReplacementCompatibility(
+                this.sourceBlock,
+                this.sourceColor,
+                this.selectedTargetBlock,
+                null
+        );
         if (compatErr != null) {
             this.errorBanner = compatErr;
             if (this.minecraft != null && this.minecraft.player != null) {
@@ -391,8 +436,49 @@ public class BlueprintBlockReplaceScreen extends Screen {
             ModLog.debug("[BlueprintBlockReplaceScreen] 拦截非法方块替换: " + compatErr.getString());
             return;
         }
-        this.onConfirmReplace.accept(this.selectedTargetBlock);
+        if (BlueprintBuildPlanner.isColorBlockSeries(this.selectedTargetBlock)) {
+            openColorPicker(this.selectedTargetBlock);
+            return;
+        }
+        this.onConfirmReplace.accept(this.selectedTargetBlock, null);
         onClose();
+    }
+
+    private void openColorPicker(Block targetBlock) {
+        if (this.minecraft == null) {
+            return;
+        }
+        int initColor = this.sourceColor != null ? (this.sourceColor & 0xFFFFFF) : 0xFFFFFF;
+        ModLog.debug("[BlueprintBlockReplaceScreen] 打开彩色方块调色 GUI: source="
+                + BuiltInRegistries.BLOCK.getKey(this.sourceBlock)
+                + ", target=" + BuiltInRegistries.BLOCK.getKey(targetBlock)
+                + ", initColor=" + String.format("#%06X", initColor));
+        this.minecraft.setScreenAndShow(new PaintBucketScreen(
+                this,
+                Component.translatable("gui.tuanzis_mod.inspector.color_picker_title"),
+                initColor,
+                chosenColor -> {
+                    Component colorErr = BlueprintBuildPlanner.checkReplacementCompatibility(
+                            this.sourceBlock,
+                            this.sourceColor,
+                            targetBlock,
+                            chosenColor
+                    );
+                    if (colorErr != null) {
+                        this.errorBanner = colorErr;
+                        if (this.minecraft != null && this.minecraft.player != null) {
+                            this.minecraft.player.sendSystemMessage(colorErr.copy().withStyle(ChatFormatting.RED));
+                        }
+                        ModLog.debug("[BlueprintBlockReplaceScreen] 调色确认拦截: " + colorErr.getString());
+                        if (this.minecraft != null) {
+                            this.minecraft.setScreenAndShow(this);
+                        }
+                        return;
+                    }
+                    this.onConfirmReplace.accept(targetBlock, chosenColor);
+                    onClose();
+                }
+        ));
     }
 
     @Override
@@ -422,7 +508,12 @@ public class BlueprintBlockReplaceScreen extends Screen {
                 BlockOption clicked = this.filteredOptions.get(index);
                 this.selectedTargetBlock = clicked.block();
                 this.selectedTargetOption = clicked;
-                this.errorBanner = BlueprintBuildPlanner.checkReplacementCompatibility(this.sourceBlock, this.selectedTargetBlock);
+                this.errorBanner = BlueprintBuildPlanner.checkReplacementCompatibility(
+                        this.sourceBlock,
+                        this.sourceColor,
+                        this.selectedTargetBlock,
+                        null
+                );
                 updateConfirmButtonState();
                 return true;
             }
@@ -537,8 +628,10 @@ public class BlueprintBlockReplaceScreen extends Screen {
             graphics.item(this.sourceDisplayStack, curX, previewY - 2);
             curX += 20;
         }
-        String srcName = this.sourceBlock.getName().getString();
-        String trimmedSrc = this.font.plainSubstrByWidth(srcName, 74);
+        String srcName = this.sourceColor != null
+                ? this.sourceBlock.getName().getString() + String.format(" #%06X", this.sourceColor)
+                : this.sourceBlock.getName().getString();
+        String trimmedSrc = this.font.plainSubstrByWidth(srcName, 84);
         graphics.text(this.font, trimmedSrc, curX, previewY + 2, 0xFFFFDD66, false);
         curX += this.font.width(trimmedSrc) + 6;
         graphics.text(this.font, "→", curX, previewY + 2, 0xFFAAAAAA, false);
@@ -596,7 +689,12 @@ public class BlueprintBlockReplaceScreen extends Screen {
                 List<Component> tips = new ArrayList<>();
                 tips.add(opt.displayName().copy().withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD));
                 tips.add(Component.literal(opt.registryId()).withStyle(ChatFormatting.DARK_GRAY));
-                Component compatErr = BlueprintBuildPlanner.checkReplacementCompatibility(this.sourceBlock, opt.block());
+                Component compatErr = BlueprintBuildPlanner.checkReplacementCompatibility(
+                        this.sourceBlock,
+                        this.sourceColor,
+                        opt.block(),
+                        null
+                );
                 if (compatErr != null) {
                     tips.add(compatErr.copy().withStyle(ChatFormatting.RED));
                 } else {

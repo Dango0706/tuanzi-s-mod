@@ -530,6 +530,42 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                             .unlockedBy("has_coin_" + spec.minorName(), has(spec.minorCoin()))
                             .save(exporter, Tuanzis_mod.MOD_ID + ":" + spec.recipeId());
                 }
+
+                // 压缩建造浆料有序合成：火药/岩浆桶 3x3 配方产出 3 个（岩浆桶合成后按原版 craftRemainder 返还空铁桶）
+                shaped(RecipeCategory.MISC, ModItems.COMPRESSED_BUILD_SLURRY, 3)
+                        .pattern("GGG")
+                        .pattern("GLG")
+                        .pattern("LGL")
+                        .define('G', Items.GUNPOWDER)
+                        .define('L', Items.LAVA_BUCKET)
+                        .unlockedBy("has_gunpowder", has(Items.GUNPOWDER))
+                        .unlockedBy("has_lava_bucket", has(Items.LAVA_BUCKET))
+                        .save(exporter);
+
+                // 空白蓝图有序合成：纸×4 + 淡蓝色染料×2 + 木棍×1 产出 1 个
+                shaped(RecipeCategory.MISC, ModItems.BLANK_BLUEPRINT, 1)
+                        .pattern("PPP")
+                        .pattern("DPD")
+                        .pattern(" S ")
+                        .define('P', Items.PAPER)
+                        .define('D', Items.DYE.lightBlue())
+                        .define('S', Items.STICK)
+                        .unlockedBy("has_paper", has(Items.PAPER))
+                        .unlockedBy("has_light_blue_dye", has(Items.DYE.lightBlue()))
+                        .save(exporter);
+
+                // 蓝图桌有序合成：刷子 + 空白蓝图 + 书与笔（顶行），任意木板分列左右两列（中/底行）
+                shaped(RecipeCategory.MISC, me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE, 1)
+                        .pattern("BLW")
+                        .pattern("P P")
+                        .pattern("P P")
+                        .define('B', Items.BRUSH)
+                        .define('L', ModItems.BLANK_BLUEPRINT)
+                        .define('W', Items.WRITABLE_BOOK)
+                        .define('P', ItemTags.PLANKS)
+                        .unlockedBy("has_blank_blueprint", has(ModItems.BLANK_BLUEPRINT))
+                        .unlockedBy("has_brush", has(Items.BRUSH))
+                        .save(exporter);
             }
         };
     }

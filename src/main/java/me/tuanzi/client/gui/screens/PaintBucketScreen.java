@@ -1,6 +1,7 @@
 package me.tuanzi.client.gui.screens;
 
 import me.tuanzi.network.PaintBucketColorPacket;
+import me.tuanzi.util.ModLog;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,6 +13,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import org.jspecify.annotations.Nullable;
+
+import java.util.function.IntConsumer;
 
 @Environment(EnvType.CLIENT)
 public class PaintBucketScreen extends Screen {
@@ -34,7 +38,9 @@ public class PaintBucketScreen extends Screen {
             0xB02E26, // 14: 红色
             0x1D1D21  // 15: 黑色
     };
-    private final InteractionHand hand;
+    private final @Nullable Screen parentScreen;
+    private final @Nullable InteractionHand hand;
+    private final @Nullable IntConsumer onConfirmColor;
     private final int initialColor;
     private int r;
     private int g;
@@ -47,13 +53,32 @@ public class PaintBucketScreen extends Screen {
     private int presetY;
 
     public PaintBucketScreen(InteractionHand hand, int initialColor) {
-        super(Component.translatable("gui.tuanzis_mod.paint_bucket.title"));
-        this.hand = hand;
-        this.initialColor = initialColor;
+        this(null, Component.translatable("gui.tuanzis_mod.paint_bucket.title"), hand, initialColor, null);
+    }
 
-        this.r = (initialColor >> 16) & 0xFF;
-        this.g = (initialColor >> 8) & 0xFF;
-        this.b = initialColor & 0xFF;
+    /**
+     * 通用调色界面构造函数（与油漆桶 GUI 外观与交互完全一致），支持蓝图桌替换彩色方块系列时复用。
+     */
+    public PaintBucketScreen(@Nullable Screen parentScreen, Component title, int initialColor, IntConsumer onConfirmColor) {
+        this(parentScreen, title, null, initialColor, onConfirmColor);
+    }
+
+    private PaintBucketScreen(
+            @Nullable Screen parentScreen,
+            Component title,
+            @Nullable InteractionHand hand,
+            int initialColor,
+            @Nullable IntConsumer onConfirmColor
+    ) {
+        super(title);
+        this.parentScreen = parentScreen;
+        this.hand = hand;
+        this.onConfirmColor = onConfirmColor;
+        this.initialColor = initialColor & 0xFFFFFF;
+
+        this.r = (this.initialColor >> 16) & 0xFF;
+        this.g = (this.initialColor >> 8) & 0xFF;
+        this.b = this.initialColor & 0xFF;
     }
 
     @Override
@@ -122,8 +147,14 @@ public class PaintBucketScreen extends Screen {
         // 确定与取消按钮
         this.addRenderableWidget(Button.builder(Component.translatable("gui.tuanzis_mod.paint_bucket.confirm"), btn -> {
             int finalColor = (this.r << 16) | (this.g << 8) | this.b;
-            ClientPlayNetworking.send(new PaintBucketColorPacket(finalColor, this.hand == InteractionHand.MAIN_HAND));
-            this.onClose();
+            ModLog.debug("[PaintBucketScreen] 确认选择颜色: " + String.format("#%06X", finalColor)
+                    + ", customCallback=" + (this.onConfirmColor != null));
+            if (this.onConfirmColor != null) {
+                this.onConfirmColor.accept(finalColor);
+            } else {
+                ClientPlayNetworking.send(new PaintBucketColorPacket(finalColor, this.hand == InteractionHand.MAIN_HAND));
+                this.onClose();
+            }
         }).bounds(startX, startY + 120, 58, 20).build());
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.tuanzis_mod.paint_bucket.cancel"), btn -> {
@@ -238,6 +269,15 @@ public class PaintBucketScreen extends Screen {
     }
 
     @Override
+    public void onClose() {
+        if (this.parentScreen != null && this.minecraft != null) {
+            this.minecraft.setScreenAndShow(this.parentScreen);
+        } else {
+            super.onClose();
+        }
+    }
+
+    @Override
     public boolean isPauseScreen() {
         return false;
     }
@@ -250,7 +290,7 @@ public class PaintBucketScreen extends Screen {
         private final String prefix;
 
         public RGBSlider(int x, int y, int width, int height, String prefix, double initialValue, java.util.function.Consumer<Integer> updateCallback) {
-            super(x, y, width, height, Component.literal(prefix + ": " + (int) (initialValue * 255)), initialValue);
+            super(x, y, width, height, Component.literal(prefix + ": " + Math.clamp(Math.round(initialValue * 255.0), 0, 255)), initialValue);
             this.prefix = prefix;
             this.updateCallback = updateCallback;
         }
@@ -262,12 +302,12 @@ public class PaintBucketScreen extends Screen {
 
         @Override
         protected void updateMessage() {
-            this.setMessage(Component.literal(prefix + ": " + (int) (this.value * 255)));
+            this.setMessage(Component.literal(prefix + ": " + Math.clamp(Math.round(this.value * 255.0), 0, 255)));
         }
 
         @Override
         protected void applyValue() {
-            this.updateCallback.accept((int) (this.value * 255));
+            this.updateCallback.accept((int) Math.clamp(Math.round(this.value * 255.0), 0, 255));
         }
     }
 }

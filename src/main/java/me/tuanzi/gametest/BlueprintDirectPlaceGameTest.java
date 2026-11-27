@@ -1,6 +1,10 @@
 package me.tuanzi.gametest;
 
+import me.tuanzi.block.cannon.BlueprintBuildPlanner;
 import me.tuanzi.block.cannon.BlueprintDirectPlacer;
+import me.tuanzi.block.entity.ColorBlockBlockEntity;
+import me.tuanzi.block.entity.ColorSlabBlockEntity;
+import me.tuanzi.init.ModBlocks;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -237,6 +241,107 @@ public class BlueprintDirectPlaceGameTest {
         BlueprintDirectPlacer.placeBlueprint(helper.getLevel(), blueprintTag, basePos, offset, 1, false);
         helper.assertBlockPresent(Blocks.GOLD_BLOCK, 2, 1, 2);
         helper.assertBlockPresent(Blocks.DIAMOND_BLOCK, 2, 1, 3);
+
+        helper.succeed();
+    }
+
+    @GameTest
+    public void testReplacedColorBlockSeriesDirectPlacePreservesColor(GameTestHelper helper) {
+        for (int x = 0; x <= 4; x++) {
+            for (int z = 0; z <= 4; z++) {
+                helper.setBlock(x, 0, z, Blocks.BEDROCK);
+                for (int y = 1; y <= 3; y++) {
+                    helper.setBlock(x, y, z, Blocks.AIR);
+                }
+            }
+        }
+
+        Map<BlockPos, BlockState> localBlocks = new HashMap<>();
+        localBlocks.put(new BlockPos(0, 0, 0), Blocks.STONE.defaultBlockState());
+        localBlocks.put(new BlockPos(1, 0, 0), Blocks.OAK_STAIRS.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.StairBlock.FACING, Direction.EAST));
+        localBlocks.put(new BlockPos(2, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        localBlocks.put(new BlockPos(3, 0, 0), ModBlocks.COLOR_BLOCK.defaultBlockState());
+        localBlocks.put(new BlockPos(0, 0, 1), ModBlocks.COLOR_SLAB.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.SlabBlock.TYPE, net.minecraft.world.level.block.state.properties.SlabType.DOUBLE));
+
+        ListTag bes = new ListTag();
+        CompoundTag redBe = new CompoundTag();
+        redBe.putIntArray("pos", new int[]{2, 0, 0});
+        CompoundTag redNbt = new CompoundTag();
+        redNbt.putString("id", "tuanzis_mod:color_block_be");
+        redNbt.putInt("Color", 0xFF0000);
+        redBe.put("nbt", redNbt);
+        bes.add(redBe);
+
+        CompoundTag blueBe = new CompoundTag();
+        blueBe.putIntArray("pos", new int[]{3, 0, 0});
+        CompoundTag blueNbt = new CompoundTag();
+        blueNbt.putString("id", "tuanzis_mod:color_block_be");
+        blueNbt.putInt("Color", 0x0000FF);
+        blueBe.put("nbt", blueNbt);
+        bes.add(blueBe);
+
+        CompoundTag slabBe = new CompoundTag();
+        slabBe.putIntArray("pos", new int[]{0, 0, 1});
+        CompoundTag slabNbt = new CompoundTag();
+        slabNbt.putString("id", "tuanzis_mod:color_slab_be");
+        slabNbt.putInt("BottomColor", 0xFF0000);
+        slabNbt.putInt("TopColor", 0x0000FF);
+        slabNbt.putBoolean("BottomSet", true);
+        slabNbt.putBoolean("TopSet", true);
+        slabBe.put("nbt", slabNbt);
+        bes.add(slabBe);
+
+        CompoundTag blueprintTag = buildBlueprintTag(4, 1, 2, localBlocks, bes, new ListTag());
+
+        // 执行彩色方块系列替换与按原色精准改色
+        var resStone = BlueprintBuildPlanner.replaceBlockInBlueprint(blueprintTag, Blocks.STONE, null, ModBlocks.COLOR_BLOCK, 0x12AB34);
+        var resStairs = BlueprintBuildPlanner.replaceBlockInBlueprint(blueprintTag, Blocks.OAK_STAIRS, null, ModBlocks.COLOR_STAIRS, 0xF9801D);
+        var resRecolorBlock = BlueprintBuildPlanner.replaceBlockInBlueprint(blueprintTag, ModBlocks.COLOR_BLOCK, 0xFF0000, ModBlocks.COLOR_BLOCK, 0xFED83D);
+        var resRecolorSlab = BlueprintBuildPlanner.replaceBlockInBlueprint(blueprintTag, ModBlocks.COLOR_SLAB, 0xFF0000, ModBlocks.COLOR_SLAB, 0x00FFAA);
+
+        if (!resStone.success() || !resStairs.success() || !resRecolorBlock.success() || !resRecolorSlab.success()) {
+            helper.fail(Component.literal("Color block replacement failed unexpectedly"));
+            return;
+        }
+
+        BlockPos basePos = helper.absolutePos(new BlockPos(0, 1, 0));
+        BlueprintDirectPlacer.placeBlueprint(helper.getLevel(), blueprintTag, basePos, BlockPos.ZERO, 0, false);
+
+        helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 0, 1, 0);
+        helper.assertBlockPresent(ModBlocks.COLOR_STAIRS, 1, 1, 0);
+        helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 2, 1, 0);
+        helper.assertBlockPresent(ModBlocks.COLOR_BLOCK, 3, 1, 0);
+        helper.assertBlockPresent(ModBlocks.COLOR_SLAB, 0, 1, 1);
+
+        ColorBlockBlockEntity be0 = helper.getBlockEntity(new BlockPos(0, 1, 0), ColorBlockBlockEntity.class);
+        ColorBlockBlockEntity be1 = helper.getBlockEntity(new BlockPos(1, 1, 0), ColorBlockBlockEntity.class);
+        ColorBlockBlockEntity be2 = helper.getBlockEntity(new BlockPos(2, 1, 0), ColorBlockBlockEntity.class);
+        ColorBlockBlockEntity be3 = helper.getBlockEntity(new BlockPos(3, 1, 0), ColorBlockBlockEntity.class);
+        ColorSlabBlockEntity beSlab = helper.getBlockEntity(new BlockPos(0, 1, 1), ColorSlabBlockEntity.class);
+
+        if ((be0.getColor() & 0xFFFFFF) != 0x12AB34) {
+            helper.fail(Component.literal("Expected replaced stone color 0x12AB34, got " + Integer.toHexString(be0.getColor())));
+            return;
+        }
+        if ((be1.getColor() & 0xFFFFFF) != 0xF9801D) {
+            helper.fail(Component.literal("Expected replaced stairs color 0xF9801D, got " + Integer.toHexString(be1.getColor())));
+            return;
+        }
+        if ((be2.getColor() & 0xFFFFFF) != 0xFED83D) {
+            helper.fail(Component.literal("Expected recolored red block 0xFED83D, got " + Integer.toHexString(be2.getColor())));
+            return;
+        }
+        if ((be3.getColor() & 0xFFFFFF) != 0x0000FF) {
+            helper.fail(Component.literal("Expected untouched blue block 0x0000FF, got " + Integer.toHexString(be3.getColor())));
+            return;
+        }
+        if ((beSlab.getBottomColor() & 0xFFFFFF) != 0x00FFAA || (beSlab.getTopColor() & 0xFFFFFF) != 0x0000FF) {
+            helper.fail(Component.literal("Expected two-tone slab (0x00FFAA / 0x0000FF), got ("
+                    + Integer.toHexString(beSlab.getBottomColor()) + " / " + Integer.toHexString(beSlab.getTopColor()) + ")"));
+            return;
+        }
 
         helper.succeed();
     }

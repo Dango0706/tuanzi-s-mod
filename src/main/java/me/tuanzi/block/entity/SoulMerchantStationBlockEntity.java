@@ -483,11 +483,18 @@ public class SoulMerchantStationBlockEntity extends BlockEntity {
 
     @Override
     public void setRemoved() {
-        // 兼容 /setblock replace (flag 256) 等跳过 preRemoveSideEffects 的方块替换路径；区块卸载时方块仍是本方块，不会误触发
+        // 兼容 /setblock replace (flag 256) 等跳过 preRemoveSideEffects 的方块替换路径；
+        // 使用 getChunkNow 避免在区块卸载或关服阶段触发区块同步加载死锁。
         if (this.level instanceof ServerLevel serverLevel
                 && this.hasVillager()
-                && !serverLevel.getBlockState(this.worldPosition).is(ModBlocks.SOUL_MERCHANT_STATION)) {
-            cleanupVillagerAndJobSite(serverLevel);
+                && serverLevel.getServer().isRunning()) {
+            net.minecraft.world.level.chunk.LevelChunk chunk = serverLevel.getChunkSource().getChunkNow(
+                    this.worldPosition.getX() >> 4,
+                    this.worldPosition.getZ() >> 4
+            );
+            if (chunk != null && !chunk.getBlockState(this.worldPosition).is(ModBlocks.SOUL_MERCHANT_STATION)) {
+                cleanupVillagerAndJobSite(serverLevel);
+            }
         }
         super.setRemoved();
     }

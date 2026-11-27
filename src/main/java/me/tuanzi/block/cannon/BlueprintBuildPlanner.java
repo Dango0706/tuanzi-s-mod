@@ -861,11 +861,31 @@ public class BlueprintBuildPlanner {
      * 校验将原方块替换为目标方块是否合法（禁止多格与单格互替或不同多方块体系互替；允许替换为空气清除）。
      */
     public static @Nullable Component checkReplacementCompatibility(Block sourceBlock, Block targetBlock) {
+        return checkReplacementCompatibility(sourceBlock, null, targetBlock, null);
+    }
+
+    /**
+     * 校验将原方块（可选限定颜色）替换为目标方块（可选指定颜色）是否合法。
+     * 彩色方块系列允许同方块不同颜色之间互相替换（换色）；同方块且同颜色时拦截。
+     */
+    public static @Nullable Component checkReplacementCompatibility(
+            Block sourceBlock,
+            @Nullable Integer sourceColor,
+            Block targetBlock,
+            @Nullable Integer targetColor
+    ) {
         if (sourceBlock == null || targetBlock == null) {
             return Component.translatable("message.tuanzis_mod.blueprint.replace_invalid");
         }
         if (sourceBlock == targetBlock) {
-            return Component.translatable("message.tuanzis_mod.blueprint.replace_same_block");
+            if (!isColorBlockSeries(sourceBlock)) {
+                return Component.translatable("message.tuanzis_mod.blueprint.replace_same_block");
+            }
+            if (sourceColor != null && targetColor != null
+                    && (sourceColor & 0xFFFFFF) == (targetColor & 0xFFFFFF)) {
+                return Component.translatable("message.tuanzis_mod.blueprint.replace_same_color");
+            }
+            return null;
         }
         if (targetBlock == Blocks.AIR) {
             return null;
@@ -938,21 +958,42 @@ public class BlueprintBuildPlanner {
     }
 
     /**
-     * 将蓝图 NBT 中指定的原方块全部替换为目标方块：
-     * - 校验多格/单格兼容性；
-     * - 保留兼容的方块状态属性；
-     * - 若原方块为纯流体，仅将源头格替换为目标方块，流动格自动清理为空气；
-     * - 自动清理已修改格上类型不再匹配的旧 BlockEntities NBT；
-     * - 对 Palette 执行压缩去重并回写 Palette / Blocks / BlockEntities。
+     * 将蓝图 NBT 中指定的原方块全部替换为目标方块。
      */
     public static ReplaceResult replaceBlockInBlueprint(CompoundTag blueprintTag, Block sourceBlock, Block targetBlock) {
+        return replaceBlockInBlueprint(blueprintTag, sourceBlock, null, targetBlock, null);
+    }
+
+    /**
+     * 将蓝图 NBT 中指定的原方块（当原方块为彩色方块系列且指定 {@code sourceColor} 时仅匹配该颜色）替换为目标方块
+     * （当目标方块为彩色方块系列时写入指定 {@code targetColor} 对应的 BlockEntity NBT）：
+     * - 校验多格/单格与同方块同色兼容性；
+     * - 保留兼容的方块状态属性；
+     * - 若原方块为纯流体，仅将源头格替换为目标方块，流动格自动清理为空气；
+     * - 自动维护彩色方块/楼梯/半砖（含双色双半砖单侧改色）的 BlockEntities NBT，并清理失效旧 NBT；
+     * - 对 Palette 执行压缩去重并回写 Palette / Blocks / BlockEntities。
+     */
+    public static ReplaceResult replaceBlockInBlueprint(
+            CompoundTag blueprintTag,
+            Block sourceBlock,
+            @Nullable Integer sourceColor,
+            Block targetBlock,
+            @Nullable Integer targetColor
+    ) {
         if (blueprintTag == null) {
             return new ReplaceResult(false, 0, 0, 0, Component.translatable("message.tuanzis_mod.blueprint.replace_invalid"));
         }
-        Component incompatError = checkReplacementCompatibility(sourceBlock, targetBlock);
+        Integer normSrcColor = (sourceColor != null && isColorBlockSeries(sourceBlock)) ? (sourceColor & 0xFFFFFF) : null;
+        Integer normDstColor = isColorBlockSeries(targetBlock)
+                ? ((targetColor != null ? targetColor : 0xFFFFFF) & 0xFFFFFF)
+                : null;
+
+        Component incompatError = checkReplacementCompatibility(sourceBlock, normSrcColor, targetBlock, normDstColor);
         if (incompatError != null) {
             ModLog.debug("BlueprintBuildPlanner.replaceBlockInBlueprint: 兼容性校验拦截 "
                     + sourceBlock.getName().getString() + " -> " + targetBlock.getName().getString()
+                    + ", sourceColor=" + formatColorForLog(normSrcColor)
+                    + ", targetColor=" + formatColorForLog(normDstColor)
                     + ", reason=" + incompatError.getString());
             return new ReplaceResult(false, 0, 0, 0, incompatError);
         }
@@ -967,59 +1008,110 @@ public class BlueprintBuildPlanner {
         }
 
         BlockState[] oldStates = new BlockState[oldPaletteNbt.size()];
-        BlockState[] newStates = new BlockState[oldPaletteNbt.size()];
-        boolean[] replacedPaletteSlot = new boolean[oldPaletteNbt.size()];
-        boolean[] clearedFlowingSlot = new boolean[oldPaletteNbt.size()];
-
         for (int i = 0; i < oldPaletteNbt.size(); i++) {
-            BlockState st = LitematicaParser.parseBlockStateFromTag(oldPaletteNbt.get(i));
-            oldStates[i] = st;
-            if (st.getBlock() == sourceBlock) {
-                if (isPureFluidBlock(st) && isFlowingFluid(st)) {
-                    newStates[i] = Blocks.AIR.defaultBlockState();
-                    clearedFlowingSlot[i] = true;
-                } else {
-                    newStates[i] = transferCompatibleProperties(st, targetBlock);
-                    replacedPaletteSlot[i] = true;
+            oldStates[i] = LitematicaParser.parseBlockStateFromTag(oldPaletteNbt.get(i));
+        }
+
+        // 读取原有 BlockEntities，按体素坐标建立映射以便彩色方块按颜色过滤与精准更新
+        Map<BlockPos, CompoundTag> teMap = new LinkedHashMap<>();
+        List<CompoundTag> outOfBoundsTes = new ArrayList<>();
+        boolean hadBlockEntitiesKey = blueprintTag.contains("BlockEntities");
+        if (hadBlockEntitiesKey) {
+            ListTag oldBes = blueprintTag.getListOrEmpty("BlockEntities");
+            for (int i = 0; i < oldBes.size(); i++) {
+                CompoundTag entry = oldBes.getCompoundOrEmpty(i);
+                int[] posArr = entry.getIntArray("pos").orElse(new int[0]);
+                if (posArr.length >= 3) {
+                    int bx = posArr[0];
+                    int by = posArr[1];
+                    int bz = posArr[2];
+                    if (bx >= 0 && bx < width && by >= 0 && by < height && bz >= 0 && bz < length) {
+                        teMap.put(new BlockPos(bx, by, bz), entry.getCompoundOrEmpty("nbt").copy());
+                        continue;
+                    }
                 }
-            } else {
-                newStates[i] = st;
+                outOfBoundsTes.add(entry.copy());
             }
         }
 
-        // 统计受影响格数与重构去重后的调色板
-        int replacedVoxels = 0;
-        int clearedFlowingVoxels = 0;
         List<BlockState> compactPalette = new ArrayList<>();
         compactPalette.add(Blocks.AIR.defaultBlockState());
         Map<BlockState, Integer> stateToCompactIdx = new HashMap<>();
         stateToCompactIdx.put(Blocks.AIR.defaultBlockState(), 0);
 
-        int[] oldIdxToNewIdx = new int[oldStates.length];
-        for (int i = 0; i < newStates.length; i++) {
-            BlockState ns = newStates[i];
-            Integer mapped = stateToCompactIdx.get(ns);
-            if (mapped == null) {
-                mapped = compactPalette.size();
-                compactPalette.add(ns);
-                stateToCompactIdx.put(ns, mapped);
-            }
-            oldIdxToNewIdx[i] = mapped;
-        }
-
         int[] updatedBlocks = new int[blocks.length];
-        for (int i = 0; i < blocks.length; i++) {
-            int pIdx = blocks[i];
-            if (pIdx < 0 || pIdx >= oldIdxToNewIdx.length) {
-                updatedBlocks[i] = 0;
+        int replacedVoxels = 0;
+        int clearedFlowingVoxels = 0;
+        int removedBlockEntities = 0;
+        int layerSize = width * length;
+
+        for (int idx = 0; idx < blocks.length; idx++) {
+            int oldPIdx = blocks[idx];
+            if (oldPIdx < 0 || oldPIdx >= oldStates.length) {
+                updatedBlocks[idx] = 0;
                 continue;
             }
-            if (replacedPaletteSlot[pIdx]) {
-                replacedVoxels++;
-            } else if (clearedFlowingSlot[pIdx]) {
-                clearedFlowingVoxels++;
+            BlockState oldState = oldStates[oldPIdx];
+            BlockState finalState = oldState;
+
+            if (oldState.getBlock() == sourceBlock) {
+                int bx = idx % width;
+                int bz = (idx / width) % length;
+                int by = idx / layerSize;
+                BlockPos pos = new BlockPos(bx, by, bz);
+                CompoundTag existingTe = teMap.get(pos);
+
+                if (isPureFluidBlock(oldState) && isFlowingFluid(oldState)) {
+                    finalState = Blocks.AIR.defaultBlockState();
+                    clearedFlowingVoxels++;
+                    if (existingTe != null) {
+                        teMap.remove(pos);
+                        removedBlockEntities++;
+                    }
+                } else if (normSrcColor != null) {
+                    // 原方块为彩色方块系列且按具体颜色精确过滤替换
+                    if (oldState.getBlock() instanceof ColorSlab
+                            && oldState.hasProperty(BlockStateProperties.SLAB_TYPE)
+                            && oldState.getValue(BlockStateProperties.SLAB_TYPE) == SlabType.DOUBLE) {
+                        int bottomCol = existingTe != null ? (existingTe.getIntOr("BottomColor", 0xFFFFFF) & 0xFFFFFF) : 0xFFFFFF;
+                        int topCol = existingTe != null ? (existingTe.getIntOr("TopColor", 0xFFFFFF) & 0xFFFFFF) : 0xFFFFFF;
+                        boolean matchBottom = (bottomCol == normSrcColor);
+                        boolean matchTop = (topCol == normSrcColor);
+                        if (matchBottom || matchTop) {
+                            finalState = transferCompatibleProperties(oldState, targetBlock);
+                            replacedVoxels++;
+                            if (targetBlock instanceof ColorSlab) {
+                                int newBottom = matchBottom ? normDstColor : bottomCol;
+                                int newTop = matchTop ? normDstColor : topCol;
+                                boolean newBottomSet = matchBottom || (existingTe != null && existingTe.getBooleanOr("BottomSet", false));
+                                boolean newTopSet = matchTop || (existingTe != null && existingTe.getBooleanOr("TopSet", false));
+                                teMap.put(pos, createColorSlabTeNbt(newBottom, newTop, newBottomSet, newTopSet));
+                            } else {
+                                removedBlockEntities += updateBlockEntityAfterReplace(teMap, pos, oldState, finalState, normDstColor);
+                            }
+                        }
+                    } else {
+                        int[] reqColors = getRequiredColors(oldState, existingTe);
+                        if (reqColors.length > 0 && (reqColors[0] & 0xFFFFFF) == normSrcColor) {
+                            finalState = transferCompatibleProperties(oldState, targetBlock);
+                            replacedVoxels++;
+                            removedBlockEntities += updateBlockEntityAfterReplace(teMap, pos, oldState, finalState, normDstColor);
+                        }
+                    }
+                } else {
+                    finalState = transferCompatibleProperties(oldState, targetBlock);
+                    replacedVoxels++;
+                    removedBlockEntities += updateBlockEntityAfterReplace(teMap, pos, oldState, finalState, normDstColor);
+                }
             }
-            updatedBlocks[i] = oldIdxToNewIdx[pIdx];
+
+            Integer mappedIdx = stateToCompactIdx.get(finalState);
+            if (mappedIdx == null) {
+                mappedIdx = compactPalette.size();
+                compactPalette.add(finalState);
+                stateToCompactIdx.put(finalState, mappedIdx);
+            }
+            updatedBlocks[idx] = mappedIdx;
         }
 
         ListTag encodedPalette = new ListTag();
@@ -1033,56 +1125,93 @@ public class BlueprintBuildPlanner {
         blueprintTag.put("Palette", encodedPalette);
         blueprintTag.putIntArray("Blocks", updatedBlocks);
 
-        // 清理已替换格上类型不匹配的旧 BlockEntities NBT
-        int removedBlockEntities = 0;
-        if (blueprintTag.contains("BlockEntities")) {
-            ListTag oldBes = blueprintTag.getListOrEmpty("BlockEntities");
-            ListTag keptBes = new ListTag();
-            for (int i = 0; i < oldBes.size(); i++) {
-                CompoundTag entry = oldBes.getCompoundOrEmpty(i);
-                int[] posArr = entry.getIntArray("pos").orElse(new int[0]);
-                boolean keep = true;
-                if (posArr.length >= 3) {
-                    int bx = posArr[0];
-                    int by = posArr[1];
-                    int bz = posArr[2];
-                    if (bx >= 0 && bx < width && by >= 0 && by < height && bz >= 0 && bz < length) {
-                        long bIdxLong = (long) by * (long) width * (long) length + (long) bz * (long) width + (long) bx;
-                        if (bIdxLong >= 0 && bIdxLong < blocks.length) {
-                            int bIdx = (int) bIdxLong;
-                            int oldPIdx = blocks[bIdx];
-                            if (oldPIdx >= 0 && oldPIdx < oldStates.length
-                                    && (replacedPaletteSlot[oldPIdx] || clearedFlowingSlot[oldPIdx])) {
-                                BlockState oldState = oldStates[oldPIdx];
-                                BlockState newState = newStates[oldPIdx];
-                                if (!hasSameBlockEntityType(oldState, newState, new BlockPos(bx, by, bz))) {
-                                    keep = false;
-                                    removedBlockEntities++;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (keep) {
-                    keptBes.add(entry.copy());
-                }
+        if (hadBlockEntitiesKey || !teMap.isEmpty() || !outOfBoundsTes.isEmpty()) {
+            ListTag updatedBes = new ListTag();
+            for (Map.Entry<BlockPos, CompoundTag> e : teMap.entrySet()) {
+                BlockPos p = e.getKey();
+                CompoundTag wrapper = new CompoundTag();
+                wrapper.putIntArray("pos", new int[]{p.getX(), p.getY(), p.getZ()});
+                wrapper.put("nbt", e.getValue().copy());
+                updatedBes.add(wrapper);
             }
-            blueprintTag.put("BlockEntities", keptBes);
+            for (CompoundTag extra : outOfBoundsTes) {
+                updatedBes.add(extra);
+            }
+            blueprintTag.put("BlockEntities", updatedBes);
         }
 
         ModLog.debug("BlueprintBuildPlanner.replaceBlockInBlueprint 完成: "
-                + sourceBlock.getName().getString() + " -> " + targetBlock.getName().getString()
+                + sourceBlock.getName().getString() + formatColorForLog(normSrcColor)
+                + " -> " + targetBlock.getName().getString() + formatColorForLog(normDstColor)
                 + ", replacedVoxels=" + replacedVoxels
                 + ", clearedFlowingVoxels=" + clearedFlowingVoxels
-                + ", removedBlockEntities=" + removedBlockEntities);
+                + ", removedBlockEntities=" + removedBlockEntities
+                + ", totalBlockEntities=" + teMap.size());
 
+        Component srcDisplay = normSrcColor != null
+                ? Component.literal(sourceBlock.getName().getString() + String.format(" #%06X", normSrcColor))
+                : sourceBlock.getName();
+        Component dstDisplay = normDstColor != null
+                ? Component.literal(targetBlock.getName().getString() + String.format(" #%06X", normDstColor))
+                : targetBlock.getName();
         Component msg = Component.translatable(
                 "message.tuanzis_mod.blueprint.replace_success",
-                sourceBlock.getName(),
-                targetBlock.getName(),
+                srcDisplay,
+                dstDisplay,
                 replacedVoxels
         );
         return new ReplaceResult(true, replacedVoxels, clearedFlowingVoxels, removedBlockEntities, msg);
+    }
+
+    private static int updateBlockEntityAfterReplace(
+            Map<BlockPos, CompoundTag> teMap,
+            BlockPos pos,
+            BlockState oldState,
+            BlockState newState,
+            @Nullable Integer targetColor
+    ) {
+        Block targetBlock = newState.getBlock();
+        if (targetBlock instanceof ColorBlock || targetBlock instanceof ColorStairs) {
+            int col = (targetColor != null ? targetColor : 0xFFFFFF) & 0xFFFFFF;
+            CompoundTag nbt = new CompoundTag();
+            nbt.putString("id", "tuanzis_mod:color_block_be");
+            nbt.putInt("Color", col);
+            teMap.put(pos, nbt);
+            return 0;
+        }
+        if (targetBlock instanceof ColorSlab) {
+            int col = (targetColor != null ? targetColor : 0xFFFFFF) & 0xFFFFFF;
+            SlabType type = newState.hasProperty(BlockStateProperties.SLAB_TYPE)
+                    ? newState.getValue(BlockStateProperties.SLAB_TYPE)
+                    : SlabType.BOTTOM;
+            if (type == SlabType.TOP) {
+                teMap.put(pos, createColorSlabTeNbt(0xFFFFFF, col, false, true));
+            } else if (type == SlabType.DOUBLE) {
+                teMap.put(pos, createColorSlabTeNbt(col, col, true, true));
+            } else {
+                teMap.put(pos, createColorSlabTeNbt(col, 0xFFFFFF, true, false));
+            }
+            return 0;
+        }
+        if (teMap.containsKey(pos) && !hasSameBlockEntityType(oldState, newState, pos)) {
+            teMap.remove(pos);
+            return 1;
+        }
+        return 0;
+    }
+
+    private static CompoundTag createColorSlabTeNbt(int bottomColor, int topColor, boolean bottomSet, boolean topSet) {
+        CompoundTag nbt = new CompoundTag();
+        nbt.putString("id", "tuanzis_mod:color_slab_be");
+        nbt.putInt("BottomColor", bottomColor & 0xFFFFFF);
+        nbt.putInt("TopColor", topColor & 0xFFFFFF);
+        nbt.putBoolean("BottomSet", bottomSet);
+        nbt.putBoolean("TopSet", topSet);
+        return nbt;
+    }
+
+    private static String formatColorForLog(@Nullable Integer color) {
+        return color != null ? String.format(" #%06X", color & 0xFFFFFF) : "";
     }
 
     private static boolean hasSameBlockEntityType(BlockState oldState, BlockState newState, BlockPos pos) {

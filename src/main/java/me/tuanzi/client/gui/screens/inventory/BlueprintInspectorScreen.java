@@ -436,18 +436,30 @@ public class BlueprintInspectorScreen extends Screen {
         if (this.minecraft == null) {
             return;
         }
-        ModLog.debug("[BlueprintInspectorScreen] 双击打开方块替换界面: source=" + entry.registryId);
+        ModLog.debug("[BlueprintInspectorScreen] 双击打开方块替换界面: source=" + entry.registryId
+                + (entry.color != null ? String.format(" #%06X", entry.color & 0xFFFFFF) : ""));
         this.minecraft.setScreenAndShow(new BlueprintBlockReplaceScreen(
                 this,
                 entry.block,
+                entry.color,
                 entry.itemStack,
-                targetBlock -> applyBlockReplacement(entry.block, targetBlock)
+                (targetBlock, targetColor) -> applyBlockReplacement(entry.block, entry.color, targetBlock, targetColor)
         ));
     }
 
-    private void applyBlockReplacement(Block sourceBlock, Block targetBlock) {
-        BlueprintBuildPlanner.ReplaceResult result =
-                BlueprintBuildPlanner.replaceBlockInBlueprint(this.blueprintTag, sourceBlock, targetBlock);
+    private void applyBlockReplacement(
+            Block sourceBlock,
+            @Nullable Integer sourceColor,
+            Block targetBlock,
+            @Nullable Integer targetColor
+    ) {
+        BlueprintBuildPlanner.ReplaceResult result = BlueprintBuildPlanner.replaceBlockInBlueprint(
+                this.blueprintTag,
+                sourceBlock,
+                sourceColor,
+                targetBlock,
+                targetColor
+        );
         if (!result.success()) {
             if (this.minecraft != null && this.minecraft.player != null) {
                 this.minecraft.player.sendSystemMessage(result.message().copy().withStyle(ChatFormatting.RED));

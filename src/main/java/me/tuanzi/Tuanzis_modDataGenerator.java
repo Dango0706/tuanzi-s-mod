@@ -273,7 +273,9 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.inspector.list_item_hint", "左键单击高亮 | 左键双击替换该方块");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_title", "替换蓝图方块");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_confirm", "确定");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_recolor", "修改颜色");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_cancel", "取消");
+            translationBuilder.add("gui.tuanzis_mod.inspector.color_picker_title", "选择替换颜色");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_select_hint", "请选择目标方块");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_click_select", "左键点击选择该方块");
             translationBuilder.add("gui.tuanzis_mod.inspector.tab_all_blocks", "全部方块");
@@ -296,16 +298,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "当前没有激活的蓝图虚影！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_invalid", "无效的方块替换请求！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_block", "目标方块与原方块相同！");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_color", "目标方块与原方块颜色相同！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_to_single", "无法将多格方块 [%s] 替换为普通单格方块 [%s]！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_single_to_multiblock", "无法将普通单格方块 [%s] 替换为多格方块 [%s]！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_mismatch", "多格方块 [%s] 与 [%s] 的结构部件不兼容，无法直接替换！");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_success", "已将蓝图中的 [%s] 替换为 [%s]（共替换 %s 格）");
 
-            translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n由 1 个烈焰粉、4 个红石粉、4 个砂砾无序合成。");
-            translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。");
+            translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n有序合成（产出 3 个）：第一行火药×3；第二行火药、岩浆桶、火药；第三行岩浆桶、火药、岩浆桶（合成后返还空铁桶）。");
+            translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。\n\n§e合成配方：\n有序合成（产出 1 个）：第一行纸×3；第二行淡蓝色染料、纸、淡蓝色染料；第三行中间放置木棍。");
             translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【结构蓝图】\n记录了特定建筑三维结构的蓝图。\n\n§e功能机制：\n1. §b虚影预览§r：手持它右键地面，可在点击处上方产生透明虚影预览。再次右键可以清除虚影.按 V 键显示/隐藏虚影，按 G 键可以打开虚影控制悬浮面板。\n2. §b快捷键调整§r：手持它时，按 R 旋转虚影，按 F 水平镜像。按住 Ctrl 配合方向键平移，PageUp/PageDown 上下调整高度。\n3. §b大炮构建§r：将结构蓝图放入蓝图大炮中作为建造模板。\n4. §b管理员直放§r：当玩家处于创造模式且为服务器管理员时，虚影控制面板会额外显示「放置此建筑」按钮，可将蓝图建筑直接放置到虚影位置。");
             translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【蓝图大炮】\n自动且精准构筑建筑的机械方块。主要用于大中型建筑的后期自动化建造。\n\n§e工作流程：\n1. 放好蓝图大炮，将录制好的结构蓝图放入蓝图槽，自动锁定要建造的基准位置。\n2. 放入压缩建造浆料作为燃料（大炮工作 5 ticks/方块，每次放置/移除方块都消耗 1 点浆料耐久。创造模式免燃料）。\n3. 大炮会自动检索周围 5 格内的箱子/木桶/潜影盒中的物料并将其消耗以进行构筑。支持自动匹配与提取嵌套潜影盒里的物资。\n4. 打开 GUI，可以控制开始、暂停、终止，并支持“非匹配方块移除”和“精准NBT匹配”功能。");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在游戏目录 `schematics`（与投影模组 Litematica 一致）下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `schematics` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b快速打开目录§r：点击界面右侧“打开目录”按钮，可快速打开 `schematics` 蓝图存放位置。\n4. §b3D旋转预览§r：在导入和导出时，可在预览检视器中查看建筑立体外观。");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在游戏目录 `schematics`（与投影模组 Litematica 一致）下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `schematics` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b快速打开目录§r：点击界面右侧“打开目录”按钮，可快速打开 `schematics` 蓝图存放位置。\n4. §b3D旋转预览§r：在导入和导出时，可在预览检视器中查看建筑立体外观。\n\n§e合成配方：\n有序合成（产出 1 个）：第一行刷子、空白蓝图、书与笔；第二行与第三行左右两侧各放置任意木板（共 4 块）。");
 
             translationBuilder.add("jei.tuanzis_mod.smelting.description", "【熔炼附魔】\n省去回家烧炉子的繁琐步骤。使用该工具挖掘“可在熔炉中烧炼的方块”时，直接掉落其烧炼后的产物。\n\n§e功能：§r\n1. §b自动熔炼§r：挖掘矿石或原木等可熔炼方块时直接掉落成品。\n2. §b完美兼容§r：与 §b时运 (Fortune)§r 完美兼容，可以获得更多掉落物。\n\n§e限制与惩罚：§r\n1. §b互斥机制§r：与 §b精准采集 (Silk Touch)§r 互斥。\n2. §b耐久消耗§r：每挖掘一个可熔炼方块，额外消耗 §c1§r 点耐久（共计消耗 2 点）。\n\n§7获取方式：无法从附魔台中直接获得。属于“宝藏附魔”，仅能通过搜刮下界要塞遗迹箱子、沙漠神殿宝箱或高等级图书管理员村民交易（极罕见，需 40-64 绿宝石）获取。");
 
@@ -2287,7 +2290,9 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("gui.tuanzis_mod.inspector.list_item_hint", "Left-click to highlight | Double-click to replace block");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_title", "Replace Blueprint Block");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_confirm", "Confirm");
+            translationBuilder.add("gui.tuanzis_mod.inspector.replace_recolor", "Change Color");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_cancel", "Cancel");
+            translationBuilder.add("gui.tuanzis_mod.inspector.color_picker_title", "Select Replacement Color");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_select_hint", "Select target block");
             translationBuilder.add("gui.tuanzis_mod.inspector.replace_click_select", "Left-click to select this block");
             translationBuilder.add("gui.tuanzis_mod.inspector.tab_all_blocks", "All Blocks");
@@ -2310,16 +2315,17 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("message.tuanzis_mod.blueprint.no_active_ghost", "No active blueprint ghost found!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_invalid", "Invalid block replacement request!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_block", "Target block is the same as the source block!");
+            translationBuilder.add("message.tuanzis_mod.blueprint.replace_same_color", "Target block has the same color as the source block!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_to_single", "Cannot replace multi-block [%s] with single block [%s]!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_single_to_multiblock", "Cannot replace single block [%s] with multi-block [%s]!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_multiblock_mismatch", "Multi-block [%s] and [%s] have incompatible parts and cannot be replaced!");
             translationBuilder.add("message.tuanzis_mod.blueprint.replace_success", "Replaced [%s] with [%s] in blueprint (%s blocks replaced)");
 
-            translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.");
-            translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.");
+            translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.\n\n§eCrafting Recipe (Yields 3):§r\nShaped: Row 1 = Gunpowder x3; Row 2 = Gunpowder, Lava Bucket, Gunpowder; Row 3 = Lava Bucket, Gunpowder, Lava Bucket (returns empty buckets).");
+            translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.\n\n§eCrafting Recipe (Yields 1):§r\nShaped: Row 1 = Paper x3; Row 2 = Light Blue Dye, Paper, Light Blue Dye; Row 3 = Stick in center.");
             translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【Structure Blueprint】\nContains the recorded three-dimensional block layouts.\n\n§eUsage:\n1. Right-click ground to place a 0.4 alpha transparent ghost preview. Right-click again to clear.\n2. Press V to toggle visibility. Press G to open the offset controller.\n3. Shortcut keys: R to rotate, F to mirror. Ctrl + Arrows to shift offset, PageUp/PageDown to adjust height.\n4. Creative Admin Direct Place: When in Creative mode as a server admin, the Ghost Controller Panel provides a \"Place Building\" button to place the structure directly at the ghost position.");
             translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【Blueprint Cannon】\nAn automated block placing machine that automatically builds a structure based on a Blueprint.\n\n§eUsage:\n1. Place down the cannon, insert a recorded Structure Blueprint.\n2. Put Compressed Build Slurry into the fuel slot. The cannon processes at 5 ticks/block. Free in creative mode.\n3. The cannon scans chests, barrels, and shulkers within 5 blocks recursively (up to 3 levels deep) to consume items.\n4. GUI provides options to start, pause, terminate, toggle block destruction, and toggle exact NBT checks.");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `schematics/` (matching Litematica).\n2. Import: Put `.litematic` or `.schem` files in `schematics/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. Open Folder: Click the Folder button on the right side of the GUI to quickly open the `schematics/` directory.\n4. 3D Preview: Inspect the structure in full 3D from the Blueprint Inspector.");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `schematics/` (matching Litematica).\n2. Import: Put `.litematic` or `.schem` files in `schematics/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. Open Folder: Click the Folder button on the right side of the GUI to quickly open the `schematics/` directory.\n4. 3D Preview: Inspect the structure in full 3D from the Blueprint Inspector.\n\n§eCrafting Recipe (Yields 1):§r\nShaped: Row 1 = Brush, Blank Blueprint, Book and Quill; Rows 2 & 3 = Any Planks on left and right sides (center empty).");
 
             // Rift Scar English translations
             translationBuilder.add(ModItems.RIFT_SCAR, "Fractured Void Scar");
