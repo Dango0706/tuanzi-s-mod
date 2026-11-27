@@ -26,7 +26,7 @@ public class GoldenPocketItem extends Item {
     }
 
     /**
-     * 判断物品是否禁止放入黄金口袋（防套娃与防潜影盒）
+     * 判断物品是否禁止放入黄金口袋（防套娃、防潜影盒与禁止蓝图）
      */
     public static boolean isForbiddenInPocket(ItemStack stack) {
         if (stack.isEmpty()) {
@@ -36,7 +36,12 @@ public class GoldenPocketItem extends Item {
         if (stack.is(ModItems.GOLDEN_POCKET)) {
             return true;
         }
-        // 2. 禁止放入潜影盒 (标签检查)
+        // 2. 禁止放入空白蓝图与结构蓝图
+        if (stack.is(ModItems.BLANK_BLUEPRINT) || stack.is(ModItems.STRUCTURE_BLUEPRINT)) {
+            ModLog.debug("[GoldenPocketItem] 拦截禁止放入黄金口袋的蓝图物品: " + stack.getItem());
+            return true;
+        }
+        // 3. 禁止放入潜影盒 (标签检查)
         try {
             if (stack.is(ItemTags.SHULKER_BOXES)) {
                 return true;
@@ -44,7 +49,7 @@ public class GoldenPocketItem extends Item {
         } catch (Exception ignored) {
             // 单元测试或离线环境中 tags 未绑定时跳过
         }
-        // 3. 禁止放入潜影盒 (方块实例检查)
+        // 4. 禁止放入潜影盒 (方块实例检查)
         if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof ShulkerBoxBlock) {
             return true;
         }

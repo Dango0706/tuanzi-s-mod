@@ -1922,7 +1922,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             // 黄金口袋
             translationBuilder.add(ModItems.GOLDEN_POCKET, "黄金口袋");
             translationBuilder.add("container.tuanzis_mod.golden_pocket", "黄金口袋");
-            translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "黄金口袋是一个拥有 6×9（54格，即大箱子）超大便携存储空间的道具。\n手持右键即可随时随地打开。\n【防套娃机制】内部严禁放入黄金口袋与任何潜影盒。\n【模组联动】原生深度联动“投影 (Litematica)”，投影界面的材料清单会自动统计并计入黄金口袋内装载的所有材料。");
+            translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "黄金口袋是一个拥有 6×9（54格，即大箱子）超大便携存储空间的道具。\n手持右键即可随时随地打开。\n【防套娃机制】内部严禁放入黄金口袋、任何潜影盒以及空白蓝图/结构蓝图。\n【模组联动】原生深度联动“投影 (Litematica)”，投影界面的材料清单会自动统计并计入黄金口袋内装载的所有材料。");
 
             // 凋灵击杀与灵魂绑定获取
             translationBuilder.add("chat.tuanzis_mod.witherkills.actionbar", "已累计击杀凋灵：%s/%s");
@@ -3845,7 +3845,7 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             // Golden Pocket
             translationBuilder.add(ModItems.GOLDEN_POCKET, "Golden Pocket");
             translationBuilder.add("container.tuanzis_mod.golden_pocket", "Golden Pocket");
-            translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "A portable storage item with a massive 6x9 (54 slots) capacity.\nRight-click while holding to open anytime.\n[Anti-Nesting] Cannot store other Golden Pockets or Shulker Boxes inside.\n[Litematica Integration] Fully integrated with Litematica, allowing the Material List to accurately recognize and tally items inside.");
+            translationBuilder.add("jei.tuanzis_mod.golden_pocket.description", "A portable storage item with a massive 6x9 (54 slots) capacity.\nRight-click while holding to open anytime.\n[Anti-Nesting] Cannot store other Golden Pockets, Shulker Boxes, or Blank/Structure Blueprints inside.\n[Litematica Integration] Fully integrated with Litematica, allowing the Material List to accurately recognize and tally items inside.");
 
             // Wither kills & Soulbound acquisition
             translationBuilder.add("chat.tuanzis_mod.witherkills.actionbar", "Wither Kills Progress: %s/%s");

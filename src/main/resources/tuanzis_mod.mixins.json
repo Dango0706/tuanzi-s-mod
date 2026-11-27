@@ -75,6 +75,7 @@
     "ScavengerPlayerMixin",
     "ServerGamePacketListenerImplMixin",
     "ServerPlayerMixin",
+    "ShulkerBoxBlockEntityMixin",
     "SmeltingEnchantmentMixin",
     "SonicBoomBlockMixin",
     "SoulboundMixin",

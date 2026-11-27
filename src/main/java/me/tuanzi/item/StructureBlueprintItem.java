@@ -67,6 +67,11 @@ public class StructureBlueprintItem extends Item {
     }
 
     @Override
+    public boolean canFitInsideContainerItems() {
+        return false;
+    }
+
+    @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
         me.tuanzi.util.LitematicaParser.compactItemStackIfNeeded(stack);
     }
