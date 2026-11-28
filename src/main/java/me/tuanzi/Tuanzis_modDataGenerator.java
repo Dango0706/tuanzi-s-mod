@@ -2179,6 +2179,92 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.copier.description", "【复印机】\n输入【打印模型】母版与【打印原料】，在权限校验通过后保留母版并复制出一份相同数据的【打印模型】。\n\n§e合成配方：§r上行 玻璃×3；中行 红石、3D打印机、红石；下行 粘液球、纸、粘液球。");
             translationBuilder.add("jei.tuanzis_mod.paper_shredder.description", "【碎纸机】\n唯一可用于彻底损毁【画布】的机械设备。\n\n§e规则与安全机制：\n1. 严格权限：只有画布主人本人才能损毁自己的画布（未绑定主人的空白画布除外）。\n2. 二次确认：点击「损毁画布」后必须经过强警告二次确认才会生效。\n3. 材料返还：损毁后归档体素数据并释放画布创建名额，返还画布本身的合成材料（纸、白色染料、线），§c不会返还画布内建筑消耗的任何材料！\n\n§e合成配方：§r上行 铁锭、剪刀、铁锭；中行 铁锭、漏斗、铁锭；下行 石砖、红石、石砖。");
             translationBuilder.add("jei.tuanzis_mod.printed_model.description", "【打印模型】\n由 3D 打印机制作的可放置静态模型方块。支持分块静态网格烘焙与自动合并碰撞箱（2D 模型支持地面、贴墙、天花板放置）。破坏时仅掉落自身，不返还画布。");
+
+            // 棋盘对战系统（五子棋、中国象棋、国际象棋）中文翻译
+            translationBuilder.add(me.tuanzi.init.ModBlocks.GOMOKU, "五子棋");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.GOMOKU.asItem(), "五子棋");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CCHESS, "中国象棋");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CCHESS.asItem(), "中国象棋");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.WCHESS, "国际象棋");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.WCHESS.asItem(), "国际象棋");
+
+            translationBuilder.add("subtitles.tuanzis_mod.block.board_game.piece", "棋子落下");
+            translationBuilder.add("subtitles.tuanzis_mod.block.board_game.reset", "重置棋盘");
+
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.black", "黑方");
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.white", "白方");
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.red", "红方");
+            translationBuilder.add("gui.tuanzis_mod.board_game.confirm_waiting", "确认并等待对手");
+            translationBuilder.add("gui.tuanzis_mod.board_game.cancel_waiting", "取消");
+            translationBuilder.add("gui.tuanzis_mod.board_game.auto_fill", "自动匹配");
+            translationBuilder.add("gui.tuanzis_mod.board_game.accept_challenge", "确认应战并开局");
+            translationBuilder.add("gui.tuanzis_mod.board_game.decline_challenge", "离开");
+            translationBuilder.add("gui.tuanzis_mod.board_game.resign", "认输（赌注归对手）");
+            translationBuilder.add("gui.tuanzis_mod.board_game.resign_confirm", "再次点击确认认输！");
+            translationBuilder.add("gui.tuanzis_mod.board_game.offer_draw", "提议和棋");
+            translationBuilder.add("gui.tuanzis_mod.board_game.accept_draw", "同意和棋（退还赌注）");
+            translationBuilder.add("gui.tuanzis_mod.board_game.draw_sent", "已发送和棋请求，等待回应");
+            translationBuilder.add("gui.tuanzis_mod.board_game.reject_draw", "拒绝和棋");
+            translationBuilder.add("gui.tuanzis_mod.board_game.host_side_btn", "当前执子：%s（点击切换）");
+            translationBuilder.add("gui.tuanzis_mod.board_game.friendly_hint", "当前为「友谊切磋」模式");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_slot_hint", "左侧放入任意物品可设赌注");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_selected", "赌注：%s ×%s");
+            translationBuilder.add("gui.tuanzis_mod.board_game.your_side", "你的阵营：%s");
+            translationBuilder.add("gui.tuanzis_mod.board_game.friendly_match", "友谊切磋（无任何赌注）");
+            translationBuilder.add("gui.tuanzis_mod.board_game.host_wager_label", "房主赌注");
+            translationBuilder.add("gui.tuanzis_mod.board_game.your_wager_label", "你的赌注");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_need_match", "请放入与房主完全一致的物品和数量");
+            translationBuilder.add("gui.tuanzis_mod.board_game.match_actions_hint", "对局进行中，请选择操作：");
+
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_title", "等待对手入座...");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_host", "房主：%s（执%s）");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_wager", "赌注：%s ×%s");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_friendly", "友谊切磋");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_join_hint", "空手右键棋盘加入对弈");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.playing_turn", "当前回合：%s（%s）");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.away_countdown", "⚠ %s 离座中！%s 秒后判负");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.draw_pending", "有未处理的和棋提议（点击棋盒查看）");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_win", "%s（%s）获胜！");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_full", "满盘和棋");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_stalemate", "逼和（无子可走）");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_move_limit", "自然限着判和");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_repeat", "长打/三次重复判和");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_agreed", "双方协议和棋");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.round_count", "⏹ 总回合：%s ⏹");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.wager_returned", "赌注已原样退还（%s ×%s）");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.wager_won", "胜者赢得全部赌注：%s ×%s");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.click_box_reset", "点击棋盒重置棋盘");
+
+            translationBuilder.add("message.tuanzis_mod.board_game.reset_done", "棋盘已重置完毕。");
+            translationBuilder.add("message.tuanzis_mod.board_game.finished_hint", "本局已结束，请点击棋盘旁的棋盒重置棋盘。");
+            translationBuilder.add("message.tuanzis_mod.board_game.match_full", "当前棋局已满员，请等待本局结束。");
+            translationBuilder.add("message.tuanzis_mod.board_game.returned_to_seat", "已回到座位，离座倒计时已取消。");
+            translationBuilder.add("message.tuanzis_mod.board_game.not_your_turn", "现在不是你的回合！");
+            translationBuilder.add("message.tuanzis_mod.board_game.waiting_with_wager", "已创建对局等待室，赌注：%s ×%s。起身离座将自动取消并退还赌注。");
+            translationBuilder.add("message.tuanzis_mod.board_game.waiting_friendly", "已创建「友谊切磋」等待室，等待第二位玩家空手右键棋盘入座。");
+            translationBuilder.add("message.tuanzis_mod.board_game.wager_refunded", "已取消等待，你的赌注物品已退还。");
+            translationBuilder.add("message.tuanzis_mod.board_game.cannot_play_self", "不能自己和自己下棋，请等待另一位玩家应战！");
+            translationBuilder.add("message.tuanzis_mod.board_game.host_offline", "房主已离开游戏，当前等待局已取消。");
+            translationBuilder.add("message.tuanzis_mod.board_game.wager_mismatch", "你的赌注物品或数量与房主不一致！");
+            translationBuilder.add("message.tuanzis_mod.board_game.match_started", "对局开始！先手：%s  VS  后手：%s");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_sent", "已向对手发出和棋提议。");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_received", "%s 向你提议和棋！请点击棋盒打开操作菜单回应。");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_already_sent", "你已发起过和棋请求，请等待对手回应。");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_rejected", "对手拒绝了你的和棋提议。");
+            translationBuilder.add("message.tuanzis_mod.board_game.player_left_seat", "⚠ %s 已离开座位！请在 60 秒内空手右键棋盘重新入座，否则将自动判负。");
+            translationBuilder.add("message.tuanzis_mod.board_game.not_enough_wager", "背包中没有足够的 %s（需要 ×%s）！");
+            translationBuilder.add("message.tuanzis_mod.board_game.break_denied", "对局进行期间禁止破坏棋盘！请先通过认输或和棋结束对局。");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.win", "对局结束，恭喜 %s 获胜！");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_full", "对局结束：棋盘已满，双方和棋！");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_stalemate", "对局结束：无子可走逼和，双方和棋！");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_move_limit", "对局结束：达到自然限着步数，双方和棋！");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_repeat", "对局结束：触发长打或三次重复局面，双方和棋！");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_agreed", "对局结束：双方协议和棋，赌注已原样退还！");
+            translationBuilder.add("message.tuanzis_mod.cchess.check", "将军！不能送将或忽略将军！");
+
+            translationBuilder.add("jei.tuanzis_mod.gomoku.description", "【五子棋】\n双人 PVP 对弈棋盘（3×3 占地，黑先白后）。\n\n§e玩法与规则：\n1. 第 1 位玩家空手右键棋盘自动入座，可选择执黑/执白，并可放入任意物品作为赌注或留空进行「友谊切磋」。\n2. 等待时棋盘上方悬浮显示阵营与赌注信息；第 2 位玩家空手右键坐到对面核对等额赌注即可开局。\n3. 坐定后空手右键交叉点落子，横/竖/斜任意方向先连成五子者获胜并赢走全部赌注。\n4. 对局中点击棋盒可认输或提议和棋；中途离座超过 60 秒自动判负，对局期间棋盘受防破坏保护。\n\n§e合成配方：§r上行 黑色染料 + 钻石 + 白色染料；下行 3×任意木板。");
+            translationBuilder.add("jei.tuanzis_mod.cchess.description", "【中国象棋】\n双人 PVP 对弈棋盘（3×3 占地，红先黑后）。\n\n§e玩法与规则：\n1. 第 1 位玩家空手右键入座选择执红/执黑并设置赌注或友谊切磋；第 2 位玩家空手右键应战。\n2. 遵循完整中国象棋规则（马踏日憋腿、象飞田塞眼、炮隔子打、将帅不得照面、禁止送将、将死/困毙判负、长打与 60 回合自然限着判和）。\n3. 点击棋盒可认输或协商和棋，对局结束后点击棋盒重置棋盘。\n\n§e合成配方：§r上行 黑色染料 + 钻石 + 红色染料；下行 3×任意木板。");
+            translationBuilder.add("jei.tuanzis_mod.wchess.description", "【国际象棋】\n双人 PVP 对弈棋盘（3×3 占地，白先黑后）。\n\n§e玩法与规则：\n1. 第 1 位玩家空手右键入座选择执白/执黑并设置赌注或友谊切磋；第 2 位玩家空手右键应战。\n2. 遵循完整国际象棋规则（王车易位、吃过路兵、兵到底线自动升后、将死判胜、逼和/三次重复/50回合限着判和）。\n3. 点击棋盒可认输或协商和棋，对局结束后点击棋盒重置棋盘。\n\n§e合成配方：§r上行 黑色染料 + 绿宝石 + 白色染料；下行 3×任意木板。");
         }
     }
 
@@ -4291,6 +4377,92 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.copier.description", "[Copier]\nTakes a Printed Model master and Print Material to produce an exact duplicate while preserving voxel data and checking permissions.");
             translationBuilder.add("jei.tuanzis_mod.paper_shredder.description", "[Paper Shredder]\nThe only machine capable of permanently destroying a Canvas.\n\n§eRules & Safety:\n1. Strict Ownership: Only the Canvas owner can shred their own Canvas (blank unowned Canvases have no owner restriction).\n2. Two-Step Confirmation: Clicking 'Shred' prompts a prominent confirmation warning.\n3. Material Refund: Archives voxel data, frees the owner's Canvas quota slot, and refunds the Canvas's own crafting materials (Paper, White Dye, String)—§cNEVER refunds blocks placed inside the Canvas!\n\n§eRecipe:§r Top: Iron Ingot, Shears, Iron Ingot; Middle: Iron Ingot, Hopper, Iron Ingot; Bottom: Stone Bricks, Redstone, Stone Bricks.");
             translationBuilder.add("jei.tuanzis_mod.printed_model.description", "[Printed Model]\nStatic baked mesh decorative block printed from a Canvas, with greedy-merged collision boxes (2D supports floor, wall, and ceiling mounting). Breaking drops only itself, never the Canvas.");
+
+            // Board Games (Gomoku, Chinese Chess, Chess) English translations
+            translationBuilder.add(me.tuanzi.init.ModBlocks.GOMOKU, "Gomoku Board");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.GOMOKU.asItem(), "Gomoku Board");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CCHESS, "Chinese Chess Board");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CCHESS.asItem(), "Chinese Chess Board");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.WCHESS, "Chess Board");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.WCHESS.asItem(), "Chess Board");
+
+            translationBuilder.add("subtitles.tuanzis_mod.block.board_game.piece", "Chess piece placed");
+            translationBuilder.add("subtitles.tuanzis_mod.block.board_game.reset", "Board reset");
+
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.black", "Black");
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.white", "White");
+            translationBuilder.add("gui.tuanzis_mod.board_game.side.red", "Red");
+            translationBuilder.add("gui.tuanzis_mod.board_game.confirm_waiting", "Confirm & Wait");
+            translationBuilder.add("gui.tuanzis_mod.board_game.cancel_waiting", "Cancel");
+            translationBuilder.add("gui.tuanzis_mod.board_game.auto_fill", "Auto-Match");
+            translationBuilder.add("gui.tuanzis_mod.board_game.accept_challenge", "Accept & Start");
+            translationBuilder.add("gui.tuanzis_mod.board_game.decline_challenge", "Leave");
+            translationBuilder.add("gui.tuanzis_mod.board_game.resign", "Resign (Forfeit Wager)");
+            translationBuilder.add("gui.tuanzis_mod.board_game.resign_confirm", "Click again to Resign!");
+            translationBuilder.add("gui.tuanzis_mod.board_game.offer_draw", "Offer Draw");
+            translationBuilder.add("gui.tuanzis_mod.board_game.accept_draw", "Accept Draw (Refund)");
+            translationBuilder.add("gui.tuanzis_mod.board_game.draw_sent", "Draw Offer Sent");
+            translationBuilder.add("gui.tuanzis_mod.board_game.reject_draw", "Decline Draw");
+            translationBuilder.add("gui.tuanzis_mod.board_game.host_side_btn", "Side: %s (Click to Switch)");
+            translationBuilder.add("gui.tuanzis_mod.board_game.friendly_hint", "Friendly Match Mode");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_slot_hint", "Put any item left to wager");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_selected", "Wager: %s ×%s");
+            translationBuilder.add("gui.tuanzis_mod.board_game.your_side", "Your Side: %s");
+            translationBuilder.add("gui.tuanzis_mod.board_game.friendly_match", "Friendly Match (No Wager)");
+            translationBuilder.add("gui.tuanzis_mod.board_game.host_wager_label", "Host Wager");
+            translationBuilder.add("gui.tuanzis_mod.board_game.your_wager_label", "Your Wager");
+            translationBuilder.add("gui.tuanzis_mod.board_game.wager_need_match", "Insert exact matching item and count");
+            translationBuilder.add("gui.tuanzis_mod.board_game.match_actions_hint", "Match in progress. Choose an action:");
+
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_title", "Waiting for Opponent...");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_host", "Host: %s (%s)");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_wager", "Wager: %s ×%s");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_friendly", "Friendly Match");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.waiting_join_hint", "Empty-hand Right-Click to Join");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.playing_turn", "Turn: %s (%s)");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.away_countdown", "⚠ %s away! Forfeit in %ss");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.draw_pending", "Draw offered (click piece box)");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_win", "%s (%s) Wins!");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_full", "Draw - Board Full");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_stalemate", "Draw - Stalemate");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_move_limit", "Draw - Move Limit");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_repeat", "Draw - Repetition");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.result_draw.draw_agreed", "Draw by Agreement");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.round_count", "⏹ Turns: %s ⏹");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.wager_returned", "Wagers Returned (%s ×%s)");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.wager_won", "Winner Claims: %s ×%s");
+            translationBuilder.add("overlay.tuanzis_mod.board_game.click_box_reset", "Click piece box to reset");
+
+            translationBuilder.add("message.tuanzis_mod.board_game.reset_done", "Board has been reset.");
+            translationBuilder.add("message.tuanzis_mod.board_game.finished_hint", "Match finished! Click the piece box to reset the board.");
+            translationBuilder.add("message.tuanzis_mod.board_game.match_full", "This board already has two players.");
+            translationBuilder.add("message.tuanzis_mod.board_game.returned_to_seat", "Returned to seat; away countdown cleared.");
+            translationBuilder.add("message.tuanzis_mod.board_game.not_your_turn", "It is not your turn!");
+            translationBuilder.add("message.tuanzis_mod.board_game.waiting_with_wager", "Waiting lobby created with wager: %s ×%s. Leaving your seat cancels and refunds.");
+            translationBuilder.add("message.tuanzis_mod.board_game.waiting_friendly", "Friendly match lobby created. Waiting for another player to right-click with an empty hand.");
+            translationBuilder.add("message.tuanzis_mod.board_game.wager_refunded", "Waiting cancelled; your wager has been refunded.");
+            translationBuilder.add("message.tuanzis_mod.board_game.cannot_play_self", "You cannot play against yourself!");
+            translationBuilder.add("message.tuanzis_mod.board_game.host_offline", "Host is no longer available; waiting room cancelled.");
+            translationBuilder.add("message.tuanzis_mod.board_game.wager_mismatch", "Your wager does not match the host's item and count!");
+            translationBuilder.add("message.tuanzis_mod.board_game.match_started", "Match started! First: %s  VS  Second: %s");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_sent", "Draw offer sent to your opponent.");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_received", "%s offered a draw! Click the piece box to respond.");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_already_sent", "You already offered a draw.");
+            translationBuilder.add("message.tuanzis_mod.board_game.draw_offer_rejected", "Your opponent declined the draw offer.");
+            translationBuilder.add("message.tuanzis_mod.board_game.player_left_seat", "⚠ %s left their seat! Return within 60s or forfeit automatically.");
+            translationBuilder.add("message.tuanzis_mod.board_game.not_enough_wager", "Not enough %s in your inventory (need ×%s)!");
+            translationBuilder.add("message.tuanzis_mod.board_game.break_denied", "Cannot break the board during an active match! Resign or agree to a draw first.");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.win", "Game over! %s wins!");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_full", "Game over: Draw (board is full)!");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_stalemate", "Game over: Draw by stalemate!");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_move_limit", "Game over: Draw by move limit!");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_repeat", "Game over: Draw by repetition!");
+            translationBuilder.add("message.tuanzis_mod.board_game.result.draw.draw_agreed", "Game over: Draw by agreement; wagers refunded!");
+            translationBuilder.add("message.tuanzis_mod.cchess.check", "Check! You cannot leave your king in check!");
+
+            translationBuilder.add("jei.tuanzis_mod.gomoku.description", "[Gomoku Board]\nTwo-player PVP 3×3 board game (Black first, White second).\n\n§eGameplay & Rules:\n1. First player empty-hand right-clicks to sit, pick Black/White, and optionally wager any item or leave empty for Friendly Match.\n2. Floating text displays side & wager (or Friendly Match) while waiting. Second player right-clicks to sit opposite and match the wager.\n3. Right-click intersections to place stones; first to connect 5 wins all wagered items.\n4. Click the stone box to resign or offer a draw; leaving seat for 60s forfeits automatically.\n\n§eRecipe:§r Top: Black Dye, Diamond, White Dye; Bottom: 3× Planks.");
+            translationBuilder.add("jei.tuanzis_mod.cchess.description", "[Chinese Chess Board]\nTwo-player PVP 3×3 board game (Red first, Black second).\n\n§eGameplay & Rules:\n1. Host sits to choose Red/Black and wager/Friendly Match; challenger sits opposite to confirm.\n2. Full Xiangqi rules enforced (blocked horse/elephant, cannon screen, flying-general ban, checkmate/stalemate, perpetual check & 60-move draw).\n3. Click the piece box to resign/draw or reset after game over.\n\n§eRecipe:§r Top: Black Dye, Diamond, Red Dye; Bottom: 3× Planks.");
+            translationBuilder.add("jei.tuanzis_mod.wchess.description", "[Chess Board]\nTwo-player PVP 3×3 board game (White first, Black second).\n\n§eGameplay & Rules:\n1. Host sits to choose White/Black and wager/Friendly Match; challenger sits opposite to confirm.\n2. Full Chess rules enforced (castling, en passant, auto-queen promotion, checkmate, stalemate, threefold repetition & 50-move rule).\n3. Click the piece box to resign/draw or reset after game over.\n\n§eRecipe:§r Top: Black Dye, Emerald, White Dye; Bottom: 3× Planks.");
         }
     }
 }

@@ -3,8 +3,11 @@ package me.tuanzi.block;
 import me.tuanzi.block.entity.BlueprintCannonBlockEntity;
 import me.tuanzi.init.ModBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -14,11 +17,14 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class BlueprintCannonBlock extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.or(
@@ -63,5 +69,15 @@ public class BlueprintCannonBlock extends BaseEntityBlock {
             }
         }
         return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        return List.of(new ItemStack(this));
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        Containers.updateNeighboursAfterDestroy(state, level, pos);
     }
 }

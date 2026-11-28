@@ -21,7 +21,6 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
         builder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.SOUL_MERCHANT_STATION.builtInRegistryHolder().key())
                 .add(ModBlocks.BLUEPRINT_CANNON.builtInRegistryHolder().key())
-                .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
                 .add(ModBlocks.PLAYER_SIMULATOR.builtInRegistryHolder().key())
                 .add(ModBlocks.BLACKBOX_CORE_CASE.builtInRegistryHolder().key())
                 .add(ModBlocks.BASE_STASH_CABINET.builtInRegistryHolder().key())
@@ -59,7 +58,11 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
                 .add(casinodecoKey("gold_veined_black_marble_slab"));
 
         builder(BlockTags.MINEABLE_WITH_AXE)
+                .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
                 .add(ModBlocks.EASEL.builtInRegistryHolder().key())
+                .add(ModBlocks.GOMOKU.builtInRegistryHolder().key())
+                .add(ModBlocks.CCHESS.builtInRegistryHolder().key())
+                .add(ModBlocks.WCHESS.builtInRegistryHolder().key())
                 .add(casinodecoKey("casino_sofa"))
                 .add(casinodecoKey("casino_sign"))
                 .add(casinodecoKey("small_casino_sign"))
@@ -115,6 +118,9 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
 
         // 方块破坏器黑名单
         builder(me.tuanzi.init.ModBlockTags.BLOCK_BREAKER_BLACKLIST)
+                .add(ModBlocks.GOMOKU.builtInRegistryHolder().key())
+                .add(ModBlocks.CCHESS.builtInRegistryHolder().key())
+                .add(ModBlocks.WCHESS.builtInRegistryHolder().key())
                 .add(net.minecraft.world.level.block.Blocks.BEDROCK.builtInRegistryHolder().key())
                 .add(net.minecraft.world.level.block.Blocks.BARRIER.builtInRegistryHolder().key())
                 .add(net.minecraft.world.level.block.Blocks.COMMAND_BLOCK.builtInRegistryHolder().key())
@@ -147,7 +153,6 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
         builder(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.SOUL_MERCHANT_STATION.builtInRegistryHolder().key())
                 .add(ModBlocks.BLUEPRINT_CANNON.builtInRegistryHolder().key())
-                .add(ModBlocks.BLUEPRINT_TABLE.builtInRegistryHolder().key())
                 .add(ModBlocks.BLACKBOX_CORE_CASE.builtInRegistryHolder().key())
                 .add(ModBlocks.BASE_STASH_CABINET.builtInRegistryHolder().key())
                 .add(ModBlocks.BASE_UPGRADE_STATION.builtInRegistryHolder().key());

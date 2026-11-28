@@ -452,6 +452,11 @@ public class ModModelProvider extends FabricModelProvider {
         blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.PRINTED_MODEL, me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK);
         blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.PRINTED_MODEL_PART, me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK);
 
+        // 棋盘系统方块（仅粒子模型，3D 棋盘与棋子由 Bedrock BlockEntityRenderer 接管）
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.GOMOKU, net.minecraft.world.level.block.Blocks.OAK_PLANKS);
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.CCHESS, net.minecraft.world.level.block.Blocks.OAK_PLANKS);
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.WCHESS, net.minecraft.world.level.block.Blocks.OAK_PLANKS);
+
         // 自动生成玩家模拟器的方向性方块模型和状态
         TextureMapping simulatorHorizontalTextures = new TextureMapping()
                 .put(TextureSlot.TOP, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "block/furnace_top")))
@@ -688,6 +693,9 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.CANVAS, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.PRINT_MATERIAL, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.PRINTED_MODEL.asItem(), ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.GOMOKU.asItem(), ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.CCHESS.asItem(), ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.WCHESS.asItem(), ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.HALL_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE.asItem(), ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.ROOM_RETURN_BEACON, ModelTemplates.FLAT_ITEM);

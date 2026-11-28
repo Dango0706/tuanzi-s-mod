@@ -272,6 +272,10 @@ public class Tuanzis_mod implements ModInitializer {
                 me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.TYPE,
                 me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.CODEC
         );
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.BoardGameActionC2SPacket.TYPE,
+                me.tuanzi.network.BoardGameActionC2SPacket.CODEC
+        );
         PayloadTypeRegistry.clientboundPlay().register(
                 me.tuanzi.network.canvas.CanvasSpaceSyncS2CPacket.TYPE,
                 me.tuanzi.network.canvas.CanvasSpaceSyncS2CPacket.CODEC
@@ -333,6 +337,38 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.TYPE, (payload, context) -> {
             context.server().execute(() ->
                     me.tuanzi.world.canvas.CanvasSpaceManager.sendCanvasDataToClient(context.player(), payload.modelUuid(), payload.dataHash()));
+        });
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BoardGameActionC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())
+                        && player.level().getBlockEntity(payload.pos()) instanceof me.tuanzi.block.board.AbstractBoardGameBlockEntity boardBe) {
+                    switch (payload.action()) {
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_TOGGLE_SIDE -> boardBe.toggleHostSide(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_CONFIRM_WAITING -> boardBe.confirmWaiting(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_CANCEL_WAITING -> boardBe.cancelWaiting(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_AUTO_FILL_WAGER -> {
+                            if (player.containerMenu instanceof me.tuanzi.world.inventory.BoardGameMenu bgMenu) {
+                                bgMenu.autoFillChallengerWager(player);
+                            }
+                        }
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_ACCEPT_CHALLENGE -> {
+                            net.minecraft.world.item.ItemStack offered = net.minecraft.world.item.ItemStack.EMPTY;
+                            if (player.containerMenu instanceof me.tuanzi.world.inventory.BoardGameMenu bgMenu) {
+                                offered = bgMenu.getChallengerWagerStack();
+                            }
+                            boardBe.acceptChallenge(player, offered);
+                        }
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_DECLINE_CHALLENGE -> boardBe.declineChallenge(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_RESIGN -> boardBe.resign(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_OFFER_OR_ACCEPT_DRAW -> boardBe.offerOrAcceptDraw(player);
+                        case me.tuanzi.network.BoardGameActionC2SPacket.ACTION_REJECT_DRAW -> boardBe.rejectDraw(player);
+                        default -> {
+                        }
+                    }
+                }
+            });
         });
 
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
@@ -696,6 +732,21 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.tickAllSessions(server);
             me.tuanzi.world.elevator.ElevatorManager.tickServer(server);
             me.tuanzi.world.canvas.CanvasDimensionManager.processPendingUnloads(server);
+        });
+
+        // 对局进行期间禁止非创造模式玩家破坏棋盘方块（防赖账）
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (!world.isClientSide() && !player.isCreative()
+                    && state.getBlock() instanceof me.tuanzi.block.board.AbstractBoardGameBlock) {
+                net.minecraft.core.BlockPos centerPos = me.tuanzi.block.board.AbstractBoardGameBlock.getCenterPos(pos, state);
+                if (world.getBlockEntity(centerPos) instanceof me.tuanzi.block.board.AbstractBoardGameBlockEntity boardBe
+                        && boardBe.getPhase() == me.tuanzi.game.board.BoardGamePhase.PLAYING) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.board_game.break_denied")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return false;
+                }
+            }
+            return true;
         });
 
         // 保护画布空间只读玩家不打开或操作空间内临时施工工具（潜影盒、蓝图大炮、蓝图桌）

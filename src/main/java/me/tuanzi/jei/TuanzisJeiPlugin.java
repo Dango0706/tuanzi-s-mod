@@ -243,6 +243,12 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.paper_shredder.description"));
         registration.addIngredientInfo(new ItemStack(ModBlocks.PRINTED_MODEL), VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.printed_model.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.GOMOKU), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.gomoku.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.CCHESS), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.cchess.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.WCHESS), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.wchess.description"));
 
         // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
         List<ItemStack> experienceBooks = registration.getIngredientManager()

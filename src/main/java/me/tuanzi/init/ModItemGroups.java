@@ -152,6 +152,11 @@ public class ModItemGroups {
                         entries.accept(ModBlocks.COPIER);
                         entries.accept(ModBlocks.PAPER_SHREDDER);
 
+                        // 加入棋盘对战系统（五子棋、中国象棋、国际象棋）
+                        entries.accept(ModBlocks.GOMOKU);
+                        entries.accept(ModBlocks.CCHESS);
+                        entries.accept(ModBlocks.WCHESS);
+
                         // 加入旅者手札、传送纸与道标符石
                         entries.accept(ModItems.TRAVELERS_NOTEBOOK);
                         entries.accept(ModItems.CRAFTSMAN_CHARM);

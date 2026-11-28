@@ -665,6 +665,42 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .unlockedBy("has_resin_clump", has(Items.RESIN_CLUMP))
                         .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
                         .save(exporter);
+
+                // 五子棋棋盘工作台有形合成：黑染料 + 钻石 + 白染料 / 3×木板
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.GOMOKU, 1)
+                        .pattern("BDW")
+                        .pattern("PPP")
+                        .define('B', Items.DYE.black())
+                        .define('D', Items.DIAMOND)
+                        .define('W', Items.DYE.white())
+                        .define('P', ItemTags.PLANKS)
+                        .unlockedBy("has_diamond", has(Items.DIAMOND))
+                        .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                        .save(exporter);
+
+                // 中国象棋棋盘工作台有形合成：黑染料 + 钻石 + 红染料 / 3×木板
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.CCHESS, 1)
+                        .pattern("BDR")
+                        .pattern("PPP")
+                        .define('B', Items.DYE.black())
+                        .define('D', Items.DIAMOND)
+                        .define('R', Items.DYE.red())
+                        .define('P', ItemTags.PLANKS)
+                        .unlockedBy("has_diamond", has(Items.DIAMOND))
+                        .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                        .save(exporter);
+
+                // 国际象棋棋盘工作台有形合成：黑染料 + 绿宝石 + 白染料 / 3×木板
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.WCHESS, 1)
+                        .pattern("BEW")
+                        .pattern("PPP")
+                        .define('B', Items.DYE.black())
+                        .define('E', Items.EMERALD)
+                        .define('W', Items.DYE.white())
+                        .define('P', ItemTags.PLANKS)
+                        .unlockedBy("has_emerald", has(Items.EMERALD))
+                        .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                        .save(exporter);
             }
         };
     }

@@ -79,6 +79,16 @@ public class ModBlocks {
     public static final Block CANVAS_BASE_BLOCK = registerBlockNoItem("canvas_base_block",
             properties -> new me.tuanzi.block.CanvasBaseBlock(properties.strength(0.4f, 1.0f).sound(net.minecraft.world.level.block.SoundType.STONE)));
 
+    // 棋盘系统方块（五子棋、中国象棋、国际象棋）
+    public static final Block GOMOKU = registerBlock("gomoku",
+            properties -> new me.tuanzi.block.board.GomokuBlock(properties));
+
+    public static final Block CCHESS = registerBlock("cchess",
+            properties -> new me.tuanzi.block.board.CChessBlock(properties));
+
+    public static final Block WCHESS = registerBlock("wchess",
+            properties -> new me.tuanzi.block.board.WChessBlock(properties));
+
     // 16 种原版染料颜色电梯方块（硬度 4，需镐子挖掘）
     public static final java.util.Map<net.minecraft.world.item.DyeColor, Block> ELEVATORS_BY_COLOR = registerElevators();
     public static final java.util.List<Block> ELEVATORS = java.util.List.copyOf(ELEVATORS_BY_COLOR.values());
@@ -291,6 +301,33 @@ public class ModBlocks {
                     Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printed_model_part_be"),
                     net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
                             me.tuanzi.block.entity.PrintedModelPartBlockEntity::new, PRINTED_MODEL_PART
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.board.GomokuBlockEntity> GOMOKU_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "gomoku_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.board.GomokuBlockEntity::new, GOMOKU
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.board.CChessBlockEntity> CCHESS_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "cchess_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.board.CChessBlockEntity::new, CCHESS
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.board.WChessBlockEntity> WCHESS_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "wchess_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.board.WChessBlockEntity::new, WCHESS
                     ).build()
             );
 

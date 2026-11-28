@@ -78,5 +78,19 @@
     "sounds": [
       "tuanzis_mod:entity/cinder_sovereign/death"
     ]
+  },
+  "block.board_game.piece": {
+    "category": "block",
+    "subtitle": "subtitles.tuanzis_mod.block.board_game.piece",
+    "sounds": [
+      "tuanzis_mod:block/piece"
+    ]
+  },
+  "block.board_game.reset": {
+    "category": "block",
+    "subtitle": "subtitles.tuanzis_mod.block.board_game.reset",
+    "sounds": [
+      "tuanzis_mod:block/gomoku_reset"
+    ]
   }
 }

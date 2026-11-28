@@ -43,7 +43,8 @@
       "me.tuanzi.gametest.BlockBreakerPistonGameTest",
       "me.tuanzi.gametest.SoulMerchantStationRestockGameTest",
       "me.tuanzi.gametest.ElevatorGameTest",
-      "me.tuanzi.gametest.CanvasSystemGameTest"
+      "me.tuanzi.gametest.CanvasSystemGameTest",
+      "me.tuanzi.gametest.BoardGameGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"

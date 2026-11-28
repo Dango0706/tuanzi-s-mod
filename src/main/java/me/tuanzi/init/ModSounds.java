@@ -24,6 +24,9 @@ public class ModSounds {
     public static final SoundEvent CINDER_SOVEREIGN_PHASE2_OVERLOAD = register("entity.cinder_sovereign.phase2_overload");
     public static final SoundEvent CINDER_SOVEREIGN_DEATH = register("entity.cinder_sovereign.death");
 
+    public static final SoundEvent BOARD_GAME_PIECE = register("block.board_game.piece");
+    public static final SoundEvent BOARD_GAME_RESET = register("block.board_game.reset");
+
     private static SoundEvent register(String path) {
         Identifier id = Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path);
         return Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));

@@ -201,6 +201,10 @@ public class TuanzisModClient implements ClientModInitializer {
                 net.minecraft.client.renderer.entity.NoopRenderer::new
         );
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+                me.tuanzi.init.ModEntities.BOARD_SEAT,
+                net.minecraft.client.renderer.entity.NoopRenderer::new
+        );
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
                 me.tuanzi.init.ModEntities.SHURIKEN,
                 context -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(context)
         );
@@ -256,6 +260,18 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
                 me.tuanzi.init.ModBlocks.PRINTED_MODEL_BLOCK_ENTITY,
                 me.tuanzi.client.renderer.PrintedModelBlockEntityRenderer::new
+        );
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+                me.tuanzi.init.ModBlocks.GOMOKU_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.board.GomokuBlockEntityRenderer::new
+        );
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+                me.tuanzi.init.ModBlocks.CCHESS_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.board.CChessBlockEntityRenderer::new
+        );
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+                me.tuanzi.init.ModBlocks.WCHESS_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.board.WChessBlockEntityRenderer::new
         );
 
         // 注册蓝图检查器 3D PiP 预览渲染器
@@ -345,6 +361,10 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.gui.screens.MenuScreens.register(
                 me.tuanzi.init.ModMenuTypes.PAPER_SHREDDER,
                 me.tuanzi.client.gui.screens.inventory.PaperShredderScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.BOARD_GAME,
+                me.tuanzi.client.gui.screens.inventory.BoardGameScreen::new
         );
 
         // 注册画布客户端碰撞箱查询桥接

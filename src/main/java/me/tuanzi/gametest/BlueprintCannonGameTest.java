@@ -1,6 +1,7 @@
 package me.tuanzi.gametest;
 
 import me.tuanzi.block.entity.BlueprintCannonBlockEntity;
+import me.tuanzi.block.entity.BlueprintTableBlockEntity;
 import me.tuanzi.init.ModBlocks;
 import me.tuanzi.init.ModItems;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
@@ -13,10 +14,14 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
@@ -782,5 +787,97 @@ public class BlueprintCannonGameTest {
                         + filledSlurryCannon.dataAccess.get(7)));
             }
         });
+    }
+
+    @GameTest
+    public void testBlueprintTableAndCannonMiningTagsSpeedAndDrops(GameTestHelper helper) {
+        BlockState tableState = ModBlocks.BLUEPRINT_TABLE.defaultBlockState();
+        BlockState cannonState = ModBlocks.BLUEPRINT_CANNON.defaultBlockState();
+
+        // 1. 标签校验：蓝图桌用斧、无需铁工具；蓝图大炮用镐
+        if (!tableState.is(BlockTags.MINEABLE_WITH_AXE)
+                || tableState.is(BlockTags.MINEABLE_WITH_PICKAXE)
+                || tableState.is(BlockTags.NEEDS_IRON_TOOL)) {
+            helper.fail(Component.literal("BlueprintTable tags mismatch: axe=" + tableState.is(BlockTags.MINEABLE_WITH_AXE)
+                    + ", pickaxe=" + tableState.is(BlockTags.MINEABLE_WITH_PICKAXE)
+                    + ", needsIron=" + tableState.is(BlockTags.NEEDS_IRON_TOOL)));
+            return;
+        }
+        if (!cannonState.is(BlockTags.MINEABLE_WITH_PICKAXE) || cannonState.is(BlockTags.MINEABLE_WITH_AXE)) {
+            helper.fail(Component.literal("BlueprintCannon tags mismatch: pickaxe=" + cannonState.is(BlockTags.MINEABLE_WITH_PICKAXE)
+                    + ", axe=" + cannonState.is(BlockTags.MINEABLE_WITH_AXE)));
+            return;
+        }
+
+        // 2. 挖掘进度速度对比（斧 vs 镐 vs 空手）
+        Player speedPlayer = helper.makeMockPlayer(GameType.SURVIVAL);
+        ItemStack ironAxe = new ItemStack(Items.IRON_AXE);
+        ItemStack ironPickaxe = new ItemStack(Items.IRON_PICKAXE);
+
+        BlockPos tablePos = helper.absolutePos(new BlockPos(1, 1, 1));
+        BlockPos cannonPos = helper.absolutePos(new BlockPos(3, 1, 1));
+        helper.setBlock(1, 1, 1, ModBlocks.BLUEPRINT_TABLE);
+        helper.setBlock(3, 1, 1, ModBlocks.BLUEPRINT_CANNON);
+
+        speedPlayer.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        float tableHandProgress = tableState.getDestroyProgress(speedPlayer, helper.getLevel(), tablePos);
+        float cannonHandProgress = cannonState.getDestroyProgress(speedPlayer, helper.getLevel(), cannonPos);
+
+        speedPlayer.setItemInHand(InteractionHand.MAIN_HAND, ironAxe);
+        float tableAxeProgress = tableState.getDestroyProgress(speedPlayer, helper.getLevel(), tablePos);
+        float cannonAxeProgress = cannonState.getDestroyProgress(speedPlayer, helper.getLevel(), cannonPos);
+
+        speedPlayer.setItemInHand(InteractionHand.MAIN_HAND, ironPickaxe);
+        float tablePickProgress = tableState.getDestroyProgress(speedPlayer, helper.getLevel(), tablePos);
+        float cannonPickProgress = cannonState.getDestroyProgress(speedPlayer, helper.getLevel(), cannonPos);
+
+        if (!(tableAxeProgress > tablePickProgress && tableAxeProgress > tableHandProgress)) {
+            helper.fail(Component.literal("Expected iron axe faster than pickaxe/hand on BlueprintTable: axe="
+                    + tableAxeProgress + ", pick=" + tablePickProgress + ", hand=" + tableHandProgress));
+            return;
+        }
+        if (!(cannonPickProgress > cannonAxeProgress && cannonPickProgress > cannonHandProgress)) {
+            helper.fail(Component.literal("Expected iron pickaxe faster than axe/hand on BlueprintCannon: pick="
+                    + cannonPickProgress + ", axe=" + cannonAxeProgress + ", hand=" + cannonHandProgress));
+            return;
+        }
+
+        // 3. 放入容器物品并通过生存模式方块破坏链路验证自身与内容物掉落
+        BlueprintTableBlockEntity tableBe = helper.getBlockEntity(new BlockPos(1, 1, 1), BlueprintTableBlockEntity.class);
+        tableBe.setItem(1, new ItemStack(ModItems.BLANK_BLUEPRINT));
+        BlueprintCannonBlockEntity cannonBe = helper.getBlockEntity(new BlockPos(3, 1, 1), BlueprintCannonBlockEntity.class);
+        cannonBe.setItem(1, new ItemStack(ModItems.COMPRESSED_BUILD_SLURRY));
+
+        // 触发真实方块移除 + 战利品掉落（含 Container 内容物 preRemoveSideEffects 与 Block.getDrops）
+        net.minecraft.world.level.block.Block.dropResources(tableState, helper.getLevel(), tablePos, tableBe, speedPlayer, ironAxe);
+        helper.getLevel().removeBlock(tablePos, false);
+
+        net.minecraft.world.level.block.Block.dropResources(cannonState, helper.getLevel(), cannonPos, cannonBe, speedPlayer, ironPickaxe);
+        helper.getLevel().removeBlock(cannonPos, false);
+
+        helper.assertBlockPresent(Blocks.AIR, 1, 1, 1);
+        helper.assertBlockPresent(Blocks.AIR, 3, 1, 1);
+
+        List<ItemEntity> droppedAtTable = helper.getLevel().getEntitiesOfClass(
+                ItemEntity.class, new AABB(tablePos).inflate(1.5));
+        boolean gotTable = droppedAtTable.stream().anyMatch(e -> e.getItem().is(ModBlocks.BLUEPRINT_TABLE.asItem()));
+        boolean gotBlankBp = droppedAtTable.stream().anyMatch(e -> e.getItem().is(ModItems.BLANK_BLUEPRINT));
+        if (!gotTable || !gotBlankBp) {
+            helper.fail(Component.literal("Expected BlueprintTable and BlankBlueprint drops, gotTable="
+                    + gotTable + ", gotBlankBp=" + gotBlankBp + ", count=" + droppedAtTable.size()));
+            return;
+        }
+
+        List<ItemEntity> droppedAtCannon = helper.getLevel().getEntitiesOfClass(
+                ItemEntity.class, new AABB(cannonPos).inflate(1.5));
+        boolean gotCannon = droppedAtCannon.stream().anyMatch(e -> e.getItem().is(ModBlocks.BLUEPRINT_CANNON.asItem()));
+        boolean gotSlurry = droppedAtCannon.stream().anyMatch(e -> e.getItem().is(ModItems.COMPRESSED_BUILD_SLURRY));
+        if (!gotCannon || !gotSlurry) {
+            helper.fail(Component.literal("Expected BlueprintCannon and Slurry drops, gotCannon="
+                    + gotCannon + ", gotSlurry=" + gotSlurry + ", count=" + droppedAtCannon.size()));
+            return;
+        }
+
+        helper.succeed();
     }
 }

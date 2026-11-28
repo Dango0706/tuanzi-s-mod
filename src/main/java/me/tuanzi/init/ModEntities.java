@@ -76,6 +76,21 @@ public class ModEntities {
                     .build(SEAT_KEY)
     );
 
+    public static final ResourceKey<EntityType<?>> BOARD_SEAT_KEY = ResourceKey.create(
+            Registries.ENTITY_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "board_seat")
+    );
+
+    public static final EntityType<me.tuanzi.entity.BoardSeatEntity> BOARD_SEAT = Registry.register(
+            BuiltInRegistries.ENTITY_TYPE,
+            BOARD_SEAT_KEY,
+            EntityType.Builder.<me.tuanzi.entity.BoardSeatEntity>of(me.tuanzi.entity.BoardSeatEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F)
+                    .clientTrackingRange(10)
+                    .noLootTable()
+                    .build(BOARD_SEAT_KEY)
+    );
+
     public static final ResourceKey<EntityType<?>> SHURIKEN_KEY = ResourceKey.create(
             Registries.ENTITY_TYPE,
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "shuriken")

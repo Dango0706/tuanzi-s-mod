@@ -27,6 +27,7 @@ public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> PRINTER_3D_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printer_3d"));
     public static final ResourceKey<MenuType<?>> COPIER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "copier"));
     public static final ResourceKey<MenuType<?>> PAPER_SHREDDER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "paper_shredder"));
+    public static final ResourceKey<MenuType<?>> BOARD_GAME_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "board_game"));
 
     public static final MenuType<TravelersNotebookMenu> TRAVELERS_NOTEBOOK = Registry.register(
             BuiltInRegistries.MENU,
@@ -122,6 +123,12 @@ public class ModMenuTypes {
             BuiltInRegistries.MENU,
             PAPER_SHREDDER_KEY,
             new MenuType<>(me.tuanzi.world.inventory.canvas.PaperShredderMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.BoardGameMenu> BOARD_GAME = Registry.register(
+            BuiltInRegistries.MENU,
+            BOARD_GAME_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.BoardGameMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static void initialize() {
