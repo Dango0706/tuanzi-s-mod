@@ -307,8 +307,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【压缩建造浆料】\n用于为蓝图大炮提供动力的高能燃料。每个可以支持大炮放置或破坏 64 个方块。\n\n§e合成配方：\n有序合成（产出 3 个）：第一行火药×3；第二行火药、岩浆桶、火药；第三行岩浆桶、火药、岩浆桶（合成后返还空铁桶）。");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【空白蓝图】\n用于录制世界中既有建筑的空白模版。\n\n§e使用方法：\n1. 手持空白蓝图，右键点击对角线的两个端点。\n2. 设定完成后，点击聊天栏中的 §e[确认构筑]§r 进行区域录制，会消耗 1 个空白蓝图，产出带有结构数据的结构蓝图。\n3. Shift + 右键空气可清除设定的角点。\n\n§e合成配方：\n有序合成（产出 1 个）：第一行纸×3；第二行淡蓝色染料、纸、淡蓝色染料；第三行中间放置木棍。");
             translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【结构蓝图】\n记录了特定建筑三维结构的蓝图。\n\n§e功能机制：\n1. §b虚影预览§r：手持它右键地面，可在点击处上方产生透明虚影预览。再次右键可以清除虚影.按 V 键显示/隐藏虚影，按 G 键可以打开虚影控制悬浮面板。\n2. §b快捷键调整§r：手持它时，按 R 旋转虚影，按 F 水平镜像。按住 Ctrl 配合方向键平移，PageUp/PageDown 上下调整高度。\n3. §b大炮构建§r：将结构蓝图放入蓝图大炮中作为建造模板。\n4. §b管理员直放§r：当玩家处于创造模式且为服务器管理员时，虚影控制面板会额外显示「放置此建筑」按钮，可将蓝图建筑直接放置到虚影位置。");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【蓝图大炮】\n自动且精准构筑建筑的机械方块。主要用于大中型建筑的后期自动化建造。\n\n§e工作流程：\n1. 放好蓝图大炮，将录制好的结构蓝图放入蓝图槽，自动锁定要建造的基准位置。\n2. 放入压缩建造浆料作为燃料（大炮工作 5 ticks/方块，每次放置/移除方块都消耗 1 点浆料耐久。创造模式免燃料）。\n3. 大炮会自动检索周围 5 格内的箱子/木桶/潜影盒中的物料并将其消耗以进行构筑。支持自动匹配与提取嵌套潜影盒里的物资。\n4. 打开 GUI，可以控制开始、暂停、终止，并支持“非匹配方块移除”和“精准NBT匹配”功能。");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在游戏目录 `schematics`（与投影模组 Litematica 一致）下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `schematics` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b快速打开目录§r：点击界面右侧“打开目录”按钮，可快速打开 `schematics` 蓝图存放位置。\n4. §b3D旋转预览§r：在导入和导出时，可在预览检视器中查看建筑立体外观。\n\n§e合成配方：\n有序合成（产出 1 个）：第一行刷子、空白蓝图、书与笔；第二行与第三行左右两侧各放置任意木板（共 4 块）。");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【蓝图大炮】\n自动且精准构筑建筑的机械方块。主要用于大中型建筑的后期自动化建造。\n\n§e工作流程：\n1. 放好蓝图大炮，将录制好的结构蓝图放入蓝图槽，自动锁定要建造的基准位置。\n2. 放入压缩建造浆料作为燃料（大炮工作 5 ticks/方块，每次放置/移除方块都消耗 1 点浆料耐久。创造模式免燃料）。\n3. 大炮会自动检索周围 5 格内的箱子/木桶/潜影盒中的物料并将其消耗以进行构筑。支持自动匹配与提取嵌套潜影盒里的物资。\n4. 打开 GUI，可以控制开始、暂停、终止，并支持“非匹配方块移除”和“精准NBT匹配”功能。\n5. 支持在画布编辑空间（含外围 8 格缓冲）内临时放置以自动建造；将自动跳过并提示超出画布边界的坐标或禁用方块，且退出画布前需先收走。");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【蓝图桌】\n处理外部设计文件导入与导出的高科技操作台。\n\n§e主要功能：\n1. §b导出蓝图§r：将已录制的结构蓝图放入左槽，在 GUI 中点击“导出”，可自动在游戏目录 `schematics`（与投影模组 Litematica 一致）下生成 `.litematic` 格式的投影文件。\n2. §b导入外部设计§r：将外部投影文件 `.litematic` 或 Sponge `.schem` 放入 `schematics` 文件夹下。在蓝图桌右槽放入空白蓝图，在 GUI 中选择文件导入，即可将外部设计写入结构蓝图中。\n3. §b快速打开目录§r：点击界面右侧“打开目录”按钮，可快速打开 `schematics` 蓝图存放位置。\n4. §b3D旋转预览§r：在导入和导出时，可在预览检视器中查看建筑立体外观。\n5. §b画布空间支持§r：允许在画布编辑空间（含外围 8 格缓冲）内临时放置并使用，不计入画布作品，退出画布前需先收走。\n\n§e合成配方：\n有序合成（产出 1 个）：第一行刷子、空白蓝图、书与笔；第二行与第三行左右两侧各放置任意木板（共 4 块）。");
 
             translationBuilder.add("jei.tuanzis_mod.smelting.description", "【熔炼附魔】\n省去回家烧炉子的繁琐步骤。使用该工具挖掘“可在熔炉中烧炼的方块”时，直接掉落其烧炼后的产物。\n\n§e功能：§r\n1. §b自动熔炼§r：挖掘矿石或原木等可熔炼方块时直接掉落成品。\n2. §b完美兼容§r：与 §b时运 (Fortune)§r 完美兼容，可以获得更多掉落物。\n\n§e限制与惩罚：§r\n1. §b互斥机制§r：与 §b精准采集 (Silk Touch)§r 互斥。\n2. §b耐久消耗§r：每挖掘一个可熔炼方块，额外消耗 §c1§r 点耐久（共计消耗 2 点）。\n\n§7获取方式：无法从附魔台中直接获得。属于“宝藏附魔”，仅能通过搜刮下界要塞遗迹箱子、沙漠神殿宝箱或高等级图书管理员村民交易（极罕见，需 40-64 绿宝石）获取。");
 
@@ -1296,6 +1296,33 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.color_block.description", "【彩色方块/半砖/楼梯】\n一类可由油漆桶染成各种自定义颜色的装饰性建材，表面纯净无任何边框杂质。\n\n§e核心机制：\n1. §b方块染色：把需要染色的彩色方块、半砖或楼梯与装有颜料的油漆桶一起放入合成栏即可完成染色。每染一个消耗 1 点油漆桶耐久。\n2. §b半砖叠加：允许将不同颜色的彩色半砖叠加放置为双半砖。其上下两个半砖将各自保留并独立渲染其原本染上的颜色，挖掘时亦会自动拆分掉落原本各自颜色的半砖物品。\n3. §b地图显示：彩色方块、楼梯和单半砖会在地图上直接显示其对应染色颜色。在叠加双半砖状态下，地图上会智能呈现§6顶部半砖§r的颜色。\n4. §b合成继承：使用带颜色的彩色方块来合成彩色楼梯（产出4个）或彩色半砖（产出6个）时，合成出来的楼梯或半砖将自动继承并融合（计算平均色）所有输入原料的颜色。");
             translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "【油漆桶】\n用于为彩色方块进行染色的实用工具。最大耐久度为 256 次。\n\n§e功能操作：\n1. §b打开调色盘：右键使用油漆桶，可打开客户端独占 of RGB 调色盘界面。拖动三个红/绿/蓝滑块可精确调节（0-255）颜料颜色，并有大方块实时预览。\n2. §b原版预设：提供 16 种原版染料色彩的快捷预设按钮，点击可一键快速换色。\n3. §b快速吸色：按住 Shift + 右键点击任意彩色方块（彩色方块、彩色半砖、彩色楼梯），可直接快速吸取该方块的当前颜色，并在操作栏实时显示色彩代码。\n4. §b确认与取消：点击“取消”或按 ESC 关闭可回退到打开界面前的初始颜色；点击“确认”将保存当前设置并播放染色音效。\n5. §b染色消耗：在合成栏内为彩色方块进行染色时，每次合成扣减 1 点油漆桶耐久并将其留在格内，当耐久降至 0 时会销毁消失。");
 
+            // 16 色电梯中文翻译
+            java.util.Map<net.minecraft.world.item.DyeColor, String> zhColorNames = java.util.Map.ofEntries(
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.WHITE, "白色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.ORANGE, "橙色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.MAGENTA, "品红色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIGHT_BLUE, "淡蓝色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.YELLOW, "黄色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIME, "黄绿色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.PINK, "粉红色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.GRAY, "灰色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIGHT_GRAY, "淡灰色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.CYAN, "青色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.PURPLE, "紫色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BLUE, "蓝色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BROWN, "棕色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.GREEN, "绿色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.RED, "红色"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BLACK, "黑色")
+            );
+            for (var entry : me.tuanzi.init.ModBlocks.ELEVATORS_BY_COLOR.entrySet()) {
+                String zhName = zhColorNames.get(entry.getKey()) + "电梯";
+                translationBuilder.add(entry.getValue(), zhName);
+                translationBuilder.add(entry.getValue().asItem(), zhName);
+            }
+            translationBuilder.add("message.tuanzis_mod.elevator.invalid_disguise", "该方块无法用作电梯伪装");
+            translationBuilder.add("jei.tuanzis_mod.elevator.description", "【电梯（16色）】\n由 8 个铁块围绕 1 个末影珍珠合成的垂直传送装置，支持与原版羊毛一致的 16 种染料染色。\n\n§e核心机制：\n1. §b垂直传送：踩在电梯上时，按【跳跃键】向上传送至同一竖直列上最近的同色电梯；按【潜行键】向下传送至同一竖直列下最近的同色电梯。\n2. §b同色独立：仅在颜色相同的电梯之间互相传送，不同颜色互不干扰。\n3. §b冷却与安全：每次传送具有 1 秒（20 ticks）冷却，防止连续误触；会自动检查目标电梯上方 2 格空间，若被方块阻挡则自动跳过并继续寻找下一台同色电梯。\n4. §b外观伪装：手持任意方块对电梯【蹲下 + 右键】，可令电梯伪装成手持方块放置下去时的外观与朝向（不消耗手持方块）；【空手蹲下 + 右键】可清除伪装恢复原貌。\n5. §b挖掘属性：硬度为 4，需使用镐子挖掘并掉落自身。");
+
             // 彩色变化头颅中文翻译
             translationBuilder.add(ModItems.CHROMATIC_SKULL, "彩色变化头颅");
             translationBuilder.add("gui.tuanzis_mod.chromatic_skull.title", "彩色变化头颅");
@@ -1990,6 +2017,168 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.config.query_overworld_max_build_height", "§7[Tuanzi's Mod] §f主世界建筑高度上限 (overworldMaxBuildHeight) 当前为: §b%s §7(最大可放置 Y=%s)");
             translationBuilder.add("commands.tuanzis_mod.config.set_overworld_max_build_height", "§7[Tuanzi's Mod] §f已将主世界建筑高度上限设置为: §b%s §7(最大可放置 Y=%s)§f，已同步并热加载生效。");
             translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §f已从磁盘重载配置并同步状态 (enableCasinoRecipes: %s§f, overworldMaxBuildHeight: §b%s §7[最大 Y=%s]§f)。");
+
+            // 画板与可打印画布系统中文翻译
+            translationBuilder.add(me.tuanzi.init.ModBlocks.EASEL, "画板");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.EASEL.asItem(), "画板");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTER_3D, "3D 打印机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTER_3D.asItem(), "3D 打印机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.COPIER, "复印机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.COPIER.asItem(), "复印机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PAPER_SHREDDER, "碎纸机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PAPER_SHREDDER.asItem(), "碎纸机");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL, "打印模型");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL.asItem(), "打印模型");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL_PART, "打印模型占位部件");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK, "画布白色底面");
+            translationBuilder.add(ModItems.CANVAS, "画布");
+            translationBuilder.add(ModItems.PRINT_MATERIAL, "打印原料");
+
+            translationBuilder.add("container.tuanzis_mod.easel", "画板");
+            translationBuilder.add("container.tuanzis_mod.printer_3d", "3D 打印机");
+            translationBuilder.add("container.tuanzis_mod.copier", "复印机");
+            translationBuilder.add("container.tuanzis_mod.paper_shredder", "碎纸机");
+
+            translationBuilder.add("canvas.tuanzis_mod.type.unset", "未选类型");
+            translationBuilder.add("canvas.tuanzis_mod.type.2d", "2D 平面");
+            translationBuilder.add("canvas.tuanzis_mod.type.3d", "3D 立体");
+            translationBuilder.add("canvas.tuanzis_mod.permission.private", "私有");
+            translationBuilder.add("canvas.tuanzis_mod.permission.team_edit", "队友可编辑");
+            translationBuilder.add("canvas.tuanzis_mod.permission.public_read", "公开只读");
+            translationBuilder.add("canvas.tuanzis_mod.permission.public_edit", "公开可编辑");
+
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.size", "尺寸: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.type", "类型: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.voxels", "非空体素数: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.permission", "访问权限: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.owner", "所有者: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.pending_upgrade", "§a已扩容，放入画板即可应用居中保留");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.corrupted", "§c数据损坏或版本不兼容（已开启只读保护）");
+            translationBuilder.add("tooltip.tuanzis_mod.printed_model.scale", "打印占用: %s×%s×%s 格");
+
+            translationBuilder.add("gui.tuanzis_mod.easel.select_2d", "设为 2D");
+            translationBuilder.add("gui.tuanzis_mod.easel.select_3d", "设为 3D");
+            translationBuilder.add("gui.tuanzis_mod.easel.enter_edit", "进入编辑");
+            translationBuilder.add("gui.tuanzis_mod.easel.save", "保存画布");
+            translationBuilder.add("gui.tuanzis_mod.easel.permission", "切换权限");
+            translationBuilder.add("gui.tuanzis_mod.easel.reset", "重置");
+            translationBuilder.add("gui.tuanzis_mod.easel.export", "导出");
+            translationBuilder.add("gui.tuanzis_mod.easel.insert_hint", "请放入画布");
+            translationBuilder.add("gui.tuanzis_mod.easel.info_line", "%s %s | 体素:%s");
+            translationBuilder.add("gui.tuanzis_mod.easel.unsaved_draft", "§6有未提交编辑草稿");
+            translationBuilder.add("gui.tuanzis_mod.easel.owner_short", "主人: %s");
+            translationBuilder.add("gui.tuanzis_mod.easel.occupied", "编辑空间使用中");
+
+            translationBuilder.add("gui.tuanzis_mod.printer.print_btn", "打印");
+            translationBuilder.add("gui.tuanzis_mod.printer.cost", "消耗原料: %s");
+            translationBuilder.add("gui.tuanzis_mod.printer.voxels", "体素: %s / %s");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.ready", "就绪，可打印");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.no_canvas", "请放入画布与打印原料");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.unset_type", "请先在画板选择 2D/3D 类型");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.empty_canvas", "空白画布，无法打印");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.exceeds_limit", "超出单次打印体素上限！");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.no_material", "打印原料不足！");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.output_full", "输出槽已满！");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.corrupted", "画布数据损坏，无法打印");
+
+            translationBuilder.add("gui.tuanzis_mod.copier.copy_btn", "复印");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.ready", "就绪，可复印");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.no_model", "请放入打印模型与打印原料");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.disabled", "服务器已禁用复印机");
+
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.shred_btn", "损毁画布");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.confirm_btn", "确认损毁");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.cancel_btn", "取消");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.insert_hint", "请放入需要损毁的画布");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.refund_info", "返还: 纸×%s、白染料×1、线×1");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.no_block_refund_hint", "§c注：不返还画布内建筑消耗的材料！");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.not_owner", "仅画布主人本人可损毁此画布！");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.in_use", "画布正在编辑中，请先退出！");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_title", "⚠ 二次确认：彻底损毁画布");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_line1", "画布作品将永久清除且不可撤销！");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_line2", "不返还画布内建筑消耗的材料！");
+
+            translationBuilder.add("message.tuanzis_mod.canvas.no_sleep", "画布编辑空间内无法使用床铺。");
+            translationBuilder.add("message.tuanzis_mod.canvas.already_in", "你已经处于画布编辑空间中！");
+            translationBuilder.add("message.tuanzis_mod.canvas.not_in", "你当前不在画布编辑空间中！");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_canvas", "画板中未放入有效画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.select_type_first", "请先在画板中选择 2D 或 3D 类型！");
+            translationBuilder.add("message.tuanzis_mod.canvas.type_locked", "画布类型已锁定，无法更改！");
+            translationBuilder.add("message.tuanzis_mod.canvas.3d_size_limit", "256 尺寸仅支持 2D 画布，3D 上限为 128！");
+            translationBuilder.add("message.tuanzis_mod.canvas.dim_missing", "无法定位画布编辑空间维度！");
+            translationBuilder.add("message.tuanzis_mod.canvas.quota_exceeded", "已达到单玩家画布创建数量上限 (%s)！");
+            translationBuilder.add("message.tuanzis_mod.canvas.private_denied", "这是私有画布，你没有访问权限！");
+            translationBuilder.add("message.tuanzis_mod.canvas.team_denied", "仅画布所有者或其队友可访问此画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.public_disabled", "服务器当前禁止访问公开画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_permission", "你没有权限进入该画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_edit_permission", "你处于只读权限，无法保存或修改此画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.only_owner_perm", "只有画布所有者或管理员可以修改权限！");
+            translationBuilder.add("message.tuanzis_mod.canvas.only_owner_allow", "只有画布所有者或管理员可以授权协作者！");
+            translationBuilder.add("message.tuanzis_mod.canvas.corrupted_readonly", "画布数据损坏或版本不兼容，已启用只读保护（可在画板导出或重置）！");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_edit", "已进入画布编辑空间 (%s×%s×%s)。输入 /canvas exit 退出。");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_readonly", "已以只读模式进入画布空间。输入 /canvas exit 退出。");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_readonly_locked", "该画布正由他人编辑中，已自动切换为只读模式！");
+            translationBuilder.add("message.tuanzis_mod.canvas.exited", "已退出画布空间并暂存编辑草稿，请回到画板点击「保存画布」正式写入。");
+            translationBuilder.add("message.tuanzis_mod.canvas.forced_exit_easel_removed", "画板已被移除，已自动保存编辑草稿并将你传回原位置！");
+            translationBuilder.add("message.tuanzis_mod.canvas.save_success", "已正式保存画布！（共 %s 个非空体素）");
+            translationBuilder.add("message.tuanzis_mod.canvas.save_fail", "保存画布失败，请查看后台日志！");
+            translationBuilder.add("message.tuanzis_mod.canvas.reset_success", "已重置画布为空白状态。");
+            translationBuilder.add("message.tuanzis_mod.canvas.export_success", "已导出画布数据副本：%s");
+            translationBuilder.add("message.tuanzis_mod.canvas.export_fail", "未找到可导出的画布文件！");
+            translationBuilder.add("message.tuanzis_mod.canvas.readonly_action_denied", "只读模式下无法建造或破坏！");
+            translationBuilder.add("message.tuanzis_mod.canvas.out_of_bounds", "超出画布边界！");
+            translationBuilder.add("message.tuanzis_mod.canvas.block_forbidden", "画布空间内禁止放置容器（潜影盒除外）、红石机械或特殊系统方块！");
+            translationBuilder.add("message.tuanzis_mod.canvas.exit_blocked_utility_remaining", "无法退出画布空间：仍有 %s 个临时施工工具（潜影盒/蓝图大炮/蓝图桌，首个位于 %s, %s, %s）未收走！");
+            translationBuilder.add("message.tuanzis_mod.canvas.utility_auto_recovered", "已自动打包回收并退还画布空间内残留的 %s 项施工工具与物料。");
+            translationBuilder.add("message.tuanzis_mod.canvas.utility_queued_return", "部分回收物品因背包已满已存入待返还队列，重新登录或清理背包后自动发放。");
+            translationBuilder.add("message.tuanzis_mod.canvas.cannon_out_of_bounds_skipped", "【画布空间】蓝图中有 %s 个方块超出画布边界 [0..%s, 0..%s, 0..%s]（首个越界坐标：%s, %s, %s），已自动跳过。");
+            translationBuilder.add("message.tuanzis_mod.canvas.cannon_forbidden_skipped", "【画布空间】蓝图中有 %s 个禁用方块与 %s 个实体受画布规则限制，已自动跳过。");
+            translationBuilder.add("message.tuanzis_mod.canvas.border_on", "已开启画布边界可视化线框。");
+            translationBuilder.add("message.tuanzis_mod.canvas.border_off", "已隐藏画布边界可视化线框。");
+            translationBuilder.add("message.tuanzis_mod.canvas.noclip_on", "已开启临时穿墙观察模式（使用 /canvas noclip off 恢复）。");
+            translationBuilder.add("message.tuanzis_mod.canvas.noclip_off", "已关闭穿墙观察模式。");
+            translationBuilder.add("message.tuanzis_mod.canvas.base_cleared", "已清除画布系统白色底面。");
+            translationBuilder.add("message.tuanzis_mod.canvas.base_restored", "已恢复画布系统白色底面。");
+            translationBuilder.add("message.tuanzis_mod.canvas.granted_owner", "已临时授权 %s 协同编辑当前画布。");
+            translationBuilder.add("message.tuanzis_mod.canvas.granted_target", "你已获准协同编辑当前画布！");
+            translationBuilder.add("message.tuanzis_mod.canvas.revoked_owner", "已收回 %s 的协同编辑权限。");
+            translationBuilder.add("message.tuanzis_mod.canvas.revoked_target", "你的协同编辑权限已被收回，已切换为只读。");
+            translationBuilder.add("message.tuanzis_mod.canvas.mode_hot_creative", "配置热更新：已切换为画布创造模式（原背包已安全暂存）。");
+            translationBuilder.add("message.tuanzis_mod.canvas.mode_hot_survival", "配置热更新：已切换为画布生存飞行模式（已还原原背包）。");
+            translationBuilder.add("message.tuanzis_mod.canvas.pulled_back_to_bounds", "已离开有效编辑范围，已拉回画布中心！");
+            translationBuilder.add("message.tuanzis_mod.easel.occupied_break_denied", "画布编辑空间内仍有玩家，禁止破坏该画板！");
+            translationBuilder.add("message.tuanzis_mod.easel.occupied_action_denied", "画布空间有人编辑中，请先让其退出后再操作！");
+            translationBuilder.add("message.tuanzis_mod.printer.print_success", "打印完成！消耗 %s 个打印原料。");
+            translationBuilder.add("message.tuanzis_mod.printer.err_no_canvas", "请先放入画布！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_unset_type", "画布尚未选择 2D 或 3D 类型！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_empty_canvas", "空白画布无法打印！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_exceeds_limit", "非空体素数量超过配置上限，禁止打印！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_no_material", "打印原料数量不足！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_output_full", "输出槽已满，请先取出成品！");
+            translationBuilder.add("message.tuanzis_mod.printer.err_corrupted", "画布数据损坏，无法打印！");
+            translationBuilder.add("message.tuanzis_mod.copier.copy_success", "复制完成！消耗 %s 个打印原料。");
+            translationBuilder.add("message.tuanzis_mod.copier.disabled", "服务器配置已禁用复印机！");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_model", "请先放入要复制的打印模型！");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_permission", "这是受保护的私有/他人模型，你无权复印！");
+            translationBuilder.add("message.tuanzis_mod.copier.err_corrupted", "模型数据无效或损坏！");
+            translationBuilder.add("message.tuanzis_mod.copier.err_output_full", "输出槽已满或无法继续堆叠！");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_material", "打印原料不足！");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned", "你的画布掉入虚空，已自动传送回你身边！");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned_to_origin", "你的画布掉入虚空，已自动传送回你进入画布前的所在位置！");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned_offline", "已自动返还 %s 张在你离线期间掉入虚空的画布！");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.confirm_required", "请先进行二次确认后再执行损毁！");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.no_canvas", "请先放入需要损毁的画布！");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.not_owner", "无权损毁：只有画布主人本人才能损毁自己的画布！");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.in_use", "该画布正在编辑空间中使用，请先退出后再损毁！");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.success", "已彻底损毁画布！返还画布合成材料：纸×%s、白色染料×1、线×1（不包含画布内建筑材料）。");
+
+            translationBuilder.add("jei.tuanzis_mod.easel.description", "【画板】\n放置后右键打开，用于放入【画布】并进入独立画布编辑空间进行创作。\n\n§e核心功能：\n1. 首次使用前选择 2D 平面（厚度1）或 3D 立体（最大 128³）类型。\n2. 每张画布拥有独立虚空空间与标准原点 (0, 0, 0)，玩家之间互不看到其他画布建筑；自带创造飞行与伤害免疫；边框开启时以蓝(X)/黄(Y)/红(Z)三色坐标轴标记原点方向。\n3. 支持 /canvas exit 退出、/canvas border 开关边界、/canvas noclip 临时穿墙、/canvas base clear|restore 清除或恢复白色底面。\n4. 退出时自动保存草稿，回到画板点击「保存画布」正式写入；所有者可设置访问权限。\n\n§e合成配方：§r上行中放纸；中行左中右为木板、纸、木板；下行木板、铁锭、木板。");
+            translationBuilder.add("jei.tuanzis_mod.canvas.description", "【画布】\n记录画布空间作品的载体，支持 16/32/64/128/256 尺寸（3D 最大 128）。数据以压缩体素文件存放在游戏目录 painted/ 下，支持跨存档迁移。\n\n§e防损毁保护：\n画布免疫火焰、岩浆、仙人掌、爆炸等伤害，掉入虚空会自动传回画布主人身边；除使用【碎纸机】外无法被常规方式损毁（仅保留原版自然消失）。\n\n§e施工工具支持：\n独立画布空间及外围 8 格缓冲内支持临时放置潜影盒、蓝图大炮与蓝图桌辅助建造，保存与打印时自动忽略，退出画布前需先收走。\n\n§e合成与升级：\n1. 基础 16×16 画布：纸 + 白色染料 + 线（无序）。\n2. 扩容升级：外圈 8 张纸围绕中间画布，可逐级扩至 32/64/128/256（3D 到 128 止），旧作品自动居中保留。");
+            translationBuilder.add("jei.tuanzis_mod.print_material.description", "【打印原料】\n用于 3D 打印机与复印机打印静态模型方块的消耗耗材。默认每 256 个非空体素消耗 1 个（随放大倍率同步递增）。\n\n§e合成配方：§r粘土球 + 树脂团 + 红染料 + 绿染料 + 蓝染料 + 墨囊（无序）。");
+            translationBuilder.add("jei.tuanzis_mod.printer_3d.description", "【3D 打印机】\n输入已保存的【画布】与【打印原料】，可自选 1×（单格微缩）至多格放大倍率，预览消耗与体素上限后打印输出【打印模型】。\n\n§e合成配方：§r上行 铁块、活塞、铁块；中行 红、绿、蓝染料；下行 铁块、红石、铁块。");
+            translationBuilder.add("jei.tuanzis_mod.copier.description", "【复印机】\n输入【打印模型】母版与【打印原料】，在权限校验通过后保留母版并复制出一份相同数据的【打印模型】。\n\n§e合成配方：§r上行 玻璃×3；中行 红石、3D打印机、红石；下行 粘液球、纸、粘液球。");
+            translationBuilder.add("jei.tuanzis_mod.paper_shredder.description", "【碎纸机】\n唯一可用于彻底损毁【画布】的机械设备。\n\n§e规则与安全机制：\n1. 严格权限：只有画布主人本人才能损毁自己的画布（未绑定主人的空白画布除外）。\n2. 二次确认：点击「损毁画布」后必须经过强警告二次确认才会生效。\n3. 材料返还：损毁后归档体素数据并释放画布创建名额，返还画布本身的合成材料（纸、白色染料、线），§c不会返还画布内建筑消耗的任何材料！\n\n§e合成配方：§r上行 铁锭、剪刀、铁锭；中行 铁锭、漏斗、铁锭；下行 石砖、红石、石砖。");
+            translationBuilder.add("jei.tuanzis_mod.printed_model.description", "【打印模型】\n由 3D 打印机制作的可放置静态模型方块。支持分块静态网格烘焙与自动合并碰撞箱（2D 模型支持地面、贴墙、天花板放置）。破坏时仅掉落自身，不返还画布。");
         }
     }
 
@@ -2324,8 +2513,8 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.compressed_build_slurry.description", "【Compressed Build Slurry】\nHigh-energy fuel used to power the Blueprint Cannon. Each slurry provides durability for placing or breaking 64 blocks.\n\n§eCrafting Recipe (Yields 3):§r\nShaped: Row 1 = Gunpowder x3; Row 2 = Gunpowder, Lava Bucket, Gunpowder; Row 3 = Lava Bucket, Gunpowder, Lava Bucket (returns empty buckets).");
             translationBuilder.add("jei.tuanzis_mod.blank_blueprint.description", "【Blank Blueprint】\nUsed to record existing structures in the world.\n\n§eUsage:\n1. Hold and right-click two corner blocks.\n2. Click §e[Confirm Construction]§r in chat to compile the region. Consumes one Blank Blueprint.\n3. Shift + Right-click air to clear selected corners.\n\n§eCrafting Recipe (Yields 1):§r\nShaped: Row 1 = Paper x3; Row 2 = Light Blue Dye, Paper, Light Blue Dye; Row 3 = Stick in center.");
             translationBuilder.add("jei.tuanzis_mod.structure_blueprint.description", "【Structure Blueprint】\nContains the recorded three-dimensional block layouts.\n\n§eUsage:\n1. Right-click ground to place a 0.4 alpha transparent ghost preview. Right-click again to clear.\n2. Press V to toggle visibility. Press G to open the offset controller.\n3. Shortcut keys: R to rotate, F to mirror. Ctrl + Arrows to shift offset, PageUp/PageDown to adjust height.\n4. Creative Admin Direct Place: When in Creative mode as a server admin, the Ghost Controller Panel provides a \"Place Building\" button to place the structure directly at the ghost position.");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【Blueprint Cannon】\nAn automated block placing machine that automatically builds a structure based on a Blueprint.\n\n§eUsage:\n1. Place down the cannon, insert a recorded Structure Blueprint.\n2. Put Compressed Build Slurry into the fuel slot. The cannon processes at 5 ticks/block. Free in creative mode.\n3. The cannon scans chests, barrels, and shulkers within 5 blocks recursively (up to 3 levels deep) to consume items.\n4. GUI provides options to start, pause, terminate, toggle block destruction, and toggle exact NBT checks.");
-            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `schematics/` (matching Litematica).\n2. Import: Put `.litematic` or `.schem` files in `schematics/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. Open Folder: Click the Folder button on the right side of the GUI to quickly open the `schematics/` directory.\n4. 3D Preview: Inspect the structure in full 3D from the Blueprint Inspector.\n\n§eCrafting Recipe (Yields 1):§r\nShaped: Row 1 = Brush, Blank Blueprint, Book and Quill; Rows 2 & 3 = Any Planks on left and right sides (center empty).");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_cannon.description", "【Blueprint Cannon】\nAn automated block placing machine that automatically builds a structure based on a Blueprint.\n\n§eUsage:\n1. Place down the cannon, insert a recorded Structure Blueprint.\n2. Put Compressed Build Slurry into the fuel slot. The cannon processes at 5 ticks/block. Free in creative mode.\n3. The cannon scans chests, barrels, and shulkers within 5 blocks recursively (up to 3 levels deep) to consume items.\n4. GUI provides options to start, pause, terminate, toggle block destruction, and toggle exact NBT checks.\n5. Can be temporarily placed inside Canvas Space (including an 8-block outer buffer) to auto-build within Canvas bounds while skipping and warning about out-of-bounds or restricted targets; collect it before exiting.");
+            translationBuilder.add("jei.tuanzis_mod.blueprint_table.description", "【Blueprint Table】\nControls import/export between external files and blueprints.\n\n§eUsage:\n1. Export: Place a recorded Structure Blueprint in the left slot and click export. Outputs a `.litematic` file in `schematics/` (matching Litematica).\n2. Import: Put `.litematic` or `.schem` files in `schematics/`. Insert a Blank Blueprint in the right slot, click import to write data.\n3. Open Folder: Click the Folder button on the right side of the GUI to quickly open the `schematics/` directory.\n4. 3D Preview: Inspect the structure in full 3D from the Blueprint Inspector.\n5. Canvas Space Support: Can be temporarily placed inside Canvas Space (including an 8-block outer buffer) without saving into voxels; collect it before exiting.\n\n§eCrafting Recipe (Yields 1):§r\nShaped: Row 1 = Brush, Blank Blueprint, Book and Quill; Rows 2 & 3 = Any Planks on left and right sides (center empty).");
 
             // Rift Scar English translations
             translationBuilder.add(ModItems.RIFT_SCAR, "Fractured Void Scar");
@@ -3219,6 +3408,33 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("jei.tuanzis_mod.color_block.description", "[Color Block/Slab/Stairs]\nDecorative blocks that can be dyed into custom colors using a Paint Bucket. The surface is pure with no borders or impurities.\n\n§eMechanics:\n1. §bBlock Dyeing: Place a Color Block, Slab, or Stairs in the crafting grid together with a Paint Bucket containing pigment to dye it. Each dyeing action consumes 1 durability from the Paint Bucket.\n2. §bSlab Stacking: Allows stacking Color Slabs of different colors into a double slab. Each half preserves and renders its own color. Mining them splits them back into their respective colored items.\n3. §bMap Display: Colored blocks, stairs, and single slabs render their actual color on maps. Double slabs intelligently display the color of the §6top slab§r on the map.\n4. §bCrafting Inheritance: Crafting Color Stairs (yields 4) or Color Slabs (yields 6) using colored blocks will automatically inherit and blend (average color) the colors of all inputs.");
             translationBuilder.add("jei.tuanzis_mod.paint_bucket.description", "[Paint Bucket]\nA utility tool used for dyeing Color Blocks. Has a maximum durability of 256 uses.\n\n§eUsage:\n1. §bOpen Palette: Right-click the Paint Bucket to open the client-side RGB palette GUI. Drag Red/Green/Blue sliders to adjust color (0-255) with real-time preview.\n2. §bVanilla Presets: Offers 16 quick preset buttons matching vanilla dyes.\n3. §bQuick Color Picking: Hold Shift and right-click any Color Block series (Color Block, Color Slab, Color Stairs) to immediately pick its current color with actionbar notification.\n4. §bConfirm & Cancel: Click Cancel or press ESC to roll back to the previous color. Click Confirm to save changes and play a dyeing sound.\n5. §bCrafting Consumption: Remains in the crafting grid and loses 1 durability per block dyed. Destroyed when durability drops to 0.");
 
+            // 16-Color Elevator English translations
+            java.util.Map<net.minecraft.world.item.DyeColor, String> enColorNames = java.util.Map.ofEntries(
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.WHITE, "White"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.ORANGE, "Orange"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.MAGENTA, "Magenta"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIGHT_BLUE, "Light Blue"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.YELLOW, "Yellow"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIME, "Lime"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.PINK, "Pink"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.GRAY, "Gray"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.LIGHT_GRAY, "Light Gray"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.CYAN, "Cyan"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.PURPLE, "Purple"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BLUE, "Blue"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BROWN, "Brown"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.GREEN, "Green"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.RED, "Red"),
+                    java.util.Map.entry(net.minecraft.world.item.DyeColor.BLACK, "Black")
+            );
+            for (var entry : me.tuanzi.init.ModBlocks.ELEVATORS_BY_COLOR.entrySet()) {
+                String enName = enColorNames.get(entry.getKey()) + " Elevator";
+                translationBuilder.add(entry.getValue(), enName);
+                translationBuilder.add(entry.getValue().asItem(), enName);
+            }
+            translationBuilder.add("message.tuanzis_mod.elevator.invalid_disguise", "This block cannot be used as an elevator disguise");
+            translationBuilder.add("jei.tuanzis_mod.elevator.description", "[Elevator (16 Colors)]\nA vertical teleportation block crafted from 8 Iron Blocks surrounding 1 Ender Pearl, available in all 16 vanilla wool colors.\n\n§eMechanics:\n1. §bVertical Teleport: Stand on an elevator and press [Jump] to teleport up to the nearest same-colored elevator in the column, or press [Sneak] to teleport down.\n2. §bColor-Matched Shafts: Elevators only link with elevators of the same color.\n3. §bCooldown & Safety: Features a 1-second (20 ticks) cooldown between teleports. Checks for 2 blocks of headroom above the destination elevator; obstructed destinations are skipped automatically.\n4. §bBlock Disguise: Hold any block and [Sneak + Right-Click] an elevator to disguise it with the exact placed appearance and orientation (does not consume the held block). [Empty-hand Sneak + Right-Click] clears the disguise.\n5. §bMining: Hardness 4, requires a pickaxe to mine and drop.");
+
             // Chromatic Skull translations
             translationBuilder.add(ModItems.CHROMATIC_SKULL, "Chromatic Skull");
             translationBuilder.add("gui.tuanzis_mod.chromatic_skull.title", "Chromatic Skull");
@@ -3913,6 +4129,168 @@ public class Tuanzis_modDataGenerator implements DataGeneratorEntrypoint {
             translationBuilder.add("commands.tuanzis_mod.config.query_overworld_max_build_height", "§7[Tuanzi's Mod] §fOverworld Max Build Height (overworldMaxBuildHeight): §b%s §7(max placeable Y=%s)");
             translationBuilder.add("commands.tuanzis_mod.config.set_overworld_max_build_height", "§7[Tuanzi's Mod] §fSet overworldMaxBuildHeight to §b%s §7(max placeable Y=%s)§f, synced and hot-reloaded.");
             translationBuilder.add("commands.tuanzis_mod.config.reloaded", "§7[Tuanzi's Mod] §fReloaded config from disk and synced settings (enableCasinoRecipes: %s§f, overworldMaxBuildHeight: §b%s §7[max Y=%s]§f).");
+
+            // Easel & Printable Canvas System English Translations
+            translationBuilder.add(me.tuanzi.init.ModBlocks.EASEL, "Easel");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.EASEL.asItem(), "Easel");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTER_3D, "3D Printer");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTER_3D.asItem(), "3D Printer");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.COPIER, "Copier");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.COPIER.asItem(), "Copier");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PAPER_SHREDDER, "Paper Shredder");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PAPER_SHREDDER.asItem(), "Paper Shredder");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL, "Printed Model");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL.asItem(), "Printed Model");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.PRINTED_MODEL_PART, "Printed Model Part");
+            translationBuilder.add(me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK, "Canvas White Base");
+            translationBuilder.add(ModItems.CANVAS, "Canvas");
+            translationBuilder.add(ModItems.PRINT_MATERIAL, "Print Material");
+
+            translationBuilder.add("container.tuanzis_mod.easel", "Easel");
+            translationBuilder.add("container.tuanzis_mod.printer_3d", "3D Printer");
+            translationBuilder.add("container.tuanzis_mod.copier", "Copier");
+            translationBuilder.add("container.tuanzis_mod.paper_shredder", "Paper Shredder");
+
+            translationBuilder.add("canvas.tuanzis_mod.type.unset", "Unset");
+            translationBuilder.add("canvas.tuanzis_mod.type.2d", "2D Flat");
+            translationBuilder.add("canvas.tuanzis_mod.type.3d", "3D Voxel");
+            translationBuilder.add("canvas.tuanzis_mod.permission.private", "Private");
+            translationBuilder.add("canvas.tuanzis_mod.permission.team_edit", "Team Edit");
+            translationBuilder.add("canvas.tuanzis_mod.permission.public_read", "Public Read");
+            translationBuilder.add("canvas.tuanzis_mod.permission.public_edit", "Public Edit");
+
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.size", "Size: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.type", "Type: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.voxels", "Non-Empty Voxels: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.permission", "Permission: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.owner", "Owner: %s");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.pending_upgrade", "§aUpgraded - place in Easel to center-expand data");
+            translationBuilder.add("tooltip.tuanzis_mod.canvas.corrupted", "§cCorrupted or incompatible version (Read-Only)");
+            translationBuilder.add("tooltip.tuanzis_mod.printed_model.scale", "Footprint: %s×%s×%s blocks");
+
+            translationBuilder.add("gui.tuanzis_mod.easel.select_2d", "Set 2D");
+            translationBuilder.add("gui.tuanzis_mod.easel.select_3d", "Set 3D");
+            translationBuilder.add("gui.tuanzis_mod.easel.enter_edit", "Enter Space");
+            translationBuilder.add("gui.tuanzis_mod.easel.save", "Save Canvas");
+            translationBuilder.add("gui.tuanzis_mod.easel.permission", "Permission");
+            translationBuilder.add("gui.tuanzis_mod.easel.reset", "Reset");
+            translationBuilder.add("gui.tuanzis_mod.easel.export", "Export");
+            translationBuilder.add("gui.tuanzis_mod.easel.insert_hint", "Insert a Canvas");
+            translationBuilder.add("gui.tuanzis_mod.easel.info_line", "%s %s | Voxels:%s");
+            translationBuilder.add("gui.tuanzis_mod.easel.unsaved_draft", "§6Unsaved draft pending");
+            translationBuilder.add("gui.tuanzis_mod.easel.owner_short", "Owner: %s");
+            translationBuilder.add("gui.tuanzis_mod.easel.occupied", "Space occupied");
+
+            translationBuilder.add("gui.tuanzis_mod.printer.print_btn", "Print");
+            translationBuilder.add("gui.tuanzis_mod.printer.cost", "Material Cost: %s");
+            translationBuilder.add("gui.tuanzis_mod.printer.voxels", "Voxels: %s / %s");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.ready", "Ready to print");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.no_canvas", "Insert Canvas & Material");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.unset_type", "Select 2D or 3D in Easel first");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.empty_canvas", "Canvas is empty");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.exceeds_limit", "Exceeds print voxel limit!");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.no_material", "Insufficient print material!");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.output_full", "Output slot is full!");
+            translationBuilder.add("gui.tuanzis_mod.printer.status.corrupted", "Canvas data corrupted");
+
+            translationBuilder.add("gui.tuanzis_mod.copier.copy_btn", "Copy");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.ready", "Ready to copy");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.no_model", "Insert Model & Material");
+            translationBuilder.add("gui.tuanzis_mod.copier.status.disabled", "Copying disabled by server");
+
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.shred_btn", "Shred");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.confirm_btn", "Confirm");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.cancel_btn", "Cancel");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.insert_hint", "Insert Canvas to shred");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.refund_info", "Refund: Paper×%s, White Dye×1, String×1");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.no_block_refund_hint", "§cNote: Does NOT refund blocks inside Canvas");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.not_owner", "Only the Canvas owner can shred this!");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.in_use", "Canvas is currently being edited!");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_title", "⚠ Confirm Permanent Shred");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_line1", "Canvas data will be permanently lost!");
+            translationBuilder.add("gui.tuanzis_mod.paper_shredder.warn_line2", "No build blocks inside will be refunded!");
+
+            translationBuilder.add("message.tuanzis_mod.canvas.no_sleep", "You cannot sleep in the Canvas Space.");
+            translationBuilder.add("message.tuanzis_mod.canvas.already_in", "You are already inside a Canvas Space!");
+            translationBuilder.add("message.tuanzis_mod.canvas.not_in", "You are not inside a Canvas Space!");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_canvas", "No valid Canvas in the Easel!");
+            translationBuilder.add("message.tuanzis_mod.canvas.select_type_first", "Please select 2D or 3D in the Easel first!");
+            translationBuilder.add("message.tuanzis_mod.canvas.type_locked", "Canvas type is already locked!");
+            translationBuilder.add("message.tuanzis_mod.canvas.3d_size_limit", "Size 256 only supports 2D Canvas (3D max is 128)!");
+            translationBuilder.add("message.tuanzis_mod.canvas.dim_missing", "Canvas Space dimension could not be found!");
+            translationBuilder.add("message.tuanzis_mod.canvas.quota_exceeded", "Reached per-player canvas limit (%s)!");
+            translationBuilder.add("message.tuanzis_mod.canvas.private_denied", "This Canvas is private!");
+            translationBuilder.add("message.tuanzis_mod.canvas.team_denied", "Only the owner or teammates can access this Canvas!");
+            translationBuilder.add("message.tuanzis_mod.canvas.public_disabled", "Public canvases are disabled by server configuration!");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_permission", "You do not have permission to enter this Canvas!");
+            translationBuilder.add("message.tuanzis_mod.canvas.no_edit_permission", "Read-only access: cannot save or edit this Canvas!");
+            translationBuilder.add("message.tuanzis_mod.canvas.only_owner_perm", "Only the owner or OP can change permissions!");
+            translationBuilder.add("message.tuanzis_mod.canvas.only_owner_allow", "Only the owner or OP can grant collaborator access!");
+            translationBuilder.add("message.tuanzis_mod.canvas.corrupted_readonly", "Canvas data is corrupted/incompatible; opened in read-only protection!");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_edit", "Entered Canvas Space (%s×%s×%s). Run /canvas exit to leave.");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_readonly", "Entered Canvas Space in read-only mode. Run /canvas exit to leave.");
+            translationBuilder.add("message.tuanzis_mod.canvas.entered_readonly_locked", "Canvas is currently edited by someone else; switched to read-only mode!");
+            translationBuilder.add("message.tuanzis_mod.canvas.exited", "Exited Canvas Space and saved draft. Click 'Save Canvas' on the Easel to commit.");
+            translationBuilder.add("message.tuanzis_mod.canvas.forced_exit_easel_removed", "Easel was removed; draft saved and returned to your previous position!");
+            translationBuilder.add("message.tuanzis_mod.canvas.save_success", "Canvas saved! (%s non-empty voxels)");
+            translationBuilder.add("message.tuanzis_mod.canvas.save_fail", "Failed to save Canvas; check server logs!");
+            translationBuilder.add("message.tuanzis_mod.canvas.reset_success", "Canvas reset to empty.");
+            translationBuilder.add("message.tuanzis_mod.canvas.export_success", "Exported Canvas backup: %s");
+            translationBuilder.add("message.tuanzis_mod.canvas.export_fail", "No Canvas file found to export!");
+            translationBuilder.add("message.tuanzis_mod.canvas.readonly_action_denied", "Cannot place or break blocks in read-only mode!");
+            translationBuilder.add("message.tuanzis_mod.canvas.out_of_bounds", "Out of Canvas bounds!");
+            translationBuilder.add("message.tuanzis_mod.canvas.block_forbidden", "Containers (except Shulker Boxes), redstone machines, and restricted blocks are forbidden in Canvas Space!");
+            translationBuilder.add("message.tuanzis_mod.canvas.exit_blocked_utility_remaining", "Cannot leave Canvas Space: %s temporary utility block(s) still remain (first at %s, %s, %s)!");
+            translationBuilder.add("message.tuanzis_mod.canvas.utility_auto_recovered", "Automatically packed and returned %s remaining utility item(s) from Canvas Space.");
+            translationBuilder.add("message.tuanzis_mod.canvas.utility_queued_return", "Overflow recovered items were added to your pending return queue and will be delivered when inventory space is available.");
+            translationBuilder.add("message.tuanzis_mod.canvas.cannon_out_of_bounds_skipped", "[Canvas Space] Skipped %s blueprint block(s) outside Canvas bounds [0..%s, 0..%s, 0..%s] (first at %s, %s, %s).");
+            translationBuilder.add("message.tuanzis_mod.canvas.cannon_forbidden_skipped", "[Canvas Space] Skipped %s restricted block(s) and %s entity(ies) disallowed by Canvas Space rules.");
+            translationBuilder.add("message.tuanzis_mod.canvas.border_on", "Canvas boundary wireframe enabled.");
+            translationBuilder.add("message.tuanzis_mod.canvas.border_off", "Canvas boundary wireframe hidden.");
+            translationBuilder.add("message.tuanzis_mod.canvas.noclip_on", "Temporary spectator noclip enabled (/canvas noclip off to exit).");
+            translationBuilder.add("message.tuanzis_mod.canvas.noclip_off", "Spectator noclip disabled.");
+            translationBuilder.add("message.tuanzis_mod.canvas.base_cleared", "Cleared system white canvas base.");
+            translationBuilder.add("message.tuanzis_mod.canvas.base_restored", "Restored system white canvas base.");
+            translationBuilder.add("message.tuanzis_mod.canvas.granted_owner", "Granted co-edit access to %s.");
+            translationBuilder.add("message.tuanzis_mod.canvas.granted_target", "You have been granted co-edit access to this Canvas!");
+            translationBuilder.add("message.tuanzis_mod.canvas.revoked_owner", "Revoked co-edit access from %s.");
+            translationBuilder.add("message.tuanzis_mod.canvas.revoked_target", "Your co-edit access was revoked; switched to read-only.");
+            translationBuilder.add("message.tuanzis_mod.canvas.mode_hot_creative", "Config hot-reloaded: switched to Canvas Creative Mode (survival inventory safely stored).");
+            translationBuilder.add("message.tuanzis_mod.canvas.mode_hot_survival", "Config hot-reloaded: switched to Canvas Survival Flight Mode (inventory restored).");
+            translationBuilder.add("message.tuanzis_mod.canvas.pulled_back_to_bounds", "Moved outside allowed area; pulled back to Canvas center!");
+            translationBuilder.add("message.tuanzis_mod.easel.occupied_break_denied", "Cannot break Easel while players are inside its Canvas Space!");
+            translationBuilder.add("message.tuanzis_mod.easel.occupied_action_denied", "Wait for players to exit the Canvas Space first!");
+            translationBuilder.add("message.tuanzis_mod.printer.print_success", "Printed model! Consumed %s Print Material.");
+            translationBuilder.add("message.tuanzis_mod.printer.err_no_canvas", "Insert a Canvas first!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_unset_type", "Select 2D or 3D type on the Easel first!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_empty_canvas", "Cannot print an empty Canvas!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_exceeds_limit", "Non-empty voxel count exceeds server limit!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_no_material", "Insufficient Print Material!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_output_full", "Output slot is full!");
+            translationBuilder.add("message.tuanzis_mod.printer.err_corrupted", "Canvas data is corrupted!");
+            translationBuilder.add("message.tuanzis_mod.copier.copy_success", "Copied model! Consumed %s Print Material.");
+            translationBuilder.add("message.tuanzis_mod.copier.disabled", "Copier is disabled by server configuration!");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_model", "Insert a Printed Model to copy!");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_permission", "You do not have permission to copy this model!");
+            translationBuilder.add("message.tuanzis_mod.copier.err_corrupted", "Model data is invalid or corrupted!");
+            translationBuilder.add("message.tuanzis_mod.copier.err_output_full", "Output slot is full or incompatible!");
+            translationBuilder.add("message.tuanzis_mod.copier.err_no_material", "Insufficient Print Material!");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned", "Your Canvas fell into the void and was teleported back to you!");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned_to_origin", "Your Canvas fell into the void and was returned to your pre-Canvas location!");
+            translationBuilder.add("message.tuanzis_mod.canvas.void_returned_offline", "Automatically returned %s Canvas(es) rescued from the void while you were offline!");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.confirm_required", "Please confirm shredding in the second prompt first!");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.no_canvas", "Insert a Canvas to shred first!");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.not_owner", "Permission denied: Only the Canvas owner can shred their own Canvas!");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.in_use", "This Canvas is currently open in Canvas Space; exit first!");
+            translationBuilder.add("message.tuanzis_mod.paper_shredder.success", "Canvas permanently shredded! Refunded crafting materials: Paper×%s, White Dye×1, String×1 (excluding built blocks).");
+
+            translationBuilder.add("jei.tuanzis_mod.easel.description", "[Easel]\nPlace and right-click to insert a Canvas and enter its isolated Canvas Space for building.\n\n§eFeatures:\n1. Choose 2D Flat (thickness 1) or 3D Voxel (up to 128³) before first edit.\n2. Every Canvas has its own isolated void dimension with standard origin (0, 0, 0), so players never see other builds. Borders highlight X (Blue), Y (Yellow), and Z (Red) axes from (0, 0, 0).\n3. Supports /canvas exit, /canvas border, /canvas noclip, and /canvas base clear|restore.\n4. Exiting saves a draft automatically; click 'Save Canvas' on the Easel to commit.");
+            translationBuilder.add("jei.tuanzis_mod.canvas.description", "[Canvas]\nStores creative works across sizes 16/32/64/128/256 (3D max 128). Voxel data is stored in compressed files under painted/ for effortless cross-world transfer.\n\n§eDamage Protection:\nImmune to fire, lava, cactus, explosions, and void drops (automatically returns to its owner). Can only be destroyed via the Paper Shredder (or vanilla despawn).\n\n§eUtility Block Support:\nShulker Boxes, Blueprint Cannons, and Blueprint Tables can be temporarily placed inside Canvas Space (including an 8-block outer buffer) to assist building; they are excluded from saved voxels and must be collected before leaving.\n\n§eCrafting & Upgrade:\n1. 16×16 Canvas: Paper + White Dye + String.\n2. Upgrade: Surround a Canvas with 8 Paper to expand 16→32→64→128→256 (3D stops at 128), centering existing voxels automatically.");
+            translationBuilder.add("jei.tuanzis_mod.print_material.description", "[Print Material]\nConsumable feedstock for the 3D Printer and Copier (default 1 per 256 non-empty voxels, scaled by print size).\n\n§eRecipe:§r Clay Ball + Resin Clump + Red/Green/Blue Dye + Ink Sac.");
+            translationBuilder.add("jei.tuanzis_mod.printer_3d.description", "[3D Printer]\nTakes a saved Canvas and Print Material, lets you choose 1× miniature or multi-block scale, previews cost and limits, and prints a Printed Model.");
+            translationBuilder.add("jei.tuanzis_mod.copier.description", "[Copier]\nTakes a Printed Model master and Print Material to produce an exact duplicate while preserving voxel data and checking permissions.");
+            translationBuilder.add("jei.tuanzis_mod.paper_shredder.description", "[Paper Shredder]\nThe only machine capable of permanently destroying a Canvas.\n\n§eRules & Safety:\n1. Strict Ownership: Only the Canvas owner can shred their own Canvas (blank unowned Canvases have no owner restriction).\n2. Two-Step Confirmation: Clicking 'Shred' prompts a prominent confirmation warning.\n3. Material Refund: Archives voxel data, frees the owner's Canvas quota slot, and refunds the Canvas's own crafting materials (Paper, White Dye, String)—§cNEVER refunds blocks placed inside the Canvas!\n\n§eRecipe:§r Top: Iron Ingot, Shears, Iron Ingot; Middle: Iron Ingot, Hopper, Iron Ingot; Bottom: Stone Bricks, Redstone, Stone Bricks.");
+            translationBuilder.add("jei.tuanzis_mod.printed_model.description", "[Printed Model]\nStatic baked mesh decorative block printed from a Canvas, with greedy-merged collision boxes (2D supports floor, wall, and ceiling mounting). Breaking drops only itself, never the Canvas.");
         }
     }
 }

@@ -23,6 +23,10 @@ public class ModMenuTypes {
     public static final ResourceKey<MenuType<?>> SCAVENGER_TACTICAL_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_tactical"));
     public static final ResourceKey<MenuType<?>> BASE_STASH_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_stash"));
     public static final ResourceKey<MenuType<?>> BASE_UPGRADE_STATION_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "base_upgrade_station"));
+    public static final ResourceKey<MenuType<?>> EASEL_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "easel"));
+    public static final ResourceKey<MenuType<?>> PRINTER_3D_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printer_3d"));
+    public static final ResourceKey<MenuType<?>> COPIER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "copier"));
+    public static final ResourceKey<MenuType<?>> PAPER_SHREDDER_KEY = ResourceKey.create(Registries.MENU, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "paper_shredder"));
 
     public static final MenuType<TravelersNotebookMenu> TRAVELERS_NOTEBOOK = Registry.register(
             BuiltInRegistries.MENU,
@@ -94,6 +98,30 @@ public class ModMenuTypes {
             BuiltInRegistries.MENU,
             BASE_UPGRADE_STATION_KEY,
             new MenuType<>(me.tuanzi.world.inventory.scavenger.BaseUpgradeStationMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.canvas.EaselMenu> EASEL = Registry.register(
+            BuiltInRegistries.MENU,
+            EASEL_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.canvas.EaselMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.canvas.Printer3DMenu> PRINTER_3D = Registry.register(
+            BuiltInRegistries.MENU,
+            PRINTER_3D_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.canvas.Printer3DMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.canvas.CopierMenu> COPIER = Registry.register(
+            BuiltInRegistries.MENU,
+            COPIER_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.canvas.CopierMenu::new, FeatureFlags.VANILLA_SET)
+    );
+
+    public static final MenuType<me.tuanzi.world.inventory.canvas.PaperShredderMenu> PAPER_SHREDDER = Registry.register(
+            BuiltInRegistries.MENU,
+            PAPER_SHREDDER_KEY,
+            new MenuType<>(me.tuanzi.world.inventory.canvas.PaperShredderMenu::new, FeatureFlags.VANILLA_SET)
     );
 
     public static void initialize() {

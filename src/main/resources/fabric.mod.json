@@ -41,7 +41,9 @@
       "me.tuanzi.gametest.LeaderZombieXpGameTest",
       "me.tuanzi.gametest.OverworldBuildHeightGameTest",
       "me.tuanzi.gametest.BlockBreakerPistonGameTest",
-      "me.tuanzi.gametest.SoulMerchantStationRestockGameTest"
+      "me.tuanzi.gametest.SoulMerchantStationRestockGameTest",
+      "me.tuanzi.gametest.ElevatorGameTest",
+      "me.tuanzi.gametest.CanvasSystemGameTest"
     ],
     "modmenu": [
       "me.tuanzi.integration.ModMenuIntegration"
@@ -56,6 +58,11 @@
     },
     {
       "config": "casinosound.client.mixins.json",
+      "environment": "client"
+    },
+    "tuanzis_mod.voxy.mixins.json",
+    {
+      "config": "tuanzis_mod.voxy.client.mixins.json",
       "environment": "client"
     }
   ],

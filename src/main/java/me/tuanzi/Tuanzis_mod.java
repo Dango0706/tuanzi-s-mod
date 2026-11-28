@@ -35,6 +35,7 @@ public class Tuanzis_mod implements ModInitializer {
             boolean previousCasinoEnabled = me.tuanzi.config.ModConfig.isCasinoRecipesEnabled();
             me.tuanzi.config.ModConfig.load(path);
             me.tuanzi.config.OverworldBuildHeightControl.handleHotReload(activeServer, previousCasinoEnabled);
+            me.tuanzi.world.canvas.CanvasSpaceManager.handleConfigHotReload(activeServer);
         });
         configWatcher.start();
         // 注册主世界建筑高度热更新同步网络包
@@ -244,6 +245,95 @@ public class Tuanzis_mod implements ModInitializer {
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "crafting_axe_strip"),
                 me.tuanzi.world.item.crafting.AxeStripRecipe.SERIALIZER
         );
+        net.minecraft.core.Registry.register(
+                net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(MOD_ID, "canvas_upgrade"),
+                me.tuanzi.world.item.crafting.CanvasUpgradeRecipe.SERIALIZER
+        );
+
+        // 注册画板与可打印画布系统网络包与服务端接收器
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.canvas.EaselActionC2SPacket.TYPE,
+                me.tuanzi.network.canvas.EaselActionC2SPacket.CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.canvas.Printer3DActionC2SPacket.TYPE,
+                me.tuanzi.network.canvas.Printer3DActionC2SPacket.CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.canvas.CopierActionC2SPacket.TYPE,
+                me.tuanzi.network.canvas.CopierActionC2SPacket.CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.canvas.PaperShredderActionC2SPacket.TYPE,
+                me.tuanzi.network.canvas.PaperShredderActionC2SPacket.CODEC
+        );
+        PayloadTypeRegistry.serverboundPlay().register(
+                me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.TYPE,
+                me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.CODEC
+        );
+        PayloadTypeRegistry.clientboundPlay().register(
+                me.tuanzi.network.canvas.CanvasSpaceSyncS2CPacket.TYPE,
+                me.tuanzi.network.canvas.CanvasSpaceSyncS2CPacket.CODEC
+        );
+        PayloadTypeRegistry.clientboundPlay().registerLarge(
+                me.tuanzi.network.canvas.CanvasDataChunkS2CPacket.TYPE,
+                me.tuanzi.network.canvas.CanvasDataChunkS2CPacket.CODEC,
+                me.tuanzi.network.canvas.CanvasDataChunkS2CPacket.MAX_PACKET_BYTES
+        );
+
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.EaselActionC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    if (player.level().getBlockEntity(payload.pos()) instanceof me.tuanzi.block.entity.EaselBlockEntity easelBe
+                            && easelBe.stillValid(player)) {
+                        easelBe.handleAction(player, payload.action());
+                    }
+                }
+            });
+        });
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.Printer3DActionC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    if (player.level().getBlockEntity(payload.pos()) instanceof me.tuanzi.block.entity.Printer3DBlockEntity printerBe
+                            && printerBe.stillValid(player)) {
+                        printerBe.handleAction(player, payload.action(), payload.scale());
+                    }
+                }
+            });
+        });
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.CopierActionC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    if (player.level().getBlockEntity(payload.pos()) instanceof me.tuanzi.block.entity.CopierBlockEntity copierBe
+                            && copierBe.stillValid(player)) {
+                        copierBe.handleAction(player, payload.action());
+                    }
+                }
+            });
+        });
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.PaperShredderActionC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayer player = context.player();
+                if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
+                        && player.level().isLoaded(payload.pos())) {
+                    if (player.level().getBlockEntity(payload.pos()) instanceof me.tuanzi.block.entity.PaperShredderBlockEntity shredderBe
+                            && shredderBe.stillValid(player)) {
+                        shredderBe.handleShred(player, payload.confirmed());
+                    }
+                }
+            });
+        });
+        ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.CanvasDataRequestC2SPacket.TYPE, (payload, context) -> {
+            context.server().execute(() ->
+                    me.tuanzi.world.canvas.CanvasSpaceManager.sendCanvasDataToClient(context.player(), payload.modelUuid(), payload.dataHash()));
+        });
 
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.TeleportRequestPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
@@ -378,6 +468,12 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintCannonActionPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
+                if (me.tuanzi.init.ModDimensions.isCanvasSpaceLevel(player.level())
+                        && !me.tuanzi.world.canvas.CanvasSpaceManager.canPlayerEditCurrentCanvas(player)) {
+                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.canvas.readonly_action_denied")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
                 if (player.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(payload.pos())) <= 64.0
                         && player.level().isLoaded(payload.pos())) {
                     net.minecraft.world.level.block.entity.BlockEntity be = player.level().getBlockEntity(payload.pos());
@@ -392,6 +488,12 @@ public class Tuanzis_mod implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(me.tuanzi.network.BlueprintTableImportPacket.TYPE, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayer player = context.player();
+                if (me.tuanzi.init.ModDimensions.isCanvasSpaceLevel(player.level())
+                        && !me.tuanzi.world.canvas.CanvasSpaceManager.canPlayerEditCurrentCanvas(player)) {
+                    player.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.canvas.readonly_action_denied")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return;
+                }
                 me.tuanzi.block.entity.BlueprintTableBlockEntity tableBe = null;
                 if (player.containerMenu instanceof me.tuanzi.world.inventory.BlueprintTableMenu tableMenu && tableMenu.stillValid(player)) {
                     if (tableMenu.getContainer() instanceof me.tuanzi.block.entity.BlueprintTableBlockEntity menuBe) {
@@ -531,6 +633,7 @@ public class Tuanzis_mod implements ModInitializer {
         me.tuanzi.init.ModTrades.initialize();
         me.tuanzi.util.ModLootTableModifiers.initialize();
         me.tuanzi.util.ModSeating.initialize();
+        me.tuanzi.world.elevator.ElevatorManager.initialize();
         me.tuanzi.util.TempBlockManager.initialize();
         me.tuanzi.item.StarRiftBladeItem.registerTickHandler();
         me.tuanzi.init.ModSounds.initialize();
@@ -541,19 +644,24 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.gacha.PlayerGachaManager.onPlayerDisconnect(handler.getPlayer().getUUID());
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.closeSession(handler.getPlayer().getUUID(), "玩家断开连接");
             me.tuanzi.world.teleport.TeleportManager.onPlayerDisconnect(handler.getPlayer().getUUID());
+            me.tuanzi.world.elevator.ElevatorManager.onPlayerDisconnect(handler.getPlayer().getUUID());
+            me.tuanzi.world.canvas.CanvasSpaceManager.onPlayerDisconnect(handler.getPlayer());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             activeServer = server;
             me.tuanzi.gacha.PoolManager.loadAllPools(server.registryAccess());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPING.register(server -> {
+            me.tuanzi.world.canvas.CanvasDimensionManager.unloadAllCanvasLevels(server);
             me.tuanzi.gacha.PlayerGachaManager.shutdown();
             me.tuanzi.gacha.PoolManager.shutdown(server.registryAccess());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             me.tuanzi.util.TempBlockManager.clear();
             me.tuanzi.world.teleport.TeleportManager.clear();
+            me.tuanzi.world.elevator.ElevatorManager.clear();
             me.tuanzi.block.entity.BlockBreakerPistonManager.clear();
+            me.tuanzi.world.canvas.CanvasSpaceManager.clearServerSessions();
             if (activeServer == server) {
                 activeServer = null;
             }
@@ -581,9 +689,28 @@ public class Tuanzis_mod implements ModInitializer {
             if (handler.getPlayer() instanceof me.tuanzi.util.DesperateStandTracker tracker) {
                 me.tuanzi.util.DesperateStandHelper.syncToClient(handler.getPlayer(), tracker.tuanzis_mod$getDesperateStandTrauma());
             }
+            me.tuanzi.world.canvas.CanvasSpaceManager.onPlayerJoin(handler.getPlayer());
+            me.tuanzi.world.canvas.CanvasPendingReturnSavedData.deliverPendingFor(handler.getPlayer());
         });
         net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.END_SERVER_TICK.register(server -> {
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.tickAllSessions(server);
+            me.tuanzi.world.elevator.ElevatorManager.tickServer(server);
+            me.tuanzi.world.canvas.CanvasDimensionManager.processPendingUnloads(server);
+        });
+
+        // 保护画布空间只读玩家不打开或操作空间内临时施工工具（潜影盒、蓝图大炮、蓝图桌）
+        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (!world.isClientSide() && player instanceof ServerPlayer sp
+                    && me.tuanzi.init.ModDimensions.isCanvasSpaceLevel(world)) {
+                net.minecraft.world.level.block.state.BlockState targetState = world.getBlockState(hitResult.getBlockPos());
+                if (me.tuanzi.world.canvas.CanvasBlockRules.isCanvasUtilityBlock(targetState)
+                        && !me.tuanzi.world.canvas.CanvasSpaceManager.canPlayerEditCurrentCanvas(sp)) {
+                    sp.sendOverlayMessage(net.minecraft.network.chat.Component.translatable("message.tuanzis_mod.canvas.readonly_action_denied")
+                            .withStyle(net.minecraft.ChatFormatting.RED));
+                    return net.minecraft.world.InteractionResult.FAIL;
+                }
+            }
+            return net.minecraft.world.InteractionResult.PASS;
         });
 
         // 注册抽卡系统指令
@@ -593,6 +720,7 @@ public class Tuanzis_mod implements ModInitializer {
             me.tuanzi.command.CorridorCommand.register(dispatcher);
             me.tuanzi.command.WitherKillsCommand.register(dispatcher);
             me.tuanzi.command.ModConfigCommand.register(dispatcher);
+            me.tuanzi.command.CanvasCommand.register(dispatcher);
         });
 
         // 初始化并入的 MineVegas Casino 模块（游戏机器、赌场装饰与赌场音响）

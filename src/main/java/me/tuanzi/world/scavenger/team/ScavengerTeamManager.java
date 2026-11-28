@@ -44,6 +44,13 @@ public class ScavengerTeamManager {
     }
 
     /**
+     * 按玩家 UUID 查询所属拾荒回廊小队 ID（不限制当前所在维度，供跨系统队友权限判断复用）。
+     */
+    public static @org.jetbrains.annotations.Nullable UUID getTeamIdByPlayerUuid(UUID playerUuid) {
+        return playerUuid != null ? playerToTeamId.get(playerUuid) : null;
+    }
+
+    /**
      * 判断两个玩家是否处于拾荒回廊同一队伍中（包括自身）
      */
     public static boolean isSameTeam(ServerPlayer a, ServerPlayer b) {

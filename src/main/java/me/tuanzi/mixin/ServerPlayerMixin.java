@@ -41,6 +41,10 @@ public class ServerPlayerMixin implements WitherKillTracker {
 
     @Inject(method = "hurtServer", at = @At("HEAD"), cancellable = true)
     private void tuanzis_mod$onHurt(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (me.tuanzi.init.ModDimensions.isCanvasSpaceLevel(level)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (amount > 0.0f) {
             TeleportManager.onPlayerDamage((ServerPlayer) (Object) this);
             me.tuanzi.world.scavenger.loot.search.SearchSessionManager.onPlayerDamaged((ServerPlayer) (Object) this);

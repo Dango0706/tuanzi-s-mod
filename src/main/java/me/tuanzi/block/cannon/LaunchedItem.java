@@ -1,7 +1,10 @@
 package me.tuanzi.block.cannon;
 
+import me.tuanzi.init.ModBlocks;
+import me.tuanzi.init.ModDimensions;
 import me.tuanzi.util.ItemStackNbtHelper;
 import me.tuanzi.util.ModLog;
+import me.tuanzi.world.canvas.CanvasBlockRules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderLookup;
@@ -186,6 +189,22 @@ public abstract class LaunchedItem {
                 ModLog.debug("LaunchedItem.ForBlockState 跳过越界或未加载目标: " + target);
                 return;
             }
+            if (ModDimensions.isCanvasSpaceLevel(world)) {
+                if (!BlueprintBuildPlanner.isWithinCanvasEditBoundsIfCanvas(world, target)) {
+                    ModLog.debug("LaunchedItem.ForBlockState 拦截画布编辑边界外操作: target=" + target);
+                    return;
+                }
+                if (isDestroy) {
+                    BlockState current = world.getBlockState(target);
+                    if (current.is(ModBlocks.CANVAS_BASE_BLOCK) || CanvasBlockRules.isCanvasUtilityBlock(current)) {
+                        ModLog.debug("LaunchedItem.ForBlockState 保护画布底面或施工工具不被破坏: target=" + target);
+                        return;
+                    }
+                } else if (!BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(world, state)) {
+                    ModLog.debug("LaunchedItem.ForBlockState 拦截画布禁用方块放置: target=" + target + ", state=" + state);
+                    return;
+                }
+            }
             ModLog.debug("LaunchedItem.ForBlockState 落地触发: " + target + ", isDestroy=" + isDestroy + ", state=" + state);
             if (isDestroy) {
                 BlockState current = world.getBlockState(target);
@@ -289,6 +308,13 @@ public abstract class LaunchedItem {
                     ModLog.debug("LaunchedItem.ForMultiBlock 跳过含越界或未加载组件的多方块: target=" + target + ", part=" + part.pos());
                     return;
                 }
+                if (ModDimensions.isCanvasSpaceLevel(world)) {
+                    if (!BlueprintBuildPlanner.isWithinCanvasEditBoundsIfCanvas(world, part.pos())
+                            || !BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(world, part.state())) {
+                        ModLog.debug("LaunchedItem.ForMultiBlock 拦截画布越界或禁用多方块组件: part=" + part.pos() + ", state=" + part.state());
+                        return;
+                    }
+                }
             }
             ModLog.debug("LaunchedItem.ForMultiBlock 整体落地触发: target=" + target + ", parts=" + parts.size());
 
@@ -382,6 +408,10 @@ public abstract class LaunchedItem {
                 ModLog.debug("LaunchedItem.ForEntity 跳过越界或未加载目标: " + target);
                 return;
             }
+            if (ModDimensions.isCanvasSpaceLevel(world)) {
+                ModLog.debug("LaunchedItem.ForEntity 拦截画布空间内蓝图实体生成: entityId=" + entityId + ", target=" + target);
+                return;
+            }
             ModLog.debug("LaunchedItem.ForEntity 落地触发: target=" + target + ", exactTarget=" + exactTarget + ", entityId=" + entityId);
             spawnEntity(world, target, exactTarget, entityId, entityNbt);
         }
@@ -396,7 +426,7 @@ public abstract class LaunchedItem {
                 String entityId,
                 @Nullable CompoundTag entityNbt
         ) {
-            if (!world.isInValidBounds(target)) {
+            if (!world.isInValidBounds(target) || ModDimensions.isCanvasSpaceLevel(world)) {
                 return false;
             }
             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(entityId)).orElse(null);

@@ -1,6 +1,8 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.config.OverworldBuildHeightControl;
+import me.tuanzi.init.ModDimensions;
+import me.tuanzi.world.canvas.CanvasSpaceManager;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,6 +25,11 @@ public abstract class BlockItemMixin {
     ) {
         if (!OverworldBuildHeightControl.isWithinBuildLimit(context.getLevel(), context.getClickedPos())) {
             cir.setReturnValue(false);
+            return;
+        }
+        if (ModDimensions.isCanvasSpaceLevel(context.getLevel())
+                && !CanvasSpaceManager.canPlaceAt(context.getPlayer(), context.getLevel(), context.getClickedPos(), stateForPlacement)) {
+            cir.setReturnValue(false);
         }
     }
 
@@ -33,6 +40,11 @@ public abstract class BlockItemMixin {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if (!OverworldBuildHeightControl.isWithinBuildLimit(context.getLevel(), context.getClickedPos())) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (ModDimensions.isCanvasSpaceLevel(context.getLevel())
+                && !CanvasSpaceManager.canPlaceAt(context.getPlayer(), context.getLevel(), context.getClickedPos(), placementState)) {
             cir.setReturnValue(false);
         }
     }

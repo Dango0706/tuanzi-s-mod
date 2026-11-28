@@ -1,10 +1,14 @@
 package me.tuanzi.mixin;
 
 import me.tuanzi.config.OverworldBuildHeightControl;
+import me.tuanzi.init.ModDimensions;
+import me.tuanzi.world.canvas.CanvasSpaceManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,6 +32,13 @@ public abstract class BucketItemMixin {
     ) {
         if (!OverworldBuildHeightControl.isWithinBuildLimit(level, pos)) {
             cir.setReturnValue(false);
+            return;
+        }
+        if (ModDimensions.isCanvasSpaceLevel(level)) {
+            Player player = user instanceof Player p ? p : null;
+            if (!CanvasSpaceManager.canPlaceAt(player, level, pos, Blocks.WATER.defaultBlockState())) {
+                cir.setReturnValue(false);
+            }
         }
     }
 }

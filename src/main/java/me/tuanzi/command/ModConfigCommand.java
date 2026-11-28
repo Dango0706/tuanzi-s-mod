@@ -19,6 +19,9 @@ public final class ModConfigCommand {
     private static final String KEY_ENABLE_CASINO_RECIPES = "enableCasinoRecipes";
     private static final String KEY_TRAUMA_HUD_CONFLICT_MODE = "traumaHudConflictMode";
     private static final String KEY_OVERWORLD_MAX_BUILD_HEIGHT = "overworldMaxBuildHeight";
+    private static final String KEY_CANVAS_CREATIVE_MODE = "canvasCreativeMode";
+    private static final String KEY_ALLOW_PUBLIC_CANVAS = "allowPublicCanvas";
+    private static final String KEY_ALLOW_CANVAS_COPYING = "allowCanvasCopying";
 
     private ModConfigCommand() {
     }
@@ -53,7 +56,32 @@ public final class ModConfigCommand {
                                                                 ModConfig.MAX_OVERWORLD_MAX_BUILD_HEIGHT
                                                         )
                                                 )
-                                                .executes(ModConfigCommand::setOverworldMaxBuildHeight))))
+                                                .executes(ModConfigCommand::setOverworldMaxBuildHeight)))
+                                .then(Commands.literal(KEY_CANVAS_CREATIVE_MODE)
+                                        .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                .executes(ctx -> {
+                                                    boolean val = BoolArgumentType.getBool(ctx, "enabled");
+                                                    ModConfig.setCanvasCreativeMode(val);
+                                                    me.tuanzi.world.canvas.CanvasSpaceManager.handleConfigHotReload(ctx.getSource().getServer());
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("canvasCreativeMode=" + val), true);
+                                                    return 1;
+                                                })))
+                                .then(Commands.literal(KEY_ALLOW_PUBLIC_CANVAS)
+                                        .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                .executes(ctx -> {
+                                                    boolean val = BoolArgumentType.getBool(ctx, "enabled");
+                                                    ModConfig.setAllowPublicCanvas(val);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("allowPublicCanvas=" + val), true);
+                                                    return 1;
+                                                })))
+                                .then(Commands.literal(KEY_ALLOW_CANVAS_COPYING)
+                                        .then(Commands.argument("enabled", BoolArgumentType.bool())
+                                                .executes(ctx -> {
+                                                    boolean val = BoolArgumentType.getBool(ctx, "enabled");
+                                                    ModConfig.setAllowCanvasCopying(val);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("allowCanvasCopying=" + val), true);
+                                                    return 1;
+                                                }))))
                         .then(Commands.literal("reload")
                                 .executes(ModConfigCommand::reloadConfig))));
     }
@@ -152,6 +180,7 @@ public final class ModConfigCommand {
         ModConfig.load();
         OverworldBuildHeightControl.syncToAllPlayers(context.getSource().getServer());
         CasinoRecipeControl.reloadServerResources(context.getSource().getServer());
+        me.tuanzi.world.canvas.CanvasSpaceManager.handleConfigHotReload(context.getSource().getServer());
 
         boolean enabled = ModConfig.isCasinoRecipesEnabled();
         int maxBuildHeight = ModConfig.getOverworldMaxBuildHeight();

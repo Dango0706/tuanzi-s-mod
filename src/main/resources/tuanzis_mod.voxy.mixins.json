@@ -1,0 +1,17 @@
+{
+  "required": false,
+  "package": "me.tuanzi.mixin.voxy",
+  "plugin": "me.tuanzi.mixin.voxy.VoxyMixinPlugin",
+  "compatibilityLevel": "JAVA_25",
+  "refmap": "tuanzis_mod.refmap.json",
+  "mixins": [
+    "VoxyStateEntryMixin",
+    "VoxyMapperMixin",
+    "VoxyWorldConversionFactoryMixin",
+    "VoxyVoxelIngestServiceMixin",
+    "VoxyWorldImporterMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

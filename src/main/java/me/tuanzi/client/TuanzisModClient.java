@@ -248,6 +248,16 @@ public class TuanzisModClient implements ClientModInitializer {
                 me.tuanzi.client.renderer.BlueprintCannonRenderer::new
         );
 
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+                me.tuanzi.init.ModBlocks.ELEVATOR_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.ElevatorBlockEntityRenderer::new
+        );
+
+        net.minecraft.client.renderer.blockentity.BlockEntityRenderers.register(
+                me.tuanzi.init.ModBlocks.PRINTED_MODEL_BLOCK_ENTITY,
+                me.tuanzi.client.renderer.PrintedModelBlockEntityRenderer::new
+        );
+
         // 注册蓝图检查器 3D PiP 预览渲染器
         net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry.register(
                 context -> new me.tuanzi.client.renderer.blueprint.BlueprintPreviewRenderer()
@@ -317,6 +327,30 @@ public class TuanzisModClient implements ClientModInitializer {
         net.minecraft.client.gui.screens.MenuScreens.register(
                 me.tuanzi.init.ModMenuTypes.BASE_UPGRADE_STATION,
                 me.tuanzi.client.gui.screens.scavenger.BaseUpgradeStationScreen::new
+        );
+
+        // 注册画板、3D打印机与复印机界面 Screens
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.EASEL,
+                me.tuanzi.client.gui.screens.inventory.EaselScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.PRINTER_3D,
+                me.tuanzi.client.gui.screens.inventory.Printer3DScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.COPIER,
+                me.tuanzi.client.gui.screens.inventory.CopierScreen::new
+        );
+        net.minecraft.client.gui.screens.MenuScreens.register(
+                me.tuanzi.init.ModMenuTypes.PAPER_SHREDDER,
+                me.tuanzi.client.gui.screens.inventory.PaperShredderScreen::new
+        );
+
+        // 注册画布客户端碰撞箱查询桥接
+        me.tuanzi.world.canvas.CanvasClientCollisionBridge.registerClientHandlers(
+                me.tuanzi.client.canvas.ClientCanvasDataCache::getVoxelData,
+                me.tuanzi.client.canvas.ClientCanvasDataCache::requestIfMissing
         );
 
         // 注册蜂刺余响自定义 TintSource
@@ -553,12 +587,27 @@ public class TuanzisModClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.scavenger.ScavengerItemRevealedS2CPacket.TYPE, (payload, context) -> {
             context.client().execute(() -> me.tuanzi.client.scavenger.ScavengerClientState.updateItemRevealed(payload));
         });
+
+        // 注册画布空间状态与分片体素网格数据接收器
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.CanvasSpaceSyncS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.canvas.ClientCanvasState.update(
+                    payload.inCanvasSpace(), payload.origin(),
+                    payload.sizeX(), payload.sizeY(), payload.sizeZ(),
+                    payload.showBorder(), payload.readOnly(), payload.creativeMode()
+            ));
+        });
+        ClientPlayNetworking.registerGlobalReceiver(me.tuanzi.network.canvas.CanvasDataChunkS2CPacket.TYPE, (payload, context) -> {
+            context.client().execute(() -> me.tuanzi.client.canvas.ClientCanvasDataCache.handleChunkPacket(payload));
+        });
+
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             me.tuanzi.config.OverworldBuildHeightControl.clearClientSync();
             me.tuanzi.world.scavenger.loot.data.ScavengerDataRegistry.clearClientSync();
             me.tuanzi.client.scavenger.ScavengerClientState.clearContainer();
             me.tuanzi.client.scavenger.ScavengerClientState.clearBaseStash();
             me.tuanzi.client.gui.TraumaHud.clear();
+            me.tuanzi.client.canvas.ClientCanvasState.clear();
+            me.tuanzi.client.canvas.ClientCanvasDataCache.clearAll();
         });
         me.tuanzi.world.inventory.scavenger.ScavengerClientBridge.registerClientProvider(
                 new me.tuanzi.world.inventory.scavenger.ScavengerClientBridge.ClientStateProvider() {
@@ -704,6 +753,31 @@ public class TuanzisModClient implements ClientModInitializer {
                 java.util.List.of(slabBottomSource, slabTopSource),
                 me.tuanzi.init.ModBlocks.COLOR_SLAB
         );
+
+        // 注册 16 种颜色电梯的方块染色处理器
+        for (var entry : me.tuanzi.init.ModBlocks.ELEVATORS_BY_COLOR.entrySet()) {
+            final int tintArgb = ARGB.opaque(entry.getKey().getTextureDiffuseColor());
+            net.minecraft.client.color.block.BlockTintSource elevatorColorSource = new net.minecraft.client.color.block.BlockTintSource() {
+                @Override
+                public int colorInWorld(net.minecraft.world.level.block.state.BlockState state, net.minecraft.client.renderer.block.BlockAndTintGetter level, net.minecraft.core.BlockPos pos) {
+                    return tintArgb;
+                }
+
+                @Override
+                public int color(net.minecraft.world.level.block.state.BlockState state) {
+                    return tintArgb;
+                }
+            };
+            net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry.register(
+                    java.util.List.of(elevatorColorSource),
+                    entry.getValue()
+            );
+        }
+
+        // 若安装了 Voxy 模组，初始化彩色方块远景 LOD 颜色联动桥接
+        if (net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded("voxy")) {
+            me.tuanzi.integration.voxy.VoxyClientBridge.init();
+        }
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) {
                 lastHoldingState = false;
@@ -954,6 +1028,60 @@ public class TuanzisModClient implements ClientModInitializer {
                 ).setAlwaysOnTop();
             } catch (IllegalStateException e) {
                 // 回退以防极端情况下没有 GizmoCollector
+            }
+        });
+
+        // 注册画布独立空间边界可视化线框渲染（X蓝 / Y黄 / Z红三色原点坐标轴 + 其余青色边框）
+        LevelRenderEvents.BEFORE_GIZMOS.register((LevelRenderContext context) -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.player == null || mc.level == null) return;
+            if (!me.tuanzi.init.ModDimensions.isCanvasSpaceLevel(mc.level)) return;
+            if (!me.tuanzi.client.canvas.ClientCanvasState.isInCanvasSpace()
+                    || !me.tuanzi.client.canvas.ClientCanvasState.isShowBorder()) return;
+
+            BlockPos origin = me.tuanzi.client.canvas.ClientCanvasState.getOrigin();
+            int sx = me.tuanzi.client.canvas.ClientCanvasState.getSizeX();
+            int sy = me.tuanzi.client.canvas.ClientCanvasState.getSizeY();
+            int sz = me.tuanzi.client.canvas.ClientCanvasState.getSizeZ();
+            if (sx <= 0 || sy <= 0 || sz <= 0) return;
+
+            double x0 = origin.getX();
+            double y0 = origin.getY();
+            double z0 = origin.getZ();
+            double x1 = x0 + sx;
+            double y1 = y0 + sy;
+            double z1 = z0 + sz;
+
+            net.minecraft.world.phys.Vec3 p000 = new net.minecraft.world.phys.Vec3(x0, y0, z0);
+            net.minecraft.world.phys.Vec3 p100 = new net.minecraft.world.phys.Vec3(x1, y0, z0);
+            net.minecraft.world.phys.Vec3 p010 = new net.minecraft.world.phys.Vec3(x0, y1, z0);
+            net.minecraft.world.phys.Vec3 p110 = new net.minecraft.world.phys.Vec3(x1, y1, z0);
+            net.minecraft.world.phys.Vec3 p001 = new net.minecraft.world.phys.Vec3(x0, y0, z1);
+            net.minecraft.world.phys.Vec3 p101 = new net.minecraft.world.phys.Vec3(x1, y0, z1);
+            net.minecraft.world.phys.Vec3 p011 = new net.minecraft.world.phys.Vec3(x0, y1, z1);
+            net.minecraft.world.phys.Vec3 p111 = new net.minecraft.world.phys.Vec3(x1, y1, z1);
+
+            int xAxisColor = ARGB.colorFromFloat(1.0F, 0.15F, 0.45F, 1.0F);
+            int yAxisColor = ARGB.colorFromFloat(1.0F, 1.0F, 0.90F, 0.10F);
+            int zAxisColor = ARGB.colorFromFloat(1.0F, 1.0F, 0.18F, 0.18F);
+            int borderColor = ARGB.colorFromFloat(0.95F, 0.1F, 0.85F, 1.0F);
+
+            try {
+                // 从 (0, 0, 0) 出发的三条坐标轴高亮加粗
+                Gizmos.line(p000, p100, xAxisColor, 4.0F);
+                Gizmos.line(p000, p010, yAxisColor, 4.0F);
+                Gizmos.line(p000, p001, zAxisColor, 4.0F);
+                // 其余 9 条边框棱边保持青色细线
+                Gizmos.line(p100, p110, borderColor, 2.0F);
+                Gizmos.line(p110, p010, borderColor, 2.0F);
+                Gizmos.line(p010, p011, borderColor, 2.0F);
+                Gizmos.line(p011, p001, borderColor, 2.0F);
+                Gizmos.line(p001, p101, borderColor, 2.0F);
+                Gizmos.line(p101, p100, borderColor, 2.0F);
+                Gizmos.line(p011, p111, borderColor, 2.0F);
+                Gizmos.line(p101, p111, borderColor, 2.0F);
+                Gizmos.line(p110, p111, borderColor, 2.0F);
+            } catch (IllegalStateException ignored) {
             }
         });
 

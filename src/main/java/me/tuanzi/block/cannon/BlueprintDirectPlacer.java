@@ -1,7 +1,12 @@
 package me.tuanzi.block.cannon;
 
+import me.tuanzi.init.ModBlocks;
+import me.tuanzi.init.ModDimensions;
 import me.tuanzi.util.LitematicaParser;
 import me.tuanzi.util.ModLog;
+import me.tuanzi.world.canvas.CanvasBlockRules;
+import me.tuanzi.world.canvas.CanvasSpaceManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -9,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -104,8 +110,12 @@ public final class BlueprintDirectPlacer {
             }
         }
 
+        boolean inCanvas = ModDimensions.isCanvasSpaceLevel(level);
         int placedBlocks = 0;
         int clearedAirBlocks = 0;
+        int outOfBoundsCount = 0;
+        BlockPos firstOutOfBoundsPos = null;
+        int forbiddenBlockCount = 0;
 
         for (int idx = 0; idx < effectiveLength; idx++) {
             int y = (int) ((long) idx / layerSize);
@@ -133,12 +143,28 @@ public final class BlueprintDirectPlacer {
             if (!level.isInValidBounds(targetPos)) {
                 continue;
             }
+            if (inCanvas && !BlueprintBuildPlanner.isWithinCanvasEditBoundsIfCanvas(level, targetPos)) {
+                if (!targetState.isAir()) {
+                    outOfBoundsCount++;
+                    if (firstOutOfBoundsPos == null) {
+                        firstOutOfBoundsPos = targetPos.immutable();
+                    }
+                }
+                continue;
+            }
 
             if (targetState.isAir()) {
-                if (!level.getBlockState(targetPos).isAir()) {
+                BlockState current = level.getBlockState(targetPos);
+                if (!current.isAir()
+                        && (!inCanvas || (!current.is(ModBlocks.CANVAS_BASE_BLOCK) && !CanvasBlockRules.isCanvasUtilityBlock(current)))) {
                     level.setBlock(targetPos, Blocks.AIR.defaultBlockState(), DIRECT_PLACE_FLAGS);
                     clearedAirBlocks++;
                 }
+                continue;
+            }
+
+            if (inCanvas && !BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, targetState)) {
+                forbiddenBlockCount++;
                 continue;
             }
 
@@ -165,9 +191,38 @@ public final class BlueprintDirectPlacer {
             }
         }
 
-        int spawnedEntities = placeBlueprintEntities(
+        int rawEntityCount = blueprintTag.getListOrEmpty("Entities").size();
+        int spawnedEntities = inCanvas ? 0 : placeBlueprintEntities(
                 level, blueprintTag, width, height, length, basePos, offset, normalizedRot, mirrored
         );
+        int skippedEntityCount = inCanvas ? rawEntityCount : 0;
+
+        if (inCanvas) {
+            CanvasSpaceManager.CanvasEditSession session = CanvasSpaceManager.getSessionByLevel(level);
+            if (outOfBoundsCount > 0 && firstOutOfBoundsPos != null && session != null) {
+                CanvasSpaceManager.notifyCanvasEditors(level, session, Component.translatable(
+                        "message.tuanzis_mod.canvas.cannon_out_of_bounds_skipped",
+                        outOfBoundsCount,
+                        session.sizeX - 1,
+                        session.sizeY - 1,
+                        session.sizeZ - 1,
+                        firstOutOfBoundsPos.getX(),
+                        firstOutOfBoundsPos.getY(),
+                        firstOutOfBoundsPos.getZ()
+                ).withStyle(ChatFormatting.YELLOW));
+                ModLog.debug("【画布蓝图直放】跳过超出编辑边界的目标方块: count=" + outOfBoundsCount
+                        + ", firstPos=" + firstOutOfBoundsPos);
+            }
+            if (forbiddenBlockCount > 0 || skippedEntityCount > 0) {
+                CanvasSpaceManager.notifyCanvasEditors(level, session, Component.translatable(
+                        "message.tuanzis_mod.canvas.cannon_forbidden_skipped",
+                        forbiddenBlockCount,
+                        skippedEntityCount
+                ).withStyle(ChatFormatting.YELLOW));
+                ModLog.debug("【画布蓝图直放】跳过画布空间禁用方块/实体: forbiddenBlocks=" + forbiddenBlockCount
+                        + ", skippedEntities=" + skippedEntityCount);
+            }
+        }
 
         BlockPos centerPos = basePos.offset(offset).offset(width / 2, height / 2, length / 2);
         level.playSound(null, centerPos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 0.8f, 1.2f);

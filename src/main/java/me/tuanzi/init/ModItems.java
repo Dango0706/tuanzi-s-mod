@@ -201,6 +201,8 @@ public class ModItems {
     public static final Item CHROMATIC_SKULL = register("chromatic_skull", (properties) -> new ChromaticSkullItem(properties.stacksTo(16).rarity(Rarity.RARE)));
     public static final Item CODEX_OF_ENCHANTING = register("codex_of_enchanting", CodexOfEnchantingItem::new);
     public static final Item GLASS_ITEM_FRAME = register("glass_item_frame", GlassItemFrameItem::new);
+    public static final Item CANVAS = register("canvas", CanvasItem::new);
+    public static final Item PRINT_MATERIAL = register("print_material", Item::new);
 
     public static final Item REINFORCED_LONG_HILT = register("reinforced_long_hilt", Item::new);
     public static final Item WOODEN_NODACHI = register("wooden_nodachi", properties -> new NodachiItem(properties, ToolMaterial.WOOD, 3.0F));

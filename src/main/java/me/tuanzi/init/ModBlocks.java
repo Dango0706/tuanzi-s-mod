@@ -56,6 +56,52 @@ public class ModBlocks {
     public static final Block BASE_UPGRADE_STATION = registerBlock("base_upgrade_station",
             properties -> new me.tuanzi.block.BaseUpgradeStationBlock(properties.strength(3.5f, 600.0f).noOcclusion()));
 
+    // 画板与可打印画布系统方块
+    public static final Block EASEL = registerBlock("easel",
+            properties -> new me.tuanzi.block.EaselBlock(properties.strength(2.0f, 3.0f).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion()));
+
+    public static final Block PRINTER_3D = registerBlock("printer_3d",
+            properties -> new me.tuanzi.block.Printer3DBlock(properties.strength(3.5f, 6.0f).requiresCorrectToolForDrops().sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));
+
+    public static final Block COPIER = registerBlock("copier",
+            properties -> new me.tuanzi.block.CopierBlock(properties.strength(3.5f, 6.0f).requiresCorrectToolForDrops().sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));
+
+    public static final Block PAPER_SHREDDER = registerBlock("paper_shredder",
+            properties -> new me.tuanzi.block.PaperShredderBlock(properties.strength(3.5f, 6.0f).requiresCorrectToolForDrops().sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));
+
+    public static final Block PRINTED_MODEL = registerBlockWithCustomItem("printed_model",
+            properties -> new me.tuanzi.block.PrintedModelBlock(properties.strength(1.5f, 3.0f).noOcclusion().dynamicShape()),
+            (block, itemProps) -> new me.tuanzi.item.PrintedModelBlockItem(block, itemProps));
+
+    public static final Block PRINTED_MODEL_PART = registerBlockNoItem("printed_model_part",
+            properties -> new me.tuanzi.block.PrintedModelPartBlock(properties.strength(1.5f, 3.0f).noOcclusion().dynamicShape()));
+
+    public static final Block CANVAS_BASE_BLOCK = registerBlockNoItem("canvas_base_block",
+            properties -> new me.tuanzi.block.CanvasBaseBlock(properties.strength(0.4f, 1.0f).sound(net.minecraft.world.level.block.SoundType.STONE)));
+
+    // 16 种原版染料颜色电梯方块（硬度 4，需镐子挖掘）
+    public static final java.util.Map<net.minecraft.world.item.DyeColor, Block> ELEVATORS_BY_COLOR = registerElevators();
+    public static final java.util.List<Block> ELEVATORS = java.util.List.copyOf(ELEVATORS_BY_COLOR.values());
+    public static final Block WHITE_ELEVATOR = ELEVATORS_BY_COLOR.get(net.minecraft.world.item.DyeColor.WHITE);
+
+    private static java.util.Map<net.minecraft.world.item.DyeColor, Block> registerElevators() {
+        java.util.EnumMap<net.minecraft.world.item.DyeColor, Block> map = new java.util.EnumMap<>(net.minecraft.world.item.DyeColor.class);
+        for (net.minecraft.world.item.DyeColor dyeColor : net.minecraft.world.item.DyeColor.values()) {
+            Block elevator = registerBlock(dyeColor.getName() + "_elevator",
+                    properties -> new me.tuanzi.block.ElevatorBlock(
+                            dyeColor,
+                            properties.strength(4.0f, 6.0f)
+                                    .requiresCorrectToolForDrops()
+                                    .sound(net.minecraft.world.level.block.SoundType.METAL)
+                                    .mapColor(dyeColor.getMapColor())
+                                    .noOcclusion()
+                                    .dynamicShape()
+                    ));
+            map.put(dyeColor, elevator);
+        }
+        return java.util.Collections.unmodifiableMap(map);
+    }
+
     // 装饰性筹码系列（按面额升序，支持地面堆叠最多 8 枚）
     public static final Block CHIP_50 = registerChipBlock("chip_50");
     public static final Block CHIP_100 = registerChipBlock("chip_100");
@@ -185,19 +231,94 @@ public class ModBlocks {
                     ).build()
             );
 
+    public static final BlockEntityType<me.tuanzi.block.entity.ElevatorBlockEntity> ELEVATOR_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "elevator_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.ElevatorBlockEntity::new, ELEVATORS.toArray(Block[]::new)
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.EaselBlockEntity> EASEL_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "easel_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.EaselBlockEntity::new, EASEL
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.Printer3DBlockEntity> PRINTER_3D_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printer_3d_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.Printer3DBlockEntity::new, PRINTER_3D
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.CopierBlockEntity> COPIER_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "copier_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.CopierBlockEntity::new, COPIER
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.PaperShredderBlockEntity> PAPER_SHREDDER_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "paper_shredder_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.PaperShredderBlockEntity::new, PAPER_SHREDDER
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.PrintedModelBlockEntity> PRINTED_MODEL_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printed_model_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.PrintedModelBlockEntity::new, PRINTED_MODEL
+                    ).build()
+            );
+
+    public static final BlockEntityType<me.tuanzi.block.entity.PrintedModelPartBlockEntity> PRINTED_MODEL_PART_BLOCK_ENTITY =
+            Registry.register(
+                    BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                    Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "printed_model_part_be"),
+                    net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder.create(
+                            me.tuanzi.block.entity.PrintedModelPartBlockEntity::new, PRINTED_MODEL_PART
+                    ).build()
+            );
+
     private static Block registerBlock(String path, java.util.function.Function<BlockBehaviour.Properties, Block> blockFactory) {
+        return registerBlockWithCustomItem(path, blockFactory, (b, p) -> new BlockItem(b, p));
+    }
+
+    private static Block registerBlockWithCustomItem(
+            String path,
+            java.util.function.Function<BlockBehaviour.Properties, Block> blockFactory,
+            java.util.function.BiFunction<Block, Item.Properties, BlockItem> itemFactory
+    ) {
         ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));
         Block block = blockFactory.apply(BlockBehaviour.Properties.of().setId(key));
 
-        // 注册方块
         Registry.register(BuiltInRegistries.BLOCK, key, block);
 
-        // 注册对应的 BlockItem
         ResourceKey<Item> itemKey = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));
-        BlockItem blockItem = new BlockItem(block, new Item.Properties().setId(itemKey));
+        BlockItem blockItem = itemFactory.apply(block, new Item.Properties().setId(itemKey));
         Registry.register(BuiltInRegistries.ITEM, itemKey, blockItem);
 
         return block;
+    }
+
+    private static Block registerBlockNoItem(String path, java.util.function.Function<BlockBehaviour.Properties, Block> blockFactory) {
+        ResourceKey<Block> key = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, path));
+        Block block = blockFactory.apply(BlockBehaviour.Properties.of().setId(key));
+        return Registry.register(BuiltInRegistries.BLOCK, key, block);
     }
 
     public static void initialize() {

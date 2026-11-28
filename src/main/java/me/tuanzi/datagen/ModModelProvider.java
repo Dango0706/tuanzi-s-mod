@@ -136,12 +136,48 @@ public class ModModelProvider extends FabricModelProvider {
                             return obj;
                         };
                         blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                    } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/easel")) {
+                        net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                            com.google.gson.JsonObject obj = readModelJson.apply("easel.json");
+                            if (obj == null) obj = new com.google.gson.JsonObject();
+                            obj.addProperty("parent", "minecraft:block/block");
+                            return obj;
+                        };
+                        blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                    } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/printer_3d")) {
+                        net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                            com.google.gson.JsonObject obj = readModelJson.apply("printer_3d.json");
+                            if (obj == null) obj = new com.google.gson.JsonObject();
+                            obj.addProperty("parent", "minecraft:block/block");
+                            return obj;
+                        };
+                        blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                    } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/copier")) {
+                        net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                            com.google.gson.JsonObject obj = readModelJson.apply("copier.json");
+                            if (obj == null) obj = new com.google.gson.JsonObject();
+                            obj.addProperty("parent", "minecraft:block/block");
+                            return obj;
+                        };
+                        blockStateModelGenerator.modelOutput.accept(id, customInstance);
+                    } else if (id.getNamespace().equals("tuanzis_mod") && path.equals("block/paper_shredder")) {
+                        net.minecraft.client.data.models.model.ModelInstance customInstance = () -> {
+                            com.google.gson.JsonObject obj = readModelJson.apply("paper_shredder.json");
+                            if (obj == null) obj = new com.google.gson.JsonObject();
+                            obj.addProperty("parent", "minecraft:block/block");
+                            return obj;
+                        };
+                        blockStateModelGenerator.modelOutput.accept(id, customInstance);
                     } else if (id.getNamespace().equals("tuanzis_mod") &&
                             (path.equals("item/soul_merchant_station") ||
                                     path.equals("item/blueprint_cannon") ||
                                     path.equals("item/blueprint_table") ||
                                     path.equals("item/base_stash_cabinet") ||
-                                    path.equals("item/base_upgrade_station"))) {
+                                    path.equals("item/base_upgrade_station") ||
+                                    path.equals("item/easel") ||
+                                    path.equals("item/printer_3d") ||
+                                    path.equals("item/copier") ||
+                                    path.equals("item/paper_shredder"))) {
                         net.minecraft.client.data.models.model.ModelInstance customItemInstance = () -> {
                             com.google.gson.JsonObject modelJson = new com.google.gson.JsonObject();
                             String parentName = "tuanzis_mod:" + path.replace("item/", "block/");
@@ -386,6 +422,36 @@ public class ModModelProvider extends FabricModelProvider {
 
         blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE, me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE);
 
+        // 画板、3D打印机、复印机与碎纸机（四向朝向 + 自定义低多边形方块/物品模型）
+        for (net.minecraft.world.level.block.Block canvasMachine : new net.minecraft.world.level.block.Block[]{
+                me.tuanzi.init.ModBlocks.EASEL,
+                me.tuanzi.init.ModBlocks.PRINTER_3D,
+                me.tuanzi.init.ModBlocks.COPIER,
+                me.tuanzi.init.ModBlocks.PAPER_SHREDDER
+        }) {
+            net.minecraft.resources.Identifier id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(canvasMachine);
+            String path = id.getPath();
+            decoratedOutput.accept(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/" + path), com.google.gson.JsonObject::new);
+            decoratedOutput.accept(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/" + path), com.google.gson.JsonObject::new);
+            MultiVariant machineVariant = BlockModelGenerators.plainVariant(
+                    net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/" + path));
+            blockStateModelGenerator.blockStateOutput.accept(
+                    MultiVariantGenerator.dispatch(canvasMachine).with(
+                            PropertyDispatch.initial(BlockStateProperties.HORIZONTAL_FACING)
+                                    .select(Direction.NORTH, machineVariant)
+                                    .select(Direction.EAST, machineVariant.with(BlockModelGenerators.Y_ROT_90))
+                                    .select(Direction.SOUTH, machineVariant.with(BlockModelGenerators.Y_ROT_180))
+                                    .select(Direction.WEST, machineVariant.with(BlockModelGenerators.Y_ROT_270))
+                    )
+            );
+        }
+
+        // 画布空间白色系统底面方块
+        blockStateModelGenerator.createTrivialCube(me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK);
+        // 打印模型主方块与占位方块（仅粒子模型，实体渲染由 BlockEntityRenderer 接管）
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.PRINTED_MODEL, me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK);
+        blockStateModelGenerator.createParticleOnlyBlock(me.tuanzi.init.ModBlocks.PRINTED_MODEL_PART, me.tuanzi.init.ModBlocks.CANVAS_BASE_BLOCK);
+
         // 自动生成玩家模拟器的方向性方块模型和状态
         TextureMapping simulatorHorizontalTextures = new TextureMapping()
                 .put(TextureSlot.TOP, new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("minecraft", "block/furnace_top")))
@@ -510,6 +576,20 @@ public class ModModelProvider extends FabricModelProvider {
         // 注册彩色方块的 BlockState
         blockStateModelGenerator.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(me.tuanzi.init.ModBlocks.COLOR_BLOCK, blockVariant));
 
+        // 注册 16 种颜色电梯方块的共享着色方块模型与 BlockState
+        net.minecraft.resources.Identifier elevatorModelId = TINTED_CUBE_ALL.create(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/elevator"),
+                new TextureMapping().put(
+                        TextureSlot.ALL,
+                        new Material(net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/elevator"))
+                ),
+                blockStateModelGenerator.modelOutput
+        );
+        MultiVariant elevatorVariant = BlockModelGenerators.plainVariant(elevatorModelId);
+        for (net.minecraft.world.level.block.Block elevator : me.tuanzi.init.ModBlocks.ELEVATORS) {
+            blockStateModelGenerator.blockStateOutput.accept(BlockModelGenerators.createSimpleBlock(elevator, elevatorVariant));
+        }
+
         // 显式触发生成油漆桶物品模型 JSON（由代理拦截覆写为双层 tints 局部着色）
         decoratedOutput.accept(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "item/paint_bucket"),
@@ -605,6 +685,9 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.generateFlatItem(ModItems.CHROMATIC_SKULL, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.CODEX_OF_ENCHANTING, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.GLASS_ITEM_FRAME, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.CANVAS, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PRINT_MATERIAL, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.PRINTED_MODEL.asItem(), ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.HALL_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(me.tuanzi.init.ModBlocks.BLACKBOX_CORE_CASE.asItem(), ModelTemplates.FLAT_ITEM);
         itemModelGenerator.generateFlatItem(ModItems.ROOM_RETURN_BEACON, ModelTemplates.FLAT_ITEM);
@@ -671,5 +754,19 @@ public class ModModelProvider extends FabricModelProvider {
                         new net.minecraft.client.color.item.Dye(-1)
                 )
         );
+
+        // 注册 16 种颜色电梯的染色物品模型
+        net.minecraft.resources.Identifier elevatorBlockModelId = net.minecraft.resources.Identifier.fromNamespaceAndPath("tuanzis_mod", "block/elevator");
+        for (var entry : me.tuanzi.init.ModBlocks.ELEVATORS_BY_COLOR.entrySet()) {
+            itemModelGenerator.itemModelOutput.accept(
+                    entry.getValue().asItem(),
+                    net.minecraft.client.data.models.model.ItemModelUtils.tintedModel(
+                            elevatorBlockModelId,
+                            net.minecraft.client.data.models.model.ItemModelUtils.constantTint(
+                                    net.minecraft.util.ARGB.opaque(entry.getKey().getTextureDiffuseColor())
+                            )
+                    )
+            );
+        }
     }
 }

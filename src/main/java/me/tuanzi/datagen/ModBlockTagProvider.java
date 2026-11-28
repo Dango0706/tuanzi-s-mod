@@ -28,6 +28,12 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
                 .add(ModBlocks.BASE_UPGRADE_STATION.builtInRegistryHolder().key())
                 .add(ModBlocks.BLOCK_BREAKER.builtInRegistryHolder().key())
                 .add(ModBlocks.BLOCK_PLACER.builtInRegistryHolder().key())
+                .add(ModBlocks.PRINTER_3D.builtInRegistryHolder().key())
+                .add(ModBlocks.COPIER.builtInRegistryHolder().key())
+                .add(ModBlocks.PAPER_SHREDDER.builtInRegistryHolder().key())
+                .add(ModBlocks.PRINTED_MODEL.builtInRegistryHolder().key())
+                .add(ModBlocks.PRINTED_MODEL_PART.builtInRegistryHolder().key())
+                .addAll(ModBlocks.ELEVATORS.stream().map(b -> b.builtInRegistryHolder().key()).toList())
                 .add(casinodecoKey("glass_coffee_table"))
                 .add(casinodecoKey("casino_chandelier"))
                 .add(casinodecoKey("velvet_rope_post"))
@@ -53,6 +59,7 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
                 .add(casinodecoKey("gold_veined_black_marble_slab"));
 
         builder(BlockTags.MINEABLE_WITH_AXE)
+                .add(ModBlocks.EASEL.builtInRegistryHolder().key())
                 .add(casinodecoKey("casino_sofa"))
                 .add(casinodecoKey("casino_sign"))
                 .add(casinodecoKey("small_casino_sign"))
@@ -148,6 +155,9 @@ public class ModBlockTagProvider extends FabricTagsProvider<Block> {
         builder(me.tuanzi.init.ModBlockTags.SNOW_STRIDER_BLOCKS)
                 .addOptionalTag(BlockTags.SNOW)
                 .addOptionalTag(BlockTags.ICE);
+
+        builder(me.tuanzi.init.ModBlockTags.ELEVATORS)
+                .addAll(ModBlocks.ELEVATORS.stream().map(b -> b.builtInRegistryHolder().key()).toList());
     }
 
     private static net.minecraft.resources.ResourceKey<Block> casinodecoKey(String path) {

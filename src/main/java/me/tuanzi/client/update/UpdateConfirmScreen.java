@@ -85,6 +85,7 @@ public class UpdateConfirmScreen extends Screen {
         // 自动更新
         this.addRenderableWidget(
                 Button.builder(Component.literal("自动更新"), button -> {
+                            this.downloadFailed = false;
                             this.isDownloading = true;
                             this.statusText = "正在下载更新包，请稍候...";
                             this.init(); // 重新加载界面按钮
@@ -193,9 +194,71 @@ public class UpdateConfirmScreen extends Screen {
         int scrollAreaY1 = panelY + 175;
         int viewHeight = 120;
 
-        if (this.isDownloading || this.isDownloaded || this.downloadFailed) {
-            // 下载/成功/失败状态绘制提示文字
-            graphics.centeredText(this.font, this.statusText, this.width / 2, panelY + 115, ARGB.color(255, 255, 255, 255));
+        if (this.isDownloading || this.isDownloaded) {
+            int textColor = this.isDownloaded
+                    ? ARGB.color(255, 110, 240, 150)
+                    : ARGB.color(255, 255, 255, 255);
+            graphics.centeredText(this.font, this.statusText, this.width / 2, panelY + 86, textColor);
+
+            long downloaded = UpdateChecker.getDownloadedBytes();
+            long total = UpdateChecker.getTotalBytes();
+            double progress = this.isDownloaded ? 1.0 : UpdateChecker.getDownloadProgress();
+            String percentText = this.isDownloaded
+                    ? "100.00%"
+                    : UpdateChecker.formatProgressPercent(downloaded, total);
+            String sizeText = UpdateChecker.formatProgressSizeMB(downloaded, total);
+
+            int barWidth = 250;
+            int barHeight = 16;
+            int barX = panelX + (panelWidth - barWidth) / 2;
+            int barY = panelY + 108;
+            int innerWidth = barWidth - 2;
+
+            // 绘制进度条底槽与描边
+            graphics.fill(barX, barY, barX + barWidth, barY + barHeight, ARGB.color(210, 12, 14, 24));
+            int borderColor = this.isDownloaded
+                    ? ARGB.color(255, 76, 210, 130)
+                    : ARGB.color(255, 66, 133, 244);
+            graphics.outline(barX, barY, barWidth, barHeight, borderColor);
+
+            // 绘制进度条填充
+            if (progress >= 0.0) {
+                int fillWidth = Mth.clamp((int) Math.round(innerWidth * progress), 0, innerWidth);
+                if (fillWidth > 0) {
+                    int topColor = this.isDownloaded
+                            ? ARGB.color(255, 86, 224, 145)
+                            : ARGB.color(255, 92, 168, 255);
+                    int bottomColor = this.isDownloaded
+                            ? ARGB.color(255, 42, 168, 98)
+                            : ARGB.color(255, 45, 110, 220);
+                    graphics.fillGradient(barX + 1, barY + 1, barX + 1 + fillWidth, barY + barHeight - 1, topColor, bottomColor);
+                }
+            } else {
+                // 未获取到总大小时的平滑往复动态指示条
+                int pulseWidth = 60;
+                int travel = innerWidth - pulseWidth;
+                double phase = (System.currentTimeMillis() % 1600L) / 1600.0;
+                double pingPong = phase < 0.5 ? phase * 2.0 : (1.0 - phase) * 2.0;
+                int offset = (int) Math.round(travel * pingPong);
+                graphics.fillGradient(
+                        barX + 1 + offset, barY + 1,
+                        barX + 1 + offset + pulseWidth, barY + barHeight - 1,
+                        ARGB.color(255, 92, 168, 255),
+                        ARGB.color(255, 45, 110, 220)
+                );
+            }
+
+            // 进度条中央百分比数字 (xx.xx%)
+            graphics.centeredText(this.font, percentText, this.width / 2, barY + (barHeight - 8) / 2, ARGB.color(255, 255, 255, 255));
+
+            // 进度条下方详情行：左对齐百分比、右对齐大小数字 (xx.xx / xx.xx MB)
+            int infoY = barY + barHeight + 10;
+            graphics.text(this.font, "进度: " + percentText, barX, infoY, ARGB.color(255, 180, 220, 255));
+            int sizeTextWidth = this.font.width(sizeText);
+            graphics.text(this.font, sizeText, barX + barWidth - sizeTextWidth, infoY, ARGB.color(255, 210, 225, 240));
+        } else if (this.downloadFailed) {
+            // 失败状态绘制提示文字
+            graphics.centeredText(this.font, this.statusText, this.width / 2, panelY + 115, ARGB.color(255, 255, 110, 110));
         } else {
             // 1. 裁剪区域限制绘制：仅渲染可视纵轴 55px 至 175px 之间的文字段落
             graphics.enableScissor(panelX + 15, scrollAreaY0, panelX + panelWidth - 15, scrollAreaY1);

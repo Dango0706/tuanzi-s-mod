@@ -5,8 +5,12 @@ import me.tuanzi.block.ColorSlab;
 import me.tuanzi.block.ColorStairs;
 import me.tuanzi.block.entity.ColorBlockBlockEntity;
 import me.tuanzi.block.entity.ColorSlabBlockEntity;
+import me.tuanzi.init.ModBlocks;
+import me.tuanzi.init.ModDimensions;
 import me.tuanzi.util.LitematicaParser;
 import me.tuanzi.util.ModLog;
+import me.tuanzi.world.canvas.CanvasBlockRules;
+import me.tuanzi.world.canvas.CanvasSpaceManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -217,8 +221,29 @@ public class BlueprintBuildPlanner {
         return cannonPos != null && targetPos != null && targetPos.closerThan(cannonPos, MAX_CANNON_RANGE);
     }
 
+    public static boolean isWithinCanvasEditBoundsIfCanvas(Level level, @Nullable BlockPos targetPos) {
+        if (!ModDimensions.isCanvasSpaceLevel(level)) {
+            return true;
+        }
+        if (targetPos == null) {
+            return false;
+        }
+        CanvasSpaceManager.CanvasEditSession session = CanvasSpaceManager.getSessionByLevel(level);
+        return session != null && session.isInsideEditBounds(targetPos);
+    }
+
+    public static boolean isAllowedBlueprintBlockInLevel(Level level, BlockState state) {
+        if (!ModDimensions.isCanvasSpaceLevel(level)) {
+            return true;
+        }
+        return CanvasBlockRules.isAllowedAsCanvasVoxel(state);
+    }
+
     public static boolean isValidWorldTarget(Level level, @Nullable BlockPos cannonPos, @Nullable BlockPos targetPos) {
-        return targetPos != null && level.isInValidBounds(targetPos) && isWithinCannonRange(cannonPos, targetPos);
+        return targetPos != null
+                && level.isInValidBounds(targetPos)
+                && isWithinCanvasEditBoundsIfCanvas(level, targetPos)
+                && isWithinCannonRange(cannonPos, targetPos);
     }
 
     public static boolean isBlueprintAir(BlockState state) {
@@ -248,6 +273,14 @@ public class BlueprintBuildPlanner {
     public static boolean isBreakableBlock(Level level, BlockPos pos, BlockState state) {
         if (state.isAir()) return false;
         if (state.getBlock() instanceof LiquidBlock) return false;
+        if (ModDimensions.isCanvasSpaceLevel(level)) {
+            if (state.is(ModBlocks.CANVAS_BASE_BLOCK) || CanvasBlockRules.isCanvasUtilityBlock(state)) {
+                return false;
+            }
+            if (!isWithinCanvasEditBoundsIfCanvas(level, pos)) {
+                return false;
+            }
+        }
         return state.getDestroySpeed(level, pos) >= 0;
     }
 

@@ -1,5 +1,6 @@
 package me.tuanzi.mixin;
 
+import me.tuanzi.init.ModDimensions;
 import me.tuanzi.init.ModStatusEffects;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -22,7 +23,8 @@ public abstract class FlightEffectMixin {
     private void tuanzis_mod$tickFlightAbility(CallbackInfo ci) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof Player player) {
-            if (player.getAbilities().instabuild || player.isSpectator()) {
+            if (player.getAbilities().instabuild || player.isSpectator()
+                    || ModDimensions.isCanvasSpaceLevel(player.level())) {
                 tuanzis_mod$hadFlightEffect = false;
                 return;
             }

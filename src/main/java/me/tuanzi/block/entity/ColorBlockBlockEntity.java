@@ -29,6 +29,8 @@ public class ColorBlockBlockEntity extends BlockEntity {
         this.setChanged();
         if (this.level != null && !this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        } else {
+            me.tuanzi.integration.voxy.VoxyColorSupport.notifyClientColorChanged(this.level, this.worldPosition);
         }
     }
 
@@ -47,6 +49,7 @@ public class ColorBlockBlockEntity extends BlockEntity {
         me.tuanzi.util.ModLog.debug("[ColorBlockEntity] loadAdditional, loaded color: " + String.format("#%06X", this.color));
         if (this.color != oldColor && this.level != null && this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+            me.tuanzi.integration.voxy.VoxyColorSupport.notifyClientColorChanged(this.level, this.worldPosition);
         }
     }
 

@@ -34,8 +34,11 @@ import net.minecraft.world.timeline.Timeline;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ModDimensions {
+    public static final String CANVAS_SPACE_DYNAMIC_PREFIX = "canvas_space_";
+
     public static final ResourceKey<Level> SCAVENGER_CORRIDOR_LEVEL = ResourceKey.create(
             Registries.DIMENSION,
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
@@ -50,6 +53,54 @@ public class ModDimensions {
             Registries.LEVEL_STEM,
             Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "scavenger_corridor")
     );
+
+    public static final ResourceKey<Level> CANVAS_SPACE_LEVEL = ResourceKey.create(
+            Registries.DIMENSION,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "canvas_space")
+    );
+
+    public static final ResourceKey<DimensionType> CANVAS_SPACE_TYPE = ResourceKey.create(
+            Registries.DIMENSION_TYPE,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "canvas_space_type")
+    );
+
+    public static final ResourceKey<LevelStem> CANVAS_SPACE_STEM = ResourceKey.create(
+            Registries.LEVEL_STEM,
+            Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "canvas_space")
+    );
+
+    /**
+     * 为指定画布 UUID 生成独立的动态维度 Key（tuanzis_mod:canvas_space_<32位小写无连字符uuid>）。
+     */
+    public static ResourceKey<Level> createCanvasInstanceDimension(UUID canvasUuid) {
+        String compact = canvasUuid.toString().replace("-", "").toLowerCase(java.util.Locale.ROOT);
+        return ResourceKey.create(
+                Registries.DIMENSION,
+                Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, CANVAS_SPACE_DYNAMIC_PREFIX + compact)
+        );
+    }
+
+    /**
+     * 判断给定维度 Key 是否属于画布独立编辑空间（兼容静态基准维度及每张画布动态维度）。
+     */
+    public static boolean isCanvasSpaceDimension(@org.jetbrains.annotations.Nullable ResourceKey<Level> dimension) {
+        if (dimension == null) {
+            return false;
+        }
+        if (dimension.equals(CANVAS_SPACE_LEVEL)) {
+            return true;
+        }
+        Identifier id = dimension.identifier();
+        return Tuanzis_mod.MOD_ID.equals(id.getNamespace())
+                && id.getPath().startsWith(CANVAS_SPACE_DYNAMIC_PREFIX);
+    }
+
+    /**
+     * 判断给定世界是否属于画布独立编辑空间。
+     */
+    public static boolean isCanvasSpaceLevel(@org.jetbrains.annotations.Nullable Level level) {
+        return level != null && isCanvasSpaceDimension(level.dimension());
+    }
 
     public static void bootstrapDimensionType(BootstrapContext<DimensionType> context) {
         HolderGetter<Block> blocks = context.lookup(Registries.BLOCK);
@@ -93,6 +144,44 @@ public class ModDimensions {
                         Optional.of(clocks.getOrThrow(WorldClocks.THE_END))
                 )
         );
+
+        EnvironmentAttributeMap canvasAttributes = EnvironmentAttributeMap.builder()
+                .set(EnvironmentAttributes.FOG_COLOR, ARGB.vector3fFromRGB24(0xC0D8FF))
+                .set(EnvironmentAttributes.SKY_LIGHT_COLOR, ARGB.vector3fFromRGB24(0xFFFFFF))
+                .set(EnvironmentAttributes.SKY_COLOR, ARGB.vector3fFromRGB24(0x78A7FF))
+                .set(EnvironmentAttributes.SKY_LIGHT_FACTOR, 1.0F)
+                .set(EnvironmentAttributes.AMBIENT_LIGHT_COLOR, ARGB.vector3fFromRGB24(0xFFFFFF))
+                .set(EnvironmentAttributes.BED_RULE, new BedRule(
+                        BedRule.Rule.NEVER,
+                        BedRule.Rule.NEVER,
+                        false,
+                        false,
+                        Optional.of(Component.translatable("message.tuanzis_mod.canvas.no_sleep"))
+                ))
+                .set(EnvironmentAttributes.RESPAWN_ANCHOR_WORKS, false)
+                .build();
+
+        context.register(
+                CANVAS_SPACE_TYPE,
+                new DimensionType(
+                        true,
+                        true,
+                        false,
+                        false,
+                        1.0,
+                        -64,
+                        384,
+                        384,
+                        blocks.getOrThrow(BlockTags.INFINIBURN_OVERWORLD),
+                        1.0F,
+                        new DimensionType.MonsterSettings(ConstantInt.of(0), 0),
+                        DimensionType.Skybox.OVERWORLD,
+                        CardinalLighting.Type.DEFAULT,
+                        canvasAttributes,
+                        timelines.getOrThrow(TimelineTags.IN_OVERWORLD),
+                        Optional.of(clocks.getOrThrow(WorldClocks.OVERWORLD))
+                )
+        );
     }
 
     public static void bootstrapLevelStem(BootstrapContext<LevelStem> context) {
@@ -115,6 +204,12 @@ public class ModDimensions {
         context.register(
                 SCAVENGER_CORRIDOR_STEM,
                 new LevelStem(type, new FlatLevelSource(flatSettings))
+        );
+
+        Holder<DimensionType> canvasType = dimensionTypes.getOrThrow(CANVAS_SPACE_TYPE);
+        context.register(
+                CANVAS_SPACE_STEM,
+                new LevelStem(canvasType, new FlatLevelSource(flatSettings))
         );
     }
 

@@ -4,6 +4,7 @@ import me.tuanzi.Tuanzis_mod;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.init.ModPotions;
 import me.tuanzi.world.item.crafting.AxeStripRecipe;
+import me.tuanzi.world.item.crafting.CanvasUpgradeRecipe;
 import me.tuanzi.world.item.crafting.ColorBlockDyeRecipe;
 import me.tuanzi.world.item.crafting.ColorBlockShapedRecipe;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
@@ -565,6 +566,104 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                         .define('P', ItemTags.PLANKS)
                         .unlockedBy("has_blank_blueprint", has(ModItems.BLANK_BLUEPRINT))
                         .unlockedBy("has_brush", has(Items.BRUSH))
+                        .save(exporter);
+
+                // 电梯有序合成：8 个铁块围绕 1 个末影珍珠，产出白色电梯
+                shaped(RecipeCategory.TRANSPORTATION, me.tuanzi.init.ModBlocks.WHITE_ELEVATOR, 1)
+                        .pattern("III")
+                        .pattern("IEI")
+                        .pattern("III")
+                        .define('I', Items.IRON_BLOCK)
+                        .define('E', Items.ENDER_PEARL)
+                        .unlockedBy("has_ender_pearl", has(Items.ENDER_PEARL))
+                        .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                        .save(exporter);
+
+                // 16 色电梯染料互染配方（与原版羊毛一致：任意其他颜色电梯 + 对应染料 -> 目标颜色电梯）
+                java.util.List<net.minecraft.world.item.Item> elevatorDyes = new java.util.ArrayList<>();
+                java.util.List<net.minecraft.world.item.Item> elevatorItems = new java.util.ArrayList<>();
+                for (net.minecraft.world.item.DyeColor dyeColor : net.minecraft.world.item.DyeColor.values()) {
+                    elevatorDyes.add(Items.DYE.pick(dyeColor));
+                    elevatorItems.add(me.tuanzi.init.ModBlocks.ELEVATORS_BY_COLOR.get(dyeColor).asItem());
+                }
+                this.colorWithDye(elevatorDyes, elevatorItems, null, "elevator", RecipeCategory.TRANSPORTATION);
+
+                // 画板有序合成：空,木板,空 / 木板,纸,木板 / 木板,铁锭,木板
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.EASEL, 1)
+                        .pattern(" P ")
+                        .pattern("PMP")
+                        .pattern("PIP")
+                        .define('P', ItemTags.PLANKS)
+                        .define('M', Items.PAPER)
+                        .define('I', Items.IRON_INGOT)
+                        .unlockedBy("has_paper", has(Items.PAPER))
+                        .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                        .save(exporter);
+
+                // 基础画布 (16x16) 无序合成：纸 + 白色染料 + 线
+                shapeless(RecipeCategory.MISC, ModItems.CANVAS, 1)
+                        .requires(Items.PAPER)
+                        .requires(Items.DYE.white())
+                        .requires(Items.STRING)
+                        .unlockedBy("has_paper", has(Items.PAPER))
+                        .unlockedBy("has_string", has(Items.STRING))
+                        .save(exporter);
+
+                // 画布扩容升级自定义配方：外圈 8 纸围绕中间画布
+                SpecialRecipeBuilder.special(CanvasUpgradeRecipe::new).save(exporter, Tuanzis_mod.MOD_ID + ":canvas_upgrade");
+
+                // 3D 打印机有序合成：铁块 + 活塞 + 红石 + 红绿蓝染料
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.PRINTER_3D, 1)
+                        .pattern("IPI")
+                        .pattern("RGB")
+                        .pattern("IDI")
+                        .define('I', Items.IRON_BLOCK)
+                        .define('P', Items.PISTON)
+                        .define('R', Items.DYE.red())
+                        .define('G', Items.DYE.green())
+                        .define('B', Items.DYE.blue())
+                        .define('D', Items.REDSTONE)
+                        .unlockedBy("has_piston", has(Items.PISTON))
+                        .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                        .save(exporter);
+
+                // 复印机有序合成：打印机 + 粘液球 + 纸 + 红石 + 玻璃
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.COPIER, 1)
+                        .pattern("GGG")
+                        .pattern("RMR")
+                        .pattern("SPS")
+                        .define('G', Items.GLASS)
+                        .define('R', Items.REDSTONE)
+                        .define('M', me.tuanzi.init.ModBlocks.PRINTER_3D)
+                        .define('S', Items.SLIME_BALL)
+                        .define('P', Items.PAPER)
+                        .unlockedBy("has_printer_3d", has(me.tuanzi.init.ModBlocks.PRINTER_3D))
+                        .save(exporter);
+
+                // 碎纸机有序合成：铁锭 + 剪刀 + 漏斗 + 石砖 + 红石
+                shaped(RecipeCategory.DECORATIONS, me.tuanzi.init.ModBlocks.PAPER_SHREDDER, 1)
+                        .pattern("ISI")
+                        .pattern("IHI")
+                        .pattern("BRB")
+                        .define('I', Items.IRON_INGOT)
+                        .define('S', Items.SHEARS)
+                        .define('H', Items.HOPPER)
+                        .define('B', Items.STONE_BRICKS)
+                        .define('R', Items.REDSTONE)
+                        .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                        .unlockedBy("has_shears", has(Items.SHEARS))
+                        .save(exporter);
+
+                // 打印原料无序合成：粘土 + 树脂团 + 红染料 + 绿染料 + 蓝染料 + 墨囊
+                shapeless(RecipeCategory.MISC, ModItems.PRINT_MATERIAL, 1)
+                        .requires(Items.CLAY_BALL)
+                        .requires(Items.RESIN_CLUMP)
+                        .requires(Items.DYE.red())
+                        .requires(Items.DYE.green())
+                        .requires(Items.DYE.blue())
+                        .requires(Items.INK_SAC)
+                        .unlockedBy("has_resin_clump", has(Items.RESIN_CLUMP))
+                        .unlockedBy("has_clay_ball", has(Items.CLAY_BALL))
                         .save(exporter);
             }
         };

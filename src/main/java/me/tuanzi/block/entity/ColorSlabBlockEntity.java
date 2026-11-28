@@ -32,6 +32,8 @@ public class ColorSlabBlockEntity extends BlockEntity {
         this.setChanged();
         if (this.level != null && !this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        } else {
+            me.tuanzi.integration.voxy.VoxyColorSupport.notifyClientColorChanged(this.level, this.worldPosition);
         }
     }
 
@@ -45,6 +47,8 @@ public class ColorSlabBlockEntity extends BlockEntity {
         this.setChanged();
         if (this.level != null && !this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        } else {
+            me.tuanzi.integration.voxy.VoxyColorSupport.notifyClientColorChanged(this.level, this.worldPosition);
         }
     }
 
@@ -77,6 +81,7 @@ public class ColorSlabBlockEntity extends BlockEntity {
         this.topSet = input.getBooleanOr("TopSet", false);
         if ((this.bottomColor != oldBottom || this.topColor != oldTop) && this.level != null && this.level.isClientSide()) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+            me.tuanzi.integration.voxy.VoxyColorSupport.notifyClientColorChanged(this.level, this.worldPosition);
         }
     }
 

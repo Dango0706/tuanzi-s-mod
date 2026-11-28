@@ -40,12 +40,13 @@ from preview_window import (
 
 def _detect_default_schematics_dir() -> str:
     """自动优先定位项目 run/schematics 或 .minecraft/schematics 目录。"""
-    here = Path(__file__).resolve()
+    base = Path(sys.executable).resolve() if getattr(sys, "frozen", False) else Path(__file__).resolve()
     candidates = [
-        here.parents[2] / "run" / "schematics",
         Path.cwd() / "run" / "schematics",
         Path(os.environ.get("APPDATA", "")) / ".minecraft" / "schematics",
     ]
+    if len(base.parents) > 2:
+        candidates.insert(0, base.parents[2] / "run" / "schematics")
     for p in candidates:
         if p.exists() and p.is_dir():
             return str(p)

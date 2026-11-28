@@ -7,14 +7,17 @@ import me.tuanzi.block.cannon.BlueprintBuildPlanner.ParsedBlueprint;
 import me.tuanzi.block.cannon.BlueprintColorMaterialHelper;
 import me.tuanzi.block.cannon.LaunchedItem;
 import me.tuanzi.init.ModBlocks;
+import me.tuanzi.init.ModDimensions;
 import me.tuanzi.init.ModItems;
 import me.tuanzi.item.CreativeCoreItem;
 import me.tuanzi.item.StructureBlueprintItem;
 import me.tuanzi.network.BlueprintCannonShootS2CPacket;
+import me.tuanzi.world.canvas.CanvasSpaceManager;
 import me.tuanzi.world.inventory.BlueprintCannonMenu;
 import me.tuanzi.world.inventory.GoldenPocketMenu;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -392,7 +395,8 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                         if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                                 || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
-                                || cell.state().getBlock().asItem() == Items.AIR) {
+                                || cell.state().getBlock().asItem() == Items.AIR
+                                || !BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, cell.state())) {
                             plan.primarySingleQueue.pollFirst();
                             plan.placementDone++;
                             this.currentIndex = plan.getCompletedWork();
@@ -451,7 +455,8 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                             || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
-                            || cell.state().getBlock().asItem() == Items.AIR) {
+                            || cell.state().getBlock().asItem() == Items.AIR
+                            || !BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, cell.state())) {
                         plan.deferredSingleQueue.pollFirst();
                         plan.placementDone++;
                         plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
@@ -479,7 +484,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 case MULTI_BLOCK -> {
                     if (!plan.multiQueue.isEmpty()) {
                         MultiBlockGroup group = plan.multiQueue.peekFirst();
-                        if (!isGroupInValidBoundsAndRange(level, pos, group)) {
+                        if (!isGroupInValidBoundsAndRange(level, pos, group) || !isGroupAllowedInLevel(level, group)) {
                             plan.multiQueue.pollFirst();
                             plan.placementDone += group.parts().size();
                             this.currentIndex = plan.getCompletedWork();
@@ -527,7 +532,7 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
 
                     if (!plan.deferredMultiQueue.isEmpty()) {
                         MultiBlockGroup group = plan.deferredMultiQueue.peekFirst();
-                        if (!isGroupInValidBoundsAndRange(level, pos, group)) {
+                        if (!isGroupInValidBoundsAndRange(level, pos, group) || !isGroupAllowedInLevel(level, group)) {
                             plan.deferredMultiQueue.pollFirst();
                             plan.placementDone += group.parts().size();
                             plan.deferredMultiPassRemaining = plan.deferredMultiQueue.size();
@@ -578,7 +583,8 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                         BlockState worldState = level.getBlockState(cell.pos());
                         if (BlueprintBuildPlanner.isCellMatch(level, cell.pos(), worldState, cell, this.exactMatch)
                                 || !BlueprintBuildPlanner.canOverwriteWorldState(worldState)
-                                || cell.state().getBlock().asItem() == Items.AIR) {
+                                || cell.state().getBlock().asItem() == Items.AIR
+                                || !BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, cell.state())) {
                             plan.deferredSingleQueue.pollFirst();
                             plan.placementDone++;
                             plan.deferredSinglePassRemaining = plan.deferredSingleQueue.size();
@@ -754,6 +760,15 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
     private static boolean isGroupInValidBoundsAndRange(Level level, BlockPos cannonPos, MultiBlockGroup group) {
         for (BlueprintCell part : group.parts()) {
             if (!BlueprintBuildPlanner.isValidWorldTarget(level, cannonPos, part.pos())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isGroupAllowedInLevel(Level level, MultiBlockGroup group) {
+        for (BlueprintCell part : group.parts()) {
+            if (!BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, part.state())) {
                 return false;
             }
         }
@@ -1131,25 +1146,93 @@ public class BlueprintCannonBlockEntity extends BlockEntity implements MenuProvi
                 plan.destroyTotalInitial = plan.destroyQueue.size();
             }
 
+            boolean inCanvas = ModDimensions.isCanvasSpaceLevel(level);
+            int outOfBoundsCount = 0;
+            BlockPos firstOutOfBoundsPos = null;
+            int forbiddenBlockCount = 0;
+            int skippedEntityCount = 0;
+
             for (BlueprintCell cell : parsed.singleCellsBottomUp()) {
+                if (inCanvas && !BlueprintBuildPlanner.isWithinCanvasEditBoundsIfCanvas(level, cell.pos())) {
+                    if (cell.state().getBlock().asItem() != Items.AIR) {
+                        outOfBoundsCount++;
+                        if (firstOutOfBoundsPos == null) {
+                            firstOutOfBoundsPos = cell.pos().immutable();
+                        }
+                    }
+                    continue;
+                }
+                if (!BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, cell.state())) {
+                    forbiddenBlockCount++;
+                    continue;
+                }
                 if (BlueprintBuildPlanner.isValidWorldTarget(level, cannonPos, cell.pos())) {
                     plan.primarySingleQueue.addLast(cell);
                 }
             }
             for (MultiBlockGroup group : parsed.multiGroupsBottomUp()) {
-                if (isGroupInValidBoundsAndRange(level, cannonPos, group)) {
+                boolean groupInCanvasBounds = true;
+                boolean groupAllowed = true;
+                for (BlueprintCell part : group.parts()) {
+                    if (inCanvas && !BlueprintBuildPlanner.isWithinCanvasEditBoundsIfCanvas(level, part.pos())) {
+                        groupInCanvasBounds = false;
+                        outOfBoundsCount += group.parts().size();
+                        if (firstOutOfBoundsPos == null) {
+                            firstOutOfBoundsPos = part.pos().immutable();
+                        }
+                        break;
+                    }
+                    if (!BlueprintBuildPlanner.isAllowedBlueprintBlockInLevel(level, part.state())) {
+                        groupAllowed = false;
+                        forbiddenBlockCount += group.parts().size();
+                        break;
+                    }
+                }
+                if (groupInCanvasBounds && groupAllowed && isGroupInValidBoundsAndRange(level, cannonPos, group)) {
                     plan.multiQueue.addLast(group);
                 }
             }
-            for (int i = 0; i < parsed.entityCount(); i++) {
-                plan.entityQueue.addLast(i);
+            if (inCanvas) {
+                skippedEntityCount = parsed.entityCount();
+            } else {
+                for (int i = 0; i < parsed.entityCount(); i++) {
+                    plan.entityQueue.addLast(i);
+                }
+            }
+
+            if (inCanvas && level instanceof ServerLevel sl) {
+                CanvasSpaceManager.CanvasEditSession session = CanvasSpaceManager.getSessionByLevel(sl);
+                if (outOfBoundsCount > 0 && firstOutOfBoundsPos != null && session != null) {
+                    CanvasSpaceManager.notifyCanvasEditors(sl, session, Component.translatable(
+                            "message.tuanzis_mod.canvas.cannon_out_of_bounds_skipped",
+                            outOfBoundsCount,
+                            session.sizeX - 1,
+                            session.sizeY - 1,
+                            session.sizeZ - 1,
+                            firstOutOfBoundsPos.getX(),
+                            firstOutOfBoundsPos.getY(),
+                            firstOutOfBoundsPos.getZ()
+                    ).withStyle(ChatFormatting.YELLOW));
+                    me.tuanzi.util.ModLog.debug("【画布蓝图大炮】跳过超出编辑边界的目标方块: count=" + outOfBoundsCount
+                            + ", firstPos=" + firstOutOfBoundsPos + ", max=("
+                            + (session.sizeX - 1) + "," + (session.sizeY - 1) + "," + (session.sizeZ - 1) + ")");
+                }
+                if (forbiddenBlockCount > 0 || skippedEntityCount > 0) {
+                    CanvasSpaceManager.notifyCanvasEditors(sl, session, Component.translatable(
+                            "message.tuanzis_mod.canvas.cannon_forbidden_skipped",
+                            forbiddenBlockCount,
+                            skippedEntityCount
+                    ).withStyle(ChatFormatting.YELLOW));
+                    me.tuanzi.util.ModLog.debug("【画布蓝图大炮】跳过画布空间禁用方块/实体: forbiddenBlocks=" + forbiddenBlockCount
+                            + ", skippedEntities=" + skippedEntityCount);
+                }
             }
 
             int multiPartSum = 0;
             for (MultiBlockGroup g : plan.multiQueue) {
                 multiPartSum += g.parts().size();
             }
-            plan.placementTotal = plan.primarySingleQueue.size() + multiPartSum + parsed.entityCount();
+            plan.placementTotal = plan.primarySingleQueue.size() + multiPartSum + plan.entityQueue.size();
 
             plan.phase = (destroyMode && !plan.destroyQueue.isEmpty())
                     ? BuildPhase.DESTROY

@@ -22,4 +22,7 @@ public class ModItemTags {
     public static final TagKey<Item> BLOCK_BREAKER_TOOLS = TagKey.create(
             Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "block_breaker_tools")
     );
+    public static final TagKey<Item> ELEVATORS = TagKey.create(
+            Registries.ITEM, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "elevators")
+    );
 }

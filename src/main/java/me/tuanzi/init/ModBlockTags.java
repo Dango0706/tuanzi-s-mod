@@ -16,4 +16,7 @@ public class ModBlockTags {
     public static final TagKey<Block> BLOCK_PLACER_BLACKLIST = TagKey.create(
             Registries.BLOCK, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "block_placer_blacklist")
     );
+    public static final TagKey<Block> ELEVATORS = TagKey.create(
+            Registries.BLOCK, Identifier.fromNamespaceAndPath(Tuanzis_mod.MOD_ID, "elevators")
+    );
 }

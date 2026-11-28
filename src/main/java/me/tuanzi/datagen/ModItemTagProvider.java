@@ -107,5 +107,10 @@ public class ModItemTagProvider extends FabricTagsProvider<Item> {
         for (net.minecraft.world.level.block.Block chip : me.tuanzi.init.ModBlocks.CHIPS) {
             casinoBetsBuilder.add(chip.asItem().builtInRegistryHolder().key());
         }
+
+        var elevatorsTagBuilder = builder(me.tuanzi.init.ModItemTags.ELEVATORS);
+        for (net.minecraft.world.level.block.Block elevator : me.tuanzi.init.ModBlocks.ELEVATORS) {
+            elevatorsTagBuilder.add(elevator.asItem().builtInRegistryHolder().key());
+        }
     }
 }

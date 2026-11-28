@@ -207,6 +207,11 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.color_block.description"));
         registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.COLOR_STAIRS), VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.color_block.description"));
+        registration.addIngredientInfo(
+                me.tuanzi.init.ModBlocks.ELEVATORS.stream().map(ItemStack::new).toList(),
+                VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.elevator.description")
+        );
         registration.addIngredientInfo(new ItemStack(ModItems.PAINT_BUCKET), VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.paint_bucket.description"));
         registration.addIngredientInfo(new ItemStack(ModItems.CHROMATIC_SKULL), VanillaTypes.ITEM_STACK,
@@ -224,6 +229,20 @@ public class TuanzisJeiPlugin implements IModPlugin {
                 Component.translatable("jei.tuanzis_mod.blueprint_cannon.description"));
         registration.addIngredientInfo(new ItemStack(me.tuanzi.init.ModBlocks.BLUEPRINT_TABLE), VanillaTypes.ITEM_STACK,
                 Component.translatable("jei.tuanzis_mod.blueprint_table.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.EASEL), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.easel.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.CANVAS), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.canvas.description"));
+        registration.addIngredientInfo(new ItemStack(ModItems.PRINT_MATERIAL), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.print_material.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.PRINTER_3D), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.printer_3d.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.COPIER), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.copier.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.PAPER_SHREDDER), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.paper_shredder.description"));
+        registration.addIngredientInfo(new ItemStack(ModBlocks.PRINTED_MODEL), VanillaTypes.ITEM_STACK,
+                Component.translatable("jei.tuanzis_mod.printed_model.description"));
 
         // 获取所有附有“阅历”附魔的附魔书 (Experience I-IV)
         List<ItemStack> experienceBooks = registration.getIngredientManager()

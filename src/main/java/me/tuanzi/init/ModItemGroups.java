@@ -144,6 +144,14 @@ public class ModItemGroups {
                         entries.accept(ModItems.PLAYER_CONTROL_CORE);
                         entries.accept(ModItems.CREATIVE_CORE);
 
+                        // 加入画板与可打印画布系统
+                        entries.accept(ModBlocks.EASEL);
+                        entries.accept(ModItems.CANVAS);
+                        entries.accept(ModItems.PRINT_MATERIAL);
+                        entries.accept(ModBlocks.PRINTER_3D);
+                        entries.accept(ModBlocks.COPIER);
+                        entries.accept(ModBlocks.PAPER_SHREDDER);
+
                         // 加入旅者手札、传送纸与道标符石
                         entries.accept(ModItems.TRAVELERS_NOTEBOOK);
                         entries.accept(ModItems.CRAFTSMAN_CHARM);
@@ -156,6 +164,7 @@ public class ModItemGroups {
                         entries.accept(ModBlocks.COLOR_BLOCK);
                         entries.accept(ModBlocks.COLOR_SLAB);
                         entries.accept(ModBlocks.COLOR_STAIRS);
+                        ModBlocks.ELEVATORS.forEach(entries::accept);
                         entries.accept(ModItems.PAINT_BUCKET);
                         entries.accept(ModItems.CHROMATIC_SKULL);
                         entries.accept(ModItems.CODEX_OF_ENCHANTING);

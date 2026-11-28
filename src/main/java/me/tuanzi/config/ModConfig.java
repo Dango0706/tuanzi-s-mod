@@ -87,12 +87,16 @@ public final class ModConfig {
                 loaded.overworldMaxBuildHeight = clampedHeight;
                 needsSave = true;
             }
+            if (sanitizeCanvasConfig(loaded)) {
+                needsSave = true;
+            }
             current = loaded;
             lastKnownJsonContent = raw;
 
             if (!obj.has("enableCasinoRecipes")
                     || !obj.has("traumaHudConflictMode")
                     || !obj.has("overworldMaxBuildHeight")
+                    || !hasAllCanvasFields(obj)
                     || needsSave) {
                 save(path);
                 ModLog.debug("配置文件补充/修正字段: enableCasinoRecipes=" + current.enableCasinoRecipes
@@ -178,6 +182,149 @@ public final class ModConfig {
         ModLog.debug("模组配置变更: overworldMaxBuildHeight=" + clamped + " (maxY=" + (clamped - 1) + ")");
     }
 
+    private static boolean hasAllCanvasFields(JsonObject obj) {
+        return obj.has("canvasCreativeMode")
+                && obj.has("allowPublicCanvas")
+                && obj.has("allowCanvasCopying")
+                && obj.has("maxCanvasesPerPlayer")
+                && obj.has("maxPrintVoxels2D")
+                && obj.has("maxPrintVoxels3D")
+                && obj.has("voxelsPerPrintMaterial")
+                && obj.has("printBaseMaterialCost")
+                && obj.has("transparentVoxelCostMultiplier")
+                && obj.has("emissiveVoxelCostMultiplier")
+                && obj.has("printedModelLodDistance")
+                && obj.has("printedModelMaxRenderDistance");
+    }
+
+    private static boolean sanitizeCanvasConfig(ConfigData data) {
+        boolean changed = false;
+        int maxPerPlayer = Math.max(1, Math.min(4096, data.maxCanvasesPerPlayer));
+        if (maxPerPlayer != data.maxCanvasesPerPlayer) {
+            data.maxCanvasesPerPlayer = maxPerPlayer;
+            changed = true;
+        }
+        int max2d = Math.max(256, Math.min(65536, data.maxPrintVoxels2D));
+        if (max2d != data.maxPrintVoxels2D) {
+            data.maxPrintVoxels2D = max2d;
+            changed = true;
+        }
+        int max3d = Math.max(4096, Math.min(2097152, data.maxPrintVoxels3D));
+        if (max3d != data.maxPrintVoxels3D) {
+            data.maxPrintVoxels3D = max3d;
+            changed = true;
+        }
+        int perMat = Math.max(1, Math.min(65536, data.voxelsPerPrintMaterial));
+        if (perMat != data.voxelsPerPrintMaterial) {
+            data.voxelsPerPrintMaterial = perMat;
+            changed = true;
+        }
+        int baseCost = Math.max(0, Math.min(1024, data.printBaseMaterialCost));
+        if (baseCost != data.printBaseMaterialCost) {
+            data.printBaseMaterialCost = baseCost;
+            changed = true;
+        }
+        double transMult = Math.max(0.1, Math.min(10.0, data.transparentVoxelCostMultiplier));
+        if (Double.compare(transMult, data.transparentVoxelCostMultiplier) != 0) {
+            data.transparentVoxelCostMultiplier = transMult;
+            changed = true;
+        }
+        double emissiveMult = Math.max(0.1, Math.min(10.0, data.emissiveVoxelCostMultiplier));
+        if (Double.compare(emissiveMult, data.emissiveVoxelCostMultiplier) != 0) {
+            data.emissiveVoxelCostMultiplier = emissiveMult;
+            changed = true;
+        }
+        int lodDist = Math.max(8, Math.min(256, data.printedModelLodDistance));
+        if (lodDist != data.printedModelLodDistance) {
+            data.printedModelLodDistance = lodDist;
+            changed = true;
+        }
+        int maxRenderDist = Math.max(lodDist, Math.min(512, data.printedModelMaxRenderDistance));
+        if (maxRenderDist != data.printedModelMaxRenderDistance) {
+            data.printedModelMaxRenderDistance = maxRenderDist;
+            changed = true;
+        }
+        return changed;
+    }
+
+    public static boolean isCanvasCreativeMode() {
+        return current.canvasCreativeMode;
+    }
+
+    public static synchronized void setCanvasCreativeMode(boolean enabled, Path path) {
+        current.canvasCreativeMode = enabled;
+        save(path);
+        ModLog.debug("模组配置变更: canvasCreativeMode=" + enabled);
+    }
+
+    public static void setCanvasCreativeMode(boolean enabled) {
+        setCanvasCreativeMode(enabled, getConfigPath());
+    }
+
+    public static boolean isAllowPublicCanvas() {
+        return current.allowPublicCanvas;
+    }
+
+    public static synchronized void setAllowPublicCanvas(boolean allowed, Path path) {
+        current.allowPublicCanvas = allowed;
+        save(path);
+        ModLog.debug("模组配置变更: allowPublicCanvas=" + allowed);
+    }
+
+    public static void setAllowPublicCanvas(boolean allowed) {
+        setAllowPublicCanvas(allowed, getConfigPath());
+    }
+
+    public static boolean isAllowCanvasCopying() {
+        return current.allowCanvasCopying;
+    }
+
+    public static synchronized void setAllowCanvasCopying(boolean allowed, Path path) {
+        current.allowCanvasCopying = allowed;
+        save(path);
+        ModLog.debug("模组配置变更: allowCanvasCopying=" + allowed);
+    }
+
+    public static void setAllowCanvasCopying(boolean allowed) {
+        setAllowCanvasCopying(allowed, getConfigPath());
+    }
+
+    public static int getMaxCanvasesPerPlayer() {
+        return current.maxCanvasesPerPlayer;
+    }
+
+    public static int getMaxPrintVoxels2D() {
+        return current.maxPrintVoxels2D;
+    }
+
+    public static int getMaxPrintVoxels3D() {
+        return current.maxPrintVoxels3D;
+    }
+
+    public static int getVoxelsPerPrintMaterial() {
+        return current.voxelsPerPrintMaterial;
+    }
+
+    public static int getPrintBaseMaterialCost() {
+        return current.printBaseMaterialCost;
+    }
+
+    public static double getTransparentVoxelCostMultiplier() {
+        return current.transparentVoxelCostMultiplier;
+    }
+
+    public static double getEmissiveVoxelCostMultiplier() {
+        return current.emissiveVoxelCostMultiplier;
+    }
+
+    public static int getPrintedModelLodDistance() {
+        return current.printedModelLodDistance;
+    }
+
+    public static int getPrintedModelMaxRenderDistance() {
+        return current.printedModelMaxRenderDistance;
+    }
+
     public enum TraumaHudConflictMode {
         ABOVE_CONFLICT,
         RIGHT_CENTER
@@ -187,5 +334,17 @@ public final class ModConfig {
         public boolean enableCasinoRecipes = true;
         public TraumaHudConflictMode traumaHudConflictMode = TraumaHudConflictMode.ABOVE_CONFLICT;
         public int overworldMaxBuildHeight = DEFAULT_OVERWORLD_MAX_BUILD_HEIGHT;
+        public boolean canvasCreativeMode = false;
+        public boolean allowPublicCanvas = true;
+        public boolean allowCanvasCopying = true;
+        public int maxCanvasesPerPlayer = 64;
+        public int maxPrintVoxels2D = 65536;
+        public int maxPrintVoxels3D = 2097152;
+        public int voxelsPerPrintMaterial = 256;
+        public int printBaseMaterialCost = 0;
+        public double transparentVoxelCostMultiplier = 1.0;
+        public double emissiveVoxelCostMultiplier = 1.0;
+        public int printedModelLodDistance = 48;
+        public int printedModelMaxRenderDistance = 96;
     }
 }

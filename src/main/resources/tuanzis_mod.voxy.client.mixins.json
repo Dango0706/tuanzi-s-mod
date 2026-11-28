@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "package": "me.tuanzi.mixin.voxy.client",
+  "plugin": "me.tuanzi.mixin.voxy.VoxyMixinPlugin",
+  "compatibilityLevel": "JAVA_25",
+  "refmap": "tuanzis_mod.refmap.json",
+  "client": [
+    "VoxyModelFactoryMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}
